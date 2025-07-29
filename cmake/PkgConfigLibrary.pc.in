@@ -1,0 +1,14 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+bindir=${prefix}/@OCTK_INSTALL_BINDIR@
+libexecdir=${prefix}/@OCTK_INSTALL_LIBEXECDIR@
+libdir=${prefix}/@OCTK_INSTALL_LIBDIR@
+includedir=${prefix}/@OCTK_INSTALL_INCLUDEDIR@
+$<$<BOOL:@contains_mkspecs@>:mkspecsdir=${prefix}/@OCTK_INSTALL_MKSPECSDIR@>
+$<1: >
+Name: @pkgconfig_name@
+Description: @pkgconfig_description@
+Version: @PROJECT_VERSION@
+Libs: $<$<NOT:@is_interface_library@>:-L${libdir} -l@pkgconfig_file@> @link_options@
+Cflags: @include_dirs@ @compile_defs@
+Requires: $<JOIN:$<REMOVE_DUPLICATES:@target_requires@>, >
