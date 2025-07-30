@@ -231,6 +231,7 @@ set(CMAKE_MODULE_PATH ${OCTK_CMAKE_DIR} ${CMAKE_MODULE_PATH})
 include(OCTKPrecompiledHeadersHelpers)
 include(OCTKScopeFinalizerHelpers)
 include(OCTKPublicWalkLibsHelpers)
+include(OCTKPublicResourceHelpers)
 include(OCTKPublicTargetHelpers)
 include(OCTKFlagHandlingHelpers)
 include(OCTKSubdirectoryHelpers)
@@ -594,9 +595,13 @@ set(OCTK_INTERNAL_ADD_EXECUTABLE_MULTI_ARGS
 #-----------------------------------------------------------------------------------------------------------------------
 # add 3rdparty subdirectory
 #-----------------------------------------------------------------------------------------------------------------------
+include(InstallPython)
 include(InstallPkgConfig)
 include(InstallRequiredSystemLibraries)
 
+if(OCTK_BUILD_DOCS)
+	include(InstallDoxygen)
+endif()
 if(OCTK_BUILD_TESTS)
 	include(CTest)
 	enable_testing()
@@ -608,4 +613,5 @@ endif()
 #-----------------------------------------------------------------------------------------------------------------------
 # add subdirectory
 #-----------------------------------------------------------------------------------------------------------------------
+add_subdirectory(src/tools)
 add_subdirectory(src/libs)

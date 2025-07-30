@@ -48,97 +48,99 @@ macro(octk_pkg_check_modules PREFIX)
 endmacro()
 
 if(TARGET OCTK3rdparty::PkgConfig)
-	set(PkgConfig_FOUND ON)
+	set(OCTKPkgConfig_FOUND ON)
 	return()
 endif()
 
 if(EXISTS "${PROJECT_SOURCE_DIR}/3rdparty/pkgconf-${OCTK_PLATFORM_NAME}.zip")
 	message(STATUS "Install pkgconf-${OCTK_PLATFORM_NAME}...")
-	set(PkgConfig_DIR_NAME "pkgconf-${OCTK_PLATFORM_NAME}")
-	set(PkgConfig_PKG_NAME "pkgconf-${OCTK_PLATFORM_NAME}.zip")
-	set(PkgConfig_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${PkgConfig_PKG_NAME}")
-	set(PkgConfig_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${PkgConfig_DIR_NAME}")
-	set(PkgConfig_INSTALL_DIR "${PkgConfig_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-	octk_stamp_file_info(PkgConfig OUTPUT_DIR "${PkgConfig_ROOT_DIR}")
-	octk_fetch_3rdparty(PkgConfig URL "${PkgConfig_URL_PATH}")
+	set(OCTKPkgConfig_NAME "pkgconf-${OCTK_PLATFORM_NAME}")
+	set(OCTKPkgConfig_PKG_NAME "pkgconf-${OCTK_PLATFORM_NAME}.zip")
+	set(OCTKPkgConfig_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKPkgConfig_PKG_NAME}")
+	set(OCTKPkgConfig_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKPkgConfig_NAME}")
+	set(OCTKPkgConfig_INSTALL_DIR "${OCTKPkgConfig_ROOT_DIR}/source")
+	octk_stamp_file_info(PkgConfig OUTPUT_DIR "${OCTKPkgConfig_ROOT_DIR}")
+	octk_fetch_3rdparty(PkgConfig URL "${OCTKPkgConfig_URL_PATH}")
 	message(STATUS "Set PkgConf executable path.")
 	if(WIN32)
-		set(PkgConfig_EXECUTABLE "${PkgConfig_INSTALL_DIR}/pkgconf.exe"
+		set(OCTKPkgConfig_EXECUTABLE "${OCTKPkgConfig_INSTALL_DIR}/pkgconf.exe"
 			CACHE INTERNAL "PkgConf executable path." FORCE)
 	else()
-		set(PkgConfig_EXECUTABLE "${PkgConfig_INSTALL_DIR}/pkgconf"
+		set(OCTKPkgConfig_EXECUTABLE "${OCTKPkgConfig_INSTALL_DIR}/pkgconf"
 			CACHE INTERNAL "PkgConf executable path." FORCE)
 	endif()
-	set(PKG_CONFIG_EXECUTABLE "${PkgConfig_EXECUTABLE}"
+	set(PKG_CONFIG_EXECUTABLE "${OCTKPkgConfig_EXECUTABLE}"
 		CACHE INTERNAL "PKG_CONFIG_EXECUTABLE executable path." FORCE)
 else()
 	find_package(PkgConfig QUIET)
 	if(NOT PkgConfig_FOUND)
-		set(PkgConfig_DIR_NAME "pkgconf-2.3.0")
-		set(PkgConfig_PKG_NAME "pkgconf-2.3.0.zip")
-		set(PkgConfig_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${PkgConfig_PKG_NAME}")
-		set(PkgConfig_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${PkgConfig_DIR_NAME}")
-		set(PkgConfig_BUILD_DIR "${PkgConfig_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-		set(PkgConfig_SOURCE_DIR "${PkgConfig_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-		set(PkgConfig_INSTALL_DIR "${PkgConfig_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-		octk_stamp_file_info(PkgConfig OUTPUT_DIR "${PkgConfig_ROOT_DIR}")
-		octk_fetch_3rdparty(PkgConfig URL "${PkgConfig_URL_PATH}")
-		if(NOT EXISTS "${PkgConfig_STAMP_FILE_PATH}")
-			if(NOT EXISTS ${PkgConfig_SOURCE_DIR})
-				message(FATAL_ERROR "${PkgConfig_DIR_NAME} FetchContent failed.")
+		set(OCTKPkgConfig_NAME "pkgconf-2.3.0")
+		set(OCTKPkgConfig_PKG_NAME "${OCTKPkgConfig_NAME}.zip")
+		set(OCTKPkgConfig_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKPkgConfig_PKG_NAME}")
+		set(OCTKPkgConfig_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKPkgConfig_NAME}")
+		set(OCTKPkgConfig_BUILD_DIR "${OCTKPkgConfig_ROOT_DIR}/source")
+		set(OCTKPkgConfig_SOURCE_DIR "${OCTKPkgConfig_ROOT_DIR}/source")
+		set(OCTKPkgConfig_INSTALL_DIR "${OCTKPkgConfig_ROOT_DIR}/install")
+		octk_stamp_file_info(PkgConfig OUTPUT_DIR "${OCTKPkgConfig_ROOT_DIR}")
+		octk_fetch_3rdparty(PkgConfig URL "${OCTKPkgConfig_URL_PATH}")
+		if(NOT EXISTS "${OCTKPkgConfig_STAMP_FILE_PATH}")
+			if(NOT EXISTS ${OCTKPkgConfig_SOURCE_DIR})
+				message(FATAL_ERROR "${OCTKPkgConfig_NAME} FetchContent failed.")
 			endif()
 			execute_process(
-				COMMAND ${CMAKE_COMMAND} -E make_directory ${PkgConfig_BUILD_DIR}
-				WORKING_DIRECTORY "${PkgConfig_ROOT_DIR}"
+				COMMAND ${CMAKE_COMMAND} -E make_directory ${OCTKPkgConfig_BUILD_DIR}
+				WORKING_DIRECTORY "${OCTKPkgConfig_ROOT_DIR}"
 				RESULT_VARIABLE MKDIR_RESULT)
 			if(NOT (MKDIR_RESULT MATCHES 0))
-				message(FATAL_ERROR "${PkgConfig_DIR_NAME} lib build directory make failed.")
+				message(FATAL_ERROR "${OCTKPkgConfig_DIR_NAME} lib build directory make failed.")
 			endif()
 
-			message(STATUS "Autogen ${PkgConfig_DIR_NAME} lib...")
+			message(STATUS "Autogen ${OCTKPkgConfig_DIR_NAME} lib...")
 			execute_process(				
 				COMMAND ./autogen.sh
-				WORKING_DIRECTORY "${PkgConfig_SOURCE_DIR}"
+				WORKING_DIRECTORY "${OCTKPkgConfig_SOURCE_DIR}"
 				RESULT_VARIABLE AUTOGEN_RESULT)
 			if(NOT AUTOGEN_RESULT MATCHES 0)
-				message(FATAL_ERROR "${PkgConfig_DIR_NAME} autogen failed.")
+				message(FATAL_ERROR "${OCTKPkgConfig_DIR_NAME} autogen failed.")
 			endif()
-			message(STATUS "${PkgConfig_DIR_NAME} autogen success")
+			message(STATUS "${OCTKPkgConfig_DIR_NAME} autogen success")
 
-			message(STATUS "Configure ${PkgConfig_DIR_NAME} lib...")
+			message(STATUS "Configure ${OCTKPkgConfig_DIR_NAME} lib...")
 			execute_process(
-				COMMAND ./configure --prefix=${PkgConfig_INSTALL_DIR}
-				WORKING_DIRECTORY "${PkgConfig_SOURCE_DIR}"
+				COMMAND ./configure --prefix=${OCTKPkgConfig_INSTALL_DIR}
+				WORKING_DIRECTORY "${OCTKPkgConfig_SOURCE_DIR}"
 				RESULT_VARIABLE CONFIGURE_RESULT)
 			if(NOT CONFIGURE_RESULT MATCHES 0)
-				message(FATAL_ERROR "${PkgConfig_DIR_NAME} configure failed.")
+				message(FATAL_ERROR "${OCTKPkgConfig_DIR_NAME} configure failed.")
 			endif()
-			message(STATUS "${PkgConfig_DIR_NAME} configure success")
+			message(STATUS "${OCTKPkgConfig_DIR_NAME} configure success")
 			
 			execute_process(
 				COMMAND make -j${OCTK_NUMBER_OF_ASYNC_JOBS}
-				WORKING_DIRECTORY "${PkgConfig_SOURCE_DIR}"
+				WORKING_DIRECTORY "${OCTKPkgConfig_SOURCE_DIR}"
 				RESULT_VARIABLE BUILD_RESULT)
 			if(NOT BUILD_RESULT MATCHES 0)
-				message(FATAL_ERROR "${PkgConfig_DIR_NAME} build failed.")
+				message(FATAL_ERROR "${OCTKPkgConfig_DIR_NAME} build failed.")
 			endif()
-			message(STATUS "${PkgConfig_DIR_NAME} build success")
+			message(STATUS "${OCTKPkgConfig_DIR_NAME} build success")
 					
 			execute_process(
 				COMMAND make install
-				WORKING_DIRECTORY "${PkgConfig_SOURCE_DIR}"
+				WORKING_DIRECTORY "${OCTKPkgConfig_SOURCE_DIR}"
 				RESULT_VARIABLE INSTALL_RESULT)
 			if(NOT INSTALL_RESULT MATCHES 0)
-				message(FATAL_ERROR "${PkgConfig_DIR_NAME} install failed.")
+				message(FATAL_ERROR "${OCTKPkgConfig_DIR_NAME} install failed.")
 			endif()
-			message(STATUS "${PkgConfig_DIR_NAME} install success")
-			octk_make_stamp_file("${PkgConfig_STAMP_FILE_PATH}")
+			message(STATUS "${OCTKPkgConfig_DIR_NAME} install success")
+			octk_make_stamp_file("${OCTKPkgConfig_STAMP_FILE_PATH}")
 		endif()
 		message(STATUS "Set PkgConf executable path.")
-		set(PkgConfig_EXECUTABLE "${PkgConfig_INSTALL_DIR}/bin/pkgconf" 
+		set(OCTKPkgConfig_EXECUTABLE "${OCTKPkgConfig_INSTALL_DIR}/bin/pkgconf" 
 			CACHE INTERNAL "PkgConf executable path." FORCE)
-		set(PKG_CONFIG_EXECUTABLE "${PkgConfig_EXECUTABLE}"
+		set(PKG_CONFIG_EXECUTABLE "${OCTKPkgConfig_EXECUTABLE}"
 			CACHE INTERNAL "PKG_CONFIG_EXECUTABLE executable path." FORCE)
+	else()
+		message(STATUS "Set use system PkgConf executable ${PKG_CONFIG_EXECUTABLE}.")
 	endif()
 endif()
-set(PkgConfig_FOUND ON)
+set(OCTKPkgConfig_FOUND ON)

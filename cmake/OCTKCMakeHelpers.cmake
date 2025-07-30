@@ -665,6 +665,7 @@ function(octk_fetch_3rdparty name)
             endif()
 
             file(GLOB extracted_dirs RELATIVE "${3rdparty_root_dir}/extract" "${3rdparty_root_dir}/extract/*")
+            set(3rdparty_extracted_dir "${3rdparty_root_dir}/extract")
             foreach(subdir ${extracted_dirs})
                 if(IS_DIRECTORY "${3rdparty_root_dir}/extract/${subdir}")
                     set(3rdparty_extracted_dir "${3rdparty_root_dir}/extract/${subdir}")

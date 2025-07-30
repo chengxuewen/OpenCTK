@@ -22,38 +22,18 @@
 ########################################################################################################################
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Set example output path
-#-----------------------------------------------------------------------------------------------------------------------
-set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Set example link libraries
-#-----------------------------------------------------------------------------------------------------------------------
-set(OCTK_EXAMPLE_LINK_LIBRARIES)
-list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::core)
-
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
-# add_subdirectory(rcc)
-
-octk_add_executable(octk_core_exp_version
-    EXCEPTIONS
-    SOURCES
-    exp_core_version.cpp
-    INCLUDE_DIRECTORIES
-    LIBRARIES
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
-    OUTPUT_DIRECTORY
-    ${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_core_exp_logging
-    EXCEPTIONS
-    SOURCES
-    exp_logging.cpp
-    INCLUDE_DIRECTORIES
-    LIBRARIES
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
-    OUTPUT_DIRECTORY
-    ${OCTK_EXAMPLE_OUTPUT_DIR})
+octk_add_executable(octk_core_exp_rcc_simple
+	EXCEPTIONS
+	SOURCES
+	exp_rcc_simple.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_EXAMPLE_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_EXAMPLE_OUTPUT_DIR})
+octk_add_resources(octk_core_exp_rcc_simple
+	RESOURCES
+	resources/flower.jpg
+	resources/hello.txt)
