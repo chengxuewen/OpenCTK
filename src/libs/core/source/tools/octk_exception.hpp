@@ -28,6 +28,8 @@
 #include <octk_global.hpp>
 #include <octk_expected.hpp>
 
+#include <string>
+
 OCTK_BEGIN_NAMESPACE
 
 template <typename R>

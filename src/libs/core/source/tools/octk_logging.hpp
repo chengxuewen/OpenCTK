@@ -29,13 +29,13 @@
 #include <octk_string_utils.hpp>
 
 #include <vector>
-#include <memory>
 #include <string>
 #include <ostream>
 #include <sstream>
 #include <functional>
 
 OCTK_BEGIN_NAMESPACE
+
 enum class LogLevel : int
 {
     Trace = 0,

@@ -469,18 +469,6 @@ include(OCTKInternalTargets)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Set custom build target
-#-----------------------------------------------------------------------------------------------------------------------
-add_custom_target(BuildAll
-	COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config ${CMAKE_BUILD_TYPE}
-	WORKING_DIRECTORY "${OCTK_BUILD_DIR}")
-add_custom_target(BuildInstall
-	COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config ${CMAKE_BUILD_TYPE}
-	COMMAND ${CMAKE_COMMAND} --install ./
-	WORKING_DIRECTORY "${OCTK_BUILD_DIR}")
-
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Set namespace and separator
 #-----------------------------------------------------------------------------------------------------------------------
 set(OCTK_NAMESPACE_VERSION ${OCTK_VERSION_MAJOR})
@@ -540,6 +528,30 @@ endif()
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run "
 		"CMake from there. You may need to remove CMakeCache.txt.")
+endif()
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# top project check
+#-----------------------------------------------------------------------------------------------------------------------
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+	set(OCTK_PROJECT_IS_TOP_LEVEL ON)
+else()
+	set(OCTK_PROJECT_IS_TOP_LEVEL OFF)
+endif()
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Set custom build target
+#-----------------------------------------------------------------------------------------------------------------------
+if(OCTK_PROJECT_IS_TOP_LEVEL)
+	add_custom_target(BuildAll
+		COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config ${CMAKE_BUILD_TYPE}
+		WORKING_DIRECTORY "${OCTK_BUILD_DIR}")
+	add_custom_target(BuildInstall
+		COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config ${CMAKE_BUILD_TYPE}
+		COMMAND ${CMAKE_COMMAND} --install ./
+		WORKING_DIRECTORY "${OCTK_BUILD_DIR}")
 endif()
 
 

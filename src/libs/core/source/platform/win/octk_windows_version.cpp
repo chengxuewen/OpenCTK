@@ -26,9 +26,9 @@
 #include <octk_string_utils.hpp>
 #include <octk_checks.hpp>
 
-#include <windows.h>
+#include <octk_string_utils.hpp>
 
-#include <memory>
+#include <windows.h>
 
 #if !defined(__clang__) && _MSC_FULL_VER < 191125507
 #   error VS 2017 Update 3.2 or higher is required
@@ -388,7 +388,7 @@ OSInfo::OSInfo()
         version_number_.major, version_number_.minor, version_number_.build);
     service_pack_.major = version_info.wServicePackMajor;
     service_pack_.minor = version_info.wServicePackMinor;
-    service_pack_str_ = toUtf8(version_info.szCSDVersion);
+    service_pack_str_ = octk::utils::toUtf8(version_info.szCSDVersion);
 
     SYSTEM_INFO system_info = {};
     ::GetNativeSystemInfo(&system_info);
@@ -518,7 +518,7 @@ std::string OSInfo::processor_model_name()
         RegKey key(HKEY_LOCAL_MACHINE, kProcessorNameString, KEY_READ);
         std::wstring value;
         key.ReadValue(L"ProcessorNameString", &value);
-        processor_model_name_ = toUtf8(value);
+        processor_model_name_ = octk::utils::toUtf8(value);
     }
     return processor_model_name_;
 #endif  // defined(WINUWP)

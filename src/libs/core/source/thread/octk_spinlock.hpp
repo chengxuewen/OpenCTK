@@ -22,38 +22,55 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_THREAD_POOL_HPP
-#define _OCTK_THREAD_POOL_HPP
+#ifndef _OCTK_SPINLOCK_HPP
+#define _OCTK_SPINLOCK_HPP
 
 #include <octk_global.hpp>
 
-#include <string>
-#include <functional>
+#include <atomic>
+#include <thread>
 
 OCTK_BEGIN_NAMESPACE
 
-class ThreadPoolPrivate;
-class OCTK_CORE_API ThreadPool
+class SpinLock
 {
 public:
-    using TaskFunc = std::function<void(void)>;
+    class Locker
+    {
+    public:
+        Locker(SpinLock &lock)
+            : spinLock(lock)
+        {
+            spinLock.lock();
+        }
+        virtual ~Locker() { spinLock.unlock(); }
+        virtual void relock() { spinLock.lock(); }
+        virtual void unlock() { spinLock.unlock(); }
+        virtual bool isLocked() { return spinLock.isLocked(); }
 
-    ThreadPool(const std::string &name, size_t count = 1);
-    explicit ThreadPool(ThreadPoolPrivate *d);
-    virtual ~ThreadPool();
+    private:
+        SpinLock &spinLock;
+        OCTK_DISABLE_COPY_MOVE(Locker)
+    };
 
-    static ThreadPool *defaultInstance();
+    SpinLock() { }
+    virtual ~SpinLock() { }
 
-    void runTask(const TaskFunc &task);
-    void runTask(TaskFunc &&task);
+    void lock()
+    {
+        while (mFlag.test_and_set(std::memory_order_acquire))
+        {
+            std::this_thread::yield();
+        }
+    }
+    void unlock() { mFlag.clear(std::memory_order_release); }
+    bool isLocked() const { return mFlag.test(std::memory_order_acquire); }
 
-    void removePending();
-
-protected:
-    OCTK_DEFINE_DPTR(ThreadPool)
-    OCTK_DECLARE_PRIVATE(ThreadPool)
-    OCTK_DISABLE_COPY_MOVE(ThreadPool)
+private:
+    std::atomic_flag mFlag = ATOMIC_FLAG_INIT;
+    OCTK_DISABLE_COPY_MOVE(SpinLock)
 };
+
 OCTK_END_NAMESPACE
 
-#endif // _OCTK_THREAD_POOL_HPP
+#endif // _OCTK_SPINLOCK_HPP

@@ -50,6 +50,13 @@ OCTK_BEGIN_NAMESPACE
 
 namespace utils
 {
+template <typename T> std::string pointerToString(T *ptr)
+{
+    std::stringstream ss;
+    ss << ptr;
+    return ss.str();
+}
+
 /**
  * @brief
  * @param filePath

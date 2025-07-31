@@ -65,9 +65,12 @@ octk_add_library(core
     source/text/octk_ascii.cpp
     source/text/octk_ascii.hpp
     source/text/octk_json.hpp
+    source/text/octk_string.cpp
+    source/text/octk_string.hpp
     source/text/octk_string_utils.cpp
     source/text/octk_string_utils.hpp
     source/text/octk_string_view.hpp
+    source/thread/octk_spinlock.hpp
     source/thread/octk_thread.cpp
     source/thread/octk_thread.hpp
     source/thread/octk_thread_p.hpp
@@ -77,6 +80,8 @@ octk_add_library(core
     source/tools/octk_assert.cpp
     source/tools/octk_assert.hpp
     source/tools/octk_checks.hpp
+    source/tools/octk_date_time.cpp
+    source/tools/octk_date_time.hpp
     source/tools/octk_exception.hpp
     source/tools/octk_expected.hpp
     source/tools/octk_limits.hpp

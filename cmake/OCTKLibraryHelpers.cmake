@@ -650,7 +650,7 @@ function(octk_add_library name)
     endif()
     set(export_name "${path_suffix}-targets")
     if(arg_EXTERNAL_HEADERS_DIRS)
-        # octk_install set in ptk_internal_extend_target
+        # octk_install set in octk_internal_extend_target
         get_target_property(public_header_backup ${target} PUBLIC_HEADER)
         set_property(TARGET ${target} PROPERTY PUBLIC_HEADER "")
     endif()

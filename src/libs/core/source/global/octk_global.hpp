@@ -32,11 +32,9 @@
 #include <octk_types.hpp>
 
 #include <stdarg.h>
-#include <limits.h>
-#include <float.h>
 
 /***********************************************************************************************************************
- *   OpenCTK compiler dll visibility macro declare
+ * compiler dll visibility macro declare
 ***********************************************************************************************************************/
 #if defined(OCTK_CC_GNU) && (OCTK_CC_GNU > 400)
 #    define OCTK_DECLARE_EXPORT __attribute__((visibility("default")))
@@ -63,7 +61,7 @@
 #endif
 
 /***********************************************************************************************************************
-   OpenCTK Compiler specific cmds for export and import code to DLL and declare namespace
+ * compiler specific cmds for export and import code to DLL and declare namespace
 ***********************************************************************************************************************/
 #ifdef OCTK_BUILD_SHARED          // compiled as a dynamic lib.
 #    ifdef OCTK_BUILDING_CORE_LIB // defined if we are building the lib

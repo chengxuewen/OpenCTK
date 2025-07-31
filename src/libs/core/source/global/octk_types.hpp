@@ -33,8 +33,8 @@
 #    include <windows.h>
 #endif
 #include <vector>
-#include <string>
-#include <limits>
+#include <memory>
+#include <stdint.h>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -52,6 +52,13 @@ using std::size_t;
 using std::ptrdiff_t;
 using uintptr_t = size_t;
 using intptr_t = ptrdiff_t;
+#if !OCTK_HAS_SSIZE_T && defined(OCTK_OS_WIN)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
+#ifndef OCTK_SIZEOF_SSIZE_T
+#   define OCTK_SIZEOF_SSIZE_T OCTK_SIZEOF_SIZE_T
+#endif
 
 using byte_t = uint8_t;
 using uchar_t = unsigned char;

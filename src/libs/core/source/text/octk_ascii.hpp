@@ -57,17 +57,17 @@ typedef enum
 /**
  * @brief Declaration for an array of bitfields holding character information.
  */
-extern const uint16_t *const ascii_table;
+OCTK_CORE_API extern const uint16_t *const ascii_table;
 
 /**
  * @brief Declaration for the array of characters to lower-case characters.
  */
-extern const char *const ascii_lower_table;
+OCTK_CORE_API extern const char *const ascii_lower_table;
 
 /**
  * @brief Declaration for the array of characters to upper-case characters.
  */
-extern const char *const ascii_upper_table;
+OCTK_CORE_API extern const char *const ascii_upper_table;
 
 /**
  * @brief Determines whether the given character is an alphanumeric character.

@@ -25,12 +25,12 @@
 #include <octk_ascii.hpp>
 #include <octk_assert.hpp>
 #include <octk_limits.hpp>
+#include <octk_string.hpp>
 
 #include <locale.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <ctype.h> /* For tolower() */
-#include <memory>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -639,7 +639,7 @@ char *ascii_strlwr(const char *str, ssize_t len)
         len = (ssize_t)strlen(str);
     }
 
-    char *result = strndup(str, (size_t)len);
+    char *result = String::strndup(str, (size_t)len);
     for (char *s = result; *s; s++)
     {
         *s = ascii_tolower(*s);
@@ -657,7 +657,7 @@ char *ascii_strupr(const char *str, ssize_t len)
         len = (ssize_t)strlen(str);
     }
 
-    char *result = strndup(str, (size_t)len);
+    char *result = String::strndup(str, (size_t)len);
     for (char *s = result; *s; s++)
     {
         *s = ascii_toupper(*s);

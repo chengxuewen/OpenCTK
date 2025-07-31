@@ -12,7 +12,7 @@ using Json = nlohmann::json;
 
 static inline Expected<Json, std::string> parseJson(const std::string &data)
 {
-    return tryCatchCall<nlohmann::json>([data]() { return nlohmann::json::parse(data); });
+    return tryCatchCall<Json>([data]() { return Json::parse(data); });
 }
 
 OCTK_END_NAMESPACE

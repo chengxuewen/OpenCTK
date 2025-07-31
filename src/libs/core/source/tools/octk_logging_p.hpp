@@ -32,7 +32,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
-#include <mutex>
 #include <atomic>
 
 OCTK_BEGIN_NAMESPACE
