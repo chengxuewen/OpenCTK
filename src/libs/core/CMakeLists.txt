@@ -70,6 +70,7 @@ octk_add_library(core
     source/text/octk_string_utils.cpp
     source/text/octk_string_utils.hpp
     source/text/octk_string_view.hpp
+    source/thread/octk_mutex.hpp
     source/thread/octk_spinlock.hpp
     source/thread/octk_thread.cpp
     source/thread/octk_thread.hpp
@@ -88,7 +89,6 @@ octk_add_library(core
     source/tools/octk_logging.cpp
     source/tools/octk_logging.hpp
     source/tools/octk_logging_p.hpp
-    source/tools/octk_mutex.hpp
     source/tools/octk_tag_id.hpp
     source/tools/octk_type_traits.hpp
     source/tools/octk_variant.hpp

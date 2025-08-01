@@ -63,7 +63,7 @@
 /***********************************************************************************************************************
  * compiler specific cmds for export and import code to DLL and declare namespace
 ***********************************************************************************************************************/
-#ifdef OCTK_BUILD_SHARED          // compiled as a dynamic lib.
+#ifdef OCTK_BUILD_SHARED_CORE // compiled as a dynamic lib.
 #    ifdef OCTK_BUILDING_CORE_LIB // defined if we are building the lib
 #        define OCTK_CORE_API OCTK_DECLARE_EXPORT
 #    else

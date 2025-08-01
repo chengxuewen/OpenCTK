@@ -99,8 +99,10 @@ TEST(MatchTest, EqualsIgnoreCase)
     EXPECT_TRUE(octk::utils::stringEqualsIgnoreCase(data, "The"));
     EXPECT_TRUE(octk::utils::stringEqualsIgnoreCase(data, "THE"));
     EXPECT_TRUE(octk::utils::stringEqualsIgnoreCase(data, "the"));
+    EXPECT_TRUE(octk::utils::stringEqualsIgnoreCase(data, std::string("the")));
     EXPECT_FALSE(octk::utils::stringEqualsIgnoreCase(data, "Quick"));
     EXPECT_FALSE(octk::utils::stringEqualsIgnoreCase(data, "then"));
+    EXPECT_FALSE(octk::utils::stringEqualsIgnoreCase(data, std::string("then")));
 }
 
 TEST(MatchTest, StartsWithIgnoreCase)
@@ -167,4 +169,4 @@ TEST(MatchTest, ContainsCharIgnoreCase)
     EXPECT_FALSE(octk::utils::stringContainsIgnoreCase("", '0'));
 }
 
-}  // namespace
+} // namespace

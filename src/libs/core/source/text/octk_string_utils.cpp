@@ -38,7 +38,7 @@ namespace utils
 const char *extractFileName(const char *filePath)
 {
     OCTK_ASSERT(nullptr != filePath);
-    
+
     char path[OCTK_PATH_MAX] = {0};
     size_t length = std::min<size_t>(OCTK_PATH_MAX, strlen(filePath));
     std::memcpy(path, filePath, length);
@@ -131,6 +131,15 @@ bool stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept
 {
     return (piece1.size() == piece2.size() && 0 == stringCaseCmp(piece1.data(), piece2.data(), piece1.size()));
 }
+
+bool Test::stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept
+{
+    return (piece1.size() == piece2.size() && 0 == stringCaseCmp(piece1.data(), piece2.data(), piece1.size()));
+}
+
+#ifndef OCTK_BUILDING_CORE_LIB
+#error "ndef OCTK_BUILDING_CORE_LIB"
+#endif
 
 } // namespace utils
 

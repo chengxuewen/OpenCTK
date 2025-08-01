@@ -28,8 +28,9 @@ if(TARGET OCTK3rdparty::WrapLibyuv)
     return()
 endif()
 
-set(OCTKWrapLibyuv_PKG_NAME "libyuv.zip")
-set(OCTKWrapLibyuv_DIR_NAME "libyuv-${OCTK_LOWER_BUILD_TYPE}")
+set(OCTKWrapLibyuv_NAME "libyuv")
+set(OCTKWrapLibyuv_PKG_NAME "${OCTKWrapLibyuv_NAME}.7z")
+set(OCTKWrapLibyuv_DIR_NAME "${OCTKWrapLibyuv_NAME}-${OCTK_LOWER_BUILD_TYPE}")
 set(OCTKWrapLibyuv_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapLibyuv_PKG_NAME}")
 set(OCTKWrapLibyuv_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapLibyuv_DIR_NAME}")
 set(OCTKWrapLibyuv_BUILD_DIR "${OCTKWrapLibyuv_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
@@ -39,11 +40,11 @@ octk_stamp_file_info(OCTKWrapLibyuv OUTPUT_DIR "${OCTKWrapLibyuv_ROOT_DIR}")
 octk_fetch_3rdparty(OCTKWrapLibyuv URL "${OCTKWrapLibyuv_URL_PATH}" OUTPUT_NAME "${OCTKWrapLibyuv_DIR_NAME}")
 if(NOT EXISTS "${OCTKWrapLibyuv_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapLibyuv_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapLibyuv_DIR_NAME} FetchContent failed.")
+        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} FetchContent failed.")
     endif()
     octk_reset_dir(PARENT_DIR ${OCTKWrapLibyuv_ROOT_DIR} TARGET_NAME build)
 
-    message(STATUS "Configure ${OCTKWrapLibyuv_DIR_NAME} lib...")
+    message(STATUS "Configure ${OCTKWrapLibyuv_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
@@ -55,28 +56,28 @@ if(NOT EXISTS "${OCTKWrapLibyuv_STAMP_FILE_PATH}")
         WORKING_DIRECTORY "${OCTKWrapLibyuv_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapLibyuv_DIR_NAME} configure failed.")
+        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} configure failed.")
     endif()
 
-    message(STATUS "${OCTKWrapLibyuv_DIR_NAME} configure success")
+    message(STATUS "${OCTKWrapLibyuv_NAME} configure success")
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS}
         --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OCTKWrapLibyuv_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapLibyuv_DIR_NAME} build failed.")
+        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapLibyuv_DIR_NAME} build success")
+    message(STATUS "${OCTKWrapLibyuv_NAME} build success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
         WORKING_DIRECTORY "${OCTKWrapLibyuv_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapLibyuv_DIR_NAME} install failed.")
+        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapLibyuv_DIR_NAME} install success")
+    message(STATUS "${OCTKWrapLibyuv_NAME} install success")
     octk_make_stamp_file("${OCTKWrapLibyuv_STAMP_FILE_PATH}")
 endif()
 # wrap lib

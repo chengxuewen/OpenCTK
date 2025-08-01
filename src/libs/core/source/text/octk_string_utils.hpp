@@ -125,6 +125,11 @@ inline bool stringEndsWith(StringView text, StringView suffix) noexcept
  */
 OCTK_CORE_API bool stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept;
 
+struct OCTK_CORE_API Test
+{
+    static bool stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept;
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // UTF helpers (Windows only)
 ///////////////////////////////////////////////////////////////////////////////

@@ -25,45 +25,53 @@
 #ifndef _OCTK_MUTEX_HPP
 #define _OCTK_MUTEX_HPP
 
-#include <octk_engine_global.hpp>
+#include <octk_global.hpp>
+#include <octk_assert.hpp>
 
 #include <mutex>
-#include <atomic>
 
 OCTK_BEGIN_NAMESPACE
 
-template <typename T>
-class MutexLocker
+class Mutex : public std::mutex
 {
 public:
-    using MutexType = T;
+    using Base = std::mutex;
 
-    MutexLocker(MutexType& mutex, bool lock = true)
-        : mMutex(mutex)
+    class Locker
     {
-        if (lock) { this->lock(); }
-    }
-
-    ~MutexLocker() noexcept { this->unlock(); }
-
-    void unlock()
-    {
-        if (mLocked.exchange(false))
+    public:
+        Locker(Base &mutex)
+            : mMutex(mutex)
+        {
+            OCTK_ASSERT(mMutex.try_lock());
+            mMutexLocked.store(true);
+        }
+        virtual ~Locker()
+        {
+            if (mMutexLocked.load())
+            {
+                mMutex.unlock();
+            }
+        }
+        virtual void relock()
+        {
+            mMutex.lock();
+            mMutexLocked.store(true);
+        }
+        virtual void unlock()
         {
             mMutex.unlock();
+            mMutexLocked.store(false);
         }
-    }
 
-    void lock()
-    {
-        mMutex.lock();
-        mLocked.store(true);
-    }
+    private:
+        Base &mMutex;
+        std::atomic_bool mMutexLocked{false};
+        OCTK_DISABLE_COPY_MOVE(Locker)
+    };
 
-private:
-    MutexType& mMutex;
-    std::atomic_bool mLocked = ATOMIC_VAR_INIT(false);
-    OCTK_DISABLE_COPY_MOVE(MutexLocker)
+    using Base::Base;
+    Mutex() = default;
 };
 
 OCTK_END_NAMESPACE

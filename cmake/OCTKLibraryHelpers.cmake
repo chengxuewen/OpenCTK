@@ -471,14 +471,11 @@ function(octk_add_library name)
 
     if(NOT arg_HEADER_LIBRARY)
         list(APPEND defines_for_extend_target
-            OCTK_NO_CAST_TO_ASCII OCTK_ASCII_CAST_WARNINGS
+            OCTK_NO_CAST_TO_ASCII
+            OCTK_ASCII_CAST_WARNINGS
             OCTK_DEPRECATED_WARNINGS
             OCTK_BUILDING_${library_define_infix}_LIB
             ${deprecation_define})
-        #        message(OCTK_BUILD_${library_define_infix}_LIB)
-        if(is_shared_lib)
-            list(APPEND defines_for_extend_target OCTK_BUILDING_${library_define_infix}_SHARED_LIB)
-        endif()
     endif()
 
     #    foreach(dir ${public_includes})
@@ -533,6 +530,10 @@ function(octk_add_library name)
             PRIVATE_DEPENDENCIES ${arg_FEATURE_DEPENDENCIES})
         octk_configure_reset(${arg_CONFIGURE_RESET})
         include(${configure_file})
+#        message(is_shared_lib=${is_shared_lib})
+        if(${is_shared_lib} OR "${target_type}" STREQUAL "SHARED_LIBRARY")
+            octk_configure_definition("OCTK_BUILD_SHARED_${library_define_infix}" PUBLIC)
+        endif()
         octk_configure_library_end("${target}")
 
         set_property(TARGET "${target}" APPEND PROPERTY
@@ -807,7 +808,7 @@ function(octk_internal_add_library target)
     endif()
 
     add_library(${target} ${type_to_create} ${arg_UNPARSED_ARGUMENTS})
-#    octk_internal_set_iterator_debug_level(${target} 0)
+    #    octk_internal_set_iterator_debug_level(${target} 0)
 
     if(NOT type_to_create STREQUAL "INTERFACE" AND NOT type_to_create STREQUAL "OBJECT")
         octk_internal_apply_win_prefix_and_suffix("${target}")

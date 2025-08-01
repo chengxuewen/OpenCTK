@@ -25,26 +25,28 @@
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
 #octk_find_package(WrapFFmpeg PROVIDED_TARGETS OCTK3rdparty::WrapFFmpeg)
+octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
 octk_add_library(media
-	EXCEPTIONS
-	SOURCES
-	source/octk_media_p.hpp
-	source/octk_media.cpp
-	source/octk_media.hpp
-	source/octk_media.h
-	source/octk_media_global.hpp
-	PRECOMPILED_HEADER
-	source/octk_media_pch.hpp
-	LIBRARIES
-#	OCTK3rdparty::WrapFFmpeg
-	octk::core_private
-	PUBLIC_LIBRARIES
-	octk::core)
+    EXCEPTIONS
+    SOURCES
+    source/octk_media_p.hpp
+    source/octk_media.cpp
+    source/octk_media.hpp
+    source/octk_media.h
+    source/octk_media_global.hpp
+    PRECOMPILED_HEADER
+    source/octk_media_pch.hpp
+    LIBRARIES
+    OCTK3rdparty::WrapLibyuv
+    #	OCTK3rdparty::WrapFFmpeg
+    octk::core_private
+    PUBLIC_LIBRARIES
+    octk::core)
 #octk_internal_extend_target(octk_media # for static ffmpeg
 #	CONDITION OCTK_SYSTEM_LINUX
 #	LINK_OPTIONS "-Wl,-Bsymbolic")
