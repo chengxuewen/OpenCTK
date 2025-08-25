@@ -1,0 +1,61 @@
+//
+// Created by cxw on 25-8-15.
+//
+
+#include <octk_video_stream_input_state.hpp>
+#include <octk_video_encoder.hpp>
+
+OCTK_BEGIN_NAMESPACE
+
+VideoStreamInputState::VideoStreamInputState()
+    : has_input_(false)
+    , frame_size_pixels_(utils::nullopt)
+    , frames_per_second_(0)
+    , video_codec_type_(VideoCodecType::kVideoCodecGeneric)
+    , min_pixels_per_frame_(kDefaultMinPixelsPerFrame)
+    , single_active_stream_pixels_(utils::nullopt)
+{
+}
+
+void VideoStreamInputState::set_has_input(bool has_input) { has_input_ = has_input; }
+
+void VideoStreamInputState::set_frame_size_pixels(Optional<int> frame_size_pixels)
+{
+    frame_size_pixels_ = frame_size_pixels;
+}
+
+void VideoStreamInputState::set_frames_per_second(int frames_per_second) { frames_per_second_ = frames_per_second; }
+
+void VideoStreamInputState::set_video_codec_type(VideoCodecType video_codec_type)
+{
+    video_codec_type_ = video_codec_type;
+}
+
+void VideoStreamInputState::set_min_pixels_per_frame(int min_pixels_per_frame)
+{
+    min_pixels_per_frame_ = min_pixels_per_frame;
+}
+
+void VideoStreamInputState::set_single_active_stream_pixels(Optional<int> single_active_stream_pixels)
+{
+    single_active_stream_pixels_ = single_active_stream_pixels;
+}
+
+bool VideoStreamInputState::has_input() const { return has_input_; }
+
+Optional<int> VideoStreamInputState::frame_size_pixels() const { return frame_size_pixels_; }
+
+int VideoStreamInputState::frames_per_second() const { return frames_per_second_; }
+
+VideoCodecType VideoStreamInputState::video_codec_type() const { return video_codec_type_; }
+
+int VideoStreamInputState::min_pixels_per_frame() const { return min_pixels_per_frame_; }
+
+Optional<int> VideoStreamInputState::single_active_stream_pixels() const { return single_active_stream_pixels_; }
+
+bool VideoStreamInputState::HasInputFrameSizeAndFramesPerSecond() const
+{
+    return has_input_ && frame_size_pixels_.has_value();
+}
+
+OCTK_END_NAMESPACE

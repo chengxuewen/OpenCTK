@@ -60,9 +60,17 @@ octk_configure_feature("ENABLE_DEBUG" PUBLIC
 	LABEL "Enable this to build enable debug"
 	CONDITION ON)
 
+octk_configure_feature("ENABLE_HARDENING_ASSERT" PUBLIC
+	LABEL "Enable this to build enable hardened assert"
+	CONDITION ON)
+
 octk_configure_feature("USE_STD_THREAD" PUBLIC
 	LABEL "Enable this to build use std thread"
 	CONDITION ON)
+
+octk_configure_feature("USE_OPTIONAL_LITE" PUBLIC
+	LABEL "Enable this to build use optional-lite"
+	CONDITION OFF)
 
 
 # int8_t type

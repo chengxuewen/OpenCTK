@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -77,6 +77,12 @@ template <typename T, std::size_t N> struct make_unique_helper<T[N]>
 
 template <typename T, typename... Args>
 inline typename detail::make_unique_helper<T>::unique_ptr makeUnique(Args &&...args)
+{
+    return detail::make_unique_helper<T>::make(std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+inline typename detail::make_unique_helper<T>::unique_ptr make_unique(Args &&...args)
 {
     return detail::make_unique_helper<T>::make(std::forward<Args>(args)...);
 }

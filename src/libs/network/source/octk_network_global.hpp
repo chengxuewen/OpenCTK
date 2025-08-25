@@ -2,12 +2,12 @@
 #define _OCTK_NETWORK_GLOBAL_HPP
 
 #include <octk_global.hpp>
-#include <octk_types.hpp>
+#include <octk_network_config.hpp>
 
 /***********************************************************************************************************************
    OpenCTK Compiler specific cmds for export and import code to DLL
 ***********************************************************************************************************************/
-#ifdef OCTK_BUILD_SHARED // compiled as a dynamic lib.
+#ifdef OCTK_BUILD_SHARED_NETWORK // compiled as a dynamic lib.
 #   ifdef OCTK_BUILDING_NETWORK_LIB // defined if we are building the lib
 #       define OCTK_NETWORK_API OCTK_DECLARE_EXPORT
 #   else

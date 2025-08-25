@@ -1,5 +1,6 @@
 ---
 Language: Cpp
+BasedOnStyle: LLVM
 
 # 基于的编码规范, 可选:
 # - LLVM: https://llvm.org/docs/CodingStandards.html
@@ -11,7 +12,7 @@ Language: Cpp
 # - GNU: https://www.gnu.org/prep/standards/standards.html
 # - InheritParentConfig: 继承父目录的编码规范, 如果有的话, 不是一个真正的编码规范
 # - None: 不使用, 即自动配置, 也就是本文件中的自定义内容
-# BasedOnStyle:  LLVM
+
 
 #访问声明符缩进
 AccessModifierOffset: -4
@@ -91,15 +92,16 @@ AlignEscapedNewlines: Right
 # - Align: 即换行时, 操作数(or 操作符加操作数)跟上一行的第一个操作数左对齐, 具体操作符要不要换行, 由BreakBeforeBinaryOperators配置决定
 AlignOperands: Align
 AlignTrailingComments: true
-AllowAllArgumentsOnNextLine: true
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortEnumsOnASingleLine: true
 AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: true
 # 允许短的函数放在同一行, 可选值: None, InlineOnly(定义在类中), Empty(空函数), Inline(定义在类中，空函数), All
 AllowShortFunctionsOnASingleLine: All
 # 允许lambda在一行中, 同上, 建议All
-AllowShortLambdasOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
 # 是否将简单的if(else/else if)语句中的body跟if(else/else if)放置于同一行，可选值
 # - Never: 永远不, 建议值
 # - WithoutElse: 没有else/else if时, 允许
@@ -146,11 +148,11 @@ BraceWrapping:
   AfterStruct: true
   AfterUnion: true
   AfterExternBlock: true
-  BeforeCatch: false
+  BeforeCatch: true
   BeforeElse: true
   BeforeLambdaBody: true
-  BeforeWhile: false
-  IndentBraces: false
+  BeforeWhile: true
+  IndentBraces: true
   SplitEmptyFunction: true
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
@@ -159,7 +161,7 @@ BreakBeforeBinaryOperators: None
 # 概念声明前是否换行, 建议Always
 BreakBeforeConceptDeclarations: Always
 # 大括号换行风格,Custom即可, 具体值可参考上方文档
-BreakBeforeBraces: Custom
+BreakBeforeBraces: Allman
 # 继承列表括号前换行, false即可
 BreakBeforeInheritanceComma: false
 # 是否将整个继承列表换行
@@ -209,11 +211,8 @@ ExperimentalAutoDetectBinPacking: false
 # - CurrentLine: 所有参数放置于一行, 如果放不下, 就一个参数一行
 # - NextLine: 同CurrentLine有点像, 唯一不同就是如果放不行, 将剩余参数放置于下一行(即不自动一参一行)
 PackConstructorInitializers: Never
-BasedOnStyle: 'LLVM'
 # 废弃配置
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
-# 废弃配置
-AllowAllConstructorInitializersOnNextLine: true
 # 是否强制在namespace结尾增加 // namespace xxx, 建议为true
 FixNamespaceComments: true
 # 大于多少行namespace内的代码行时才在namespace结尾添加 // namespace xxx, 建议0，即无论如何都添加
@@ -288,8 +287,8 @@ LambdaBodyIndentation: Signature
 MacroBlockBegin: ''
 # 宏结束的正则, 不使用
 MacroBlockEnd: ''
-# 空行保持, 建议为1
-MaxEmptyLinesToKeep: 1
+# 空行保持, 建议为2
+MaxEmptyLinesToKeep: 2
 # Namespace内的对齐, 直接使用None即可, 即所有namespace内(包括内嵌的)都不indent
 NamespaceIndentation: None
 # Obj-C语言设置, 跳过

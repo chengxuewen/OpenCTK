@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -85,6 +85,7 @@
 #if defined(__clang__)
 #    if defined(__apple_build_version__)
 #        /* http://en.wikipedia.org/wiki/Xcode#Toolchain_Versions */
+
 #        if __apple_build_version__ >= 8020041
 #            define OCTK_CC_CLANG 309
 #        elif __apple_build_version__ >= 8000038
@@ -144,7 +145,7 @@
 #define OCTK_CC_CPP23_OR_GREATER (OCTK_CC_CPLUSPLUS_VERSION >= 202300L)
 
 /***********************************************************************************************************************
-    OpenCTK compiler CXX11 feature macro define
+    OpenCTK compiler cxx feature macro define
 ***********************************************************************************************************************/
 /*OCTK_CC_GNU*/
 #if defined(OCTK_CC_GNU) && !defined(OCTK_CC_INTEL) && !defined(OCTK_CC_CLANG)
@@ -250,6 +251,9 @@
 #            endif
 #        endif
 #    endif
+#    if OCTK_CC_GNU >= 408
+#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#    endif
 #endif
 
 /*OCTK_CC_MSVC*/
@@ -313,11 +317,15 @@
 #    endif
 #    if _MSC_VER >= 1920 // C++11 features supported in VC14.2 = VC2019
 #    endif
-#    if _MSC_FULL_VER >= 190023419
+#   if _MSC_FULL_VER >= 190023419
 #        define OCTK_CC_FEATURE_ATTRIBUTES         1
 #        define OCTK_CC_FEATURE_THREADSAFE_STATICS 1
 #        define OCTK_CC_FEATURE_UNIFORM_INIT       1
-#    endif
+#   endif
+#   if !defined(__INTEL_COMPILER) && (_MSC_VER >= 1926)
+#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#       define OCTK_CC_FEATURE_BUILTIN_COLUMN 1
+#   endif
 #endif
 
 /*OCTK_CC_CLANG*/
@@ -325,22 +333,19 @@
 /* General C++ features */
 #    define OCTK_CC_FEATURE_RESTRICTED_VLA     1
 #    define OCTK_CC_FEATURE_THREADSAFE_STATICS 1
-
 // Clang supports binary literals in C, C++98 and C++11 modes
 // It's been supported "since the dawn of time itself" (cf. commit 179883)
 #    if __has_extension(cxx_binary_literals)
 #        define OCTK_CC_FEATURE_BINARY_LITERALS 1
 #    endif
-
 // Variadic macros are supported for gnu++98, c++11, c99 ... since 2.9
 #    if OCTK_CC_CLANG >= 209
-#        if !defined(__STRICT_ANSI__) || defined(__GXX_EXPERIMENTAL_CXX0X__) ||                                        \
-            (defined(__cplusplus) && (__cplusplus >= 201103L)) ||                                                      \
+#        if !defined(__STRICT_ANSI__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || \
+            (defined(__cplusplus) && (__cplusplus >= 201103L)) || \
             (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L))
 #            define OCTK_CC_FEATURE_VARIADIC_MACROS 1
 #        endif
 #    endif
-
 /* C++11 features, see http://clang.llvm.org/cxx_status.html */
 #    if __cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__)
 /* Detect C++ features using __has_feature(), see http://clang.llvm.org/docs/LanguageExtensions.html#cxx11 */
@@ -441,7 +446,6 @@
 #            define OCTK_CC_FEATURE_EXTERN_TEMPLATES 1
 #        endif
 #    endif
-
 /* C++1y features, deprecated macros. Do not update this list. */
 #    if __cplusplus > 201103L
 #        if __has_feature(cxx_binary_literals)
@@ -466,7 +470,6 @@
 #            define OCTK_CC_FEATURE_VLA 1
 #        endif
 #    endif
-
 #    if defined(__STDC_VERSION__)
 #        if __has_feature(c_static_assert)
 #            define OCTK_CC_FEATURE_STATIC_ASSERT 1
@@ -477,6 +480,13 @@
 #            endif
 #        endif
 #    endif
+#   if !defined(__apple_build_version__) && (__clang_major__ >= 9)
+#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#       define OCTK_CC_FEATURE_BUILTIN_COLUMN 1
+#   elif defined(__apple_build_version__) && (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__ % 100) >= 110003
+#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#       define OCTK_CC_FEATURE_BUILTIN_COLUMN 1
+#   endif
 #elif defined(OCTK_CC_INTEL) && !defined(OCTK_CC_MSVC)
 #    define OCTK_CC_FEATURE_RESTRICTED_VLA     1
 #    define OCTK_CC_FEATURE_VARIADIC_MACROS    1 // C++11 feature supported as an extension in other modes, too
@@ -624,6 +634,7 @@
 #    endif
 #endif
 
+
 #ifndef OCTK_CC_FEATURE_RESTRICTED_VLA
 #    define OCTK_CC_FEATURE_RESTRICTED_VLA 0
 #endif
@@ -741,6 +752,20 @@
 #ifndef OCTK_CC_FEATURE_VARIADIC_TEMPLATES
 #    define OCTK_CC_FEATURE_VARIADIC_TEMPLATES 0
 #endif
+#ifndef OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION
+// __builtin_FILE(), __builtin_FUNCTION(), __builtin_LINE()
+#    define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 0
+#endif
+#ifndef OCTK_CC_FEATURE_BUILTIN_COLUMN
+// __builtin_COLUMN()
+#    define OCTK_CC_FEATURE_BUILTIN_COLUMN 0
+#endif
+#if defined(__cpp_deduction_guides)
+#   define OCTK_CC_FEATURE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 1
+#else
+#   define OCTK_CC_FEATURE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 0
+#endif
+
 
 /***********************************************************************************************************************
     OpenCTK compiler Warning/diagnostic handling macro define

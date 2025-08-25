@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -26,7 +26,7 @@
 #define _OCTK_MEDIA_GLOBAL_HPP
 
 #include <octk_global.hpp>
-#include <octk_types.hpp>
+#include <octk_media_config.hpp>
 
 /***********************************************************************************************************************
    OpenCTK Compiler specific cmds for export and import code to DLL

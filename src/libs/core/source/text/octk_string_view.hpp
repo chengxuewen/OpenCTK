@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -40,6 +40,16 @@ template <typename CharT, typename Traits> using BaseStringView = nonstd::basic_
 using nonstd::to_string;
 using nonstd::to_string_view;
 
+constexpr bool operator<(StringView lhs, StringView rhs) noexcept { return lhs.compare(rhs) < 0; }
+constexpr bool operator>(StringView lhs, StringView rhs) noexcept { return rhs < lhs; }
+constexpr bool operator<=(StringView lhs, StringView rhs) noexcept { return !(rhs < lhs); }
+constexpr bool operator>=(StringView lhs, StringView rhs) noexcept { return !(lhs < rhs); }
+
+struct StringViewCmp
+{
+    using is_transparent = void;
+    bool operator()(StringView lhs, StringView rhs) const { return lhs < rhs; }
+};
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_STRING_VIEW_HPP

@@ -1,8 +1,9 @@
 #include <octk_string_utils.hpp>
 
-#include <string>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include "gtest/gtest.h"
+#include <string>
 
 namespace
 {

@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -32,9 +32,34 @@
 OCTK_BEGIN_NAMESPACE
 
 class ThreadPrivate;
+
 class OCTK_CORE_API Thread
 {
 public:
+#if defined(OCTK_OS_WIN)
+    using Handle = void *;
+#else
+    using Handle = pthread_t;
+#endif
+
+    enum class Priority
+    {
+        kLow = 1,
+        kNormal,
+        kHigh,
+        kRealtime,
+    };
+
+    struct Attributes
+    {
+        Priority priority = Priority::kNormal;
+        Attributes &SetPriority(Priority p)
+        {
+            priority = p;
+            return *this;
+        }
+    };
+
     Thread();
     explicit Thread(ThreadPrivate *d);
     virtual ~Thread();
@@ -50,17 +75,13 @@ public:
     /**
      * @brief Request rescheduling of threads.
      */
-#   undef Yield
-    static void Yield();
+    static void yield();
 
 protected:
-    std::unique_ptr<ThreadPrivate> mDPtr;
-
-private:
+    OCTK_DEFINE_DPTR(Thread);
     OCTK_DECLARE_PRIVATE(Thread);
     OCTK_DISABLE_COPY_MOVE(Thread)
 };
-
 OCTK_END_NAMESPACE
 
 #endif  // _OCTK_THREAD_HPP

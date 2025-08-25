@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -28,6 +28,10 @@
 
 #include <mutex>
 
+#ifndef OCTK_BUILDING_CORE_LIB
+#    error "ndef OCTK_BUILDING_CORE_LIB"
+#endif
+
 OCTK_BEGIN_NAMESPACE
 namespace detail
 {
@@ -40,8 +44,7 @@ Core::Core()
 
 void Core::init()
 {
-    std::call_once(detail::initOnceFlag, [=]()
-    {
+    std::call_once(detail::initOnceFlag, [=]() {
     });
 }
 
@@ -49,7 +52,6 @@ const char *Core::version()
 {
     return OCTK_VERSION_NAME;
 }
-
 OCTK_END_NAMESPACE
 
 #include <octk_core.h>
@@ -92,8 +94,7 @@ static void init_logger(octk::Logger::Ptr logger,
         octk::Logger::MessageHandler handler = nullptr;
         if (func)
         {
-            handler = [func](const char *name, const octk::Logger::Context &context, const char *message)
-            {
+            handler = [func](const char *name, const octk::Logger::Context &context, const char *message) {
                 func(name,
                      {
                          static_cast<octk_log_level_t>(context.level),
@@ -113,7 +114,7 @@ static void init_logger(octk::Logger::Ptr logger,
 void octk_init_all_loggers(octk_log_level_t level, octk_log_callback_func func, bool unique_ownership)
 {
     auto loggers = octk::Logger::allLoggers();
-    for (auto &&logger : loggers)
+    for (auto &&logger: loggers)
     {
         init_logger(logger, level, func, unique_ownership);
     }
@@ -144,7 +145,7 @@ void octk_core_init()
 // {
 //     if (buff && len > 0)
 //     {
-//         const auto timestamp = octk::time_utils::utcTimestampString();
+//         const auto timestamp = octk::time_utils::systemTimestampString();
 //         snprintf(buff, len, "%s", timestamp.c_str());
 //     }
 // }

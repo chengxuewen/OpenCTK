@@ -114,6 +114,7 @@ if(NOT DEFINED OCTK_FEATURE_DEV_BUILD)
 		set(OCTK_FEATURE_DEV_BUILD ${INPUT_OCTK_FEATURE_DEV_BUILD})
 	endif()
 endif()
+message(STATUS "Project feature dev build ${OCTK_FEATURE_DEV_BUILD}")
 
 # Pre-calculate the no_prefix feature if it's set by configure via INPUT_OCTK_FEATURE_NO_PREFIX.
 # This needs to be done before configure.cmake is processed.
@@ -125,6 +126,7 @@ if(NOT DEFINED OCTK_FEATURE_NO_PREFIX)
 	endif()
 endif()
 
+set(OCTK_BINARY_DIR ${OpenCTK_BINARY_DIR})
 # here we specify the installation directory
 # Handle both FEATURE_ and OCTK_FEATURE_ cases when they are specified on the command line explicitly.
 # It's possible for one to be set, but not the other, because core/configure.cmake is not processed by this point.
@@ -139,8 +141,7 @@ else()
 	endif()
 	string(APPEND OCTK_DEFAULT_PREFIX "OpenCTK-${OCTK_VERSION}")
 endif()
-message(STATUS "OCTK_FEATURE_DEV_BUILD=${OCTK_FEATURE_DEV_BUILD}")
-if(NOT CMAKE_INSTALL_PREFIX OR OCTK_FEATURE_DEV_BUILD)
+if(NOT CMAKE_INSTALL_PREFIX AND OCTK_FEATURE_DEV_BUILD)
 	set(CMAKE_INSTALL_PREFIX "${OCTK_DEFAULT_PREFIX}")
 endif()
 

@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -178,8 +178,8 @@ static uint64_t _parse_long_long(const char *nptr, const char **endptr, uint_t b
 
     /* Save the pointer so we can check later if anything happened.  */
     save = s;
-    cutoff = limits::kUInt64Max / base;
-    cutlim = limits::kUInt64Max % base;
+    cutoff = kUInt64Max / base;
+    cutlim = kUInt64Max % base;
 
     overflow = false;
     ui64 = 0;
@@ -230,7 +230,7 @@ static uint64_t _parse_long_long(const char *nptr, const char **endptr, uint_t b
     if (OCTK_UNLIKELY(overflow))
     {
         strerror(ERANGE);
-        return limits::kUInt64Max;
+        return kUInt64Max;
     }
 
     return ui64;
@@ -473,15 +473,15 @@ int64_t ascii_strtoll(const char *nptr, char **endptr, uint_t base)
 {
     bool negative = false;
     uint64_t result = _parse_long_long(nptr, (const char **)endptr, base, &negative);
-    if (negative && result > (uint64_t)limits::kInt64Min)
+    if (negative && result > (uint64_t)kInt64Min)
     {
         errno = ERANGE;
-        return limits::kInt64Min;
+        return kInt64Min;
     }
-    else if (!negative && result > (uint64_t)limits::kInt64Max)
+    else if (!negative && result > (uint64_t)kInt64Max)
     {
         errno = ERANGE;
-        return limits::kInt64Max;
+        return kInt64Max;
     }
     else if (negative)
     {

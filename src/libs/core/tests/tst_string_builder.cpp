@@ -10,10 +10,10 @@
 
 #include <octk_string_builder.hpp>
 
-#include <string.h>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <cstring>
 
 namespace octk
 {

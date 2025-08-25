@@ -24,6 +24,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
+octk_find_package(WrapGLFW PROVIDED_TARGETS OCTK3rdparty::WrapGLFW)
 octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
 
 
@@ -37,13 +38,16 @@ octk_add_library(gui
 	source/octk_gui.hpp
 	source/octk_gui.h
 	source/octk_gui_global.hpp
+	source/octk_sdl_p.hpp
 	PRECOMPILED_HEADER
 	source/octk_gui_pch.hpp
 	LIBRARIES
+	OCTK3rdparty::WrapGLFW
 	OCTK3rdparty::WrapSDL
 	octk::core_private
 	PUBLIC_LIBRARIES
 	octk::core)
+add_subdirectory(source/imgui)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

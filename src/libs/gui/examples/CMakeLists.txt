@@ -36,6 +36,16 @@ list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::gui)
 #-----------------------------------------------------------------------------------------------------------------------
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
+add_subdirectory(imgui)
+octk_add_executable(octk_gui_exp_imgui_window
+	SOURCES
+	exp_gui_imgui_window.cpp
+	INCLUDE_DIRECTORIES
+	${CMAKE_CURRENT_SOURCE_DIR}
+	LIBRARIES
+	${OCTK_EXAMPLE_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(octk_gui_exp_version
 	SOURCES
 	exp_gui_version.cpp

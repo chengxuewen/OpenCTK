@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -38,7 +38,7 @@
 #   define OCTK_DCHECK_IS_ON 0
 #endif
 
-//#define OCTK_CHECK(condition) \
+// #define OCTK_CHECK(condition) \
 //    if (!(condition)) OCTK_FATAL(octk::StringView("Check \""#condition"\" failed!"))
 #define OCTK_CHECK(condition) \
     if (!(condition)) octk::Logger::FatalLogCall("Check \""#condition"\" failed!") & OCTK_FATAL()
@@ -53,7 +53,7 @@
 #define OCTK_CHECK_GE(val1, val2) OCTK_CHECK_OP(Ge, >=, val1, val2)
 #define OCTK_CHECK_GT(val1, val2) OCTK_CHECK_OP(Gt, >, val1, val2)
 
-// The RTC_DCHECK macro is equivalent to RTC_CHECK except that it only generates
+// The OCTK_DCHECK macro is equivalent to RTC_CHECK except that it only generates
 // code in debug builds. It does reference the condition parameter in all cases,
 // though, so callers won't risk getting warnings about unused variables.
 #if OCTK_DCHECK_IS_ON
@@ -78,9 +78,18 @@
 
 // Kills the process with an error message. Never returns. Use when you wish to
 // assert that a point in the code is never reached.
-#define OCTK_CHECK_NOTREACHED()
-//#define OCTK_CHECK_NOTREACHED() octk::Logger::FatalLogCall("Unreachable Code Reached!") & OCTK_FATAL()
-//octk::Logger::FatalLogCall("Unreachable Code Reached!") & OCTK_FATAL()
+#define OCTK_CHECK_NOTREACHED() octk::Logger::FatalLogCall("Unreachable Code Reached!") & OCTK_FATAL()
 //#define OCTK_CHECK_NOTREACHED() OCTK_FATAL(octk::StringView("Unreachable Code Reached!"))
+
+
+// // Checks current code is running on the desired sequence.
+// //
+// // First statement validates it is running on the sequence `x`.
+// // Second statement annotates for the thread safety analyzer the check was done.
+// // Such annotation has to be attached to a function, and that function has to be
+// // called. Thus current implementation creates a noop lambda and calls it.
+// #define OCTK_DCHECK_RUN_ON(x) \
+//   OCTK_DCHECK((x)->IsCurrent()); \
+//   []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) {}()
 
 #endif  // _OCTK_CHECKS_HPP

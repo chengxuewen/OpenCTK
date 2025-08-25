@@ -1,35 +1,30 @@
-/*
- *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be found
- *  in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
- */
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present chengxuewen.
+** Copyright 2016 The WebRTC Project Authors.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
 
-// This file defines six constexpr functions:
-//
-//   rtc::SafeEq  // ==
-//   rtc::SafeNe  // !=
-//   rtc::SafeLt  // <
-//   rtc::SafeLe  // <=
-//   rtc::SafeGt  // >
-//   rtc::SafeGe  // >=
-//
-// They each accept two arguments of arbitrary types, and in almost all cases,
-// they simply call the appropriate comparison operator. However, if both
-// arguments are integers, they don't compare them using C++'s quirky rules,
-// but instead adhere to the true mathematical definitions. It is as if the
-// arguments were first converted to infinite-range signed integers, and then
-// compared, although of course nothing expensive like that actually takes
-// place. In practice, for signed/signed and unsigned/unsigned comparisons and
-// some mixed-signed comparisons with a compile-time constant, the overhead is
-// zero; in the remaining cases, it is just a few machine instructions (no
-// branches).
-
-#ifndef _OCTK_CORE_NUMERICS_SAFE_COMPARE_HPP
-#define _OCTK_CORE_NUMERICS_SAFE_COMPARE_HPP
+#ifndef _OCTK_SAFE_COMPARE_HPP
+#define _OCTK_SAFE_COMPARE_HPP
 
 #include <octk_type_traits.hpp>
 
@@ -66,7 +61,7 @@ struct LargerInt : LargerIntImpl<sizeof(T1) < sizeof(T2) || sizeof(T1) < sizeof(
 {
 };
 
-template <typename T> constexpr typename std::make_unsigned<T>::type MakeUnsigned(T a)
+template <typename T> constexpr typename std::make_unsigned<T>::type makeUnsigned(T a)
 {
     return static_cast<typename std::make_unsigned<T>::type>(a);
 }
@@ -75,8 +70,8 @@ template <typename T> constexpr typename std::make_unsigned<T>::type MakeUnsigne
 template <typename Op,
           typename T1,
           typename T2,
-          typename std::enable_if<std::is_signed<T1>::value == std::is_signed<T2>::value>::type * = nullptr>
-constexpr bool Cmp(T1 a, T2 b)
+    typename std::enable_if<std::is_signed<T1>::value == std::is_signed<T2>::value>::type * = nullptr>
+constexpr bool cmp(T1 a, T2 b)
 {
     return Op::Op(a, b);
 }
@@ -86,9 +81,9 @@ constexpr bool Cmp(T1 a, T2 b)
 template <typename Op,
           typename T1,
           typename T2,
-          typename std::enable_if<std::is_signed<T1>::value && std::is_unsigned<T2>::value &&
-                                  LargerInt<T2, T1>::value>::type * = nullptr>
-constexpr bool Cmp(T1 a, T2 b)
+    typename std::enable_if<std::is_signed<T1>::value && std::is_unsigned<T2>::value &&
+                            LargerInt<T2, T1>::value>::type * = nullptr>
+constexpr bool cmp(T1 a, T2 b)
 {
     return Op::Op(a, static_cast<typename LargerInt<T2, T1>::type>(b));
 }
@@ -98,9 +93,9 @@ constexpr bool Cmp(T1 a, T2 b)
 template <typename Op,
           typename T1,
           typename T2,
-          typename std::enable_if<std::is_unsigned<T1>::value && std::is_signed<T2>::value &&
-                                  LargerInt<T1, T2>::value>::type * = nullptr>
-constexpr bool Cmp(T1 a, T2 b)
+    typename std::enable_if<std::is_unsigned<T1>::value && std::is_signed<T2>::value &&
+                            LargerInt<T1, T2>::value>::type * = nullptr>
+constexpr bool cmp(T1 a, T2 b)
 {
     return Op::Op(static_cast<typename LargerInt<T1, T2>::type>(a), b);
 }
@@ -110,11 +105,11 @@ constexpr bool Cmp(T1 a, T2 b)
 template <typename Op,
           typename T1,
           typename T2,
-          typename std::enable_if<std::is_signed<T1>::value && std::is_unsigned<T2>::value &&
-                                  !LargerInt<T2, T1>::value>::type * = nullptr>
-constexpr bool Cmp(T1 a, T2 b)
+    typename std::enable_if<std::is_signed<T1>::value && std::is_unsigned<T2>::value &&
+                            !LargerInt<T2, T1>::value>::type * = nullptr>
+constexpr bool cmp(T1 a, T2 b)
 {
-    return a < 0 ? Op::Op(-1, 0) : Op::Op(safe_cmp_impl::MakeUnsigned(a), b);
+    return a < 0 ? Op::Op(-1, 0) : Op::Op(safe_cmp_impl::makeUnsigned(a), b);
 }
 
 // Overload for unsigned - signed comparison that can't be promoted to a bigger
@@ -122,11 +117,11 @@ constexpr bool Cmp(T1 a, T2 b)
 template <typename Op,
           typename T1,
           typename T2,
-          typename std::enable_if<std::is_unsigned<T1>::value && std::is_signed<T2>::value &&
-                                  !LargerInt<T1, T2>::value>::type * = nullptr>
-constexpr bool Cmp(T1 a, T2 b)
+    typename std::enable_if<std::is_unsigned<T1>::value && std::is_signed<T2>::value &&
+                            !LargerInt<T1, T2>::value>::type * = nullptr>
+constexpr bool cmp(T1 a, T2 b)
 {
-    return b < 0 ? Op::Op(0, -1) : Op::Op(a, safe_cmp_impl::MakeUnsigned(b));
+    return b < 0 ? Op::Op(0, -1) : Op::Op(a, safe_cmp_impl::makeUnsigned(b));
 }
 
 #define OCTK_SAFECMP_MAKE_OP(name, op)                                                                                 \
@@ -134,25 +129,31 @@ constexpr bool Cmp(T1 a, T2 b)
     {                                                                                                                  \
         template <typename T1, typename T2> static constexpr bool Op(T1 a, T2 b) { return a op b; }                    \
     };
-OCTK_SAFECMP_MAKE_OP(EqOp, ==)
-OCTK_SAFECMP_MAKE_OP(NeOp, !=)
-OCTK_SAFECMP_MAKE_OP(LtOp, <)
-OCTK_SAFECMP_MAKE_OP(LeOp, <=)
-OCTK_SAFECMP_MAKE_OP(GtOp, >)
-OCTK_SAFECMP_MAKE_OP(GeOp, >=)
-#undef OCTK_SAFECMP_MAKE_OP
 
+OCTK_SAFECMP_MAKE_OP(EqOp, ==)
+
+OCTK_SAFECMP_MAKE_OP(NeOp, !=)
+
+OCTK_SAFECMP_MAKE_OP(LtOp, <)
+
+OCTK_SAFECMP_MAKE_OP(LeOp, <=)
+
+OCTK_SAFECMP_MAKE_OP(GtOp, >)
+
+OCTK_SAFECMP_MAKE_OP(GeOp, >=)
+
+#undef OCTK_SAFECMP_MAKE_OP
 } // namespace safe_cmp_impl
 
 #define OCTK_SAFECMP_MAKE_FUN(name)                                                                                    \
     template <typename T1, typename T2>                                                                                \
-    constexpr typename std::enable_if<IsIntlike<T1>::value && IsIntlike<T2>::value, bool>::type Safe##name(T1 a, T2 b) \
+    constexpr typename std::enable_if<IsIntLike<T1>::value && IsIntLike<T2>::value, bool>::type Safe##name(T1 a, T2 b) \
     {                                                                                                                  \
         /* Unary plus here turns enums into real integral types. */                                                    \
-        return safe_cmp_impl::Cmp<safe_cmp_impl::name##Op>(+a, +b);                                                    \
+        return safe_cmp_impl::cmp<safe_cmp_impl::name##Op>(+a, +b);                                                    \
     }                                                                                                                  \
     template <typename T1, typename T2>                                                                                \
-    constexpr typename std::enable_if<!IsIntlike<T1>::value || !IsIntlike<T2>::value, bool>::type Safe##name(          \
+    constexpr typename std::enable_if<!IsIntLike<T1>::value || !IsIntLike<T2>::value, bool>::type Safe##name(          \
         const T1 &a, const T2 &b)                                                                                      \
     {                                                                                                                  \
         return safe_cmp_impl::name##Op::Op(a, b);                                                                      \
@@ -164,7 +165,6 @@ OCTK_SAFECMP_MAKE_FUN(Le)
 OCTK_SAFECMP_MAKE_FUN(Gt)
 OCTK_SAFECMP_MAKE_FUN(Ge)
 #undef OCTK_SAFECMP_MAKE_FUN
-
 OCTK_END_NAMESPACE
 
-#endif // _OCTK_CORE_NUMERICS_SAFE_COMPARE_HPP
+#endif // _OCTK_SAFE_COMPARE_HPP

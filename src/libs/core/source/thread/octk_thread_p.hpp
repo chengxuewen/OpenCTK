@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -26,6 +26,7 @@
 #define _OCTK_THREAD_P_HPP
 
 #include <octk_thread.hpp>
+#include <octk_optional.hpp>
 
 #include <thread>
 
@@ -34,19 +35,24 @@ OCTK_BEGIN_NAMESPACE
 class OCTK_CORE_API ThreadPrivate
 {
 public:
+    using Handle = Thread::Handle;
+
     explicit ThreadPrivate(Thread *p);
     virtual ~ThreadPrivate();
 
     void dispatch(void);
 
-    std::thread mThread;
+    // std::thread mThread;
+
+    Optional<Handle> handle_;
+    bool joinable_ = false;
 
 protected:
     OCTK_DEFINE_PPTR(Thread)
     OCTK_DECLARE_PUBLIC(Thread)
+
     OCTK_DISABLE_COPY_MOVE(ThreadPrivate)
 };
-
 OCTK_END_NAMESPACE
 
 #endif  // _OCTK_THREAD_P_HPP

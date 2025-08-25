@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -26,8 +26,10 @@
 #define _OCTK_STRINGS_UTILS_HPP
 
 #include <octk_string_view.hpp>
+#include <octk_global.hpp>
 
 #include <cstring>
+#include <sstream>
 #include <string.h>
 
 /**
@@ -65,6 +67,16 @@ template <typename T> std::string pointerToString(T *ptr)
 OCTK_CORE_API const char *extractFileName(const char *filePath);
 
 /**
+ * @brief
+ * @param s1
+ * @param s2
+ * @param len
+ * @param ignoreCase
+ * @return
+ */
+OCTK_CORE_API bool stringCompare(const char *s1, const char *s2, size_t len, bool ignoreCase);
+
+/**
  * @brief Performs a byte-by-byte comparison of `len` bytes of the strings `s1` and `s2`,
  * ignoring the case of the characters.
  * It returns an integer less than, equal to, or greater than zero if `s1` is found, respectively, to be less than,
@@ -78,57 +90,77 @@ OCTK_CORE_API int stringCaseCmp(const char *s1, const char *s2, size_t len);
  */
 OCTK_CORE_API bool stringContainsIgnoreCase(StringView haystack, StringView needle) noexcept;
 
+/**
+ * @brief
+ * @param haystack
+ * @param needle
+ * @return
+ */
 OCTK_CORE_API bool stringContainsIgnoreCase(StringView haystack, char needle) noexcept;
 
 /**
  * @brief Returns whether a given string `haystack` contains the substring `needle`.
  */
-static inline bool stringContains(StringView haystack, StringView needle) noexcept
+static OCTK_FORCE_INLINE bool stringContains(StringView haystack, StringView needle) noexcept
 {
     return haystack.find(needle, 0) != haystack.npos;
 }
 
-static inline bool stringContains(StringView haystack, char needle) noexcept
+static OCTK_FORCE_INLINE bool stringContains(StringView haystack, char needle) noexcept
 {
     return haystack.find(needle) != haystack.npos;
 }
 
 /**
- * @brief Returns whether a given ASCII string `text` starts with `prefix`, ignoring case in the comparison.s
- */
-OCTK_CORE_API bool stringStartsWithIgnoreCase(StringView text, StringView prefix) noexcept;
-
-/**
  * @brief Returns whether a given string `text` begins with `prefix`.
  */
-inline bool stringStartsWith(StringView text, StringView prefix) noexcept
+static OCTK_FORCE_INLINE bool stringStartsWith(StringView text, StringView prefix) noexcept
 {
     return prefix.empty() || (text.size() >= prefix.size() && memcmp(text.data(), prefix.data(), prefix.size()) == 0);
 }
 
 /**
+ * @brief Returns whether given ASCII strings `piece1` and `piece2` are equal, ignoring case in the comparison.
+ */
+static OCTK_FORCE_INLINE bool stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept
+{
+    return (piece1.size() == piece2.size() && 0 == stringCaseCmp(piece1.data(), piece2.data(), piece1.size()));
+}
+
+/**
+ * @brief Returns whether a given ASCII string `text` starts with `prefix`, ignoring case in the comparison.s
+ */
+static OCTK_FORCE_INLINE  bool stringStartsWithIgnoreCase(StringView text, StringView prefix) noexcept
+{
+    return (text.size() >= prefix.size()) && stringEqualsIgnoreCase(text.substr(0, prefix.size()), prefix);
+}
+
+/**
  * @brief Returns whether a given ASCII string `text` ends with `suffix`, ignoring case in the comparison.
  */
-OCTK_CORE_API bool stringEndsWithIgnoreCase(StringView text, StringView suffix) noexcept;
+static OCTK_FORCE_INLINE  bool stringEndsWithIgnoreCase(StringView text, StringView suffix) noexcept
+{
+    return (text.size() >= suffix.size()) && stringEqualsIgnoreCase(text.substr(text.size() - suffix.size()), suffix);
+}
 
 /**
  * @brief Returns whether a given string `text` ends with `suffix`.
  */
-inline bool stringEndsWith(StringView text, StringView suffix) noexcept
+static OCTK_FORCE_INLINE bool stringEndsWith(StringView text, StringView suffix) noexcept
 {
     return suffix.empty() || (text.size() >= suffix.size() &&
                               memcmp(text.data() + (text.size() - suffix.size()), suffix.data(), suffix.size()) == 0);
 }
 
 /**
- * @brief Returns whether given ASCII strings `piece1` and `piece2` are equal, ignoring case in the comparison.
+ * @brief Return a C++ string given printf-like input.
+ * Based on base::StringPrintf() in Chrome but without its fancy dynamic memory allocation for any size of the input buffer.
+ * @param format
+ * @param ...
+ * @return
  */
-OCTK_CORE_API bool stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept;
+OCTK_CORE_API std::string StringFormat(const char *format, ...) OCTK_ATTRIBUTE_FORMAT_PRINTF(1, 2);
 
-struct OCTK_CORE_API Test
-{
-    static bool stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept;
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 // UTF helpers (Windows only)
@@ -167,7 +199,6 @@ inline std::string toUtf8(const wchar_t *wide) { return toUtf8(wide, wcslen(wide
 inline std::string toUtf8(const std::wstring &wstr) { return toUtf8(wstr.data(), wstr.length()); }
 
 #endif // defined(OCTK_OS_WIN)
-
 } // namespace utils
 
 OCTK_END_NAMESPACE

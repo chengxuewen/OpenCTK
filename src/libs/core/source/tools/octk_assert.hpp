@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -49,5 +49,41 @@ static inline void octk_noop(void) {}
 #endif
 #define OCTK_STATIC_ASSERT(Condition) static_assert(bool(Condition), #Condition)
 #define OCTK_STATIC_ASSERT_X(Condition, Message) static_assert(bool(Condition), Message)
+
+/**
+ * @brief `ABSL_INTERNAL_HARDENING_ABORT()` controls how `OCTK_HARDENING_ASSERT()` aborts the program in
+ * release mode (when NDEBUG is defined).
+ * The implementation should abort the program as quickly as possible and ideally it should not be possible
+ * to ignore the abort request.
+ */
+#define ABSL_INTERNAL_HARDENING_ABORT()   \
+  do { \
+    OCTK_INTERNAL_IMMEDIATE_ABORT(); \
+    OCTK_INTERNAL_UNREACHABLE();     \
+  } while (false)
+
+/**
+ * @brief `OCTK_HARDENING_ASSERT()` is like `OCTK_ASSERT()`, but used to implement runtime assertions that should
+ * be enabled in hardened builds even when `NDEBUG` is defined.
+ *
+ * When `NDEBUG` is not defined or OCTK_FEATURE_ENABLE_HARDENING_ASSERT set false, `OCTK_HARDENING_ASSERT()` is
+ * identical to `ABSL_ASSERT()`.
+ */
+#if OCTK_FEATURE_ENABLE_HARDENING_ASSERT && defined(NDEBUG)
+#   define OCTK_HARDENING_ASSERT(expr) \
+    (OCTK_LIKELY((expr)) ? static_cast<void>(0) : [] { ABSL_INTERNAL_HARDENING_ABORT(); }())
+#   define OCTK_UNREACHABLE() ABSL_INTERNAL_HARDENING_ABORT()
+#else
+#   define OCTK_HARDENING_ASSERT(expr) OCTK_ASSERT(expr)
+#   define OCTK_UNREACHABLE() OCTK_ASSERT_X("OCTK_UNREACHABLE reached")
+#endif
+
+#if OCTK_CC_CPP14_OR_GREATER
+#    define OCTK_CXX14_CONSTEXPR_ASSERT(Condition) OCTK_STATIC_ASSERT(Condition)
+#    define OCTK_CXX14_CONSTEXPR_ASSERT_X(Condition, Message) OCTK_STATIC_ASSERT_X(Condition, Message)
+#else
+#    define OCTK_CXX14_CONSTEXPR_ASSERT(Condition) OCTK_ASSERT(Condition)
+#    define OCTK_CXX14_CONSTEXPR_ASSERT_X(Condition, Message) OCTK_ASSERT_X(Condition, OCTK_STRFILELINE, Message)
+#endif
 
 #endif // _OCTK_ASSERT_HPP

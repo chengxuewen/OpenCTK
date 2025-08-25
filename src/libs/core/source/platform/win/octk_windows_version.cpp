@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -168,7 +168,7 @@ public:
             {
                 wchar_t expanded[kMaxStringLength];
                 size =
-                    ::ExpandEnvironmentStringsW(raw_value, expanded, kMaxStringLength);
+                    ::ExpandRtcContextStringsW(raw_value, expanded, kMaxStringLength);
                 // Success: returns the number of wchar_t's copied
                 // Fail: buffer too small, returns the size required
                 // Fail: other, returns 0

@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -40,40 +40,21 @@ public:
     class Locker
     {
     public:
-        Locker(Base &mutex)
-            : mMutex(mutex)
-        {
-            OCTK_ASSERT(mMutex.try_lock());
-            mMutexLocked.store(true);
-        }
-        virtual ~Locker()
-        {
-            if (mMutexLocked.load())
-            {
-                mMutex.unlock();
-            }
-        }
-        virtual void relock()
-        {
-            mMutex.lock();
-            mMutexLocked.store(true);
-        }
-        virtual void unlock()
-        {
-            mMutex.unlock();
-            mMutexLocked.store(false);
-        }
+        Locker(Base *mutex) : Locker(*mutex) {}
+        Locker(Base &mutex) : mMutex(mutex) { mMutex.lock(); }
+        virtual ~Locker() { if (mLocked.exchange(false)) { mMutex.unlock(); }}
+        virtual void relock() { if (!mLocked.exchange(true)) { mMutex.lock(); }}
+        virtual void unlock() { if (mLocked.exchange(false)) { mMutex.unlock(); }}
 
     private:
         Base &mMutex;
-        std::atomic_bool mMutexLocked{false};
+        std::atomic_bool mLocked{true};
         OCTK_DISABLE_COPY_MOVE(Locker)
     };
 
     using Base::Base;
     Mutex() = default;
 };
-
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_MUTEX_HPP

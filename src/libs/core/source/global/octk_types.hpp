@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -30,7 +30,9 @@
 #include <octk_core_config.hpp>
 
 #if defined(OCTK_OS_WIN)
-#    include <windows.h>
+#   include <windows.h>
+#else
+#   include <sys/types.h>
 #endif
 #include <vector>
 #include <memory>
@@ -54,7 +56,9 @@ using uintptr_t = size_t;
 using intptr_t = ptrdiff_t;
 #if !OCTK_HAS_SSIZE_T && defined(OCTK_OS_WIN)
 #include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
+using ssize_t = SSIZE_T;
+#else
+using ssize_t = ssize_t;
 #endif
 #ifndef OCTK_SIZEOF_SSIZE_T
 #   define OCTK_SIZEOF_SSIZE_T OCTK_SIZEOF_SIZE_T
@@ -192,7 +196,6 @@ template <typename T> Binary makeBinary(const std::vector<T> &data)
 #else
 #    error "Could not determine size of void *"
 #endif
-
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_TYPES_HPP

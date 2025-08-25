@@ -96,44 +96,45 @@ endmacro()
 
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
-macro(octk_build_repo_begin)
-    octk_build_internals_set_up_private_api()
-    octk_internal_generate_binary_strip_wrapper()
-endmacro()
+#macro(octk_build_repo_begin)
+#    octk_build_internals_set_up_private_api()
+#    octk_internal_generate_binary_strip_wrapper()
+#endmacro()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
-macro(octk_build_repo_end)
-    if(NOT OCTK_BUILD_STANDALONE_TESTS)
-        # Delayed actions on some of the OpenCTK targets:
-        include(OCTKPostProcess)
-
-        # Install the repo-specific cmake find modules.
-        octk_path_join(__octk_repo_install_dir ${OCTK_CONFIG_INSTALL_DIR} ${OCTK_CMAKE_INSTALL_NAMESPACE})
-        octk_path_join(__octk_repo_build_dir ${OCTK_CONFIG_BUILD_DIR} ${OCTK_CMAKE_INSTALL_NAMESPACE})
-
-        if(NOT PROJECT_NAME STREQUAL "OCTKBase")
-            if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-                octk_copy_or_install(DIRECTORY cmake/
-                    DESTINATION "${__octk_repo_install_dir}"
-                    FILES_MATCHING PATTERN "Find*.cmake")
-                if(OCTK_SUPERBUILD AND OCTK_BUILD_INSTALL)
-                    file(COPY cmake/
-                        DESTINATION "${__octk_repo_build_dir}"
-                        FILES_MATCHING PATTERN "Find*.cmake")
-                endif()
-            endif()
-        endif()
-
-        if(NOT OCTK_SUPERBUILD)
-            octk_print_feature_summary()
-        endif()
-    endif()
-
-    octk_build_internals_add_toplevel_targets()
-
-    if(NOT OCTK_SUPERBUILD)
-        octk_print_build_instructions()
-    endif()
-endmacro()
+#macro(octk_build_repo_end)
+#    if(NOT OCTK_BUILD_STANDALONE_TESTS)
+#        # Delayed actions on some of the OpenCTK targets:
+#        include(OCTKPostProcess)
+#
+#        # Install the repo-specific cmake find modules.
+#        octk_path_join(__octk_repo_install_dir ${OCTK_CONFIG_INSTALL_DIR} ${OCTK_CMAKE_INSTALL_NAMESPACE})
+#        octk_path_join(__octk_repo_build_dir ${OCTK_CONFIG_BUILD_DIR} ${OCTK_CMAKE_INSTALL_NAMESPACE})
+#
+#        if(NOT PROJECT_NAME STREQUAL "OCTKBase")
+#            if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+#                octk_copy_or_install(
+#                    DIRECTORY cmake/
+#                    DESTINATION "${__octk_repo_install_dir}"
+#                    FILES_MATCHING PATTERN "Find*.cmake")
+#                if(OCTK_SUPERBUILD AND OCTK_BUILD_INSTALL)
+#                    file(COPY cmake/
+#                        DESTINATION "${__octk_repo_build_dir}"
+#                        FILES_MATCHING PATTERN "Find*.cmake")
+#                endif()
+#            endif()
+#        endif()
+#
+#        if(NOT OCTK_SUPERBUILD)
+#            octk_print_feature_summary()
+#        endif()
+#    endif()
+#
+#    octk_build_internals_add_toplevel_targets()
+#
+#    if(NOT OCTK_SUPERBUILD)
+#        octk_print_build_instructions()
+#    endif()
+#endmacro()

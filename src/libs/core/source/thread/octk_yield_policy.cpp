@@ -1,0 +1,63 @@
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
+
+#include <octk_yield_policy.hpp>
+
+OCTK_BEGIN_NAMESPACE
+
+namespace detail
+{
+OCTK_CONST_INIT thread_local YieldInterface *current_yield_policy = nullptr;
+
+YieldInterface *GetCurrentYieldPolicy()
+{
+    return current_yield_policy;
+}
+
+void SetCurrentYieldPolicy(YieldInterface *ptr)
+{
+    current_yield_policy = ptr;
+}
+}
+
+ScopedYieldPolicy::ScopedYieldPolicy(YieldInterface *policy)
+    : previous_(detail::GetCurrentYieldPolicy())
+{
+    detail::SetCurrentYieldPolicy(policy);
+}
+
+ScopedYieldPolicy::~ScopedYieldPolicy()
+{
+    detail::SetCurrentYieldPolicy(previous_);
+}
+
+void ScopedYieldPolicy::YieldExecution()
+{
+    YieldInterface *current = detail::GetCurrentYieldPolicy();
+    if (current)
+    {
+        current->YieldExecution();
+    }
+}
+OCTK_END_NAMESPACE

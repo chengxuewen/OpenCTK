@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -70,7 +70,10 @@ public:
         struct StreamData
         {
             StreamData(Logger &target, const Context &ctx, bool spa)
-                : ref(1), space(spa), logger(target), context(ctx)
+                : ref(1)
+                , space(spa)
+                , logger(target)
+                , context(ctx)
             {
             }
 
@@ -83,7 +86,10 @@ public:
 
     public:
         inline Stream(const Stream &other)
-            : mStream(other.mStream) { ++mStream->ref; }
+            : mStream(other.mStream)
+        {
+            ++mStream->ref;
+        }
 
         inline Stream(Logger &target, const Context &ctx, bool spa = false)
             : mStream(new StreamData(target, ctx, spa))
@@ -114,17 +120,11 @@ public:
             return *this;
         }
 
-        void putUcs2(uint16_t ucs2)
-        {
-        }
+        void putUcs2(uint16_t ucs2) { }
 
-        void putUcs4(uint32_t ucs4)
-        {
-        }
+        void putUcs4(uint32_t ucs4) { }
 
-        void putString(const char *begin, size_t length)
-        {
-        }
+        void putString(const char *begin, size_t length) { }
 
         OCTK_FORCE_INLINE void prepend(const char *message)
         {
@@ -241,8 +241,12 @@ public:
 
         inline Stream &operator<<(const char *t)
         {
-            mStream->ss << t;
-            return this->maybeSpace();
+            if (t)
+            {
+                mStream->ss << t;
+                return this->maybeSpace();
+            }
+            return *this;
         }
 
         inline Stream &operator<<(const std::string &t)
@@ -279,7 +283,8 @@ public:
     struct Streamer final
     {
         Streamer(Logger &target, LogLevel level, const char *filePath, const char *funcName, int line)
-            : logger(target), context{level, filePath, utils::extractFileName(filePath), funcName, line}
+            : logger(target)
+            , context{level, filePath, utils::extractFileName(filePath), funcName, line}
         {
         }
 
@@ -296,10 +301,17 @@ public:
             return Stream(logger, context, true) << string;
         }
 
-        OCTK_FORCE_INLINE Stream logging() const
+        OCTK_FORCE_INLINE Stream logging(const std::string &string) const
         {
-            return Stream(logger, context);
+            return Stream(logger, context, true) << string;
         }
+
+        OCTK_FORCE_INLINE Stream logging(const std::stringstream &stream) const
+        {
+            return Stream(logger, context, true) << stream.str();
+        }
+
+        OCTK_FORCE_INLINE Stream logging() const { return Stream(logger, context); }
 
         Logger &logger;
         Context context;
@@ -308,14 +320,12 @@ public:
     class FatalLogCall final
     {
     public:
-        FatalLogCall(const char *message) : mMessage(message)
+        FatalLogCall(const char *message)
+            : mMessage(message)
         {
         }
 
-        OCTK_FORCE_INLINE void operator&(Stream stream)
-        {
-            stream.prepend(mMessage);
-        }
+        OCTK_FORCE_INLINE void operator&(Stream stream) { stream.prepend(mMessage); }
 
     private:
         const char *mMessage;
@@ -354,51 +364,55 @@ protected:
     OCTK_DECLARE_PRIVATE(Logger)
     OCTK_DISABLE_COPY_MOVE(Logger)
 };
-
 OCTK_END_NAMESPACE
 
 #define OCTK_DECLARE_LOGGER(export, logger) export octk::Logger &logger();
-#define OCTK_DEFINE_LOGGER_WITH_LEVEL(name, logger, level) \
-    octk::Logger &logger() { \
-    static constexpr char loggerName[] = name; \
-    static octk::Logger loggerInstance(loggerName, level);  \
-    return loggerInstance; } \
-    static struct logger##_builder{ logger##_builder() { logger(); } } init_##logger;
+#define OCTK_DEFINE_LOGGER_WITH_LEVEL(name, logger, level)                                                             \
+    octk::Logger &logger()                                                                                             \
+    {                                                                                                                  \
+        static constexpr char loggerName[] = name;                                                                     \
+        static octk::Logger loggerInstance(loggerName, level);                                                         \
+        return loggerInstance;                                                                                         \
+    }                                                                                                                  \
+    static struct logger##_builder                                                                                     \
+    {                                                                                                                  \
+        logger##_builder() { logger(); }                                                                               \
+    } init_##logger;
 
 #define OCTK_DEFINE_LOGGER(name, logger) OCTK_DEFINE_LOGGER_WITH_LEVEL(name, logger, octk::LogLevel::Debug)
 
-#define OCTK_LOGGING(logger, level, ...) \
-    for (bool enabled = logger.isLevelEnabled(level); enabled; enabled = false) \
-    octk::Logger::Streamer(logger, level, __FILE__, OCTK_STRFUNC, __LINE__).logging(__VA_ARGS__);
+#define OCTK_LOGGING(logger, level, ...)                                                                               \
+    for (bool enabled = logger.isLevelEnabled(level); enabled; enabled = false)                                        \
+        octk::Logger::Streamer(logger, level, __FILE__, OCTK_STRFUNC, __LINE__).logging(__VA_ARGS__);
 
-#define OCTK_LOGGING_TRACE(logger, ...) OCTK_LOGGING(logger, octk::LogLevel::Trace, __VA_ARGS__)
-#define OCTK_LOGGING_DEBUG(logger, ...) OCTK_LOGGING(logger, octk::LogLevel::Debug, __VA_ARGS__)
-#define OCTK_LOGGING_INFO(logger, ...) OCTK_LOGGING(logger, octk::LogLevel::Info, __VA_ARGS__)
-#define OCTK_LOGGING_WARNING(logger, ...) OCTK_LOGGING(logger, octk::LogLevel::Warning, __VA_ARGS__)
-#define OCTK_LOGGING_ERROR(logger, ...) OCTK_LOGGING(logger, octk::LogLevel::Error, __VA_ARGS__)
+#define OCTK_LOGGING_TRACE(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Trace, __VA_ARGS__)
+#define OCTK_LOGGING_DEBUG(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Debug, __VA_ARGS__)
+#define OCTK_LOGGING_INFO(logger, ...)     OCTK_LOGGING(logger, octk::LogLevel::Info, __VA_ARGS__)
+#define OCTK_LOGGING_WARNING(logger, ...)  OCTK_LOGGING(logger, octk::LogLevel::Warning, __VA_ARGS__)
+#define OCTK_LOGGING_ERROR(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Error, __VA_ARGS__)
 #define OCTK_LOGGING_CRITICAL(logger, ...) OCTK_LOGGING(logger, octk::LogLevel::Critical, __VA_ARGS__)
-#define OCTK_LOGGING_FATAL(logger, ...) OCTK_LOGGING(logger, octk::LogLevel::Fatal, __VA_ARGS__)
+#define OCTK_LOGGING_FATAL(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Fatal, __VA_ARGS__)
 
 OCTK_DECLARE_LOGGER(OCTK_CORE_API, OCTK_LOGGER)
-#define OCTK_TRACE \
-    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Trace); enabled; enabled = false) \
+#define OCTK_TRACE                                                                                                     \
+    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Trace); enabled; enabled = false)                 \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Trace, __FILE__, OCTK_STRFUNC, __LINE__).logging
-#define OCTK_DEBUG \
-    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Debug); enabled; enabled = false) \
+#define OCTK_DEBUG                                                                                                     \
+    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Debug); enabled; enabled = false)                 \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Debug, __FILE__, OCTK_STRFUNC, __LINE__).logging
-#define OCTK_INFO \
-    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Info); enabled; enabled = false) \
+#define OCTK_INFO                                                                                                      \
+    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Info); enabled; enabled = false)                  \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Info, __FILE__, OCTK_STRFUNC, __LINE__).logging
-#define OCTK_WARNING \
-    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Warning); enabled; enabled = false) \
+#define OCTK_WARNING                                                                                                   \
+    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Warning); enabled; enabled = false)               \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Warning, __FILE__, OCTK_STRFUNC, __LINE__).logging
-#define OCTK_ERROR \
-    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Error); enabled; enabled = false) \
+#define OCTK_ERROR                                                                                                     \
+    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Error); enabled; enabled = false)                 \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Error, __FILE__, OCTK_STRFUNC, __LINE__).logging
-#define OCTK_CRITICAL \
-    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Critical); enabled; enabled = false) \
+#define OCTK_CRITICAL                                                                                                  \
+    for (bool enabled = OCTK_LOGGER().isLevelEnabled(octk::LogLevel::Critical); enabled; enabled = false)              \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Critical, __FILE__, OCTK_STRFUNC, __LINE__).logging
-#define OCTK_FATAL \
+#define OCTK_FATAL                                                                                                     \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Fatal, __FILE__, OCTK_STRFUNC, __LINE__).logging
 
 #endif // _OCTK_LOGGING_HPP

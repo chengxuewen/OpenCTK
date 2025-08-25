@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -39,8 +39,6 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace limits
-{
 OCTK_STATIC_CONSTANT_NUMBER(kInt8Min, std::numeric_limits<int8_t>::min())
 OCTK_STATIC_CONSTANT_NUMBER(kInt8Max, std::numeric_limits<int8_t>::max())
 OCTK_STATIC_CONSTANT_NUMBER(kInt16Min, std::numeric_limits<int16_t>::min())
@@ -75,21 +73,28 @@ OCTK_STATIC_CONSTANT_NUMBER(kULongMax, std::numeric_limits<ulong_t>::max())
 OCTK_STATIC_CONSTANT_NUMBER(kULongLongMin, std::numeric_limits<ulonglong_t>::min())
 OCTK_STATIC_CONSTANT_NUMBER(kULongLongMax, std::numeric_limits<ulonglong_t>::max())
 
+namespace utils
+{
 template <typename T>
-static constexpr T numeric_msin() noexcept { return std::numeric_limits<T>::min(); }
+static constexpr T numericMin() noexcept { return std::numeric_limits<T>::min(); }
 template <typename T>
-static constexpr T math_min(const T& left, const T &right) noexcept { return std::min<T>(left, right); }
+static constexpr T mathMin(const T &left, const T &right) noexcept { return std::min<T>(left, right); }
 template <typename T, typename P>
-static constexpr T math_min(const T& left, const T &right, P pred) noexcept { return std::min<T, P>(left, right, pred); }
-
-template <typename T>
-static constexpr T numeric_max() noexcept { return std::numeric_limits<T>::max(); }
-template <typename T>
-static constexpr T math_max(const T& left, const T &right) noexcept { return std::max<T>(left, right); }
-template <typename T, typename P>
-static constexpr T math_max(const T& left, const T &right, P pred) noexcept { return std::max<T, P>(left, right, pred); }
+static constexpr T mathMin(const T &left, const T &right, P pred) noexcept
+{
+    return std::min<T, P>(left, right, pred);
 }
 
+template <typename T>
+static constexpr T numericMax() noexcept { return std::numeric_limits<T>::max(); }
+template <typename T>
+static constexpr T mathMax(const T &left, const T &right) noexcept { return std::max<T>(left, right); }
+template <typename T, typename P>
+static constexpr T mathMax(const T &left, const T &right, P pred) noexcept
+{
+    return std::max<T, P>(left, right, pred);
+}
+};
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_LIMITS_HPP

@@ -30,33 +30,364 @@ set(OCTK_TEST_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_TESTSDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Add tests link libraries
 #-----------------------------------------------------------------------------------------------------------------------
+octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
 set(OCTK_TEST_LINK_LIBRARIES octk::core OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Add tests
 #-----------------------------------------------------------------------------------------------------------------------
+octk_add_test(octk_core_tst_aligned_malloc
+	SOURCES
+	tst_aligned_malloc.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_array_view
+	SOURCES
+	tst_array_view.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_base64
+	SOURCES
+	tst_base64.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_buffer
+	SOURCES
+	tst_buffer.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_checks
-    SOURCES
-    tst_checks.cpp
-    INCLUDE_DIRECTORIES
-    LIBRARIES
-    ${OCTK_TEST_LINK_LIBRARIES}
-    OUTPUT_DIRECTORY
-    ${OCTK_TEST_OUTPUT_DIR})
-#octk_add_test(octk_core_tst_mutex
-#    SOURCES
-#    tst_mutex.cpp
-#    INCLUDE_DIRECTORIES
-#    LIBRARIES
-#    ${OCTK_TEST_LINK_LIBRARIES}
-#    OUTPUT_DIRECTORY
-#    ${OCTK_TEST_OUTPUT_DIR})
+	SOURCES
+	tst_checks.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_clock
+	SOURCES
+	tst_clock.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_crypto_random
+	SOURCES
+	tst_crypto_random.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_data_rate
+	SOURCES
+	tst_data_rate.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_data_size
+	SOURCES
+	tst_data_size.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_date_time
+	SOURCES
+	tst_date_time.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_divide_round
+	SOURCES
+	tst_divide_round.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_exception
+	SOURCES
+	tst_exception.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_fake_clock
+	SOURCES
+	tst_fake_clock.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(octk_core_tst_file_utils
+#	SOURCES
+#	tst_file_utils.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_frequency
+	SOURCES
+	tst_frequency.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_inlined_vector
+	SOURCES
+	${OCTKWrapAbseil_SOURCE_DIR}/absl/container/internal/test_instance_tracker.cc
+	tst_inlined_vector.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	OCTK3rdparty::WrapAbseil
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_metrics
+	SOURCES
+	tst_metrics.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_move_wrapper
+	SOURCES
+	tst_move_wrapper.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_mutex
+	SOURCES
+	tst_mutex.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_mutex_benchmark
+	SOURCES
+	tst_mutex_benchmark.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_ntp_time
+	SOURCES
+	tst_ntp_time.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_numeric
+	SOURCES
+	tst_numeric.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_pending_task_safety_flag
+	SOURCES
+	tst_pending_task_safety_flag.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_platform_thread
+	SOURCES
+	tst_platform_thread.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_random
+	SOURCES
+	tst_random.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_ref_counted_object
+	SOURCES
+	tst_ref_counted_object.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_repeating_task
+	SOURCES
+	tst_repeating_task.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_scope_guard
+	SOURCES
+	tst_scope_guard.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_scoped_refptr
+	SOURCES
+	tst_scoped_refptr.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_sequence_checker
+	SOURCES
+	tst_sequence_checker.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_shared_buffer
+	SOURCES
+	tst_shared_buffer.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_source_location
+	SOURCES
+	tst_source_location.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_string_encode
+	SOURCES
+	tst_string_encode.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_string_to_number
+	SOURCES
+	tst_string_to_number.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_string_utils
-    SOURCES
-    tst_string_utils.cpp
-    INCLUDE_DIRECTORIES
-    LIBRARIES
-    ${OCTK_TEST_LINK_LIBRARIES}
-    OUTPUT_DIRECTORY
-    ${OCTK_TEST_OUTPUT_DIR})
+	SOURCES
+	tst_string_utils.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_strong_alias
+	SOURCES
+	tst_strong_alias.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_task_event
+	SOURCES
+	tst_task_event.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_task_queue
+	SOURCES
+	tst_task_queue.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_task_thread
+	SOURCES
+	tst_task_thread.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_time_delta
+	SOURCES
+	tst_time_delta.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_timestamp
+	SOURCES
+	tst_timestamp.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_unit_base
+	SOURCES
+	tst_unit_base.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(octk_core_tst_yield_policy
+#	SOURCES
+#	tst_yield_policy.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_zero_memory
+	SOURCES
+	tst_zero_memory.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})

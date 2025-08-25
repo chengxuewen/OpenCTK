@@ -26,6 +26,37 @@
 # Please consider to use a more specific version target like the one created
 # by octk_add_test or octk_add_tool below.
 #-----------------------------------------------------------------------------------------------------------------------
+# This function is currently in Technical Preview.
+# It's signature and behavior might change.
+#
+# Wrapper function that adds an executable with some Qt specific behavior.
+# Some scenarios require steps to be deferred to the end of the current
+# directory scope so that the caller has an opportunity to modify certain
+# target properties.
+#function(qt6_add_executable target)
+#    cmake_parse_arguments(PARSE_ARGV 1 arg "MANUAL_FINALIZATION" "" "")
+#
+#    _qt_internal_create_executable("${target}" ${arg_UNPARSED_ARGUMENTS})
+#    target_link_libraries("${target}" PRIVATE Qt6::Core)
+#
+#    if(arg_MANUAL_FINALIZATION)
+#        # Caller says they will call qt6_finalize_target() themselves later
+#        return()
+#    endif()
+#
+#    # Defer the finalization if we can. When the caller's project requires
+#    # CMake 3.19 or later, this makes the calls to this function concise while
+#    # still allowing target property modification before finalization.
+#    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+#        # Need to wrap in an EVAL CODE or else ${target} won't be evaluated
+#        # due to special behavior of cmake_language() argument handling
+#        cmake_language(EVAL CODE "cmake_language(DEFER CALL qt6_finalize_target ${target})")
+#    else()
+#        set_target_properties("${target}" PROPERTIES _qt_is_immediately_finalized TRUE)
+#        qt6_finalize_target("${target}")
+#    endif()
+#endfunction()
+
 function(octk_add_executable name)
     octk_parse_all_arguments(arg "octk_add_executable"
         "${OCTK_INTERNAL_ADD_EXECUTABLE_OPTIONAL_ARGS}"

@@ -8,74 +8,75 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_mutex.hpp>
-#include <octk_event.hpp>
-#include <octk_thread.hpp>
+#include <octk_task_event.hpp>
 #include <octk_time_delta.hpp>
+#include <octk_thread.hpp>
+#include <octk_memory.hpp>
+#include <octk_mutex.hpp>
 
-#include <benchmark/benchmark.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <benchmark/benchmark.h>
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <type_traits>
+#include <cstddef>
+#include <utility>
+#include <cstdint>
 #include <atomic>
 #include <memory>
 #include <thread>
-#include <type_traits>
-#include <utility>
 #include <vector>
 
-namespace octk
-{
+using namespace octk;
+
 namespace
 {
 
 constexpr int kNumThreads = 16;
 
 template <class MutexType>
-class OCTK_LOCKABLE RawMutexLocker
+class OCTK_ATTRIBUTE_LOCKABLE RawMutexLocker
 {
 public:
     explicit RawMutexLocker(MutexType &mutex) : mMutex(mutex) {}
-    void Lock() OCTK_EXCLUSIVE_LOCK_FUNCTION() { mMutex.Lock(); }
-    void Unlock() OCTK_UNLOCK_FUNCTION() { mMutex.Unlock(); }
+    void lock() OCTK_ATTRIBUTE_EXCLUSIVE_LOCK_FUNCTION() { mMutex.lock(); }
+    void unlock() OCTK_ATTRIBUTE_UNLOCK_FUNCTION() { mMutex.unlock(); }
 
 private:
     MutexType &mMutex;
 };
 
-class OCTK_LOCKABLE RawMutexTryLocker
+class OCTK_ATTRIBUTE_LOCKABLE RawMutexTryLocker
 {
 public:
     explicit RawMutexTryLocker(Mutex &mutex) : mMutex(mutex) {}
-    void Lock() OCTK_EXCLUSIVE_LOCK_FUNCTION()
+    void lock() OCTK_ATTRIBUTE_EXCLUSIVE_LOCK_FUNCTION()
     {
-        while (!mMutex.TryLock())
+        while (!mMutex.try_lock())
         {
-            Thread::Yield();
+            std::this_thread::yield();
         }
     }
-    void Unlock() OCTK_UNLOCK_FUNCTION() { mMutex.Unlock(); }
+    void unlock() OCTK_ATTRIBUTE_UNLOCK_FUNCTION() { mMutex.unlock(); }
 
 private:
     Mutex &mMutex;
 };
 
-template <class MutexType, class MutexLockType>
-class MutexLockLocker
+template <class MutexType, class MutexlockType>
+class Mutexlocklocker
 {
 public:
-    explicit MutexLockLocker(MutexType &mutex) : mMutex(mutex) {}
-    void Lock() { mLock = std::make_unique<MutexLockType>(&mMutex); }
-    void Unlock() { mLock = nullptr; }
+    explicit Mutexlocklocker(MutexType &mutex) : mMutex(mutex) {}
+    void lock() { mlock = utils::make_unique<MutexlockType>(&mMutex); }
+    void unlock() { mlock = nullptr; }
 
 private:
     MutexType &mMutex;
-    std::unique_ptr<MutexLockType> mLock;
+    std::unique_ptr<MutexlockType> mlock;
 };
 
-template <class MutexType, class MutexLocker>
+template <class MutexType, class Mutexlocker>
 class LockRunner
 {
 public:
@@ -85,7 +86,7 @@ public:
         , mStartEvent(true, false)
         , mDoneEvent(true, false)
         , mSharedValue(0), mMutex(args...)
-        , mLocker(mMutex) {}
+        , mlocker(mMutex) {}
 
     bool Run()
     {
@@ -93,7 +94,7 @@ public:
         mStartEvent.Set();
 
         // Wait for all threads to finish.
-        return mDoneEvent.Wait(kLongTime);
+        return mDoneEvent.Wait(kLongTime());
     }
 
     void SetExpectedThreadCount(int count) { mThreadsActive = count; }
@@ -101,21 +102,21 @@ public:
     int shared_value()
     {
         int shared_value;
-        mLocker.Lock();
+        mlocker.lock();
         shared_value = mSharedValue;
-        mLocker.Unlock();
+        mlocker.unlock();
         return shared_value;
     }
 
     void Loop()
     {
-        ASSERT_TRUE(mStartEvent.Wait(kLongTime));
-        mLocker.Lock();
+        ASSERT_TRUE(mStartEvent.Wait(kLongTime()));
+        mlocker.lock();
 
         EXPECT_EQ(0, mSharedValue);
         int old = mSharedValue;
 
-        // Use a loop to increase the chance of race. If the `mLocker`
+        // Use a loop to increase the chance of race. If the `mlocker`
         // implementation is faulty, it would be improbable that the error slips
         // through.
         for (int i = 0; i < kOperationsToRun; ++i)
@@ -125,7 +126,7 @@ public:
         EXPECT_EQ(old + kOperationsToRun, mSharedValue);
         mSharedValue = 0;
 
-        mLocker.Unlock();
+        mlocker.unlock();
         if (mThreadsActive.fetch_sub(1) == 1)
         {
             mDoneEvent.Set();
@@ -133,7 +134,7 @@ public:
     }
 
 private:
-    static constexpr TimeDelta kLongTime = TimeDelta::Seconds(10);
+    static TimeDelta kLongTime() { return TimeDelta::Seconds(10); }
     static constexpr int kOperationsToRun = 1000;
 
     std::atomic<int> mThreadsActive;
@@ -141,7 +142,7 @@ private:
     Event mDoneEvent;
     int mSharedValue;
     MutexType mMutex;
-    MutexLocker mLocker;
+    Mutexlocker mlocker;
 };
 
 template <typename Runner>
@@ -149,7 +150,7 @@ void StartThreads(std::vector<std::unique_ptr<std::thread>> &threads, Runner *ha
 {
     for (int i = 0; i < kNumThreads; ++i)
     {
-        auto thread = std::make_unique<std::thread>([handler] { handler->Loop(); });
+        auto thread = utils::make_unique<std::thread>([handler, i]() { handler->Loop(); });
         threads.push_back(std::move(thread));
     }
 }
@@ -162,6 +163,7 @@ TEST(MutexTest, ProtectsSharedResourceWithMutexAndRawMutexLocker)
     runner.SetExpectedThreadCount(kNumThreads);
     EXPECT_TRUE(runner.Run());
     EXPECT_EQ(0, runner.shared_value());
+    for (auto &&thread: threads) { thread->join(); }
 }
 
 TEST(MutexTest, ProtectsSharedResourceWithMutexAndRawMutexTryLocker)
@@ -172,17 +174,17 @@ TEST(MutexTest, ProtectsSharedResourceWithMutexAndRawMutexTryLocker)
     runner.SetExpectedThreadCount(kNumThreads);
     EXPECT_TRUE(runner.Run());
     EXPECT_EQ(0, runner.shared_value());
+    for (auto &&thread: threads) { thread->join(); }
 }
 
-TEST(MutexTest, ProtectsSharedResourceWithMutexAndMutexLocker)
+TEST(MutexTest, ProtectsSharedResourceWithMutexAndMutexlocker)
 {
     std::vector<std::unique_ptr<std::thread>> threads;
-    LockRunner<Mutex, MutexLockLocker<Mutex, MutexLock>> runner;
+    LockRunner<Mutex, Mutexlocklocker<Mutex, Mutex::Locker>> runner;
     StartThreads(threads, &runner);
     runner.SetExpectedThreadCount(kNumThreads);
     EXPECT_TRUE(runner.Run());
     EXPECT_EQ(0, runner.shared_value());
+    for (auto &&thread: threads) { thread->join(); }
 }
-
 }  // namespace
-}  // namespace webrtc

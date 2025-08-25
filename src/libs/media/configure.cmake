@@ -24,3 +24,9 @@
 octk_configure_feature("USE_FFMPEG" PUBLIC
 	LABEL "Enable this to build use ffmpeg"
 	CONDITION OFF)
+octk_configure_feature("ENABLE_CAPTURE_DESKTOP" PUBLIC
+	LABEL "Enable this to build use capture desktop function"
+	CONDITION OFF)
+octk_configure_feature("ENABLE_CAPTURE_VIDEO" PUBLIC
+	LABEL "Enable this to build use capture video function"
+	CONDITION OFF)

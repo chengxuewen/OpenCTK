@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -36,23 +36,15 @@ ThreadPrivate::~ThreadPrivate()
 {
 }
 
-Thread::Thread()
-    : mDPtr(utils::makeUnique<ThreadPrivate>(this))
-{
-}
-
-Thread::Thread(ThreadPrivate *d)
-    : mDPtr(d)
-{
-}
+Thread::Thread() : Thread(new ThreadPrivate(this)) {}
+Thread::Thread(ThreadPrivate *d) : mDPtr(d) {}
 
 Thread::~Thread()
 {
 }
 
-void Thread::Yield()
+void Thread::yield()
 {
     std::this_thread::yield();
 }
-
 OCTK_END_NAMESPACE

@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -26,16 +26,55 @@
 #define _OCTK_EXCEPTION_HPP
 
 #include <octk_global.hpp>
+#include <octk_logging.hpp>
 #include <octk_expected.hpp>
+#include <octk_string_view.hpp>
 
 #include <string>
+#include <exception>
 
 OCTK_BEGIN_NAMESPACE
 
-template <typename R>
-Expected<R, std::string> tryCatchCall(const std::function<R()> func)
+namespace detail
 {
-#ifndef OCTK_NO_EXCEPTIONS
+
+struct ExceptionWhat final
+{
+    ExceptionWhat(const char *format, ...)
+    {
+        va_list args;
+        va_start(args, format);
+        char string[OCTK_LINE_MAX] = {0};
+        std::vsnprintf(string, OCTK_LINE_MAX, format, args);
+        va_end(args);
+        what = string;
+    }
+    ExceptionWhat(StringView string)
+        : what(string)
+    {
+    }
+    ExceptionWhat(const std::string &string)
+        : what(string)
+    {
+    }
+    ExceptionWhat(const std::stringstream &stream)
+        : what(stream.str())
+    {
+    }
+    std::string what;
+};
+
+static inline const char *getCStrHelper(const char *string) { return string; }
+static inline const char *getCStrHelper(const StringView &string) { return string.data(); }
+static inline const char *getCStrHelper(const std::string &string) { return string.data(); }
+static inline const char *getCStrHelper(const ExceptionWhat &exceptionWhat) { return exceptionWhat.what.c_str(); }
+}; // namespace detail
+
+namespace utils
+{
+template <typename R> Expected<R, std::string> tryCatchCall(const std::function<R()> func)
+{
+#if OCTK_HAS_EXCEPTIONS
     try
     {
         return func();
@@ -48,7 +87,30 @@ Expected<R, std::string> tryCatchCall(const std::function<R()> func)
     return func();
 #endif
 }
+} // namespace utils
 
 OCTK_END_NAMESPACE
+
+#ifndef OCTK_HAS_EXCEPTIONS
+#    define OCTK_THROW_DELEGATE(Exception, what)  throw Exception(octk::detail::getCStrHelper(what))
+#    define OCTK_THROW_NO_MSG_DELEGATE(Exception) throw Exception()
+#else
+#    define OCTK_THROW_DELEGATE(Exception, what)  OCTK_FATAL("%s", detail::getCStrHelper(what))
+#    define OCTK_THROW_NO_MSG_DELEGATE(Exception) OCTK_FATAL("%s", #Exception)
+#endif
+#define OCTK_THROW(Exception, ...)   OCTK_THROW_DELEGATE(Exception, octk::detail::ExceptionWhat(__VA_ARGS__))
+#define OCTK_THROW_NO_MSG(Exception) OCTK_THROW_NO_MSG_DELEGATE(Exception)
+
+#define OCTK_THROW_STD_LOGIC_ERROR(...)      OCTK_THROW(std::logic_error, __VA_ARGS__)
+#define OCTK_THROW_STD_INVALID_ARGUMENT(...) OCTK_THROW(std::invalid_argument, __VA_ARGS__)
+#define OCTK_THROW_STD_DOMAIN_ERROR(...)     OCTK_THROW(std::domain_error, __VA_ARGS__)
+#define OCTK_THROW_STD_LENGTH_ERROR(...)     OCTK_THROW(std::length_error, __VA_ARGS__)
+#define OCTK_THROW_STD_OUT_OF_RANGE(...)     OCTK_THROW(std::out_of_range, __VA_ARGS__)
+#define OCTK_THROW_STD_RUNTIME_ERROR(...)    OCTK_THROW(std::runtime_error, __VA_ARGS__)
+#define OCTK_THROW_STD_RANGE_ERROR(...)      OCTK_THROW(std::range_error, __VA_ARGS__)
+#define OCTK_THROW_STD_OVERFLOW_ERROR(...)   OCTK_THROW(std::overflow_error, __VA_ARGS__)
+#define OCTK_THROW_STD_UNDERFLOW_ERROR(...)  OCTK_THROW(std::underflow_error, __VA_ARGS__)
+#define OCTK_THROW_STD_BAD_FUNCTION_CALL()   OCTK_THROW_NO_MSG(std::bad_function_call)
+#define OCTK_THROW_STD_BAD_ALLOC()           OCTK_THROW_NO_MSG(std::bad_alloc)
 
 #endif // _OCTK_EXCEPTION_HPP

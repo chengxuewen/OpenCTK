@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -35,13 +35,11 @@ template <typename E> using Unexpected = tl::unexpected<E>;
 
 template <typename T, typename E> using Expected = tl::expected<T, E>;
 
-using tl::make_unexpected;
-
-template <typename E>
-Unexpected<typename std::decay<E>::type> makeUnexpected(E &&e)
+namespace utils
 {
-    return tl::make_unexpected(e);
-}
+using tl::make_unexpected;
+template <typename E> Unexpected<typename std::decay<E>::type> makeUnexpected(E &&e) { return tl::make_unexpected(e); }
+} // namespace utils
 
 OCTK_END_NAMESPACE
 

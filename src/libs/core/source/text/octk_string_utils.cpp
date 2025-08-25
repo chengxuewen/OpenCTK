@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present chengxuewen.
+** Copyright (C) 2025~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -24,8 +24,9 @@
 
 #include <octk_string_utils.hpp>
 #include <octk_assert.hpp>
-#include <octk_ascii.hpp>
 #include <octk_macros.hpp>
+#include <octk_checks.hpp>
+#include <octk_ascii.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -62,6 +63,35 @@ const char *extractFileName(const char *filePath)
         file_name = last_slash + 1;
     }
     return filePath + (file_name - path);
+}
+
+bool stringCompare(const char *s1, const char *s2, size_t len, bool ignoreCase)
+{
+    const unsigned char *us1 = reinterpret_cast<const unsigned char *>(s1);
+    const unsigned char *us2 = reinterpret_cast<const unsigned char *>(s2);
+
+    for (size_t i = 0; i < len; i++)
+    {
+        unsigned char c1 = us1[i];
+        unsigned char c2 = us2[i];
+        // If bytes are the same, they will be the same when converted to lower.
+        // So we only need to convert if bytes are not equal.
+        if (c1 != c2 && ignoreCase)
+        {
+            c1 = c1 >= 'A' && c1 <= 'Z' ? c1 - 'A' + 'a' : c1;
+            c2 = c2 >= 'A' && c2 <= 'Z' ? c2 - 'A' + 'a' : c2;
+            const int diff = int{c1} - int{c2};
+            if (diff != 0)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 int stringCaseCmp(const char *s1, const char *s2, size_t len)
@@ -117,30 +147,25 @@ bool stringContainsIgnoreCase(StringView haystack, char needle) noexcept
     }
 }
 
-bool stringStartsWithIgnoreCase(StringView text, StringView prefix) noexcept
+namespace
 {
-    return (text.size() >= prefix.size()) && stringEqualsIgnoreCase(text.substr(0, prefix.size()), prefix);
-}
+// This is an arbitrary limitation that can be changed if necessary, or removed if someone has the time and
+// inclination to replicate the fancy logic from Chromium's base::StringPrinf().
+constexpr int kMaxSize = 512;
+}  // namespace
 
-bool stringEndsWithIgnoreCase(StringView text, StringView suffix) noexcept
+std::string StringFormat(const char *format, ...)
 {
-    return (text.size() >= suffix.size()) && stringEqualsIgnoreCase(text.substr(text.size() - suffix.size()), suffix);
+    char buffer[kMaxSize];
+    va_list args;
+    va_start(args, format);
+    int result = vsnprintf(buffer, kMaxSize, format, args);
+    va_end(args);
+    OCTK_DCHECK_GE(result, 0) << "ERROR: vsnprintf() failed with error " << result;
+    OCTK_DCHECK_LT(result, kMaxSize) << "WARNING: string was truncated from " << result << " to "
+                                     << (kMaxSize - 1) << " characters";
+    return std::string(buffer);
 }
-
-bool stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept
-{
-    return (piece1.size() == piece2.size() && 0 == stringCaseCmp(piece1.data(), piece2.data(), piece1.size()));
-}
-
-bool Test::stringEqualsIgnoreCase(StringView piece1, StringView piece2) noexcept
-{
-    return (piece1.size() == piece2.size() && 0 == stringCaseCmp(piece1.data(), piece2.data(), piece1.size()));
-}
-
-#ifndef OCTK_BUILDING_CORE_LIB
-#error "ndef OCTK_BUILDING_CORE_LIB"
-#endif
-
 } // namespace utils
 
 OCTK_END_NAMESPACE
