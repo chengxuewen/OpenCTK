@@ -36,21 +36,22 @@ octk_internal_extend_target(octk_gui
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3_shaders.h
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
-	backends/octk_imgui_window_sdlgpu3.cpp
-	backends/octk_imgui_window_sdlgpu3.hpp
-	octk_imgui.cpp
-	octk_imgui.hpp
+	backends/octk_imgui_application_sdlgpu3.cpp
+	backends/octk_imgui_application_sdlgpu3.hpp
+	backends/octk_imgui_application_sdlrenderer3.cpp
+	backends/octk_imgui_application_sdlrenderer3.hpp
+	octk_imgui_application.cpp
+	octk_imgui_application.hpp
+	octk_imgui_application_p.hpp
 	octk_imgui_constants.hpp
-	octk_imgui_window.cpp
-	octk_imgui_window.hpp
-	octk_imgui_window_p.hpp
-	octk_imgui_window_factory.cpp
-	octk_imgui_window_factory.hpp
+	EXTERNAL_HEADERS_DIRS
+	${OCTKWrapImGui_INSTALL_DIR}/include
 	INCLUDE_DIRECTORIES
-	${OCTKWrapImGui_SOURCE_DIR}
 	${OCTKWrapImGui_SOURCE_DIR}/backends
+	${OCTKWrapImGui_SOURCE_DIR}
 	LIBRARIES
 	OCTK3rdparty::WrapSDL
+	PUBLIC_LIBRARIES
 	OCTK3rdparty::WrapImGui)
 octk_internal_extend_target(octk_gui
 	SOURCES
@@ -70,6 +71,8 @@ octk_internal_extend_target(octk_gui
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+	backends/octk_imgui_application_sdlopengl3.cpp
+	backends/octk_imgui_application_sdlopengl3.hpp
 	LIBRARIES
 	OpenGL::GL
 	CONDITION OpenGL_FOUND)

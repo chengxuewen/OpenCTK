@@ -33,11 +33,11 @@ OCTK_BEGIN_NAMESPACE
 
 struct OCTK_CORE_API ClockInterface
 {
-    virtual ~ClockInterface() {}
+    virtual ~ClockInterface() { }
     virtual int64_t TimeNanos() const = 0;
 
     static ClockInterface *SetClockForTesting(ClockInterface *clock);
-// Returns previously set clock, or nullptr if no custom clock is being used.
+    // Returns previously set clock, or nullptr if no custom clock is being used.
     static ClockInterface *GetClockForTesting();
 };
 
@@ -46,13 +46,13 @@ class OCTK_CORE_API DateTime
 public:
     struct LocalTime
     {
-        int mil;                /* milliseconds after the minute [0-1000] */
-        int sec;                /* seconds after the minute [0-60] */
-        int min;                /* minutes after the hour [0-59] */
-        int hour;               /* hours since midnight [0-23] */
-        int day;                /* day of the month [1-31] */
-        int mon;                /* months since January [0-11] */
-        int year;               /* years since 1900 */
+        int mil;  /* milliseconds after the minute [0-1000] */
+        int sec;  /* seconds after the minute [0-60] */
+        int min;  /* minutes after the hour [0-59] */
+        int hour; /* hours since midnight [0-23] */
+        int day;  /* day of the month [1-31] */
+        int mon;  /* months since January [0-11] */
+        int year; /* years since 1900 */
 
         int days_since_sunday;  /* days since Sunday [0-6] */
         int days_since_january; /* days since January 1 [0-365] */
@@ -64,29 +64,29 @@ public:
     OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerUSec, int64_t(1000))
 
     OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerMSec, int64_t(1000))
-    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerMSec, int64_t(kNSecsPerUSec * kUSecsPerMSec))
+    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerMSec, int64_t(kNSecsPerUSec *kUSecsPerMSec))
 
     OCTK_STATIC_CONSTANT_NUMBER(kMSecsPerSec, int64_t(1000))
-    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerSec, int64_t(kUSecsPerMSec * kMSecsPerSec))
-    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerSec, int64_t(kNSecsPerMSec * kMSecsPerSec))
+    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerSec, int64_t(kUSecsPerMSec *kMSecsPerSec))
+    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerSec, int64_t(kNSecsPerMSec *kMSecsPerSec))
 
     OCTK_STATIC_CONSTANT_NUMBER(kSecsPerMin, int64_t(60))
-    OCTK_STATIC_CONSTANT_NUMBER(kMSecsPerMin, int64_t(kMSecsPerSec * kSecsPerMin))
-    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerMin, int64_t(kUSecsPerSec * kSecsPerMin))
-    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerMin, int64_t(kNSecsPerSec * kSecsPerMin))
+    OCTK_STATIC_CONSTANT_NUMBER(kMSecsPerMin, int64_t(kMSecsPerSec *kSecsPerMin))
+    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerMin, int64_t(kUSecsPerSec *kSecsPerMin))
+    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerMin, int64_t(kNSecsPerSec *kSecsPerMin))
 
     OCTK_STATIC_CONSTANT_NUMBER(kMinsPerHour, int64_t(60))
-    OCTK_STATIC_CONSTANT_NUMBER(kSecsPerHour, int64_t(kSecsPerMin * kMinsPerHour))
-    OCTK_STATIC_CONSTANT_NUMBER(kMSecsPerHour, int64_t(kMSecsPerMin * kMinsPerHour))
-    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerHour, int64_t(kUSecsPerMin * kMinsPerHour))
-    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerHour, int64_t(kNSecsPerMin * kMinsPerHour))
+    OCTK_STATIC_CONSTANT_NUMBER(kSecsPerHour, int64_t(kSecsPerMin *kMinsPerHour))
+    OCTK_STATIC_CONSTANT_NUMBER(kMSecsPerHour, int64_t(kMSecsPerMin *kMinsPerHour))
+    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerHour, int64_t(kUSecsPerMin *kMinsPerHour))
+    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerHour, int64_t(kNSecsPerMin *kMinsPerHour))
 
     OCTK_STATIC_CONSTANT_NUMBER(kHoursPerDay, int64_t(24))
-    OCTK_STATIC_CONSTANT_NUMBER(kMinsPerDay, int64_t(kMinsPerHour * kHoursPerDay))
-    OCTK_STATIC_CONSTANT_NUMBER(kSecsPerDay, int64_t(kSecsPerHour * kHoursPerDay))
-    OCTK_STATIC_CONSTANT_NUMBER(kMSecsPerDay, int64_t(kMSecsPerHour * kHoursPerDay))
-    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerDay, int64_t(kUSecsPerHour * kHoursPerDay))
-    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerDay, int64_t(kNSecsPerHour * kHoursPerDay))
+    OCTK_STATIC_CONSTANT_NUMBER(kMinsPerDay, int64_t(kMinsPerHour *kHoursPerDay))
+    OCTK_STATIC_CONSTANT_NUMBER(kSecsPerDay, int64_t(kSecsPerHour *kHoursPerDay))
+    OCTK_STATIC_CONSTANT_NUMBER(kMSecsPerDay, int64_t(kMSecsPerHour *kHoursPerDay))
+    OCTK_STATIC_CONSTANT_NUMBER(kUSecsPerDay, int64_t(kUSecsPerHour *kHoursPerDay))
+    OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerDay, int64_t(kNSecsPerHour *kHoursPerDay))
 
     /* system_clock CLOCK_REALTIME for log/datetime */
     static int64_t systemTimeSecs();
@@ -127,59 +127,33 @@ public:
         msecs = msecs > 0 ? msecs : steadyTimeMSecs();
         return localTimeStringFromSystemTimeMSecs(systemTimeFromSteadyNSecs(msecs * kNSecsPerMSec) / kNSecsPerMSec);
     }
+    static OCTK_FORCE_INLINE std::string localTimeString() { return localTimeStringFromSteadyTimeMSecs(); }
 
     static OCTK_FORCE_INLINE int64_t TimeUTCNanos()
     {
         auto clock = ClockInterface::GetClockForTesting();
         return clock ? clock->TimeNanos() : systemTimeNSecs();
     }
-    static OCTK_FORCE_INLINE int64_t TimeUTCMicros()
-    {
-        return TimeUTCNanos() / kNSecsPerUSec;
-    }
-    static OCTK_FORCE_INLINE int64_t TimeUTCMillis()
-    {
-        return TimeUTCNanos() / kNSecsPerMSec;
-    }
+    static OCTK_FORCE_INLINE int64_t TimeUTCMicros() { return TimeUTCNanos() / kNSecsPerUSec; }
+    static OCTK_FORCE_INLINE int64_t TimeUTCMillis() { return TimeUTCNanos() / kNSecsPerMSec; }
 
     static OCTK_FORCE_INLINE int64_t TimeNanos()
     {
         auto clock = ClockInterface::GetClockForTesting();
         return clock ? clock->TimeNanos() : steadyTimeNSecs();
     }
-    static OCTK_FORCE_INLINE int64_t TimeMicros()
-    {
-        return TimeNanos() / kNSecsPerUSec;
-    }
-    static OCTK_FORCE_INLINE int64_t TimeMillis()
-    {
-        return TimeNanos() / kNSecsPerMSec;
-    }
+    static OCTK_FORCE_INLINE int64_t TimeMicros() { return TimeNanos() / kNSecsPerUSec; }
+    static OCTK_FORCE_INLINE int64_t TimeMillis() { return TimeNanos() / kNSecsPerMSec; }
     static OCTK_FORCE_INLINE int64_t TimeAfter(int64_t elapsed)
     {
         OCTK_DCHECK_GE(elapsed, 0);
         return TimeMillis() + elapsed;
     }
-    static OCTK_FORCE_INLINE int64_t TimeSince(int64_t earlier)
-    {
-        return DateTime::TimeMillis() - earlier;
-    }
-    static OCTK_FORCE_INLINE int32_t TimeDiff32(uint32_t later, uint32_t earlier)
-    {
-        return later - earlier;
-    }
-    static OCTK_FORCE_INLINE int64_t TimeDiff(int64_t later, int64_t earlier)
-    {
-        return later - earlier;
-    }
-    static OCTK_FORCE_INLINE int64_t TimeUntil(int64_t later)
-    {
-        return later - TimeMillis();
-    }
-    static OCTK_FORCE_INLINE uint32_t Time32()
-    {
-        return static_cast<uint32_t>(TimeNanos() / kNSecsPerMSec);
-    }
+    static OCTK_FORCE_INLINE int64_t TimeSince(int64_t earlier) { return DateTime::TimeMillis() - earlier; }
+    static OCTK_FORCE_INLINE int32_t TimeDiff32(uint32_t later, uint32_t earlier) { return later - earlier; }
+    static OCTK_FORCE_INLINE int64_t TimeDiff(int64_t later, int64_t earlier) { return later - earlier; }
+    static OCTK_FORCE_INLINE int64_t TimeUntil(int64_t later) { return later - TimeMillis(); }
+    static OCTK_FORCE_INLINE uint32_t Time32() { return static_cast<uint32_t>(TimeNanos() / kNSecsPerMSec); }
 
     static OCTK_FORCE_INLINE int64_t timeAfterMSecs(int64_t elapsed)
     {

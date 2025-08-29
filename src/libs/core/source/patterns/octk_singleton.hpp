@@ -11,11 +11,6 @@
 
 OCTK_BEGIN_NAMESPACE
 
-#define OCTK_DECLARE_SINGLETON(CLASS)                                                                                  \
-    friend class Singleton<CLASS>;                                                                                     \
-    friend struct SingletonScopedPointerDeleter<CLASS>;
-
-
 template <typename T> struct SingletonScopedPointerDeleter
 {
     constexpr SingletonScopedPointerDeleter() noexcept = default;
@@ -90,5 +85,9 @@ template <typename T> std::once_flag Singleton<T>::mOnceFlag;
 template <typename T> std::unique_ptr<T, SingletonScopedPointerDeleter<T>> Singleton<T>::mScoped(nullptr);
 
 OCTK_END_NAMESPACE
+
+#define OCTK_DECLARE_SINGLETON(CLASS)                                                                                  \
+    friend class octk::Singleton<CLASS>;                                                                               \
+    friend struct octk::SingletonScopedPointerDeleter<CLASS>;
 
 #endif // _OCTK_SINGLETON_HPP

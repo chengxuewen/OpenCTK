@@ -75,10 +75,10 @@ private:
 class SequenceCheckerDoNothing
 {
 public:
-    explicit SequenceCheckerDoNothing(bool /* attach_to_current_thread */) {}
-    explicit SequenceCheckerDoNothing(TaskQueue * /* attached_queue */) {}
+    explicit SequenceCheckerDoNothing(bool /* attach_to_current_thread */) { }
+    explicit SequenceCheckerDoNothing(TaskQueue * /* attached_queue */) { }
     bool IsCurrent() const { return true; }
-    void Detach() {}
+    void Detach() { }
 };
 
 template <typename ThreadLikeObject>
@@ -99,7 +99,7 @@ ExpectationToString(const ThreadLikeObject *)
 {
     return std::string();
 }
-}  // namespace internal
+} // namespace internal
 
 // SequenceChecker is a helper class used to help verify that some methods
 // of a class are called on the same task queue or thread. A
@@ -131,28 +131,38 @@ class OCTK_ATTRIBUTE_LOCKABLE SequenceChecker
     using Impl = internal::SequenceCheckerDoNothing;
 #endif
 public:
-    enum InitialState : bool { kDetached = false, kAttached = true };
+    enum InitialState : bool
+    {
+        kDetached = false,
+        kAttached = true
+    };
 
-// TODO(tommi): We could maybe join these two ctors and have fewer factory
-// functions. At the moment they're separate to minimize code changes when
-// we added the second ctor as well as avoiding to have unnecessary code at
-// the SequenceChecker which much only run for the SequenceCheckerImpl
-// implementation.
-// In theory we could have something like:
-//
-//  SequenceChecker(InitialState initial_state = kAttached,
-//                  TaskQueue* attached_queue = TaskQueue::Current());
-//
-// But the problem with that is having the call to `Current()` exist for
-// `SequenceCheckerDoNothing`.
-    explicit SequenceChecker(InitialState initial_state = kAttached) : Impl(initial_state) {}
-    explicit SequenceChecker(TaskQueue *attached_queue) : Impl(attached_queue) {}
+    // TODO(tommi): We could maybe join these two ctors and have fewer factory
+    // functions. At the moment they're separate to minimize code changes when
+    // we added the second ctor as well as avoiding to have unnecessary code at
+    // the SequenceChecker which much only run for the SequenceCheckerImpl
+    // implementation.
+    // In theory we could have something like:
+    //
+    //  SequenceChecker(InitialState initial_state = kAttached,
+    //                  TaskQueue* attached_queue = TaskQueue::Current());
+    //
+    // But the problem with that is having the call to `Current()` exist for
+    // `SequenceCheckerDoNothing`.
+    explicit SequenceChecker(InitialState initial_state = kAttached)
+        : Impl(initial_state)
+    {
+    }
+    explicit SequenceChecker(TaskQueue *attached_queue)
+        : Impl(attached_queue)
+    {
+    }
 
-// Returns true if sequence checker is attached to the current sequence.
+    // Returns true if sequence checker is attached to the current sequence.
     bool IsCurrent() const { return Impl::IsCurrent(); }
-// Detaches checker from sequence to which it is attached. Next attempt
-// to do a check with this checker will result in attaching this checker
-// to the sequence on which check was performed.
+    // Detaches checker from sequence to which it is attached. Next attempt
+    // to do a check with this checker will result in attaching this checker
+    // to the sequence on which check was performed.
     void Detach() { Impl::Detach(); }
 };
 
@@ -214,9 +224,9 @@ public:
 // Second statement annotates for the thread safety analyzer the check was done.
 // Such annotation has to be attached to a function, and that function has to be
 // called. Thus current implementation creates a noop lambda and calls it.
-#define OCTK_DCHECK_RUN_ON(x) \
-    OCTK_DCHECK((x)->IsCurrent()) << octk::internal::ExpectationToString(x); \
-    []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) {}()
+#define OCTK_DCHECK_RUN_ON(x)                                                                                          \
+    OCTK_DCHECK((x)->IsCurrent()) << octk::internal::ExpectationToString(x);                                           \
+    []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) { }()
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_SEQUENCE_CHECKER_HPP

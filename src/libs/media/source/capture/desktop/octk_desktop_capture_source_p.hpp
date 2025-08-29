@@ -28,14 +28,14 @@ using octk::I420Buffer;
 using octk::VideoAdapter;
 using octk::VideoBroadcaster;
 
-class DesktopCaptureSourcePrivate
+class DesktopCapturerPrivate
 #if MSRTC_FEATURE_USE_LIBWEBRTC
     : public webrtc::DesktopCapturer::Callback
 #endif
 {
 public:
-    explicit DesktopCaptureSourcePrivate(DesktopCaptureSource *p);
-    ~DesktopCaptureSourcePrivate();
+    explicit DesktopCapturerPrivate(DesktopCapturer *p);
+    ~DesktopCapturerPrivate();
 
     void updateVideoAdapter();
     void updateLastError(const std::string &error);
@@ -72,10 +72,10 @@ public:
     VideoBroadcaster mVideoBroadcaster;
 
 protected:
-    MSRTC_DEFINE_PPTR(DesktopCaptureSource)
-    MSRTC_DECLARE_PUBLIC(DesktopCaptureSource)
+    MSRTC_DEFINE_PPTR(DesktopCapturer)
+    MSRTC_DECLARE_PUBLIC(DesktopCapturer)
 
-    MSRTC_DISABLE_COPY_MOVE(DesktopCaptureSourcePrivate)
+    MSRTC_DISABLE_COPY_MOVE(DesktopCapturerPrivate)
 };
 MSRTC_END_NAMESPACE
 

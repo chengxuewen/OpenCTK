@@ -33,7 +33,7 @@
 int main()
 {
     OCTK_LOGGER().switchLevel(octk::LogLevel::Trace);
-    auto capturer = octk::utils::make_unique<octk::DesktopCaptureSource>(15, 2);
+    auto capturer = octk::utils::make_unique<octk::DesktopCapturer>(15, 2);
     capturer->startCapture();
 
     std::unique_ptr<VideoRenderer> renderer = octk::utils::make_unique<VideoRenderer>(capturer->windowTitle(),

@@ -22,49 +22,32 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_IMGUI_WINDOW_HPP
-#define _OCTK_IMGUI_WINDOW_HPP
+#ifndef _OCTK_IMGUI_APPLICATION_SDLOPENGL_3_HPP
+#define _OCTK_IMGUI_APPLICATION_SDLOPENGL_3_HPP
 
-#include <octk_gui_global.hpp>
-#include <octk_memory.hpp>
-
-#include <functional>
+#include <octk_imgui_application.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class ImGuiWindowPrivate;
-class OCTK_GUI_API ImGuiWindow
+class ImguiApplicationSDLOpenGL3Private;
+class ImguiApplicationSDLOpenGL3 : public ImGuiApplication
 {
 public:
-    using DrawFunction = std::function<void()>;
+    ImguiApplicationSDLOpenGL3(const Properties &properties = {});
+    ~ImguiApplicationSDLOpenGL3() override;
 
-    using SharedPtr = std::shared_ptr<ImGuiWindow>;
-    using UniquePtr = std::unique_ptr<ImGuiWindow>;
-
-    ImGuiWindow();
-    ImGuiWindow(ImGuiWindowPrivate *d);
-    virtual ~ImGuiWindow();
-
-    std::string lastError() const;
-    void setDrawFunction(DrawFunction func);
-
-    bool exec();
-    void stopExec();
-
-    virtual bool init() = 0;
-    virtual bool render() = 0;
-    virtual bool destroy() = 0;
-    virtual std::string typeName() const = 0;
+    bool exec() override;
+    StringView typeName() const override;
 
 protected:
-    void setError(const std::string &error);
+    bool init() override;
+    void destroy() override;
 
-protected:
-    OCTK_DEFINE_DPTR(ImGuiWindow)
-    OCTK_DECLARE_PRIVATE(ImGuiWindow)
-    OCTK_DISABLE_COPY_MOVE(ImGuiWindow)
+private:
+    OCTK_DECLARE_PRIVATE(ImguiApplicationSDLOpenGL3)
+    OCTK_DISABLE_COPY_MOVE(ImguiApplicationSDLOpenGL3)
 };
 
 OCTK_END_NAMESPACE
 
-#endif // _OCTK_IMGUI_WINDOW_HPP
+#endif // _OCTK_IMGUI_APPLICATION_SDLOPENGL_3_HPP

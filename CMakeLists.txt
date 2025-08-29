@@ -280,12 +280,12 @@ octk_option(OCTK_BUILD_EXAMPLES "Enable this to build examples" ON
 octk_option(OCTK_BUILD_INSTALL "Enable this to build the installer" ${OCTK_WILL_INSTALL_VALUE}
 	OR_CONDITION OCTK_BUILD_ALL)
 
+octk_option(OCTK_ENABLE_LIB_GUI "Enable this to build enable gui lib" OFF
+	OR_CONDITION OCTK_BUILD_ALL)
 octk_option(OCTK_ENABLE_LIB_NETWORK "Enable this to build enable network lib" OFF
 	OR_CONDITION OCTK_BUILD_ALL)
 octk_option(OCTK_ENABLE_LIB_MEDIA "Enable this to build enable media lib" OFF
-	DEPENDS OCTK_ENABLE_LIB_NETWORK
-	OR_CONDITION OCTK_BUILD_ALL)
-octk_option(OCTK_ENABLE_LIB_GUI "Enable this to build enable gui lib" OFF
+	DEPENDS OCTK_ENABLE_LIB_NETWORK AND OCTK_ENABLE_LIB_GUI
 	OR_CONDITION OCTK_BUILD_ALL)
 
 

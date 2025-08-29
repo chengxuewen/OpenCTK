@@ -142,6 +142,8 @@ octk_add_library(core
 	source/tools/octk_file_utils.cpp
 	source/tools/octk_file_utils.hpp
 	source/tools/octk_function_view.hpp
+	source/tools/octk_id_registry.cpp
+	source/tools/octk_id_registry.hpp
 	source/tools/octk_inlined_vector.hpp
 	source/tools/octk_invocable.hpp
 	source/tools/octk_iterator.hpp
@@ -161,6 +163,7 @@ octk_add_library(core
 	source/tools/octk_random.hpp
 	source/tools/octk_ref_count.hpp
 	source/tools/octk_ref_counted_object.hpp
+	source/tools/octk_result.hpp
 	source/tools/octk_scope_guard.hpp
 	source/tools/octk_scoped_refptr.hpp
 	source/tools/octk_shared_buffer.cpp

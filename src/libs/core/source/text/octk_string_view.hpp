@@ -50,6 +50,7 @@ struct StringViewCmp
     using is_transparent = void;
     bool operator()(StringView lhs, StringView rhs) const { return lhs < rhs; }
 };
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_STRING_VIEW_HPP

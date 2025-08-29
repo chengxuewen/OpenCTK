@@ -943,7 +943,7 @@ FrameGeneratorInterface::VideoFrameData ScrollingImageFrameGenerator::nextFrame(
     if (!same_scroll_position)
     {
         // If scrolling is not finished yet, force full frame update.
-        current_frame_.update_rect = VideoFrame::UpdateRect{0, 0, target_width_, target_height_};
+        current_frame_.updateRect = VideoFrame::UpdateRect{0, 0, target_width_, target_height_};
     }
     prev_frame_not_scrolled_ = cur_frame_not_scrolled;
 
@@ -961,13 +961,13 @@ void ScrollingImageFrameGenerator::updateSourceFrame(size_t frame_num)
     while (current_frame_num_ != frame_num)
     {
         current_source_frame_ = file_generator_.nextFrame();
-        if (current_source_frame_.update_rect)
+        if (current_source_frame_.updateRect)
         {
-            acc_update.unionRect(*current_source_frame_.update_rect);
+            acc_update.unionRect(*current_source_frame_.updateRect);
         }
         current_frame_num_ = (current_frame_num_ + 1) % num_frames_;
     }
-    current_source_frame_.update_rect = acc_update;
+    current_source_frame_.updateRect = acc_update;
 }
 
 void ScrollingImageFrameGenerator::cropSourceToScrolledImage(double scroll_factor)
@@ -984,7 +984,7 @@ void ScrollingImageFrameGenerator::cropSourceToScrolledImage(double scroll_facto
     int offset_v = (i420_buffer->StrideV() * (pixels_scrolled_y / 2)) +
                    (pixels_scrolled_x / 2);
 
-    VideoFrame::UpdateRect update_rect = current_source_frame_.update_rect->isEmpty()
+    VideoFrame::UpdateRect updateRect = current_source_frame_.updateRect->isEmpty()
                                          ? VideoFrame::UpdateRect{0, 0, 0, 0}
                                          : VideoFrame::UpdateRect{0, 0, target_width_, target_height_};
     current_frame_ = VideoFrameData(utils::wrapI420Buffer(target_width_, target_height_,
@@ -992,6 +992,6 @@ void ScrollingImageFrameGenerator::cropSourceToScrolledImage(double scroll_facto
                                                           &i420_buffer->DataU()[offset_u], i420_buffer->StrideU(),
                                                           &i420_buffer->DataV()[offset_v],
                                                           i420_buffer->StrideV(), // To keep reference alive.
-                                                          [i420_buffer] {}), update_rect);
+                                                          [i420_buffer] {}), updateRect);
 }
 OCTK_END_NAMESPACE

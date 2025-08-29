@@ -18,7 +18,7 @@
 #include "common_video/libyuv/include/webrtc_libyuv.h"
 #include "modules/video_capture/video_capture_config.h"
 #include "rtc_base/logging.h"
-#include "rtc_base/time_utils.h"
+#include "rtc_base/utils.h"
 #include "rtc_base/trace_event.h"
 #include "third_party/libyuv/include/libyuv.h"
 

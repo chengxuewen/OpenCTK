@@ -44,7 +44,7 @@
 // #include "rtc_base/logging.h"
 // #include "rtc_base/strings/string_builder.h"
 // #include "rtc_base/synchronization/mutex.h"
-// #include "rtc_base/time_utils.h"
+// #include "rtc_base/utils.h"
 
 OCTK_BEGIN_NAMESPACE
 
@@ -337,7 +337,7 @@ void VideoAdapter::onOutputFormatRequest(const Optional<VideoFormat> &format)
         maxPixelCount = format->width * format->height;
         if (format->interval > 0)
         {
-            maxFps = time_utils::KNSecsPerSec / format->interval;
+            maxFps = utils::KNSecsPerSec / format->interval;
         }
     }
     onOutputFormatRequest(targetAspectRatio, maxPixelCount, maxFps);

@@ -29,11 +29,13 @@ OCTK_BEGIN_NAMESPACE
 
 VideoTrackSource::VideoTrackSource(bool remote)
     : mState(kInitializing)
-    , mIsRemote(remote) {}
+    , mIsRemote(remote)
+{
+}
 
 void VideoTrackSource::setState(SourceState newState)
 {
-    //    OCTK_DCHECK_RUN_ON(&signaling_thread_checker_);
+    OCTK_DCHECK_RUN_ON(&mSignalingThreadChecker);
     if (newState != mState)
     {
         mState = newState;
@@ -41,15 +43,15 @@ void VideoTrackSource::setState(SourceState newState)
     }
 }
 
-void VideoTrackSource::addOrUpdateSink(VideoSinkInterface<VideoFrame>* sink, const VideoSinkWants& wants)
+void VideoTrackSource::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
-    //    OCTK_DCHECK(worker_thread_checker_.IsCurrent());
+    OCTK_DCHECK(mWorkerThreadChecker.IsCurrent());
     source()->addOrUpdateSink(sink, wants);
 }
 
-void VideoTrackSource::removeSink(VideoSinkInterface<VideoFrame>* sink)
+void VideoTrackSource::removeSink(VideoSinkInterface<VideoFrame> *sink)
 {
-    //    OCTK_DCHECK(worker_thread_checker_.IsCurrent());
+    OCTK_DCHECK(mWorkerThreadChecker.IsCurrent());
     source()->removeSink(sink);
 }
 

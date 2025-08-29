@@ -66,10 +66,24 @@ public:
 
     static OnceFlag *localOnceFlag();
 
-private:
+protected:
     std::atomic<State> mState{State::NeverCalled};
     OCTK_DISABLE_COPY_MOVE(OnceFlag)
 };
+
+class MutableOnceFlag final : public OnceFlag
+{
+public:
+    MutableOnceFlag() = default;
+    ~MutableOnceFlag() = default;
+
+    bool reset()
+    {
+        auto expected = State::Done;
+        return mState.compare_exchange_strong(expected, State::NeverCalled);
+    }
+};
+
 
 namespace utils
 {
@@ -81,12 +95,6 @@ template <typename Func> void callOnce(OnceFlag &flag, Func func)
         flag.leave();
     }
 }
-// static OCTK_FORCE_INLINE void callOnce(OnceFlag &flag, void (*func)()) { callOnce<void (*)()>(flag, func); }
-// static QEXT_FORCE_INLINE void callOnce(OnceFlag &flag, std::function<void()> func)
-// {
-//     callOnce<std::function<void()>>(flag, func);
-// }
-
 template <typename Func> void callOncePerThread(Func func) { callOnce(*OnceFlag::localOnceFlag(), func); }
 } // namespace utils
 

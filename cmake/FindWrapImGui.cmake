@@ -30,7 +30,7 @@ endif()
 
 set(OCTKWrapImGui_NAME "imgui-1.92.2b")
 set(OCTKWrapImGui_DIR_NAME "${OCTKWrapImGui_NAME}")
-set(OCTKWrapImGui_PKG_NAME "${OCTKWrapImGui_NAME}.tar.gz")
+set(OCTKWrapImGui_PKG_NAME "${OCTKWrapImGui_NAME}.7z")
 set(OCTKWrapImGui_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapImGui_PKG_NAME}")
 set(OCTKWrapImGui_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapImGui_DIR_NAME}")
 set(OCTKWrapImGui_BUILD_DIR "${OCTKWrapImGui_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
@@ -60,7 +60,12 @@ if(NOT TARGET ImGui)
 		${OCTKWrapImGui_SOURCE_DIR}/imstb_truetype.h)
 endif()
 target_link_libraries(OCTK3rdparty::WrapImGui INTERFACE ImGui)
-target_link_directories(OCTK3rdparty::WrapImGui INTERFACE
-	"${OCTKWrapImGui_SOURCE_DIR}"
-	"${OCTKWrapImGui_SOURCE_DIR}/backends")
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imconfig.h"
+	"${OCTKWrapImGui_INSTALL_DIR}/include/imgui/imconfig.h"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imgui.h"
+	"${OCTKWrapImGui_INSTALL_DIR}/include/imgui/imgui.h"
+	WORKING_DIRECTORY "${OCTKWrapImGui_ROOT_DIR}"
+	ERROR_QUIET)
+target_include_directories(OCTK3rdparty::WrapImGui INTERFACE "${OCTKWrapImGui_INSTALL_DIR}/include")
 set(OCTKWrapImGui_FOUND ON)

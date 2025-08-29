@@ -22,20 +22,32 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_imgui.hpp>
+#ifndef _OCTK_IMGUI_APPLICATION_SDLRENDERER3_HPP
+#define _OCTK_IMGUI_APPLICATION_SDLRENDERER3_HPP
 
-#include <imgui.h>
+#include <octk_imgui_application.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-void ImGui::drawDemo(bool *open) { ::ImGui::ShowDemoWindow(open); }
-
-void ImGui::drawText(const char *fmt, ...)
+class ImGuiApplicationSDLRenderer3Private;
+class ImGuiApplicationSDLRenderer3 : public ImGuiApplication
 {
-    va_list args;
-    va_start(args, fmt);
-    ::ImGui::TextV(fmt, args);
-    va_end(args);
-}
+public:
+    ImGuiApplicationSDLRenderer3(const Properties &properties = {});
+    ~ImGuiApplicationSDLRenderer3() override;
+
+    bool exec() override;
+    StringView typeName() const override;
+
+protected:
+    bool init() override;
+    void destroy() override;
+
+private:
+    OCTK_DECLARE_PRIVATE(ImGuiApplicationSDLRenderer3)
+    OCTK_DISABLE_COPY_MOVE(ImGuiApplicationSDLRenderer3)
+};
 
 OCTK_END_NAMESPACE
+
+#endif // _OCTK_IMGUI_APPLICATION_SDLRENDERER3_HPP

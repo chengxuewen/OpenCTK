@@ -22,68 +22,33 @@
 **
 ***********************************************************************************************************************/
 
-#include <private/octk_imgui_window_p.hpp>
+#ifndef _OCTK_ID_REGISTRY_HPP
+#define _OCTK_ID_REGISTRY_HPP
+
+#include <octk_global.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-ImGuiWindowPrivate::ImGuiWindowPrivate(ImGuiWindow *p)
-    : mPPtr(p)
+class IdRegistryPrivate;
+class OCTK_CORE_API IdRegistry
 {
-}
+public:
+    IdRegistry();
+    virtual ~IdRegistry();
 
-ImGuiWindowPrivate::~ImGuiWindowPrivate() { }
+    int64_t registeredIdCount() const;
+    bool isIdRegistered(int64_t id) const;
 
-ImGuiWindow::ImGuiWindow()
-    : ImGuiWindow(new ImGuiWindowPrivate(this))
-{
-}
-ImGuiWindow::ImGuiWindow(ImGuiWindowPrivate *d)
-    : mDPtr(d)
-{
-}
+    int64_t requestId();
+    void registerId(int64_t id);
+    void unregisterId(int64_t id);
 
-ImGuiWindow::~ImGuiWindow() { }
-
-std::string ImGuiWindow::lastError() const
-{
-    OCTK_D(const ImGuiWindow);
-    return d->mLastError;
-}
-
-void ImGuiWindow::setError(const std::string &error)
-{
-    OCTK_D(ImGuiWindow);
-    if (error != d->mLastError)
-    {
-        d->mLastError = error;
-    }
-}
-
-void ImGuiWindow::setDrawFunction(DrawFunction func)
-{
-    OCTK_D(ImGuiWindow);
-    SpinLock::Locker locker(d->mDrawFunctionSpinLock);
-    d->mDrawFunction = func;
-}
-
-bool ImGuiWindow::exec()
-{
-    OCTK_D(ImGuiWindow);
-    d->mLooping.store(true);
-    while (d->mLooping.load())
-    {
-        if (!this->render())
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-void ImGuiWindow::stopExec()
-{
-    OCTK_D(ImGuiWindow);
-    d->mLooping.store(false);
-}
+protected:
+    OCTK_DEFINE_DPTR(IdRegistry)
+    OCTK_DECLARE_PRIVATE(IdRegistry)
+    OCTK_DISABLE_COPY_MOVE(IdRegistry)
+};
 
 OCTK_END_NAMESPACE
+
+#endif // _OCTK_ID_REGISTRY_HPP

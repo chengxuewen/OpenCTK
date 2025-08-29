@@ -22,9 +22,10 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_gui.hpp>
-#include <octk_logging.hpp>
+#include <private/octk_sdl_p.hpp>
 #include <octk_core_config.hpp>
+#include <octk_logging.hpp>
+#include <octk_gui.hpp>
 
 #include <SDL3/SDL.h>
 
@@ -34,7 +35,11 @@ OCTK_BEGIN_NAMESPACE
 
 Gui::Gui() { }
 
-void Gui::init() { OCTK_WARNING() << "Gui::init()"; }
+void Gui::init()
+{
+    SDL::init();
+    OCTK_TRACE() << "Gui::init()";
+}
 
 const char *Gui::version() { return OCTK_VERSION_NAME; }
 
@@ -42,11 +47,12 @@ const char *Gui::sdlVersion()
 {
     static std::once_flag once;
     static char versionBuff[OCTK_LINE_MAX] = {0};
-    std::call_once(once, [=]()
-                   {
-                       snprintf(versionBuff, OCTK_LINE_MAX, "v%d.%d.%d",
-                                SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
-                   });
+    std::call_once(
+        once,
+        [=]()
+        {
+            snprintf(versionBuff, OCTK_LINE_MAX, "v%d.%d.%d", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
+        });
     return versionBuff;
 }
 

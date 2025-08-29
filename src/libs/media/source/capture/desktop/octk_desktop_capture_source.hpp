@@ -32,19 +32,19 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class DesktopCaptureSourcePrivate;
+class DesktopCapturerPrivate;
 
-class OCTK_MEDIA_API DesktopCaptureSource :
+class OCTK_MEDIA_API DesktopCapturer :
     public VideoSourceInterface<VideoFrame>, public VideoSinkInterface<VideoFrame>
 {
 public:
-    using SharedPtr = std::shared_ptr<DesktopCaptureSource>;
+    using SharedPtr = std::shared_ptr<DesktopCapturer>;
 
-    DesktopCaptureSource();
-    DesktopCaptureSource(size_t
+    DesktopCapturer();
+    DesktopCapturer(size_t
                          targetFps,
                          size_t deviceIndex);
-    ~DesktopCaptureSource() override;
+    ~DesktopCapturer() override;
 
     std::string windowTitle() const;
     std::string lastError() const;
@@ -67,10 +67,10 @@ public:
     void onDiscardedFrame() override;
 
 protected:
-    OCTK_DEFINE_DPTR(DesktopCaptureSource)
-    OCTK_DECLARE_PRIVATE(DesktopCaptureSource)
+    OCTK_DEFINE_DPTR(DesktopCapturer)
+    OCTK_DECLARE_PRIVATE(DesktopCapturer)
 
-    OCTK_DISABLE_COPY_MOVE(DesktopCaptureSource)
+    OCTK_DISABLE_COPY_MOVE(DesktopCapturer)
 };
 OCTK_END_NAMESPACE
 

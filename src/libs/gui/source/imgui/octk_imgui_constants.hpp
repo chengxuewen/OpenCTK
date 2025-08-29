@@ -31,7 +31,9 @@ OCTK_BEGIN_NAMESPACE
 
 namespace constants
 {
-OCTK_STATIC_CONSTANT_STRING(kImGuiWindowSDLGPU3, "ImGuiWindowSDLGPU3")
+OCTK_STATIC_CONSTANT_STRING(kImGuiApplicationSDLGPU3, "ImGuiApplicationSDLGPU3")
+OCTK_STATIC_CONSTANT_STRING(kImguiApplicationSDLOpenGL3, "ImguiApplicationSDLOpenGL3")
+OCTK_STATIC_CONSTANT_STRING(kImGuiApplicationSDLRenderer3, "ImGuiApplicationSDLRenderer3")
 } // namespace constants
 
 OCTK_END_NAMESPACE

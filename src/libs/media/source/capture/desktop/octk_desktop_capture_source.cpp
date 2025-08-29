@@ -40,11 +40,11 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class DesktopCaptureSourcePrivate : public DesktopCapturer::Callback
+class DesktopCapturerPrivate : public DesktopCapturer::Callback
 {
 public:
-    explicit DesktopCaptureSourcePrivate(DesktopCaptureSource *p);
-    ~DesktopCaptureSourcePrivate();
+    explicit DesktopCapturerPrivate(DesktopCapturer *p);
+    ~DesktopCapturerPrivate();
 
     void updateVideoAdapter();
     void updateLastError(const std::string &error);
@@ -79,30 +79,30 @@ public:
     VideoBroadcaster mVideoBroadcaster;
 
 protected:
-    OCTK_DEFINE_PPTR(DesktopCaptureSource)
-    OCTK_DECLARE_PUBLIC(DesktopCaptureSource)
+    OCTK_DEFINE_PPTR(DesktopCapturer)
+    OCTK_DECLARE_PUBLIC(DesktopCapturer)
 
-    OCTK_DISABLE_COPY_MOVE(DesktopCaptureSourcePrivate)
+    OCTK_DISABLE_COPY_MOVE(DesktopCapturerPrivate)
 };
 
-DesktopCaptureSourcePrivate::DesktopCaptureSourcePrivate(DesktopCaptureSource *p)
+DesktopCapturerPrivate::DesktopCapturerPrivate(DesktopCapturer *p)
     : mPPtr(p)
 {
 }
 
-DesktopCaptureSourcePrivate::~DesktopCaptureSourcePrivate()
+DesktopCapturerPrivate::~DesktopCapturerPrivate()
 {
 }
 
-void DesktopCaptureSourcePrivate::OnFrameCaptureStart()
+void DesktopCapturerPrivate::OnFrameCaptureStart()
 {
     Callback::OnFrameCaptureStart();
 }
 
-void DesktopCaptureSourcePrivate::OnCaptureResult(DesktopCapturer::Result result,
+void DesktopCapturerPrivate::OnCaptureResult(DesktopCapturer::Result result,
                                                   std::unique_ptr<DesktopFrame> frame)
 {
-    OCTK_P(DesktopCaptureSource);
+    OCTK_P(DesktopCapturer);
     const auto nowUSecs = DateTime::systemTimeUSecs();
     const auto nowMSecs = nowUSecs / DateTime::kUSecsPerMSec;
     static size_t cnt = 0;
@@ -172,7 +172,7 @@ void DesktopCaptureSourcePrivate::OnCaptureResult(DesktopCapturer::Result result
     }
 }
 
-void DesktopCaptureSourcePrivate::implInit(size_t targetFps, size_t deviceIndex)
+void DesktopCapturerPrivate::implInit(size_t targetFps, size_t deviceIndex)
 {
     mLibWebRTCDesktopCapturer = DesktopCapturer::CreateScreenCapturer(DesktopCaptureOptions::CreateDefault());
     if (!mLibWebRTCDesktopCapturer)
@@ -205,7 +205,7 @@ void DesktopCaptureSourcePrivate::implInit(size_t targetFps, size_t deviceIndex)
     mIsInited.store(true);
 }
 
-void DesktopCaptureSourcePrivate::implStart()
+void DesktopCapturerPrivate::implStart()
 {
     mLibWebRTCDesktopCapturer->start(this);
     while (mStartFlag.load())
@@ -220,83 +220,83 @@ void DesktopCaptureSourcePrivate::implStart()
     }
 }
 
-void DesktopCaptureSourcePrivate::updateVideoAdapter()
+void DesktopCapturerPrivate::updateVideoAdapter()
 {
     mVideoAdapter.OnSinkWants(mVideoBroadcaster.wants());
 }
 
-void DesktopCaptureSourcePrivate::updateLastError(const std::string &error)
+void DesktopCapturerPrivate::updateLastError(const std::string &error)
 {
     mLastError = error;
     // mPPtr->errorOccurred(error);
 }
 
-DesktopCaptureSource::DesktopCaptureSource()
-    : mDPtr(utils::make_unique<DesktopCaptureSourcePrivate>(this))
+DesktopCapturer::DesktopCapturer()
+    : mDPtr(utils::make_unique<DesktopCapturerPrivate>(this))
 {
 }
 
-DesktopCaptureSource::DesktopCaptureSource(size_t targetFps, size_t deviceIndex)
-    : mDPtr(utils::make_unique<DesktopCaptureSourcePrivate>(this))
+DesktopCapturer::DesktopCapturer(size_t targetFps, size_t deviceIndex)
+    : mDPtr(utils::make_unique<DesktopCapturerPrivate>(this))
 {
     this->init(targetFps, deviceIndex);
 }
 
-DesktopCaptureSource::~DesktopCaptureSource()
+DesktopCapturer::~DesktopCapturer()
 {
     this->stopCapture();
 }
 
-std::string DesktopCaptureSource::windowTitle() const
+std::string DesktopCapturer::windowTitle() const
 {
-    OCTK_D(const DesktopCaptureSource);
+    OCTK_D(const DesktopCapturer);
     return d->mWindowTitle;
 }
 
-std::string DesktopCaptureSource::lastError() const
+std::string DesktopCapturer::lastError() const
 {
-    OCTK_D(const DesktopCaptureSource);
+    OCTK_D(const DesktopCapturer);
     return d->mLastError;
 }
 
-bool DesktopCaptureSource::isInited() const
+bool DesktopCapturer::isInited() const
 {
-    OCTK_D(const DesktopCaptureSource);
+    OCTK_D(const DesktopCapturer);
     return d->mIsInited.load();
 }
 
-size_t DesktopCaptureSource::index() const
+size_t DesktopCapturer::index() const
 {
-    OCTK_D(const DesktopCaptureSource);
+    OCTK_D(const DesktopCapturer);
     return d->mIndex;
 }
 
-size_t DesktopCaptureSource::fps() const
+size_t DesktopCapturer::fps() const
 {
-    OCTK_D(const DesktopCaptureSource);
+    OCTK_D(const DesktopCapturer);
     return d->mFps;
 }
 
-bool DesktopCaptureSource::init(size_t targetFps, size_t deviceIndex)
+bool DesktopCapturer::init(size_t targetFps, size_t deviceIndex)
 {
-    OCTK_D(DesktopCaptureSource);
+    OCTK_D(DesktopCapturer);
     std::call_once(d->mInitOnceFlag, [=]() {
         d->implInit(targetFps, deviceIndex);
     });
     return d->mIsInited.load();
 }
 
-bool DesktopCaptureSource::startCapture()
+bool DesktopCapturer::startCapture()
 {
-    OCTK_D(DesktopCaptureSource);
+    OCTK_D(DesktopCapturer);
     if (!d->mIsInited.load())
     {
-        OCTK_WARNING() << "DesktopCaptureSource not inited";
+        OCTK_WARNING() << "DesktopCapturer not inited";
         return false;
     }
     if (d->mStartFlag.exchange(true))
     {
-        OCTK_WARNING() << "DesktopCaptureSource already been running...";
+        OCTK_WARNING() << "DesktopCapturer already been running...";
         return false;
     }
 
@@ -307,9 +307,9 @@ bool DesktopCaptureSource::startCapture()
     return true;
 }
 
-void DesktopCaptureSource::stopCapture()
+void DesktopCapturer::stopCapture()
 {
-    OCTK_D(DesktopCaptureSource);
+    OCTK_D(DesktopCapturer);
     d->mStartFlag.store(false);
     if (d->mCaptureThread && d->mCaptureThread->joinable())
     {
@@ -317,38 +317,38 @@ void DesktopCaptureSource::stopCapture()
     }
 }
 
-void DesktopCaptureSource::requestRefreshFrame()
+void DesktopCapturer::requestRefreshFrame()
 {
     VideoSourceInterface<VideoFrame>::requestRefreshFrame();
 }
 
-void DesktopCaptureSource::onConstraintsChanged(const VideoTrackSourceConstraints &video_track_source_constraints)
+void DesktopCapturer::onConstraintsChanged(const VideoTrackSourceConstraints &video_track_source_constraints)
 {
     VideoSinkInterface<VideoFrame>::onConstraintsChanged(video_track_source_constraints);
 }
 
-void DesktopCaptureSource::onDiscardedFrame()
+void DesktopCapturer::onDiscardedFrame()
 {
     VideoSinkInterface<VideoFrame>::onDiscardedFrame();
 }
 
-void DesktopCaptureSource::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
+void DesktopCapturer::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
-    OCTK_D(DesktopCaptureSource);
+    OCTK_D(DesktopCapturer);
     d->mVideoBroadcaster.addOrUpdateSink(sink, wants);
     d->updateVideoAdapter();
 }
 
-void DesktopCaptureSource::removeSink(VideoSinkInterface<VideoFrame> *sink)
+void DesktopCapturer::removeSink(VideoSinkInterface<VideoFrame> *sink)
 {
-    OCTK_D(DesktopCaptureSource);
+    OCTK_D(DesktopCapturer);
     d->mVideoBroadcaster.removeSink(sink);
     d->updateVideoAdapter();
 }
 
-void DesktopCaptureSource::onFrame(const VideoFrame &frame)
+void DesktopCapturer::onFrame(const VideoFrame &frame)
 {
-    OCTK_D(DesktopCaptureSource);
+    OCTK_D(DesktopCapturer);
     int croppedWidth = 0;
     int croppedHeight = 0;
     int outWidth = 0;

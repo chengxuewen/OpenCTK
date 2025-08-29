@@ -28,6 +28,7 @@
 #include <octk_video_source_interface.hpp>
 #include <octk_custom_video_capturer.hpp>
 #include <octk_task_queue_factory.hpp>
+#include <octk_video_track_source.hpp>
 #include <octk_video_broadcaster.hpp>
 #include <octk_frame_generator.hpp>
 #include <octk_repeating_task.hpp>
@@ -35,6 +36,7 @@
 #include <octk_video_frame.hpp>
 #include <octk_optional.hpp>
 #include <octk_memory.hpp>
+#include <octk_result.hpp>
 #include <octk_mutex.hpp>
 #include <octk_clock.hpp>
 
@@ -50,11 +52,10 @@ public:
     {
     public:
         // OnSinkWantsChanged is called when FrameGeneratorCapturer::AddOrUpdateSink is called.
-        virtual void OnSinkWantsChanged(VideoSinkInterface<VideoFrame> *sink,
-                                        const VideoSinkWants &wants) = 0;
+        virtual void OnSinkWantsChanged(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants) = 0;
 
     protected:
-        virtual ~SinkWantsObserver() {}
+        virtual ~SinkWantsObserver() { }
     };
 
     FrameGeneratorCapturer(Clock *clock,
@@ -78,14 +79,11 @@ public:
     };
     Optional<Resolution> getResolution() const;
 
-    void onOutputFormatRequest(int width,
-                               int height,
-                               const Optional<int> &max_fps);
+    void onOutputFormatRequest(int width, int height, const Optional<int> &max_fps);
 
     void setSinkWantsObserver(SinkWantsObserver *observer);
 
-    void addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink,
-                         const VideoSinkWants &wants) override;
+    void addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants) override;
     void removeSink(VideoSinkInterface<VideoFrame> *sink) override;
 
     void forceFrame();
@@ -114,6 +112,51 @@ private:
 
     std::unique_ptr<TaskQueue, TaskQueueDeleter> task_queue_;
 };
+
+/**
+ * @brief Implements a VideoTrackSourceInterface to be used for creating VideoTracks.
+ * @details The video source is generated using a FrameGeneratorCapturer, specifically a SquareGenerator
+ * that generates frames with randomly sized and colored squares.
+ */
+class FrameGeneratorCapturerVideoTrackSourcePrivate;
+class FrameGeneratorCapturerVideoTrackSource : public VideoTrackSource
+{
+public:
+    static const int kDefaultFramesPerSecond = 30;
+    static const int kDefaultWidth = 640;
+    static const int kDefaultHeight = 480;
+    static const int kNumSquaresGenerated = 50;
+
+    struct Config
+    {
+        int frames_per_second = kDefaultFramesPerSecond;
+        int width = kDefaultWidth;
+        int height = kDefaultHeight;
+        int num_squares_generated = 50;
+    };
+
+    FrameGeneratorCapturerVideoTrackSource(Config config, Clock *clock, bool isScreenCast);
+    FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorInterface> frameGenerator,
+                                           int targetFps,
+                                           Clock *clock,
+                                           bool isScreenCast);
+    FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorCapturer> video_capturer, bool isScreenCast);
+    ~FrameGeneratorCapturerVideoTrackSource() override;
+
+    ResultS start();
+    void stop();
+
+    bool isScreencast() const override;
+
+protected:
+    VideoSourceInterface<VideoFrame> *source() override;
+
+private:
+    OCTK_DEFINE_DPTR(FrameGeneratorCapturerVideoTrackSource)
+    OCTK_DECLARE_PRIVATE(FrameGeneratorCapturerVideoTrackSource)
+    OCTK_DISABLE_COPY_MOVE(FrameGeneratorCapturerVideoTrackSource)
+};
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_FRAME_GENERATOR_CAPTURER_HPP

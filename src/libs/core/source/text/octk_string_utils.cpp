@@ -65,6 +65,21 @@ const char *extractFileName(const char *filePath)
     return filePath + (file_name - path);
 }
 
+std::string extractFunctionName(const char *function, const char *suffix)
+{
+    const StringView funcStringView(function);
+    const auto end = funcStringView.find_last_of('(');
+    if (std::string::npos != end)
+    {
+        const auto start = funcStringView.find_last_of(' ', end);
+        if (std::string::npos != start)
+        {
+            return std::string(function + start, function + end) + suffix;
+        }
+    }
+    return function;
+}
+
 bool stringCompare(const char *s1, const char *s2, size_t len, bool ignoreCase)
 {
     const unsigned char *us1 = reinterpret_cast<const unsigned char *>(s1);
@@ -152,7 +167,7 @@ namespace
 // This is an arbitrary limitation that can be changed if necessary, or removed if someone has the time and
 // inclination to replicate the fancy logic from Chromium's base::StringPrinf().
 constexpr int kMaxSize = 512;
-}  // namespace
+} // namespace
 
 std::string StringFormat(const char *format, ...)
 {
@@ -162,8 +177,8 @@ std::string StringFormat(const char *format, ...)
     int result = vsnprintf(buffer, kMaxSize, format, args);
     va_end(args);
     OCTK_DCHECK_GE(result, 0) << "ERROR: vsnprintf() failed with error " << result;
-    OCTK_DCHECK_LT(result, kMaxSize) << "WARNING: string was truncated from " << result << " to "
-                                     << (kMaxSize - 1) << " characters";
+    OCTK_DCHECK_LT(result, kMaxSize) << "WARNING: string was truncated from " << result << " to " << (kMaxSize - 1)
+                                     << " characters";
     return std::string(buffer);
 }
 } // namespace utils

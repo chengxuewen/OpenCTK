@@ -35,11 +35,12 @@
 #include <memory>
 
 OCTK_BEGIN_NAMESPACE
-
+#if 0
 // Implements a VideoTrackSourceInterface to be used for creating VideoTracks.
 // The video source is generated using a FrameGeneratorCapturer, specifically
 // a SquareGenerator that generates frames with randomly sized and colored
 // squares.
+class FrameGeneratorCapturerVideoTrackSourcePrivate;
 class FrameGeneratorCapturerVideoTrackSource : public VideoTrackSource
 {
 public:
@@ -56,38 +57,43 @@ public:
         int num_squares_generated = 50;
     };
 
-    FrameGeneratorCapturerVideoTrackSource(Config config,
-                                           Clock *clock,
-                                           bool is_screencast)
-        : VideoTrackSource(false /* remote */), task_queue_factory_(utils::createDefaultTaskQueueFactory())
+    FrameGeneratorCapturerVideoTrackSource(Config config, Clock *clock, bool is_screencast)
+        : VideoTrackSource(false /* remote */)
+        , task_queue_factory_(utils::createDefaultTaskQueueFactory())
         , is_screencast_(is_screencast)
     {
-        video_capturer_ = utils::make_unique<FrameGeneratorCapturer>(
-            clock,
-            utils::CreateSquareFrameGenerator(config.width, config.height,
-                                              utils::nullopt,
-                                              config.num_squares_generated),
-            config.frames_per_second, *task_queue_factory_);
+        video_capturer_ =
+            utils::make_unique<FrameGeneratorCapturer>(clock,
+                                                       utils::CreateSquareFrameGenerator(config.width,
+                                                                                         config.height,
+                                                                                         utils::nullopt,
+                                                                                         config.num_squares_generated),
+                                                       config.frames_per_second,
+                                                       *task_queue_factory_);
         video_capturer_->init();
     }
 
-    FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorInterface> frameGenerator, int target_fps,
+    FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorInterface> frameGenerator,
+                                           int target_fps,
                                            Clock *clock,
                                            bool is_screencast)
-        : VideoTrackSource(false /* remote */), task_queue_factory_(utils::createDefaultTaskQueueFactory())
+        : VideoTrackSource(false /* remote */)
+        , task_queue_factory_(utils::createDefaultTaskQueueFactory())
         , is_screencast_(is_screencast)
     {
         video_capturer_ = utils::make_unique<FrameGeneratorCapturer>(clock,
-                                                                   std::move(frameGenerator),
-                                                                   target_fps,
-                                                                   *task_queue_factory_);
+                                                                     std::move(frameGenerator),
+                                                                     target_fps,
+                                                                     *task_queue_factory_);
         video_capturer_->init();
     }
 
-    FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorCapturer> video_capturer,
-                                           bool is_screencast)
-        : VideoTrackSource(false /* remote */), video_capturer_(std::move(video_capturer)), is_screencast_(
-        is_screencast) {}
+    FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorCapturer> video_capturer, bool is_screencast)
+        : VideoTrackSource(false /* remote */)
+        , video_capturer_(std::move(video_capturer))
+        , is_screencast_(is_screencast)
+    {
+    }
 
     ~FrameGeneratorCapturerVideoTrackSource() = default;
 
@@ -106,16 +112,15 @@ public:
     bool isScreencast() const override { return is_screencast_; }
 
 protected:
-    VideoSourceInterface<VideoFrame> *source() override
-    {
-        return video_capturer_.get();
-    }
+    VideoSourceInterface<VideoFrame> *source() override { return video_capturer_.get(); }
 
 private:
+    OCTK_DEFINE_DPTR(FrameGeneratorCapturerVideoTrackSource)
     const std::unique_ptr<TaskQueueFactory> task_queue_factory_;
     std::unique_ptr<FrameGeneratorCapturer> video_capturer_;
     const bool is_screencast_;
 };
+#endif
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_FRAME_GENERATOR_CAPTURER_VIDEO_TRACK_SOURCE_HPP

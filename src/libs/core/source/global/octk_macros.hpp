@@ -320,8 +320,7 @@ OCTK_END_NAMESPACE
 #    define OCTK_STRFUNC ((const char *)("???"))
 #endif
 
-#define OCTK_LINE __LINE__
-
+#define OCTK_LINE    __LINE__
 #define OCTK_STRFILE __FILE__
 
 #define OCTK_PATH_NAME(path) (strrchr(path, OCTK_PATH_SLASH) ? strrchr(path, OCTK_PATH_SLASH) + 1 : path)

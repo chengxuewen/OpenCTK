@@ -145,7 +145,7 @@ void octk_core_init()
 // {
 //     if (buff && len > 0)
 //     {
-//         const auto timestamp = octk::time_utils::systemTimestampString();
+//         const auto timestamp = octk::utils::systemTimestampString();
 //         snprintf(buff, len, "%s", timestamp.c_str());
 //     }
 // }
@@ -154,7 +154,7 @@ void octk_core_init()
 // {
 //     if (buff && len > 0)
 //     {
-//         const auto timestamp = octk::time_utils::localTimestampString();
+//         const auto timestamp = octk::utils::localTimestampString();
 //         snprintf(buff, len, "%s", timestamp.c_str());
 //     }
 // }

@@ -51,7 +51,6 @@ int main()
                                                                                   config.frames_per_second,
                                                                                   Clock::GetRealTimeClock(),
                                                                                   false);
-    // trackSource->Start();
 
     std::unique_ptr<VideoRenderer> renderer = octk::utils::make_unique<VideoRenderer>("SquareGenerator",
                                                                                       config.width,

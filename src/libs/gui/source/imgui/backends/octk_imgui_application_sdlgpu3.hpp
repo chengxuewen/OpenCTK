@@ -22,39 +22,32 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_IMGUI_WINDOW_P_HPP
-#define _OCTK_IMGUI_WINDOW_P_HPP
+#ifndef _OCTK_IMGUI_APPLICATION_SDLGPU3_HPP
+#define _OCTK_IMGUI_APPLICATION_SDLGPU3_HPP
 
-#include <octk_imgui_constants.hpp>
-#include <private/octk_sdl_p.hpp>
-#include <octk_imgui_window.hpp>
-#include <octk_once_flag.hpp>
-#include <octk_spinlock.hpp>
-
-#include <imgui.h>
+#include <octk_imgui_application.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class ImGuiWindowPrivate
+class ImGuiApplicationSDLGPU3Private;
+class ImGuiApplicationSDLGPU3 : public ImGuiApplication
 {
-protected:
-    OCTK_DEFINE_PPTR(ImGuiWindow)
-    OCTK_DECLARE_PUBLIC(ImGuiWindow)
-    OCTK_DISABLE_COPY_MOVE(ImGuiWindowPrivate)
 public:
-    using DrawFunction = ImGuiWindow::DrawFunction;
+    ImGuiApplicationSDLGPU3(const Properties &properties = {});
+    ~ImGuiApplicationSDLGPU3() override;
 
-    explicit ImGuiWindowPrivate(ImGuiWindow *p);
-    virtual ~ImGuiWindowPrivate();
+    bool exec() override;
+    StringView typeName() const override;
 
-    std::atomic_bool mLooping{false};
-    const ImVec4 mClearColor{0.45f, 0.55f, 0.60f, 1.00f};
+protected:
+    bool init() override;
+    void destroy() override;
 
-    std::string mLastError;
-    DrawFunction mDrawFunction;
-    mutable SpinLock mDrawFunctionSpinLock;
+private:
+    OCTK_DECLARE_PRIVATE(ImGuiApplicationSDLGPU3)
+    OCTK_DISABLE_COPY_MOVE(ImGuiApplicationSDLGPU3)
 };
 
 OCTK_END_NAMESPACE
 
-#endif // _OCTK_IMGUI_WINDOW_P_HPP
+#endif // _OCTK_IMGUI_APPLICATION_SDLGPU3_HPP

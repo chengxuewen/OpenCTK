@@ -45,6 +45,8 @@ OCTK_BEGIN_NAMESPACE
 class FrameGeneratorInterface
 {
 public:
+    using UniquePtr = std::unique_ptr<FrameGeneratorInterface>;
+
     struct Resolution
     {
         size_t width;
@@ -53,40 +55,58 @@ public:
 
     struct VideoFrameData
     {
-        VideoFrameData(std::shared_ptr<VideoFrameBuffer> buffer,
-                       Optional<VideoFrame::UpdateRect> update_rect)
-            : buffer(std::move(buffer)), update_rect(update_rect) {}
+        VideoFrameData(std::shared_ptr<VideoFrameBuffer> buff, Optional<VideoFrame::UpdateRect> rect)
+            : buffer(std::move(buff))
+            , updateRect(rect)
+        {
+        }
 
         std::shared_ptr<VideoFrameBuffer> buffer;
-        Optional<VideoFrame::UpdateRect> update_rect;
+        Optional<VideoFrame::UpdateRect> updateRect;
     };
 
-    enum class OutputType { kI420, kI420A, kI010, kNV12 };
+    enum class OutputType
+    {
+        kI420,
+        kI420A,
+        kI010,
+        kNV12
+    };
     static const char *outputTypeToString(OutputType type);
 
     virtual ~FrameGeneratorInterface() = default;
 
-    // Returns VideoFrameBuffer and area where most of update was done to set them
-    // on the VideoFrame object.
+    /**
+     * @return Returns VideoFrameBuffer and area where most of update was done to set them on the VideoFrame object.
+     */
     virtual VideoFrameData nextFrame() = 0;
-    // Skips the next frame in case it doesn't need to be encoded.
-    // Default implementation is to call nextFrame and ignore the returned value.
+
+    /**
+     * @brief Skips the next frame in case it doesn't need to be encoded.
+     * @details Default implementation is to call nextFrame and ignore the returned value.
+     */
     virtual void skipnextFrame() { this->nextFrame(); }
 
-    // Change the capture resolution.
+    /**
+     * @brief Change the capture resolution.
+     */
     virtual void changeResolution(size_t width, size_t height) = 0;
 
     virtual Resolution getResolution() const = 0;
 
-    // Returns the frames per second this generator is supposed to provide
-    // according to its data source. Not all frame generators know the frames per
-    // second of the data source, in such case this method returns utils::nullopt.
+    /**
+     * @return Returns the frames per second this generator is supposed to provide according to its data source.
+     * Not all frame generators know the frames per second of the data source, in such case this method
+     * returns utils::nullopt.
+     */
     virtual Optional<int> fps() const = 0;
 };
 
-// SquareGenerator is a FrameGenerator that draws a given amount of randomly
-// sized and colored squares. Between each new generated frame, the squares
-// are moved slightly towards the lower right corner.
+/**
+ * @details SquareGenerator is a FrameGenerator that draws a given amount of randomly sized and colored squares.
+ * Between each new generated frame, the squares are moved slightly towards the lower right corner.
+ */
+// class SquareGeneratorPrivate;
 class OCTK_MEDIA_API SquareGenerator : public FrameGeneratorInterface
 {
 public:
@@ -129,10 +149,7 @@ private:
 class OCTK_MEDIA_API YuvFileGenerator : public FrameGeneratorInterface
 {
 public:
-    YuvFileGenerator(std::vector<FILE *> files,
-                     size_t width,
-                     size_t height,
-                     int frame_repeat_count);
+    YuvFileGenerator(std::vector<FILE *> files, size_t width, size_t height, int frame_repeat_count);
 
     ~YuvFileGenerator();
 
@@ -165,10 +182,7 @@ private:
 class OCTK_MEDIA_API NV12FileGenerator : public FrameGeneratorInterface
 {
 public:
-    NV12FileGenerator(std::vector<FILE *> files,
-                      size_t width,
-                      size_t height,
-                      int frame_repeat_count);
+    NV12FileGenerator(std::vector<FILE *> files, size_t width, size_t height, int frame_repeat_count);
 
     ~NV12FileGenerator();
 
@@ -268,6 +282,7 @@ private:
     VideoFrameData current_frame_;
     YuvFileGenerator file_generator_;
 };
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_FRAME_GENERATOR_HPP

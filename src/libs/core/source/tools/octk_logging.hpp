@@ -25,14 +25,13 @@
 #ifndef _OCTK_LOGGING_HPP
 #define _OCTK_LOGGING_HPP
 
-#include <octk_global.hpp>
 #include <octk_string_utils.hpp>
 
-#include <vector>
-#include <string>
+#include <functional>
 #include <ostream>
 #include <sstream>
-#include <functional>
+#include <vector>
+#include <string>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -366,6 +365,8 @@ protected:
 };
 OCTK_END_NAMESPACE
 
+#define OCTK_STRFUNC_NAME octk::utils::extractFunctionName(OCTK_STRFUNC).c_str()
+
 #define OCTK_DECLARE_LOGGER(export, logger) export octk::Logger &logger();
 #define OCTK_DEFINE_LOGGER_WITH_LEVEL(name, logger, level)                                                             \
     octk::Logger &logger()                                                                                             \
@@ -384,6 +385,9 @@ OCTK_END_NAMESPACE
 #define OCTK_LOGGING(logger, level, ...)                                                                               \
     for (bool enabled = logger.isLevelEnabled(level); enabled; enabled = false)                                        \
         octk::Logger::Streamer(logger, level, __FILE__, OCTK_STRFUNC, __LINE__).logging(__VA_ARGS__);
+#define OCTK_LOGGING_FULL(logger, level, file, func, line, ...)                                                        \
+    for (bool enabled = logger.isLevelEnabled(level); enabled; enabled = false)                                        \
+        octk::Logger::Streamer(logger, level, file, func, line).logging(__VA_ARGS__);
 
 #define OCTK_LOGGING_TRACE(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Trace, __VA_ARGS__)
 #define OCTK_LOGGING_DEBUG(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Debug, __VA_ARGS__)

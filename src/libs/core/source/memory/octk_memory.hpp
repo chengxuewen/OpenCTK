@@ -69,7 +69,7 @@ template <typename T, std::size_t N> struct make_unique_helper<T[N]>
 
 #if __GNUC__ == 4 && __GNUC_MINOR__ <= 6
     // G++ 4.6 has an ICE when you have no arguments
-        static inline unique_ptr make() { return unique_ptr(new T[N]); }
+    static inline unique_ptr make() { return unique_ptr(new T[N]); }
 #endif
 };
 
@@ -86,6 +86,9 @@ inline typename detail::make_unique_helper<T>::unique_ptr make_unique(Args &&...
 {
     return detail::make_unique_helper<T>::make(std::forward<Args>(args)...);
 }
+
+template <typename T> std::shared_ptr<T> toSharedPtr(const std::weak_ptr<T> &ptr) { return ptr.lock(); }
+template <typename T> std::weak_ptr<T> makeWeakPtr(const std::shared_ptr<T> &ptr) { return ptr; }
 
 } // namespace utils
 

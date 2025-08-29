@@ -32,13 +32,6 @@
 #include <octk_video_frame.hpp>
 #include <octk_optional.hpp>
 
-//#include "api/media_stream_interface.h"
-//#include "api/notifier.h"
-//#include "api/sequence_checker.h"
-//#include "media/base/media_channel.h"
-//#include "rtc_base/system/no_unique_address.h"
-//#include "rtc_base/thread_annotations.h"
-
 OCTK_BEGIN_NAMESPACE
 
 // VideoTrackSource is a convenience base class for implementations of VideoTrackSourceInterface.
@@ -49,7 +42,7 @@ public:
 
     SourceState state() const override
     {
-        //    OCTK_DCHECK_RUN_ON(&signaling_thread_checker_);
+        OCTK_DCHECK_RUN_ON(&mSignalingThreadChecker);
         return mState;
     }
 
@@ -60,27 +53,26 @@ public:
     bool isScreencast() const override { return false; }
     Optional<bool> needsDenoising() const override { return utils::nullopt; }
 
-    bool getStats(Stats* stats) override { return false; }
+    bool getStats(Stats *stats) override { return false; }
 
-    void addOrUpdateSink(VideoSinkInterface<VideoFrame>* sink, const VideoSinkWants& wants) override;
-    void removeSink(VideoSinkInterface<VideoFrame>* sink) override;
+    void addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants) override;
+    void removeSink(VideoSinkInterface<VideoFrame> *sink) override;
 
     bool isSupportsEncodedOutput() const override { return false; }
-    void generateKeyFrame() override {}
-    void addEncodedSink(VideoSinkInterface<RecordableEncodedFrame>* sink) override {}
-    void removeEncodedSink(VideoSinkInterface<RecordableEncodedFrame>* sink) override {}
+    void generateKeyFrame() override { }
+    void addEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) override { }
+    void removeEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) override { }
 
 protected:
-    virtual VideoSourceInterface<VideoFrame>* source() = 0;
+    virtual VideoSourceInterface<VideoFrame> *source() = 0;
 
 private:
-    //    OCTK_NO_UNIQUE_ADDRESS SequenceChecker worker_thread_checker_{SequenceChecker::kDetached};
-    //    OCTK_NO_UNIQUE_ADDRESS SequenceChecker signaling_thread_checker_;
-    SourceState mState;
-    //OCTK_ATTRIBUTE_GUARDED_BY(&signaling_thread_checker_);
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker mWorkerThreadChecker{SequenceChecker::kDetached};
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker mSignalingThreadChecker;
+    SourceState mState OCTK_ATTRIBUTE_GUARDED_BY(&mSignalingThreadChecker);
     const bool mIsRemote;
 };
 
 OCTK_END_NAMESPACE
 
-#endif  //  _OCTK_VIDEO_TRACK_SOURCE_HPP
+#endif //  _OCTK_VIDEO_TRACK_SOURCE_HPP

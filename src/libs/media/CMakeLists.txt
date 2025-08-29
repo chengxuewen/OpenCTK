@@ -95,6 +95,7 @@ octk_add_library(media
 	source/rtc/octk_rtc_event.hpp
 	source/rtc/octk_rtc_event_log.hpp
 	source/rtc/octk_rtc_event_log_output.hpp
+	source/rtc/octk_rtc_offer_answer_options.hpp
 	source/rtc/octk_rtc_peer_connection.cpp
 	source/rtc/octk_rtc_peer_connection.hpp
 	source/rtc/octk_rtc_rtp_transceiver.cpp
@@ -201,12 +202,10 @@ octk_add_library(media
 	source/octk_media_pch.hpp
 	LIBRARIES
 	OCTK3rdparty::WrapLibyuv
-	#	OCTK3rdparty::WrapFFmpeg
-	octk::core_private
 	${OCTK_LIB_LINK_LIBRARIES}
 	PUBLIC_LIBRARIES
 	octk::network
-	octk::core)
+	octk::gui)
 add_subdirectory(source/capture/custom)
 if(OCTK_FEATURE_ENABLE_CAPTURE_DESKTOP)
 	add_subdirectory(source/capture/desktop)

@@ -68,6 +68,13 @@ OCTK_CORE_API const char *extractFileName(const char *filePath);
 
 /**
  * @brief
+ * @param function
+ * @return
+ */
+OCTK_CORE_API std::string extractFunctionName(const char *function, const char *suffix = "");
+
+/**
+ * @brief
  * @param s1
  * @param s2
  * @param len
@@ -130,7 +137,7 @@ static OCTK_FORCE_INLINE bool stringEqualsIgnoreCase(StringView piece1, StringVi
 /**
  * @brief Returns whether a given ASCII string `text` starts with `prefix`, ignoring case in the comparison.s
  */
-static OCTK_FORCE_INLINE  bool stringStartsWithIgnoreCase(StringView text, StringView prefix) noexcept
+static OCTK_FORCE_INLINE bool stringStartsWithIgnoreCase(StringView text, StringView prefix) noexcept
 {
     return (text.size() >= prefix.size()) && stringEqualsIgnoreCase(text.substr(0, prefix.size()), prefix);
 }
@@ -138,7 +145,7 @@ static OCTK_FORCE_INLINE  bool stringStartsWithIgnoreCase(StringView text, Strin
 /**
  * @brief Returns whether a given ASCII string `text` ends with `suffix`, ignoring case in the comparison.
  */
-static OCTK_FORCE_INLINE  bool stringEndsWithIgnoreCase(StringView text, StringView suffix) noexcept
+static OCTK_FORCE_INLINE bool stringEndsWithIgnoreCase(StringView text, StringView suffix) noexcept
 {
     return (text.size() >= suffix.size()) && stringEqualsIgnoreCase(text.substr(text.size() - suffix.size()), suffix);
 }

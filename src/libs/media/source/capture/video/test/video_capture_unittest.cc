@@ -24,7 +24,7 @@
 #include "modules/video_capture/video_capture_factory.h"
 #include "rtc_base/gunit.h"
 #include "rtc_base/synchronization/mutex.h"
-#include "rtc_base/time_utils.h"
+#include "rtc_base/utils.h"
 #include "test/frame_utils.h"
 #include "test/gtest.h"
 
