@@ -61,6 +61,8 @@ protected:
     virtual ~Singleton() { }
 
     virtual void onAboutToBeDestroyed() { }
+    virtual void initSingleton() { }
+
     T *detachScoped()
     {
         mScoped.release();
@@ -72,6 +74,7 @@ private:
     {
         mScoped.reset(new T);
         mInstance = mScoped.get();
+        mInstance->initSingleton();
     }
 
     static T *mInstance;
