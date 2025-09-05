@@ -42,16 +42,20 @@ const char *DegradationPreferenceToString(DegradationPreference degradation_pref
 const double kDefaultBitratePriority = 1.0;
 
 RtcpFeedback::RtcpFeedback() = default;
+
 RtcpFeedback::RtcpFeedback(RtcpFeedbackType type)
     : type(type)
 {
 }
+
 RtcpFeedback::RtcpFeedback(RtcpFeedbackType type, RtcpFeedbackMessageType message_type)
     : type(type)
     , message_type(message_type)
 {
 }
+
 RtcpFeedback::RtcpFeedback(const RtcpFeedback &rhs) = default;
+
 RtcpFeedback::~RtcpFeedback() = default;
 
 RtpCodec::RtpCodec() = default;
@@ -71,26 +75,26 @@ RtpHeaderExtensionCapability::RtpHeaderExtensionCapability(StringView uri)
     : uri(uri)
 {
 }
-RtpHeaderExtensionCapability::RtpHeaderExtensionCapability(StringView uri, int preferred_id)
+RtpHeaderExtensionCapability::RtpHeaderExtensionCapability(StringView uri, int preferredId)
     : uri(uri)
-    , preferred_id(preferred_id)
+    , preferredId(preferredId)
 {
 }
 RtpHeaderExtensionCapability::RtpHeaderExtensionCapability(StringView uri,
-                                                           int preferred_id,
+                                                           int preferredId,
                                                            RtpTransceiverDirection direction)
     : uri(uri)
-    , preferred_id(preferred_id)
+    , preferredId(preferredId)
     , direction(direction)
 {
 }
 RtpHeaderExtensionCapability::RtpHeaderExtensionCapability(StringView uri,
-                                                           int preferred_id,
-                                                           bool preferred_encrypt,
+                                                           int preferredId,
+                                                           bool preferredEncrypt,
                                                            RtpTransceiverDirection direction)
     : uri(uri)
-    , preferred_id(preferred_id)
-    , preferred_encrypt(preferred_encrypt)
+    , preferredId(preferredId)
+    , preferredEncrypt(preferredEncrypt)
     , direction(direction)
 {
 }

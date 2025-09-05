@@ -109,8 +109,11 @@ octk_add_library(media
 	source/rtp/octk_rtp_packet_infos.hpp
 	source/rtp/octk_rtp_parameters.cpp
 	source/rtp/octk_rtp_parameters.hpp
+	source/rtp/octk_rtp_receiver_interface.cpp
+	source/rtp/octk_rtp_receiver_interface.hpp
 	source/rtp/octk_rtp_sender_interface.cpp
 	source/rtp/octk_rtp_sender_interface.hpp
+	source/rtp/octk_rtp_source.hpp
 	source/rtp/octk_rtp_transceiver_direction.hpp
 	source/rtp/octk_rtp_transceiver_interface.cpp
 	source/rtp/octk_rtp_transceiver_interface.hpp

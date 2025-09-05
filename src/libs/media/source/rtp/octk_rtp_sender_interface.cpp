@@ -22,9 +22,14 @@
 **
 ***********************************************************************************************************************/
 
-#include "octk_rtp_sender_interface.hpp"
+#include <octk_rtp_sender_interface.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
+void RtpSenderInterface::SetParametersAsync(const RtpParameters & /* parameters */,
+                                            SetParametersCallback /* callback */)
+{
+    OCTK_DCHECK_NOTREACHED() << "Default implementation called";
+}
 
 OCTK_END_NAMESPACE

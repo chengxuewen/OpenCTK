@@ -32,11 +32,11 @@ OCTK_BEGIN_NAMESPACE
 // https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiverdirection
 enum class RtpTransceiverDirection
 {
-    kSendRecv,
-    kSendOnly,
-    kRecvOnly,
-    kInactive,
-    kStopped,
+    SendRecv,
+    SendOnly,
+    RecvOnly,
+    Inactive,
+    Stopped,
 };
 
 namespace utils

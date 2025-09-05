@@ -142,6 +142,7 @@ public:
 protected:
     ~RtpSenderInterface() override = default;
 };
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_RTP_SENDER_INTERFACE_HPP

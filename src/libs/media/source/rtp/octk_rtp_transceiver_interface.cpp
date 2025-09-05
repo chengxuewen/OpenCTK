@@ -22,8 +22,43 @@
 **
 ***********************************************************************************************************************/
 
-#include "octk_rtp_transceiver_interface.hpp"
+#include <octk_rtp_transceiver_interface.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
+RtpTransceiverInit::RtpTransceiverInit() = default;
+
+RtpTransceiverInit::RtpTransceiverInit(const RtpTransceiverInit &rhs) = default;
+
+RtpTransceiverInit::~RtpTransceiverInit() = default;
+
+Optional<RtpTransceiverDirection> RtpTransceiverInterface::fired_direction() const { return utils::nullopt; }
+
+bool RtpTransceiverInterface::stopping() const { return false; }
+
+void RtpTransceiverInterface::Stop() { StopInternal(); }
+
+RTCError RtpTransceiverInterface::StopStandard()
+{
+    OCTK_DCHECK_NOTREACHED() << "DEBUG: RtpTransceiverInterface::StopStandard called";
+    return RTCError::OK();
+}
+
+void RtpTransceiverInterface::StopInternal()
+{
+    OCTK_DCHECK_NOTREACHED() << "DEBUG: RtpTransceiverInterface::StopInternal called";
+}
+
+// TODO(bugs.webrtc.org/11839) Remove default implementations when clients are updated.
+void RtpTransceiverInterface::SetDirection(RtpTransceiverDirection new_direction)
+{
+    SetDirectionWithError(new_direction);
+}
+
+RTCError RtpTransceiverInterface::SetDirectionWithError(RtpTransceiverDirection /* new_direction */)
+{
+    OCTK_DCHECK_NOTREACHED() << "Default implementation called";
+    return RTCError::OK();
+}
 
 OCTK_END_NAMESPACE

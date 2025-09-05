@@ -226,30 +226,30 @@ struct OCTK_MEDIA_API RtpHeaderExtensionCapability
     std::string uri;
 
     // Preferred value of ID that goes in the packet.
-    Optional<int> preferred_id;
+    Optional<int> preferredId;
 
     // If true, it's preferred that the value in the header is encrypted.
-    bool preferred_encrypt = false;
+    bool preferredEncrypt = false;
 
     // The direction of the extension. The kStopped value is only used with
     // RtpTransceiverInterface::SetHeaderExtensionsToNegotiate() and
     // SetHeaderExtensionsToNegotiate().
-    RtpTransceiverDirection direction = RtpTransceiverDirection::kSendRecv;
+    RtpTransceiverDirection direction = RtpTransceiverDirection::SendRecv;
 
     // Constructors for convenience.
     RtpHeaderExtensionCapability();
     explicit RtpHeaderExtensionCapability(StringView uri);
-    RtpHeaderExtensionCapability(StringView uri, int preferred_id);
-    RtpHeaderExtensionCapability(StringView uri, int preferred_id, RtpTransceiverDirection direction);
+    RtpHeaderExtensionCapability(StringView uri, int preferredId);
+    RtpHeaderExtensionCapability(StringView uri, int preferredId, RtpTransceiverDirection direction);
     RtpHeaderExtensionCapability(StringView uri,
-                                 int preferred_id,
-                                 bool preferred_encrypt,
+                                 int preferredId,
+                                 bool preferredEncrypt,
                                  RtpTransceiverDirection direction);
     ~RtpHeaderExtensionCapability();
 
     bool operator==(const RtpHeaderExtensionCapability &o) const
     {
-        return uri == o.uri && preferred_id == o.preferred_id && preferred_encrypt == o.preferred_encrypt &&
+        return uri == o.uri && preferredId == o.preferredId && preferredEncrypt == o.preferredEncrypt &&
                direction == o.direction;
     }
     bool operator!=(const RtpHeaderExtensionCapability &o) const { return !(*this == o); }
@@ -452,7 +452,7 @@ struct OCTK_MEDIA_API RtpEncodingParameters
     // Currently there is logic for how bitrate is distributed per simulcast layer
     // in the VideoBitrateAllocator. This must be updated to incorporate relative
     // bitrate priority.
-    double bitrate_priority = kDefaultBitratePriority;
+    double bitratePriority = kDefaultBitratePriority;
 
     // The relative DiffServ Code Point priority for this encoding, allowing
     // packets to be marked relatively higher or lower without affecting
@@ -460,7 +460,7 @@ struct OCTK_MEDIA_API RtpEncodingParameters
     // TODO(http://crbug.com/webrtc/8630): Implement this per encoding parameter.
     // TODO(http://crbug.com/webrtc/11379): TCP connections should use a single
     // DSCP value even if shared by multiple senders; this is not implemented.
-    Priority network_priority = Priority::kLow;
+    Priority networkPriority = Priority::kLow;
 
     // If set, this represents the Transport Independent Application Specific
     // maximum bandwidth defined in RFC3890. If unset, there is no maximum
@@ -473,24 +473,24 @@ struct OCTK_MEDIA_API RtpEncodingParameters
     // bandwidth for the entire bandwidth estimator (audio and video). This is
     // just always how "b=AS" was handled, but it's not correct and should be
     // fixed.
-    Optional<int> max_bitrate_bps;
+    Optional<int> maxBitrateBps;
 
     // Specifies the minimum bitrate in bps for video.
-    Optional<int> min_bitrate_bps;
+    Optional<int> minBitrateBps;
 
     // Specifies the maximum framerate in fps for video.
-    Optional<double> max_framerate;
+    Optional<double> maxFramerate;
 
     // Specifies the number of temporal layers for video (if the feature is
     // supported by the codec implementation).
     // Screencast support is experimental.
-    Optional<int> num_temporal_layers;
+    Optional<int> numTemporalLayers;
 
     // For video, scale the resolution down by this factor.
-    Optional<double> scale_resolution_down_by;
+    Optional<double> scaleResolutionDownBy;
 
     // https://w3c.github.io/webrtc-svc/#rtcrtpencodingparameters
-    Optional<std::string> scalability_mode;
+    Optional<std::string> scalabilityMode;
 
     // This is an alternative API to `scale_resolution_down_by` but expressed in
     // absolute terms (max width and max height) as opposed to relative terms (a
@@ -501,7 +501,7 @@ struct OCTK_MEDIA_API RtpEncodingParameters
     //
     // See spec:
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpencodingparameters-scaleresolutiondownto
-    Optional<Resolution> scale_resolution_down_to;
+    Optional<Resolution> scaleResolutionDownTo;
 
     // For an RtpSender, set to true to cause this encoding to be encoded and
     // sent, and false for it not to be encoded and sent. This allows control
@@ -514,23 +514,22 @@ struct OCTK_MEDIA_API RtpEncodingParameters
     // Value to use for RID RTP header extension.
     // Called "encodingId" in ORTC.
     std::string rid;
-    bool request_key_frame = false;
+    bool requestKeyFrame = false;
 
     // Allow dynamic frame length changes for audio:
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpencodingparameters-adaptiveptime
-    bool adaptive_ptime = false;
+    bool adaptivePTime = false;
 
     // Allow changing the used codec for this encoding.
     Optional<RtpCodec> codec;
 
     bool operator==(const RtpEncodingParameters &o) const
     {
-        return ssrc == o.ssrc && bitrate_priority == o.bitrate_priority && network_priority == o.network_priority &&
-               max_bitrate_bps == o.max_bitrate_bps && min_bitrate_bps == o.min_bitrate_bps &&
-               max_framerate == o.max_framerate && num_temporal_layers == o.num_temporal_layers &&
-               scale_resolution_down_by == o.scale_resolution_down_by && active == o.active && rid == o.rid &&
-               adaptive_ptime == o.adaptive_ptime && scale_resolution_down_to == o.scale_resolution_down_to &&
-               codec == o.codec;
+        return ssrc == o.ssrc && bitratePriority == o.bitratePriority && networkPriority == o.networkPriority &&
+               maxBitrateBps == o.maxBitrateBps && minBitrateBps == o.minBitrateBps && maxFramerate == o.maxFramerate &&
+               numTemporalLayers == o.numTemporalLayers && scaleResolutionDownBy == o.scaleResolutionDownBy &&
+               active == o.active && rid == o.rid && adaptivePTime == o.adaptivePTime &&
+               scaleResolutionDownTo == o.scaleResolutionDownTo && codec == o.codec;
     }
     bool operator!=(const RtpEncodingParameters &o) const { return !(*this == o); }
 };
@@ -544,11 +543,11 @@ struct OCTK_MEDIA_API RtpCodecParameters : public RtpCodec
     // Payload type used to identify this codec in RTP packets.
     // This must always be present, and must be unique across all codecs using
     // the same transport.
-    int payload_type = 0;
+    int payloadType = 0;
 
     bool operator==(const RtpCodecParameters &o) const
     {
-        return RtpCodec::operator==(o) && payload_type == o.payload_type;
+        return RtpCodec::operator==(o) && payloadType == o.payloadType;
     }
     bool operator!=(const RtpCodecParameters &o) const { return !(*this == o); }
 };
@@ -564,7 +563,7 @@ struct OCTK_MEDIA_API RtpCapabilities
     std::vector<RtpCodecCapability> codecs;
 
     // Supported RTP header extensions.
-    std::vector<RtpHeaderExtensionCapability> header_extensions;
+    std::vector<RtpHeaderExtensionCapability> headerExtensions;
 
     // Supported Forward Error Correction (FEC) mechanisms. Note that the RED,
     // ulpfec and flexfec codecs used by these mechanisms will still appear in
@@ -573,7 +572,7 @@ struct OCTK_MEDIA_API RtpCapabilities
 
     bool operator==(const RtpCapabilities &o) const
     {
-        return codecs == o.codecs && header_extensions == o.header_extensions && fec == o.fec;
+        return codecs == o.codecs && headerExtensions == o.headerExtensions && fec == o.fec;
     }
     bool operator!=(const RtpCapabilities &o) const { return !(*this == o); }
 };
@@ -601,7 +600,7 @@ struct RtcpParameters final
     std::string cname;
 
     // Send reduced-size RTCP?
-    bool reduced_size = false;
+    bool reducedSize = false;
 
     // Send RTCP multiplexed on the RTP transport?
     // Not used with PeerConnection senders/receivers
@@ -609,7 +608,7 @@ struct RtcpParameters final
 
     bool operator==(const RtcpParameters &o) const
     {
-        return ssrc == o.ssrc && cname == o.cname && reduced_size == o.reduced_size && mux == o.mux;
+        return ssrc == o.ssrc && cname == o.cname && reducedSize == o.reducedSize && mux == o.mux;
     }
     bool operator!=(const RtcpParameters &o) const { return !(*this == o); }
 };
@@ -632,7 +631,7 @@ struct OCTK_MEDIA_API RtpParameters
 
     std::vector<RtpCodecParameters> codecs;
 
-    std::vector<RtpExtension> header_extensions;
+    std::vector<RtpExtension> headerExtensions;
 
     std::vector<RtpEncodingParameters> encodings;
 
@@ -644,12 +643,12 @@ struct OCTK_MEDIA_API RtpParameters
     // When bandwidth is constrained and the RtpSender needs to choose between
     // degrading resolution or degrading framerate, degradationPreference
     // indicates which is preferred. Only for video tracks.
-    Optional<DegradationPreference> degradation_preference;
+    Optional<DegradationPreference> degradationPreference;
 
     bool operator==(const RtpParameters &o) const
     {
-        return mid == o.mid && codecs == o.codecs && header_extensions == o.header_extensions &&
-               encodings == o.encodings && rtcp == o.rtcp && degradation_preference == o.degradation_preference;
+        return mid == o.mid && codecs == o.codecs && headerExtensions == o.headerExtensions &&
+               encodings == o.encodings && rtcp == o.rtcp && degradationPreference == o.degradationPreference;
     }
     bool operator!=(const RtpParameters &o) const { return !(*this == o); }
 };

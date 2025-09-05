@@ -62,6 +62,7 @@ OCTK_MEDIA_API std::shared_ptr<I420Buffer> ReadI420Buffer(int width, int height,
 
 OCTK_MEDIA_API std::shared_ptr<NV12Buffer> ReadNV12Buffer(int width, int height, FILE *);
 } // namespace utils
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_FRAME_UTILS_HPP
