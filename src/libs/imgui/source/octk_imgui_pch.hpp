@@ -22,20 +22,8 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_IMGUI_CONSTANTS_HPP
-#define _OCTK_IMGUI_CONSTANTS_HPP
+#ifndef _OCTK_IMGUI_PCH_HPP
+#define _OCTK_IMGUI_PCH_HPP
 
-#include <octk_gui_global.hpp>
 
-OCTK_BEGIN_NAMESPACE
-
-namespace constants
-{
-OCTK_STATIC_CONSTANT_STRING(kImGuiApplicationSDLGPU3, "ImGuiApplicationSDLGPU3")
-OCTK_STATIC_CONSTANT_STRING(kImguiApplicationSDLOpenGL3, "ImguiApplicationSDLOpenGL3")
-OCTK_STATIC_CONSTANT_STRING(kImGuiApplicationSDLRenderer3, "ImGuiApplicationSDLRenderer3")
-} // namespace constants
-
-OCTK_END_NAMESPACE
-
-#endif // _OCTK_IMGUI_CONSTANTS_HPP
+#endif // _OCTK_IMGUI_PCH_HPP

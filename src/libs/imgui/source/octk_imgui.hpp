@@ -22,46 +22,25 @@
 **
 ***********************************************************************************************************************/
 
-#include <private/octk_sdl_p.hpp>
-#include <octk_core_config.hpp>
-#include <octk_logging.hpp>
-#include <octk_gui.hpp>
+#ifndef _OCTK_IMGUI_HPP
+#define _OCTK_IMGUI_HPP
 
-#include <SDL3/SDL.h>
-
-#include <mutex>
+#include <octk_imgui_global.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-Gui::Gui() { }
-
-void Gui::init()
+class OCTK_IMGUI_API IMGui
 {
-    SDL::init();
-    OCTK_TRACE() << "Gui::init()";
-}
+public:
+    explicit IMGui();
 
-const char *Gui::version() { return OCTK_VERSION_NAME; }
+    static void init();
 
-const char *Gui::sdlVersion()
-{
-    static std::once_flag once;
-    static char versionBuff[OCTK_LINE_MAX] = {0};
-    std::call_once(
-        once,
-        [=]()
-        {
-            snprintf(versionBuff, OCTK_LINE_MAX, "v%d.%d.%d", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
-        });
-    return versionBuff;
-}
+    static const char *version();
+
+    static const char *sdlVersion();
+};
 
 OCTK_END_NAMESPACE
 
-#include <octk_gui.h>
-
-const char *octk_gui_version() { return octk::Gui::version(); }
-
-const char *octk_sdl_version() { return octk::Gui::sdlVersion(); }
-
-void octk_gui_init() { octk::Gui::init(); }
+#endif // _OCTK_IMGUI_HPP

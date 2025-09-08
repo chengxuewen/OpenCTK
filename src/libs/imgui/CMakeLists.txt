@@ -21,13 +21,19 @@
 #
 ########################################################################################################################
 
-set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib link libraries
+#-----------------------------------------------------------------------------------------------------------------------
 octk_find_package(WrapImGui PROVIDED_TARGETS OCTK3rdparty::WrapImGui)
+octk_find_package(WrapGLFW PROVIDED_TARGETS OCTK3rdparty::WrapGLFW)
+octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
+
+
 #-----------------------------------------------------------------------------------------------------------------------
-# extend lib target
+# Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_internal_extend_target(octk_gui
+octk_add_library(imgui
+	EXCEPTIONS
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
@@ -36,24 +42,34 @@ octk_internal_extend_target(octk_gui
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3_shaders.h
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
-	backends/octk_imgui_application_sdlgpu3.cpp
-	backends/octk_imgui_application_sdlgpu3.hpp
-	backends/octk_imgui_application_sdlrenderer3.cpp
-	backends/octk_imgui_application_sdlrenderer3.hpp
-	octk_imgui_application.cpp
-	octk_imgui_application.hpp
-	octk_imgui_application_p.hpp
-	octk_imgui_constants.hpp
+	source/octk_imgui.cpp
+	source/octk_imgui.hpp
+	source/octk_imgui.h
+	source/octk_imgui_application.cpp
+	source/octk_imgui_application.hpp
+	source/octk_imgui_application_p.hpp
+	source/octk_imgui_application_sdlgpu3.cpp
+	source/octk_imgui_application_sdlgpu3.hpp
+	source/octk_imgui_application_sdlrenderer3.cpp
+	source/octk_imgui_application_sdlrenderer3.hpp
+	source/octk_imgui_constants.hpp
+	source/octk_imgui_global.hpp
+	source/octk_sdl_p.hpp
+	PRECOMPILED_HEADER
+	source/octk_imgui_pch.hpp
 	EXTERNAL_HEADERS_DIRS
 	${OCTKWrapImGui_INSTALL_DIR}/include
 	INCLUDE_DIRECTORIES
 	${OCTKWrapImGui_SOURCE_DIR}/backends
 	${OCTKWrapImGui_SOURCE_DIR}
 	LIBRARIES
+	OCTK3rdparty::WrapGLFW
 	OCTK3rdparty::WrapSDL
+	octk::core_private
 	PUBLIC_LIBRARIES
-	OCTK3rdparty::WrapImGui)
-octk_internal_extend_target(octk_gui
+	OCTK3rdparty::WrapImGui
+	octk::core)
+octk_internal_extend_target(octk_imgui
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
@@ -67,12 +83,19 @@ octk_internal_extend_target(octk_gui
 	CONDITION OCTK_SYSTEM_MAC)
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL 3 QUIET)
-octk_internal_extend_target(octk_gui
+octk_internal_extend_target(octk_imgui
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
-	backends/octk_imgui_application_sdlopengl3.cpp
-	backends/octk_imgui_application_sdlopengl3.hpp
+	source/octk_imgui_application_sdlopengl3.cpp
+	source/octk_imgui_application_sdlopengl3.hpp
 	LIBRARIES
 	OpenGL::GL
 	CONDITION OpenGL_FOUND)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib examples and tests
+#-----------------------------------------------------------------------------------------------------------------------
+octk_add_subdirectory(examples OCTK_BUILD_EXAMPLES)
+octk_add_subdirectory(tests OCTK_BUILD_TESTS)

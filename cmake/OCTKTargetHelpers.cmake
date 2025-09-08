@@ -120,7 +120,7 @@ function(octk_internal_extend_target target)
         # were found via find_package().
         octk_internal_get_all_known_librarys(known_librarys)
 
-        # When a public module depends on a private module (Gui on CorePrivate)
+        # When a public module depends on a private module (IMGui on CorePrivate)
         # make its private module depend on the other private module (GuiPrivate will depend on
         # CorePrivate).
         set(octk_libs_private "")

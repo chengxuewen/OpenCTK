@@ -22,15 +22,20 @@
 **
 ***********************************************************************************************************************/
 
-#include <iostream>
+#ifndef _OCTK_IMGUI_CONSTANTS_HPP
+#define _OCTK_IMGUI_CONSTANTS_HPP
 
-#include <octk_gui.h>
-#include <octk_logging.hpp>
+#include <octk_imgui_global.hpp>
 
-int main()
+OCTK_BEGIN_NAMESPACE
+
+namespace constants
 {
-    std::cout << "exp_gui_version start!" << std::endl;
-    octk_gui_init();
-    OCTK_INFO("octk_gui_version=%s", octk_gui_version());
-    return 0;
-}
+OCTK_STATIC_CONSTANT_STRING(kImGuiApplicationSDLGPU3, "ImGuiApplicationSDLGPU3")
+OCTK_STATIC_CONSTANT_STRING(kImguiApplicationSDLOpenGL3, "ImguiApplicationSDLOpenGL3")
+OCTK_STATIC_CONSTANT_STRING(kImGuiApplicationSDLRenderer3, "ImGuiApplicationSDLRenderer3")
+} // namespace constants
+
+OCTK_END_NAMESPACE
+
+#endif // _OCTK_IMGUI_CONSTANTS_HPP

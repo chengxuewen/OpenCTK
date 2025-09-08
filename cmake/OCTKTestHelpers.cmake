@@ -160,7 +160,7 @@ function(octk_internal_add_test name)
         endif()
 
         # Android requires octk::gui so add it by default for tests, todo
-        #        octk_internal_extend_target("${name}" CONDITION ANDROID PUBLIC_LIBRARIES ${OCTK_CMAKE_EXPORT_NAMESPACE}::Gui)
+        #        octk_internal_extend_target("${name}" CONDITION ANDROID PUBLIC_LIBRARIES ${OCTK_CMAKE_EXPORT_NAMESPACE}::IMGui)
     endif()
 
     # Generate a label in the form tests/auto/foo/bar/tst_baz

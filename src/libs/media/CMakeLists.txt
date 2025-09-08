@@ -207,8 +207,7 @@ octk_add_library(media
 	OCTK3rdparty::WrapLibyuv
 	${OCTK_LIB_LINK_LIBRARIES}
 	PUBLIC_LIBRARIES
-	octk::network
-	octk::gui)
+	octk::network)
 add_subdirectory(source/capture/custom)
 if(OCTK_FEATURE_ENABLE_CAPTURE_DESKTOP)
 	add_subdirectory(source/capture/desktop)

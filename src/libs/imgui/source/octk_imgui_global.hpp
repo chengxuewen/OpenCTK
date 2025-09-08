@@ -22,25 +22,25 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_GUI_HPP
-#define _OCTK_GUI_HPP
+#ifndef _OCTK_IMGUI_GLOBAL_HPP
+#define _OCTK_IMGUI_GLOBAL_HPP
 
-#include <octk_gui_global.hpp>
+#include <octk_global.hpp>
+#include <octk_imgui_config.hpp>
 
-OCTK_BEGIN_NAMESPACE
+/***********************************************************************************************************************
+   OpenCTK Compiler specific cmds for export and import code to DLL
+***********************************************************************************************************************/
+#ifdef OCTK_BUILD_SHARED        // compiled as a dynamic lib.
+#    ifdef OCTK_BUILDING_IMGUI_LIB // defined if we are building the lib
+#        define OCTK_IMGUI_API OCTK_DECLARE_EXPORT
+#    else
+#        define OCTK_IMGUI_API OCTK_DECLARE_IMPORT
+#    endif
+#    define OCTK_IMGUI_HIDDEN OCTK_DECLARE_HIDDEN
+#else // compiled as a static lib.
+#    define OCTK_IMGUI_API
+#    define OCTK_IMGUI_HIDDEN
+#endif
 
-class OCTK_GUI_API Gui
-{
-public:
-    explicit Gui();
-
-    static void init();
-
-    static const char *version();
-
-    static const char *sdlVersion();
-};
-
-OCTK_END_NAMESPACE
-
-#endif // _OCTK_GUI_HPP
+#endif // _OCTK_IMGUI_GLOBAL_HPP

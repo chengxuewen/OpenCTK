@@ -22,55 +22,15 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_GUI_H
-#define _OCTK_GUI_H
+#include <iostream>
 
-#include <stdint.h>
+#include <octk_imgui.h>
+#include <octk_logging.hpp>
 
-#if defined(__GNUC__) && ((100 * __GNUC__ + __GNUC_MINOR__) > 400)
-#   define OCTK_GUI_EXPORT __attribute__((visibility("default")))
-#   define OCTK_GUI_IMPORT __attribute__((visibility("default")))
-#elif defined(__MINGW32__) || defined(_MSC_VER)
-#   define OCTK_GUI_EXPORT __declspec(dllexport)
-#   define OCTK_GUI_IMPORT __declspec(dllimport)
-#elif defined(__clang__)
-#   define OCTK_GUI_EXPORT __attribute__((visibility("default")))
-#   define OCTK_GUI_IMPORT __attribute__((visibility("default")))
-#endif
-
-#ifndef OCTK_BUILD_STATIC // compiled as a dynamic lib.
-#   ifdef OCTK_BUILDING_GUI_LIB    // defined if we are building the lib
-#       define OCTK_GUI_C_API OCTK_GUI_EXPORT
-#   else
-#       define OCTK_GUI_C_API OCTK_GUI_IMPORT
-#   endif
-#else // compiled as a static lib.
-#   define OCTK_GUI_C_API
-#endif
-
-#ifdef _WIN32
-#   ifndef OCTK_NO_STDCALL
-#       define OCTK_GUI_STDCALL __stdcall
-#   else
-#       define OCTK_GUI_STDCALL
-#   endif
-#else // not WIN32
-#   define OCTK_GUI_STDCALL
-#endif
-
-#ifdef  __cplusplus
-extern "C"
+int main()
 {
-#endif
-
-OCTK_GUI_C_API const char *octk_gui_version(void);
-
-OCTK_GUI_C_API const char *octk_sdl_version(void);
-
-OCTK_GUI_C_API void octk_gui_init(void);
-
-#ifdef  __cplusplus
+    std::cout << "exp_gui_version start!" << std::endl;
+    octk_imgui_init();
+    OCTK_INFO("octk_gui_version=%s", octk_imgui_version());
+    return 0;
 }
-#endif
-
-#endif // _OCTK_GUI_H

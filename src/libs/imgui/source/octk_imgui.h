@@ -22,25 +22,55 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_GUI_GLOBAL_HPP
-#define _OCTK_GUI_GLOBAL_HPP
+#ifndef _OCTK_IMGUI_H
+#define _OCTK_IMGUI_H
 
-#include <octk_global.hpp>
-#include <octk_gui_config.hpp>
+#include <stdint.h>
 
-/***********************************************************************************************************************
-   OpenCTK Compiler specific cmds for export and import code to DLL
-***********************************************************************************************************************/
-#ifdef OCTK_BUILD_SHARED        // compiled as a dynamic lib.
-#    ifdef OCTK_BUILDING_GUI_LIB // defined if we are building the lib
-#        define OCTK_GUI_API OCTK_DECLARE_EXPORT
-#    else
-#        define OCTK_GUI_API OCTK_DECLARE_IMPORT
-#    endif
-#    define OCTK_GUI_HIDDEN OCTK_DECLARE_HIDDEN
-#else // compiled as a static lib.
-#    define OCTK_GUI_API
-#    define OCTK_GUI_HIDDEN
+#if defined(__GNUC__) && ((100 * __GNUC__ + __GNUC_MINOR__) > 400)
+#   define OCTK_IMGUI_EXPORT __attribute__((visibility("default")))
+#   define OCTK_IMGUI_IMPORT __attribute__((visibility("default")))
+#elif defined(__MINGW32__) || defined(_MSC_VER)
+#   define OCTK_IMGUI_EXPORT __declspec(dllexport)
+#   define OCTK_IMGUI_IMPORT __declspec(dllimport)
+#elif defined(__clang__)
+#   define OCTK_IMGUI_EXPORT __attribute__((visibility("default")))
+#   define OCTK_IMGUI_IMPORT __attribute__((visibility("default")))
 #endif
 
-#endif // _OCTK_GUI_GLOBAL_HPP
+#ifndef OCTK_BUILD_STATIC // compiled as a dynamic lib.
+#   ifdef OCTK_BUILDING_IMGUI_LIB    // defined if we are building the lib
+#       define OCTK_IMGUI_C_API OCTK_IMGUI_EXPORT
+#   else
+#       define OCTK_IMGUI_C_API OCTK_IMGUI_IMPORT
+#   endif
+#else // compiled as a static lib.
+#   define OCTK_IMGUI_C_API
+#endif
+
+#ifdef _WIN32
+#   ifndef OCTK_NO_STDCALL
+#       define OCTK_IMGUI_STDCALL __stdcall
+#   else
+#       define OCTK_IMGUI_STDCALL
+#   endif
+#else // not WIN32
+#   define OCTK_IMGUI_STDCALL
+#endif
+
+#ifdef  __cplusplus
+extern "C"
+{
+#endif
+
+OCTK_IMGUI_C_API const char *octk_imgui_version(void);
+
+OCTK_IMGUI_C_API const char *octk_sdl_version(void);
+
+OCTK_IMGUI_C_API void octk_imgui_init(void);
+
+#ifdef  __cplusplus
+}
+#endif
+
+#endif // _OCTK_IMGUI_H

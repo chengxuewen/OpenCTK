@@ -22,8 +22,46 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_GUI_PCH_HPP
-#define _OCTK_GUI_PCH_HPP
+#include <private/octk_sdl_p.hpp>
+#include <octk_core_config.hpp>
+#include <octk_logging.hpp>
+#include <octk_imgui.hpp>
 
+#include <SDL3/SDL.h>
 
-#endif // _OCTK_GUI_PCH_HPP
+#include <mutex>
+
+OCTK_BEGIN_NAMESPACE
+
+IMGui::IMGui() { }
+
+void IMGui::init()
+{
+    SDL::init();
+    OCTK_TRACE() << "IMGui::init()";
+}
+
+const char *IMGui::version() { return OCTK_VERSION_NAME; }
+
+const char *IMGui::sdlVersion()
+{
+    static std::once_flag once;
+    static char versionBuff[OCTK_LINE_MAX] = {0};
+    std::call_once(
+        once,
+        [=]()
+        {
+            snprintf(versionBuff, OCTK_LINE_MAX, "v%d.%d.%d", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
+        });
+    return versionBuff;
+}
+
+OCTK_END_NAMESPACE
+
+#include <octk_imgui.h>
+
+const char *octk_imgui_version() { return octk::IMGui::version(); }
+
+const char *octk_sdl_version() { return octk::IMGui::sdlVersion(); }
+
+void octk_imgui_init() { octk::IMGui::init(); }

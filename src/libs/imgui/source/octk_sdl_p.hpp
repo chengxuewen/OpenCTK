@@ -5,7 +5,7 @@
 #ifndef _OCTK_SDL_P_HPP
 #define _OCTK_SDL_P_HPP
 
-#include <octk_gui_global.hpp>
+#include <octk_imgui_global.hpp>
 #include <octk_expected.hpp>
 #include <octk_logging.hpp>
 

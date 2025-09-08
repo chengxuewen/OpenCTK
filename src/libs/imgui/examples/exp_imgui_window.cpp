@@ -3,7 +3,7 @@
 //
 #include <octk_imgui_application.hpp>
 #include <octk_logging.hpp>
-#include <octk_gui.hpp>
+#include <octk_imgui.hpp>
 
 #include <thread>
 

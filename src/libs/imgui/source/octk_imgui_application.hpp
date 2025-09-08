@@ -27,12 +27,12 @@
 
 #include <octk_imgui_constants.hpp>
 #include <octk_string_view.hpp>
-#include <octk_gui_global.hpp>
+#include <octk_imgui_global.hpp>
 #include <octk_optional.hpp>
 #include <octk_memory.hpp>
 #include <octk_assert.hpp>
 
-#define IMGUI_API OCTK_GUI_API
+#define IMGUI_API OCTK_IMGUI_API
 #include <imgui/imgui.h>
 
 #include <functional>
@@ -40,7 +40,7 @@
 OCTK_BEGIN_NAMESPACE
 
 class ImGuiApplicationPrivate;
-class OCTK_GUI_API ImGuiApplication
+class OCTK_IMGUI_API ImGuiApplication
 {
 public:
     using Callback = std::function<void()>;

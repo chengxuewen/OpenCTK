@@ -25,6 +25,10 @@
 # Set example output path
 #-----------------------------------------------------------------------------------------------------------------------
 set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Set example link libraries
+#-----------------------------------------------------------------------------------------------------------------------
 octk_find_package(WrapImGui PROVIDED_TARGETS OCTK3rdparty::WrapImGui)
 octk_find_package(WrapGLFW PROVIDED_TARGETS OCTK3rdparty::WrapGLFW)
 octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
@@ -35,11 +39,31 @@ if(APPLE)
 		"-framework IOKit"
 		"-framework CoreVideo")
 endif()
+list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::imgui)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
+octk_add_executable(octk_imgui_exp_window
+	SOURCES
+	exp_imgui_window.cpp
+	INCLUDE_DIRECTORIES
+	${CMAKE_CURRENT_SOURCE_DIR}
+	LIBRARIES
+	${OCTK_EXAMPLE_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_EXAMPLE_OUTPUT_DIR})
+octk_add_executable(octk_imgui_exp_version
+	SOURCES
+	exp_imgui_version.cpp
+	INCLUDE_DIRECTORIES
+	${CMAKE_CURRENT_SOURCE_DIR}
+	LIBRARIES
+	${OCTK_EXAMPLE_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_EXAMPLE_OUTPUT_DIR})
+
 if(APPLE)
 	octk_add_executable(octk_imgui_exp_apple_metal
 		SOURCES
@@ -248,5 +272,4 @@ if(Vulkan_FOUND)
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
 endif()
-
 

@@ -276,7 +276,7 @@ function(__octk_internal_memoize_values_in_dict target dict_name dict_key values
     # Assigning for library aliases is needed to avoid multiple recomputation of values.
     # Scenario in the context of __octk_internal_walk_libs:
     # 'values' are computed for Core target and memoized to INTERFACE_Core.
-    # When processing Gui, it depends on octk::core, but there are no values for INTERFACE_OCTK::Core.
+    # When processing IMGui, it depends on octk::core, but there are no values for INTERFACE_OCTK::Core.
     set_target_properties(${dict_name} PROPERTIES INTERFACE_${target}_${dict_key} "${values}")
 
     get_target_property(versionless_alias "${target}" "_octk_versionless_alias")
