@@ -21,8 +21,37 @@
 #
 ########################################################################################################################
 
-add_subdirectory(core)
-octk_add_subdirectory(imgui OCTK_ENABLE_LIB_IMGUI)
-octk_add_subdirectory(network OCTK_ENABLE_LIB_NETWORK)
-octk_add_subdirectory(platform OCTK_ENABLE_LIB_PLATFORM)
-octk_add_subdirectory(media OCTK_ENABLE_LIB_MEDIA AND OCTK_ENABLE_LIB_NETWORK)
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib link libraries
+#-----------------------------------------------------------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib target
+#-----------------------------------------------------------------------------------------------------------------------
+octk_add_library(platform
+	EXCEPTIONS
+	SOURCES
+	source/octk_platform.cpp
+	source/octk_platform.hpp
+	source/octk_platform_global.hpp
+	PRECOMPILED_HEADER
+	source/octk_platform_pch.hpp
+	LIBRARIES
+	octk::core_private
+	PUBLIC_LIBRARIES
+	octk::core)
+octk_internal_extend_target(octk_platform
+	PUBLIC_DEFINES
+	NOMINMAX
+	SOURCES
+	source/win/octk_windows_version.cpp
+	source/win/octk_windows_version.hpp
+	CONDITION OCTK_SYSTEM_WIN)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib examples and tests
+#-----------------------------------------------------------------------------------------------------------------------
+octk_add_subdirectory(examples OCTK_BUILD_EXAMPLES)
+octk_add_subdirectory(tests OCTK_BUILD_TESTS)

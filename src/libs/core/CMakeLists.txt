@@ -208,13 +208,6 @@ octk_add_library(core
 	OCTK3rdparty::WrapStringViewLite
 	${OCTK_LIB_LINK_LIBRARIES})
 octk_internal_extend_target(octk_core
-	PUBLIC_DEFINES
-	NOMINMAX
-	SOURCES
-	source/platform/win/octk_windows_version.cpp
-	source/platform/win/octk_windows_version.hpp
-	CONDITION OCTK_SYSTEM_WIN)
-octk_internal_extend_target(octk_core
 	SOURCES
 	source/thread/octk_task_thread.mm
 	source/tools/octk_file_utils.mm

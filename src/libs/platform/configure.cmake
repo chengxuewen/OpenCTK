@@ -20,9 +20,3 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
-
-add_subdirectory(core)
-octk_add_subdirectory(imgui OCTK_ENABLE_LIB_IMGUI)
-octk_add_subdirectory(network OCTK_ENABLE_LIB_NETWORK)
-octk_add_subdirectory(platform OCTK_ENABLE_LIB_PLATFORM)
-octk_add_subdirectory(media OCTK_ENABLE_LIB_MEDIA AND OCTK_ENABLE_LIB_NETWORK)

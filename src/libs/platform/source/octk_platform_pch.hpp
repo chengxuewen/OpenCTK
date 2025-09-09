@@ -1,0 +1,5 @@
+#ifndef _OCTK_PLATFORM_PCH_HPP
+#define _OCTK_PLATFORM_PCH_HPP
+
+
+#endif // _OCTK_PLATFORM_PCH_HPP
