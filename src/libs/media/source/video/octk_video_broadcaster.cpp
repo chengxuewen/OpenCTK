@@ -40,7 +40,7 @@ OCTK_BEGIN_NAMESPACE
 VideoBroadcaster::VideoBroadcaster() = default;
 VideoBroadcaster::~VideoBroadcaster() = default;
 
-void VideoBroadcaster::addOrUpdateSink(VideoSinkInterface<VideoFrame>* sink, const VideoSinkWants& wants)
+void VideoBroadcaster::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
     OCTK_DCHECK(sink != nullptr);
     std::lock_guard<std::mutex> lock(mSinksAndWantsMutex);
@@ -49,19 +49,19 @@ void VideoBroadcaster::addOrUpdateSink(VideoSinkInterface<VideoFrame>* sink, con
         // `Sink` is a new sink, which didn't receive previous frame.
         mPreviousFrameSentToAllSinks = false;
 
-        if (last_constraints_.has_value())
+        if (mLastConstraints.has_value())
         {
             OCTK_INFO() << __func__ << " forwarding stored constraints min_fps "
-                         << last_constraints_->minFps.value_or(-1) << " maxFps "
-                         << last_constraints_->maxFps.value_or(-1);
-            sink->onConstraintsChanged(*last_constraints_);
+                        << mLastConstraints->minFps.value_or(-1) << " maxFps "
+                        << mLastConstraints->maxFps.value_or(-1);
+            sink->onConstraintsChanged(*mLastConstraints);
         }
     }
     VideoSourceBase::addOrUpdateSink(sink, wants);
     UpdateWants();
 }
 
-void VideoBroadcaster::removeSink(VideoSinkInterface<VideoFrame>* sink)
+void VideoBroadcaster::removeSink(VideoSinkInterface<VideoFrame> *sink)
 {
     OCTK_DCHECK(sink != nullptr);
     std::lock_guard<std::mutex> lock(mSinksAndWantsMutex);
@@ -81,11 +81,11 @@ VideoSinkWants VideoBroadcaster::wants() const
     return mCurrentWants;
 }
 
-void VideoBroadcaster::onFrame(const VideoFrame& frame)
+void VideoBroadcaster::onFrame(const VideoFrame &frame)
 {
     std::lock_guard<std::mutex> lock(mSinksAndWantsMutex);
     bool currentFrameWasDiscarded = false;
-    for (auto& sinkPair : sinkPairs())
+    for (auto &sinkPair : this->sinkPairs())
     {
         if (sinkPair.wants.rotationApplied && frame.rotation() != VideoRotation::Angle0)
         {
@@ -101,11 +101,11 @@ void VideoBroadcaster::onFrame(const VideoFrame& frame)
         if (sinkPair.wants.blackFrames)
         {
             VideoFrame blackFrame = VideoFrame::Builder()
-                                         .setVideoFrameBuffer(GetBlackFrameBuffer(frame.width(), frame.height()))
-                                         .setRotation(frame.rotation())
-                                         .setTimestampUSecs(frame.timestampUSecs())
-                                         .setId(frame.id())
-                                         .build();
+                                        .setVideoFrameBuffer(GetBlackFrameBuffer(frame.width(), frame.height()))
+                                        .setRotation(frame.rotation())
+                                        .setTimestampUSecs(frame.timestampUSecs())
+                                        .setId(frame.id())
+                                        .build();
             sinkPair.sink->onFrame(blackFrame);
         }
         else if (!mPreviousFrameSentToAllSinks && frame.hasUpdateRect())
@@ -127,19 +127,19 @@ void VideoBroadcaster::onFrame(const VideoFrame& frame)
 void VideoBroadcaster::onDiscardedFrame()
 {
     std::lock_guard<std::mutex> lock(mSinksAndWantsMutex);
-    for (auto& sinkPair : sinkPairs())
+    for (auto &sinkPair : sinkPairs())
     {
         sinkPair.sink->onDiscardedFrame();
     }
 }
 
-void VideoBroadcaster::processConstraints(const VideoTrackSourceConstraints& constraints)
+void VideoBroadcaster::processConstraints(const VideoTrackSourceConstraints &constraints)
 {
     std::lock_guard<std::mutex> lock(mSinksAndWantsMutex);
     OCTK_INFO() << __func__ << " min_fps " << constraints.minFps.value_or(-1) << " maxFps "
-                 << constraints.maxFps.value_or(-1) << " broadcasting to " << sinkPairs().size() << " sinks.";
-    last_constraints_ = constraints;
-    for (auto& sinkPair : sinkPairs())
+                << constraints.maxFps.value_or(-1) << " broadcasting to " << sinkPairs().size() << " sinks.";
+    mLastConstraints = constraints;
+    for (auto &sinkPair : sinkPairs())
     {
         sinkPair.sink->onConstraintsChanged(constraints);
     }
@@ -161,7 +161,7 @@ void VideoBroadcaster::UpdateWants()
     // this means that there is only a behavioural change when using new
     // api.
     bool ignore_inactive_encoders_old_api = false;
-    for (auto& sink : sinkPairs())
+    for (auto &sink : sinkPairs())
     {
         if (sink.wants.isActive && sink.wants.requestedResolution.has_value())
         {
@@ -170,7 +170,7 @@ void VideoBroadcaster::UpdateWants()
         }
     }
 
-    for (auto& sink : sinkPairs())
+    for (auto &sink : sinkPairs())
     {
         if (!sink.wants.isActive && (sink.wants.requestedResolution || ignore_inactive_encoders_old_api))
         {
@@ -233,16 +233,16 @@ void VideoBroadcaster::UpdateWants()
     mCurrentWants = wants;
 }
 
-const std::shared_ptr<VideoFrameBuffer>& VideoBroadcaster::GetBlackFrameBuffer(int width, int height)
+const std::shared_ptr<VideoFrameBuffer> &VideoBroadcaster::GetBlackFrameBuffer(int width, int height)
 {
-    if (!black_frame_buffer_ || black_frame_buffer_->width() != width || black_frame_buffer_->height() != height)
+    if (!mBlackFrameBuffer || mBlackFrameBuffer->width() != width || mBlackFrameBuffer->height() != height)
     {
         std::shared_ptr<I420Buffer> buffer = I420Buffer::Create(width, height);
         I420Buffer::SetBlack(buffer.get());
-        black_frame_buffer_ = buffer;
+        mBlackFrameBuffer = buffer;
     }
 
-    return black_frame_buffer_;
+    return mBlackFrameBuffer;
 }
 
 OCTK_END_NAMESPACE

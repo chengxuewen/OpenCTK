@@ -22,7 +22,7 @@ struct VideoStream
     VideoStream();
     ~VideoStream();
     VideoStream(const VideoStream &other);
-    std::string ToString() const;
+    std::string toString() const;
 
     // Width/Height in pixels.
     // This is the actual width and height used to configure encoder,
@@ -160,7 +160,7 @@ public:
     VideoEncoderConfig();
     VideoEncoderConfig(VideoEncoderConfig &&);
     ~VideoEncoderConfig();
-    std::string ToString() const;
+    std::string toString() const;
 
     bool HasScaleResolutionDownTo() const;
 

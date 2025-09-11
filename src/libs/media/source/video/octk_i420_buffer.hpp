@@ -105,7 +105,7 @@ public:
 
     // Scale the cropped area of `src` to the size of `this` buffer, and
     // write the result into `this`.
-    void CropAndScaleFrom(const I420BufferInterface &src,
+    void cropAndScaleFrom(const I420BufferInterface &src,
                           int offsetX,
                           int offsetY,
                           int cropWidth,
@@ -113,7 +113,7 @@ public:
 
     // The common case of a center crop, when needed to adjust the
     // aspect ratio without distorting the image.
-    void CropAndScaleFrom(const I420BufferInterface &src);
+    void cropAndScaleFrom(const I420BufferInterface &src);
 
     // Scale all of `src` to the size of `this` buffer, with no cropping.
     void scaleFrom(const I420BufferInterface &src);

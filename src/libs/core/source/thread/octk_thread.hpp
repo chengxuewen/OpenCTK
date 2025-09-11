@@ -50,10 +50,10 @@ public:
         kRealtime,
     };
 
-    struct Attributes
+    struct attributes
     {
         Priority priority = Priority::kNormal;
-        Attributes &SetPriority(Priority p)
+        attributes &SetPriority(Priority p)
         {
             priority = p;
             return *this;

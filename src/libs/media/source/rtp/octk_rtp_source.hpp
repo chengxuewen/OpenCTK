@@ -46,7 +46,7 @@ public:
               RtpSourceType source_type,
               uint32_t rtp_timestamp,
               const RtpSource::Extensions &extensions)
-        : timestamp_(timestamp)
+        : mTimestamp(timestamp)
         , source_id_(source_id)
         , source_type_(source_type)
         , extensions_(extensions)
@@ -58,7 +58,7 @@ public:
     RtpSource &operator=(const RtpSource &) = default;
     ~RtpSource() = default;
 
-    Timestamp timestamp() const { return timestamp_; }
+    Timestamp timestamp() const { return mTimestamp; }
 
     // The identifier of the source can be the CSRC or the SSRC.
     uint32_t source_id() const { return source_id_; }
@@ -78,14 +78,14 @@ public:
 
     bool operator==(const RtpSource &o) const
     {
-        return timestamp_ == o.timestamp() && source_id_ == o.source_id() && source_type_ == o.source_type() &&
+        return mTimestamp == o.timestamp() && source_id_ == o.source_id() && source_type_ == o.source_type() &&
                extensions_.audio_level == o.extensions_.audio_level &&
                extensions_.absolute_capture_time == o.extensions_.absolute_capture_time &&
                rtp_timestamp_ == o.rtp_timestamp();
     }
 
 private:
-    Timestamp timestamp_;
+    Timestamp mTimestamp;
     uint32_t source_id_;
     RtpSourceType source_type_;
     RtpSource::Extensions extensions_;

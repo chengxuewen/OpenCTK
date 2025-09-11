@@ -82,7 +82,7 @@ VideoCodec::VideoCodec()
 {
 }
 
-std::string VideoCodec::ToString() const
+std::string VideoCodec::toString() const
 {
     // char string_buf[2048];
     // rtc::SimpleStringBuilder ss(string_buf);

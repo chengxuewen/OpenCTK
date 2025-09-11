@@ -16,7 +16,7 @@ class BroadcastResourceListener::AdapterResource : public Resource
 {
 public:
     explicit AdapterResource(StringView name)
-        : name_(std::move(name))
+        : mName(std::move(name))
     {
     }
     ~AdapterResource() override { OCTK_DCHECK(!listener_); }
@@ -31,7 +31,7 @@ public:
     }
 
     // Resource implementation.
-    std::string Name() const override { return name_; }
+    std::string Name() const override { return mName; }
     void SetResourceListener(ResourceListener *listener) override
     {
         Mutex::Locker locker(&lock_);
@@ -40,7 +40,7 @@ public:
     }
 
 private:
-    const std::string name_;
+    const std::string mName;
     Mutex lock_;
     ResourceListener *listener_ OCTK_ATTRIBUTE_GUARDED_BY(lock_) = nullptr;
 };

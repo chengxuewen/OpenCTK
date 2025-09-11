@@ -149,7 +149,7 @@ void NV12Buffer::InitializeData()
     memset(data_.get(), 0, NV12DataSize(height_, stride_y_, stride_uv_));
 }
 
-void NV12Buffer::CropAndScaleFrom(const NV12BufferInterface &src,
+void NV12Buffer::cropAndScaleFrom(const NV12BufferInterface &src,
                                   int offsetX,
                                   int offsetY,
                                   int cropWidth,

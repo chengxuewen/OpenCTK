@@ -36,9 +36,44 @@ using Json = nlohmann::json;
 
 namespace utils
 {
-static inline Expected<Json, std::string> parseJson(const std::string &data)
+static OCTK_FORCE_INLINE Expected<Json, std::string> parseJson(const std::string &data)
 {
     return tryCatchCall<Json>([data]() { return Json::parse(data); });
+}
+
+template <typename T> static OCTK_FORCE_INLINE bool parseJsonToVector(const Json &json, std::vector<T> *out = nullptr)
+{
+    if (json.is_array())
+    {
+        if (out)
+        {
+            out->clear();
+            for (const auto &item : json)
+            {
+                auto expected = tryCatchCall<T>([&]() { return item.get<T>(); });
+                if (expected.has_value())
+                {
+                    out->push_back(expected.value());
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+template <typename T> static OCTK_FORCE_INLINE bool readJsonValue(const Json &json, StringView key, T *out = nullptr)
+{
+    const auto iter = json.find(key.data());
+    if (json.end() != iter)
+    {
+        if (out)
+        {
+            *out = iter->get<T>();
+        }
+        return true;
+    }
+    return false;
 }
 } // namespace utils
 

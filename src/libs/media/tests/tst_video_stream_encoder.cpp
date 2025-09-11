@@ -940,7 +940,7 @@ public:
             video_stream_encoder_->Stop();
 
         auto encoder_queue =
-            env_.task_queue_factory().CreateTaskQueue("EncoderQueue", TaskQueueFactory::Priority::NORMAL);
+            env_.taskQueueFactory().CreateTaskQueue("EncoderQueue", TaskQueueFactory::Priority::NORMAL);
         TaskQueue *encoder_queue_ptr = encoder_queue.get();
         std::unique_ptr<FrameCadenceAdapterInterface> cadence_adapter =
             FrameCadenceAdapterInterface::Create(time_controller_.GetClock(),
@@ -1163,7 +1163,7 @@ public:
         void CheckLastTimeStampsMatch(int64_t ntp_time_ms, uint32_t timestamp) const
         {
             MutexLock lock(&local_mutex_);
-            EXPECT_EQ(timestamp_, timestamp);
+            EXPECT_EQ(mTimestamp, timestamp);
             EXPECT_EQ(ntp_time_ms_, ntp_time_ms);
         }
 
@@ -1327,12 +1327,12 @@ public:
                 }
                 else
                 {
-                    EXPECT_GT(input_image.rtp_timestamp(), timestamp_);
+                    EXPECT_GT(input_image.rtp_timestamp(), mTimestamp);
                     EXPECT_GT(input_image.ntp_time_ms(), ntp_time_ms_);
                     EXPECT_EQ(input_image.rtp_timestamp(), input_image.ntp_time_ms() * 90);
                 }
 
-                timestamp_ = input_image.rtp_timestamp();
+                mTimestamp = input_image.rtp_timestamp();
                 ntp_time_ms_ = input_image.ntp_time_ms();
                 last_input_width_ = input_image.width();
                 last_input_height_ = input_image.height();
@@ -1427,7 +1427,7 @@ public:
             kInitialized
         } initialized_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = EncoderState::kUninitialized;
         Event continue_encode_event_;
-        uint32_t timestamp_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = 0;
+        uint32_t mTimestamp OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = 0;
         int64_t ntp_time_ms_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = 0;
         int last_input_width_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = 0;
         int last_input_height_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = 0;

@@ -34,10 +34,11 @@
 
 OCTK_BEGIN_NAMESPACE
 
-// VideoSourceBase is not thread safe. Before using this class, consider using
-// VideoSourceBaseGuarded below instead, which is an identical implementation
-// but applies a sequence checker to help protect internal state.
-// TODO(bugs.webrtc.org/12780): Delete this class.
+/**
+ * VideoSourceBase is not thread safe. Before using this class, consider using VideoSourceBaseGuarded below instead,
+ * which is an identical implementation but applies a sequence checker to help protect internal state.
+ * TODO(bugs.webrtc.org/12780): Delete this class.
+ */
 class VideoSourceBase : public VideoSourceInterface<VideoFrame>
 {
 public:
@@ -60,10 +61,10 @@ protected:
     };
     SinkPair *FindSinkPair(const VideoSinkInterface<VideoFrame> *sink);
 
-    const std::vector<SinkPair> &sinkPairs() const { return sinks_; }
+    const std::vector<SinkPair> &sinkPairs() const { return mSinks; }
 
 private:
-    std::vector<SinkPair> sinks_;
+    std::vector<SinkPair> mSinks;
 };
 
 // VideoSourceBaseGuarded assumes that operations related to sinks, occur on the
@@ -92,12 +93,12 @@ protected:
     SinkPair *FindSinkPair(const VideoSinkInterface<VideoFrame> *sink);
     const std::vector<SinkPair> &sinkPairs() const;
 
-    // Keep the `source_sequence_` checker protected to allow sub classes the
+    // Keep the `mSourceSequence` checker protected to allow sub classes the
     // ability to call Detach() if/when appropriate.
-    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker source_sequence_;
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker mSourceSequence;
 
 private:
-    std::vector<SinkPair> sinks_ OCTK_ATTRIBUTE_GUARDED_BY(&source_sequence_);
+    std::vector<SinkPair> mSinks OCTK_ATTRIBUTE_GUARDED_BY(&mSourceSequence);
 };
 
 OCTK_END_NAMESPACE

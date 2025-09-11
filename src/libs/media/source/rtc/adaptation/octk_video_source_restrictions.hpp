@@ -30,7 +30,7 @@ public:
     }
     bool operator!=(const VideoSourceRestrictions &rhs) const { return !(*this == rhs); }
 
-    std::string ToString() const;
+    std::string toString() const;
 
     // The source must produce a resolution less than or equal to
     // max_pixels_per_frame().

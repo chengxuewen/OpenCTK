@@ -204,7 +204,7 @@ uint16_t *I010Buffer::MutableDataV()
     return const_cast<uint16_t *>(DataV());
 }
 
-void I010Buffer::CropAndScaleFrom(const I010BufferInterface &src,
+void I010Buffer::cropAndScaleFrom(const I010BufferInterface &src,
                                   int offsetX,
                                   int offsetY,
                                   int cropWidth,
@@ -241,6 +241,6 @@ void I010Buffer::CropAndScaleFrom(const I010BufferInterface &src,
 
 void I010Buffer::scaleFrom(const I010BufferInterface &src)
 {
-    CropAndScaleFrom(src, 0, 0, src.width(), src.height());
+    cropAndScaleFrom(src, 0, 0, src.width(), src.height());
 }
 OCTK_END_NAMESPACE

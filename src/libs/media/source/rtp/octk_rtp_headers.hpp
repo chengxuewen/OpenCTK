@@ -181,7 +181,7 @@ struct RTPHeaderExtension
     // See https://tools.ietf.org/html/rfc8843
     std::string mid;
 
-    Optional<ColorSpace> color_space;
+    Optional<ColorSpace> colorSpace;
     Optional<AudioLevel> audioLevel;
 
 // private:

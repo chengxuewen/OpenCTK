@@ -40,7 +40,7 @@ struct VideoAdaptationCounters
 
     VideoAdaptationCounters operator+(const VideoAdaptationCounters &other) const;
 
-    std::string ToString() const;
+    std::string toString() const;
 
     int resolution_adaptations;
     int fps_adaptations;

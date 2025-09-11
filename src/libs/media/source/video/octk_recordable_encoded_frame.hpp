@@ -54,7 +54,7 @@ public:
 
     // Optionally returns the colorspace of the encoded frame. This can differ
     // from the eventually decoded frame's colorspace.
-    virtual Optional<ColorSpace> color_space() const = 0;
+    virtual Optional<ColorSpace> colorSpace() const = 0;
 
     // Returns the codec of the encoded frame
     virtual VideoCodecType codec() const = 0;

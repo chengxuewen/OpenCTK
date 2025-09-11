@@ -197,7 +197,7 @@ void I420Buffer::SetBlack(I420Buffer *buffer)
                                 128) == 0);
 }
 
-void I420Buffer::CropAndScaleFrom(const I420BufferInterface &src,
+void I420Buffer::cropAndScaleFrom(const I420BufferInterface &src,
                                   int offsetX,
                                   int offsetY,
                                   int cropWidth,
@@ -240,13 +240,15 @@ void I420Buffer::CropAndScaleFrom(const I420BufferInterface &src,
     OCTK_DCHECK_EQ(res, 0);
 }
 
-void I420Buffer::CropAndScaleFrom(const I420BufferInterface &src)
+void I420Buffer::cropAndScaleFrom(const I420BufferInterface &src)
 {
-    const int cropWidth = height() > 0 ? std::min(src.width(), width() * src.height() / height()) : src.width();
-    const int cropHeight = width() > 0 ? std::min(src.height(), height() * src.width() / width()) : src.height();
-
-    CropAndScaleFrom(src, (src.width() - cropWidth) / 2, (src.height() - cropHeight) / 2, cropWidth, cropHeight);
+    const auto width = this->width();
+    const auto height = this->height();
+    const int cropWidth = height > 0 ? std::min(src.width(), width * src.height() / height) : src.width();
+    const int cropHeight = width > 0 ? std::min(src.height(), height * src.width() / width) : src.height();
+    this->cropAndScaleFrom(src, (src.width() - cropWidth) / 2, (src.height() - cropHeight) / 2, cropWidth, cropHeight);
 }
 
-void I420Buffer::scaleFrom(const I420BufferInterface &src) { CropAndScaleFrom(src, 0, 0, src.width(), src.height()); }
+void I420Buffer::scaleFrom(const I420BufferInterface &src) { cropAndScaleFrom(src, 0, 0, src.width(), src.height()); }
+
 OCTK_END_NAMESPACE

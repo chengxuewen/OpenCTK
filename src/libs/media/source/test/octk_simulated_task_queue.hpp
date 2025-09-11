@@ -66,7 +66,7 @@ public:
 private:
     sim_time_impl::SimulatedTimeControllerImpl *const handler_;
     // Using char* to be debugger friendly.
-    char *name_;
+    char *mName;
 
     mutable Mutex lock_;
 

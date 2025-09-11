@@ -65,7 +65,7 @@ struct OCTK_MEDIA_API SdpVideoFormat
     bool IsSameCodec(const SdpVideoFormat &other) const;
     bool IsCodecInList(ArrayView<const SdpVideoFormat> formats) const;
 
-    std::string ToString() const;
+    std::string toString() const;
 
     friend OCTK_MEDIA_API bool operator==(const SdpVideoFormat &a, const SdpVideoFormat &b);
     friend OCTK_MEDIA_API bool operator!=(const SdpVideoFormat &a, const SdpVideoFormat &b) { return !(a == b); }

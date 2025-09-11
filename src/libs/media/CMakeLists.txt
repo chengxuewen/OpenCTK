@@ -87,6 +87,13 @@ octk_add_library(media
 	source/rtc/adaptation/octk_video_stream_input_state.hpp
 	source/rtc/octk_dtls_transport_interface.cpp
 	source/rtc/octk_dtls_transport_interface.hpp
+	source/rtc/stats/octk_rtc_stats.cpp
+	source/rtc/stats/octk_rtc_stats.hpp
+	source/rtc/stats/octk_rtc_stats_collector.hpp
+	source/rtc/stats/octk_rtc_stats_objects.cpp
+	source/rtc/stats/octk_rtc_stats_objects.hpp
+	source/rtc/stats/octk_rtc_stats_report.cpp
+	source/rtc/stats/octk_rtc_stats_report.hpp
 	source/rtc/octk_rtc_context.cpp
 	source/rtc/octk_rtc_context.hpp
 	source/rtc/octk_rtc_error.cpp

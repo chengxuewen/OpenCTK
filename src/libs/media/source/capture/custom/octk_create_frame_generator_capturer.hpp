@@ -109,27 +109,27 @@ namespace utils
 {
 OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::SquaresVideo config);
 
 OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::SquareSlides config);
 
 OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::VideoFile config);
 
 OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::ImageSlides config);
 
 OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     const FrameGeneratorCapturerConfig &config);
 } // namespace utils
 OCTK_END_NAMESPACE

@@ -276,7 +276,7 @@ struct OCTK_MEDIA_API RtpExtension
     RtpExtension(StringView uri, int id, bool encrypt);
     ~RtpExtension();
 
-    std::string ToString() const;
+    std::string toString() const;
     bool operator==(const RtpExtension &rhs) const { return uri == rhs.uri && id == rhs.id && encrypt == rhs.encrypt; }
     static bool IsSupportedForAudio(StringView uri);
     static bool IsSupportedForVideo(StringView uri);

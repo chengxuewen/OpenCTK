@@ -72,7 +72,7 @@ public:
 
     // Scale the cropped area of `src` to the size of `this` buffer, and
     // write the result into `this`.
-    void CropAndScaleFrom(const I010BufferInterface &src,
+    void cropAndScaleFrom(const I010BufferInterface &src,
                           int offsetX,
                           int offsetY,
                           int cropWidth,

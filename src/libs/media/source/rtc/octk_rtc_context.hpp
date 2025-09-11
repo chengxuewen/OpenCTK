@@ -83,7 +83,7 @@ public:
 
     // Provides a factory for task queues, WebRTC threading primitives.
     // See ../../g3doc/implementation_basics.md#threads
-    TaskQueueFactory &task_queue_factory() const;
+    TaskQueueFactory &taskQueueFactory() const;
 
     // Provides an interface for collecting structured logs.
     // See ../../logging/g3doc/rtc_event_log.md
@@ -94,12 +94,12 @@ private:
     RtcContext(ScopedRefPtr<const RefCountedBase> storage,
                Nonnull<const FieldTrialsView *> field_trials,
                Nonnull<Clock *> clock,
-               Nonnull<TaskQueueFactory *> task_queue_factory,
+               Nonnull<TaskQueueFactory *> taskQueueFactory,
                Nonnull<RtcEventLog *> event_log)
         : storage_(std::move(storage))
         , field_trials_(field_trials)
         , clock_(clock)
-        , task_queue_factory_(task_queue_factory)
+        , task_queue_factory_(taskQueueFactory)
         , event_log_(event_log)
     {
     }
@@ -126,7 +126,7 @@ inline const FieldTrialsView &RtcContext::field_trials() const { return *field_t
 
 inline Clock &RtcContext::clock() const { return *clock_; }
 
-inline TaskQueueFactory &RtcContext::task_queue_factory() const { return *task_queue_factory_; }
+inline TaskQueueFactory &RtcContext::taskQueueFactory() const { return *task_queue_factory_; }
 
 inline RtcEventLog &RtcContext::event_log() const { return *event_log_; }
 
@@ -145,7 +145,7 @@ inline RtcEventLog &RtcContext::event_log() const { return *event_log_; }
 //    factory.Set(std::make_unique<CustomFieldTrials>());
 //    RtcContext custom_env = factory.Create();
 //
-class OCTK_CORE_API RtcContextFactory final
+class OCTK_MEDIA_API RtcContextFactory final
 {
 public:
     RtcContextFactory() = default;

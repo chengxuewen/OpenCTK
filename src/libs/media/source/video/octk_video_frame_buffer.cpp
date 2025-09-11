@@ -40,7 +40,7 @@ std::shared_ptr<VideoFrameBuffer> VideoFrameBuffer::CropAndScale(int offsetX, in
                                                                  int cropHeight, int scaled_width, int scaled_height)
 {
     std::shared_ptr<I420Buffer> result = I420Buffer::Create(scaled_width, scaled_height);
-    result->CropAndScaleFrom(*this->ToI420(), offsetX, offsetY, cropWidth, cropHeight);
+    result->cropAndScaleFrom(*this->ToI420(), offsetX, offsetY, cropWidth, cropHeight);
     return result;
 }
 
@@ -150,7 +150,7 @@ std::shared_ptr<VideoFrameBuffer> I444BufferInterface::CropAndScale(int offsetX,
                                                                     int scaled_height)
 {
     std::shared_ptr<I444Buffer> result = I444Buffer::Create(scaled_width, scaled_height);
-    result->CropAndScaleFrom(*this, offsetX, offsetY, cropWidth, cropHeight);
+    result->cropAndScaleFrom(*this, offsetX, offsetY, cropWidth, cropHeight);
     return result;
 }
 
@@ -165,7 +165,7 @@ std::shared_ptr<VideoFrameBuffer> I422BufferInterface::CropAndScale(int offsetX,
                                                                     int scaled_height)
 {
     std::shared_ptr<I422Buffer> result = I422Buffer::Create(scaled_width, scaled_height);
-    result->CropAndScaleFrom(*this, offsetX, offsetY, cropWidth, cropHeight);
+    result->cropAndScaleFrom(*this, offsetX, offsetY, cropWidth, cropHeight);
     return result;
 }
 
@@ -198,7 +198,7 @@ std::shared_ptr<VideoFrameBuffer> NV12BufferInterface::CropAndScale(int offsetX,
                                                                     int scaled_height)
 {
     std::shared_ptr<NV12Buffer> result = NV12Buffer::Create(scaled_width, scaled_height);
-    result->CropAndScaleFrom(*this, offsetX, offsetY, cropWidth, cropHeight);
+    result->cropAndScaleFrom(*this, offsetX, offsetY, cropWidth, cropHeight);
     return result;
 }
 

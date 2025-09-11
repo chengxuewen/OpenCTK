@@ -150,7 +150,7 @@ uint8_t *I444Buffer::MutableDataY() { return const_cast<uint8_t *>(DataY()); }
 uint8_t *I444Buffer::MutableDataU() { return const_cast<uint8_t *>(DataU()); }
 uint8_t *I444Buffer::MutableDataV() { return const_cast<uint8_t *>(DataV()); }
 
-void I444Buffer::CropAndScaleFrom(const I444BufferInterface &src, int offsetX, int offsetY, int cropWidth,
+void I444Buffer::cropAndScaleFrom(const I444BufferInterface &src, int offsetX, int offsetY, int cropWidth,
                                   int cropHeight)
 {
     OCTK_CHECK_LE(cropWidth, src.width());

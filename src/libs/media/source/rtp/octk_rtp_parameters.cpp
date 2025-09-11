@@ -154,7 +154,7 @@ RtpParameters::RtpParameters() = default;
 RtpParameters::RtpParameters(const RtpParameters &rhs) = default;
 RtpParameters::~RtpParameters() = default;
 
-std::string RtpExtension::ToString() const
+std::string RtpExtension::toString() const
 {
     char buf[256];
     std::stringstream ss;

@@ -164,7 +164,7 @@ SdpVideoFormat &SdpVideoFormat::operator=(SdpVideoFormat &&) = default;
 
 SdpVideoFormat::~SdpVideoFormat() = default;
 
-std::string SdpVideoFormat::ToString() const
+std::string SdpVideoFormat::toString() const
 {
     // rtc::StringBuilder builder;
     std::stringstream ss;
@@ -300,11 +300,11 @@ Optional<SdpVideoFormat> FuzzyMatchSdpVideoFormat(ArrayView<const SdpVideoFormat
 
     if (!res)
     {
-        OCTK_INFO() << "Failed to match SdpVideoFormat " << format.ToString();
+        OCTK_INFO() << "Failed to match SdpVideoFormat " << format.toString();
     }
     else if (*res != format)
     {
-        OCTK_INFO() << "Matched SdpVideoFormat " << format.ToString() << " with " << res->ToString();
+        OCTK_INFO() << "Matched SdpVideoFormat " << format.toString() << " with " << res->toString();
     }
 
     return res;

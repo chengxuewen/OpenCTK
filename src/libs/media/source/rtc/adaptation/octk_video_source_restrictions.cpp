@@ -27,7 +27,7 @@ VideoSourceRestrictions::VideoSourceRestrictions(Optional<size_t> max_pixels_per
     OCTK_DCHECK(!max_frame_rate_.has_value() || max_frame_rate_.value() > 0.0);
 }
 
-std::string VideoSourceRestrictions::ToString() const
+std::string VideoSourceRestrictions::toString() const
 {
     // rtc::StringBuilder ss;
     std::stringstream ss;

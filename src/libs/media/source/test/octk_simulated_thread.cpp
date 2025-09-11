@@ -54,16 +54,16 @@ SimulatedThread::SimulatedThread(sim_time_impl::SimulatedTimeControllerImpl *han
                                  StringView name,
                                  std::unique_ptr<SocketServer> socket_server)
     : TaskThread(socket_server ? std::move(socket_server)
-                               : utils::make_unique<DummySocketServer>()), handler_(handler), name_(
+                               : utils::make_unique<DummySocketServer>()), handler_(handler), mName(
     new char[name.size()])
 {
-    std::copy_n(name.begin(), name.size(), name_);
+    std::copy_n(name.begin(), name.size(), mName);
 }
 
 SimulatedThread::~SimulatedThread()
 {
     handler_->Unregister(this);
-    delete[] name_;
+    delete[] mName;
 }
 
 void SimulatedThread::RunReady(Timestamp at_time)

@@ -61,7 +61,11 @@ OCTK_BEGIN_NAMESPACE
 // Note that ScopedRefPtr depends on compile-time duck-typing; formally
 // implementing the below RefCountInterface is not required.
 
-enum class RefCountReleaseStatus { kDroppedLastRef, kOtherRefsRemained };
+enum class RefCountReleaseStatus
+{
+    kDroppedLastRef,
+    kOtherRefsRemained
+};
 
 // Interfaces where refcounting is part of the public api should
 // inherit this abstract interface. The implementation of these
@@ -76,7 +80,7 @@ public:
     // Non-public destructor, because Release() has exclusive responsibility for
     // destroying the object.
 protected:
-    virtual ~RefCountInterface() {}
+    virtual ~RefCountInterface() { }
 };
 
 namespace internal
@@ -84,7 +88,10 @@ namespace internal
 class RefCounter
 {
 public:
-    explicit RefCounter(int ref_count) : ref_count_(ref_count) {}
+    explicit RefCounter(int ref_count)
+        : ref_count_(ref_count)
+    {
+    }
     RefCounter() = delete;
 
     void IncRef()
@@ -134,7 +141,7 @@ public:
 private:
     std::atomic<int> ref_count_;
 };
-}  // namespace internal
+} // namespace internal
 
 class RefCountedBase
 {
@@ -179,8 +186,7 @@ private:
 //
 // sizeof(MyInt) on a 32 bit system would then be 8, int + refcount and no
 // vtable generated.
-template <typename T>
-class RefCountedNonVirtual
+template <typename T> class RefCountedNonVirtual
 {
 public:
     RefCountedNonVirtual() = default;
@@ -198,8 +204,7 @@ public:
         // 2) The virtual methods are a part of the design of the class. In this
         //    case you can consider using `RefCountedBase` instead or alternatively
         //    use `rtc::RefCountedObject`.
-        static_assert(!std::is_polymorphic<T>::value,
-                      "T has virtual methods. RefCountedBase is a better fit.");
+        static_assert(!std::is_polymorphic<T>::value, "T has virtual methods. RefCountedBase is a better fit.");
         const auto status = ref_count_.DecRef();
         if (status == RefCountReleaseStatus::kDroppedLastRef)
         {
@@ -218,6 +223,7 @@ protected:
 private:
     mutable internal::RefCounter ref_count_{0};
 };
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_REF_COUNT_HPP

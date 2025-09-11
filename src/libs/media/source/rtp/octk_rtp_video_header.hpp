@@ -105,7 +105,7 @@ struct RTPVideoHeader
 
     Optional<VideoPlayoutDelay> playout_delay;
     VideoSendTiming video_timing;
-    Optional<ColorSpace> color_space;
+    Optional<ColorSpace> colorSpace;
     // This field is meant for media quality testing purpose only. When enabled it
     // carries the webrtc::VideoFrame id field from the sender to the receiver.
     Optional<uint16_t> video_frame_tracking_id;

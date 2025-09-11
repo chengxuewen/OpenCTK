@@ -197,7 +197,7 @@ public:
 
     bool operator==(const VideoCodec &other) const = delete;
     bool operator!=(const VideoCodec &other) const = delete;
-    std::string ToString() const;
+    std::string toString() const;
 
     // Accessors for codec specific information.
     // There is a const version of each that returns a reference,

@@ -120,8 +120,8 @@ bool ImGuiApplicationSDLGPU3::init()
         d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 
         // Setup Dear ImGui style
-        ImGui::StyleColorsDark();
-        //ImGui::StyleColorsLight();
+        // ImGui::StyleColorsDark();
+        ImGui::StyleColorsLight();
 
         // Setup scaling
         ImGuiStyle &style = ImGui::GetStyle();

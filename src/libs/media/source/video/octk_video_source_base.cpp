@@ -22,15 +22,10 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_checks.hpp>
 #include <octk_video_source_base.hpp>
-
-// #include <absl/algorithm/container.h>
+#include <octk_checks.hpp>
 
 #include <algorithm>
-
-// #include "absl/algorithm/container.h"
-// #include "rtc_base/checks.h"
 
 OCTK_BEGIN_NAMESPACE
 
@@ -41,14 +36,14 @@ void VideoSourceBase::addOrUpdateSink(VideoSinkInterface<VideoFrame>* sink, cons
 {
     OCTK_DCHECK(sink != nullptr);
 
-    SinkPair* sink_pair = FindSinkPair(sink);
-    if (!sink_pair)
+    SinkPair* sinkPair = FindSinkPair(sink);
+    if (!sinkPair)
     {
-        sinks_.push_back(SinkPair(sink, wants));
+        mSinks.push_back(SinkPair(sink, wants));
     }
     else
     {
-        sink_pair->wants = wants;
+        sinkPair->wants = wants;
     }
 }
 
@@ -56,19 +51,19 @@ void VideoSourceBase::removeSink(VideoSinkInterface<VideoFrame>* sink)
 {
     OCTK_DCHECK(sink != nullptr);
     OCTK_DCHECK(FindSinkPair(sink));
-    sinks_.erase(std::remove_if(sinks_.begin(), sinks_.end(),
+    mSinks.erase(std::remove_if(mSinks.begin(), mSinks.end(),
                                 [sink](const SinkPair& sink_pair) { return sink_pair.sink == sink; }),
-                 sinks_.end());
+                 mSinks.end());
 }
 
 VideoSourceBase::SinkPair* VideoSourceBase::FindSinkPair(const VideoSinkInterface<VideoFrame>* sink)
 {
-    //    auto sink_pair_it = absl::c_find_if(sinks_,
-    //                                        [sink](const SinkPair &sink_pair) { return sink_pair.sink == sink; });
-    //    if (sink_pair_it != sinks_.end())
-    //    {
-    //        return &*sink_pair_it;
-    //    }
+    auto iter = std::find_if(mSinks.begin(), mSinks.end(),
+                                        [sink](const SinkPair &sinkPair) { return sinkPair.sink == sink; });
+    if (iter != mSinks.end())
+    {
+        return &*iter;
+    }
     return nullptr;
 }
 
@@ -77,13 +72,13 @@ VideoSourceBaseGuarded::~VideoSourceBaseGuarded() = default;
 
 void VideoSourceBaseGuarded::addOrUpdateSink(VideoSinkInterface<VideoFrame>* sink, const VideoSinkWants& wants)
 {
-    //    OCTK_DCHECK_RUN_ON(&source_sequence_);
+    OCTK_DCHECK_RUN_ON(&mSourceSequence);
     OCTK_DCHECK(sink != nullptr);
 
     SinkPair* sink_pair = FindSinkPair(sink);
     if (!sink_pair)
     {
-        sinks_.push_back(SinkPair(sink, wants));
+        mSinks.push_back(SinkPair(sink, wants));
     }
     else
     {
@@ -93,30 +88,30 @@ void VideoSourceBaseGuarded::addOrUpdateSink(VideoSinkInterface<VideoFrame>* sin
 
 void VideoSourceBaseGuarded::removeSink(VideoSinkInterface<VideoFrame>* sink)
 {
-    //    OCTK_DCHECK_RUN_ON(&source_sequence_);
+    OCTK_DCHECK_RUN_ON(&mSourceSequence);
     OCTK_DCHECK(sink != nullptr);
     OCTK_DCHECK(FindSinkPair(sink));
-    sinks_.erase(std::remove_if(sinks_.begin(), sinks_.end(),
+    mSinks.erase(std::remove_if(mSinks.begin(), mSinks.end(),
                                 [sink](const SinkPair& sink_pair) { return sink_pair.sink == sink; }),
-                 sinks_.end());
+                 mSinks.end());
 }
 
 VideoSourceBaseGuarded::SinkPair* VideoSourceBaseGuarded::FindSinkPair(const VideoSinkInterface<VideoFrame>* sink)
 {
-    //    OCTK_DCHECK_RUN_ON(&source_sequence_);
-    //    auto sink_pair_it = absl::c_find_if(sinks_,
-    //                                        [sink](const SinkPair &sink_pair) { return sink_pair.sink == sink; });
-    //    if (sink_pair_it != sinks_.end())
-    //    {
-    //        return &*sink_pair_it;
-    //    }
+    OCTK_DCHECK_RUN_ON(&mSourceSequence);
+    auto iter = std::find_if(mSinks.begin(), mSinks.end(),
+                                        [sink](const SinkPair &sinkPair) { return sinkPair.sink == sink; });
+    if (iter != mSinks.end())
+    {
+        return &*iter;
+    }
     return nullptr;
 }
 
 const std::vector<VideoSourceBaseGuarded::SinkPair>& VideoSourceBaseGuarded::sinkPairs() const
 {
-    //  OCTK_DCHECK_RUN_ON(&source_sequence_);
-    return sinks_;
+    OCTK_DCHECK_RUN_ON(&mSourceSequence);
+    return mSinks;
 }
 
 OCTK_END_NAMESPACE

@@ -216,7 +216,7 @@ uint16_t *I410Buffer::MutableDataV()
     return const_cast<uint16_t *>(DataV());
 }
 
-void I410Buffer::CropAndScaleFrom(const I410BufferInterface &src,
+void I410Buffer::cropAndScaleFrom(const I410BufferInterface &src,
                                   int offsetX,
                                   int offsetY,
                                   int cropWidth,
@@ -247,6 +247,6 @@ void I410Buffer::CropAndScaleFrom(const I410BufferInterface &src,
 
 void I410Buffer::scaleFrom(const I410BufferInterface &src)
 {
-    CropAndScaleFrom(src, 0, 0, src.width(), src.height());
+    cropAndScaleFrom(src, 0, 0, src.width(), src.height());
 }
 OCTK_END_NAMESPACE

@@ -28,10 +28,14 @@
 #include <octk_global.hpp>
 #include <octk_core_config.hpp>
 
+#if OCTK_CC_CPP17_OR_GREATER
+#    include <optional>
+#endif
+
 #if OCTK_FEATURE_USE_OPTIONAL_LITE
-#   include <nonstd/optional.hpp>
+#    include <nonstd/optional.hpp>
 #else
-#   include <tl/optional.hpp>
+#    include <tl/optional.hpp>
 #endif
 
 OCTK_BEGIN_NAMESPACE
@@ -62,6 +66,7 @@ using tl::make_optional;
 } // namespace utils
 
 #endif
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_OPTIONAL_HPP

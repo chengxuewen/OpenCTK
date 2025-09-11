@@ -74,7 +74,7 @@ public:
     }
 
     FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorInterface> frameGenerator,
-                                           int target_fps,
+                                           int targetFps,
                                            Clock *clock,
                                            bool is_screencast)
         : VideoTrackSource(false /* remote */)
@@ -83,7 +83,7 @@ public:
     {
         video_capturer_ = utils::make_unique<FrameGeneratorCapturer>(clock,
                                                                      std::move(frameGenerator),
-                                                                     target_fps,
+                                                                     targetFps,
                                                                      *task_queue_factory_);
         video_capturer_->init();
     }

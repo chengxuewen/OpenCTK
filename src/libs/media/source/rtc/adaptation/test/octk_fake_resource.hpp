@@ -19,7 +19,7 @@ public:
 
     explicit FakeResource(StringView name)
         : Resource()
-        , name_(name)
+        , mName(name)
         , listener_(nullptr)
     {
     }
@@ -34,11 +34,11 @@ public:
     }
 
     // Resource implementation.
-    std::string Name() const override { return name_; }
+    std::string Name() const override { return mName; }
     void SetResourceListener(ResourceListener *listener) override { listener_ = listener; }
 
 private:
-    const std::string name_;
+    const std::string mName;
     ResourceListener *listener_;
 };
 

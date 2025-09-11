@@ -25,24 +25,15 @@
 #ifndef _OCTK_VIDEO_ADAPTER_HPP
 #define _OCTK_VIDEO_ADAPTER_HPP
 
-#include <octk_media_global.hpp>
+#include <octk_video_source_interface.hpp>
 #include <octk_framerate_controller.hpp>
 #include <octk_video_resolution.hpp>
-#include <octk_video_source_interface.hpp>
 #include <octk_optional.hpp>
 
 #include <utility>
 #include <cstdint>
 #include <string>
 #include <mutex>
-//
-// #include "api/video/resolution.h"
-// #include "api/video/video_source_interface.h"
-// #include "common_video/framerate_controller.h"
-// #include "media/base/video_common.h"
-// #include "rtc_base/synchronization/mutex.h"
-// #include "rtc_base/system/rtc_export.h"
-// #include "rtc_base/thread_annotations.h"
 
 OCTK_BEGIN_NAMESPACE
 

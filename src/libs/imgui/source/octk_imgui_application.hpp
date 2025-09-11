@@ -37,6 +37,12 @@
 
 #include <functional>
 
+namespace ImGui
+{
+OCTK_IMGUI_API void StyleColorsCinder(ImGuiStyle *dst = NULL);
+OCTK_IMGUI_API void StyleColorsSpectrum(ImGuiStyle *dst = NULL);
+} // namespace ImGui
+
 OCTK_BEGIN_NAMESPACE
 
 class ImGuiApplicationPrivate;

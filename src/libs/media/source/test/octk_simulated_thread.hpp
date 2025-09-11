@@ -67,7 +67,7 @@ public:
 private:
     sim_time_impl::SimulatedTimeControllerImpl *const handler_;
     // Using char* to be debugger friendly.
-    char *name_;
+    char *mName;
     mutable Mutex lock_;
     Timestamp next_run_time_ OCTK_ATTRIBUTE_GUARDED_BY(lock_) = Timestamp::PlusInfinity();
 };

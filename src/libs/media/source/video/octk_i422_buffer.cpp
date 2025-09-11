@@ -232,7 +232,7 @@ uint8_t *I422Buffer::MutableDataV()
     return const_cast<uint8_t *>(DataV());
 }
 
-void I422Buffer::CropAndScaleFrom(const I422BufferInterface &src,
+void I422Buffer::cropAndScaleFrom(const I422BufferInterface &src,
                                   int offsetX,
                                   int offsetY,
                                   int cropWidth,

@@ -56,18 +56,18 @@ namespace utils
 {
 std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::SquaresVideo config)
 {
     return utils::make_unique<FrameGeneratorCapturer>(
         clock,
         utils::CreateSquareFrameGenerator(config.width, config.height,
                                           config.pixel_format, config.num_squares),
-        config.framerate, task_queue_factory);
+        config.framerate, taskQueueFactory);
 }
 std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::SquareSlides config)
 {
     return utils::make_unique<FrameGeneratorCapturer>(
@@ -76,11 +76,11 @@ std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
             config.width, config.height,
             /*frame_repeat_count*/ config.change_interval.seconds<double>() *
                                    config.framerate),
-        config.framerate, task_queue_factory);
+        config.framerate, taskQueueFactory);
 }
 std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::VideoFile config)
 {
     OCTK_CHECK(config.width && config.height);
@@ -89,12 +89,12 @@ std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
         utils::CreateFromYuvFileFrameGenerator({TransformFilePath(config.name)},
                                                config.width, config.height,
             /*frame_repeat_count*/ 1),
-        config.framerate, task_queue_factory);
+        config.framerate, taskQueueFactory);
 }
 
 std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     FrameGeneratorCapturerConfig::ImageSlides config)
 {
     std::unique_ptr<FrameGeneratorInterface> slides_generator;
@@ -125,32 +125,32 @@ std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
                                    config.framerate);
     }
     return utils::make_unique<FrameGeneratorCapturer>(
-        clock, std::move(slides_generator), config.framerate, task_queue_factory);
+        clock, std::move(slides_generator), config.framerate, taskQueueFactory);
 }
 
 std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &task_queue_factory,
+    TaskQueueFactory &taskQueueFactory,
     const FrameGeneratorCapturerConfig &config)
 {
     if (config.video_file)
     {
-        return CreateFrameGeneratorCapturer(clock, task_queue_factory,
+        return CreateFrameGeneratorCapturer(clock, taskQueueFactory,
                                             *config.video_file);
     }
     else if (config.image_slides)
     {
-        return CreateFrameGeneratorCapturer(clock, task_queue_factory,
+        return CreateFrameGeneratorCapturer(clock, taskQueueFactory,
                                             *config.image_slides);
     }
     else if (config.squares_slides)
     {
-        return CreateFrameGeneratorCapturer(clock, task_queue_factory,
+        return CreateFrameGeneratorCapturer(clock, taskQueueFactory,
                                             *config.squares_slides);
     }
     else
     {
-        return CreateFrameGeneratorCapturer(clock, task_queue_factory,
+        return CreateFrameGeneratorCapturer(clock, taskQueueFactory,
                                             config.squares_video.value_or(
                                                 FrameGeneratorCapturerConfig::SquaresVideo()));
     }

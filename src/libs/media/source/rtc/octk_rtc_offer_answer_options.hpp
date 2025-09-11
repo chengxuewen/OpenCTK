@@ -30,7 +30,7 @@
 OCTK_BEGIN_NAMESPACE
 
 // See: https://www.w3.org/TR/webrtc/#idl-def-rtcofferansweroptions
-struct OCTK_MEDIA_API RTCOfferAnswerOptions
+struct OCTK_MEDIA_API RtcOfferAnswerOptions
 {
     OCTK_STATIC_CONSTANT_NUMBER(kUndefined, -1)
     OCTK_STATIC_CONSTANT_NUMBER(kUnkMaxOfferToReceiveMediadefined, 1)
@@ -68,9 +68,9 @@ struct OCTK_MEDIA_API RTCOfferAnswerOptions
     // If false: Use SDP format from draft-ietf-mmusic-sdp-sdp-26 or later
     bool useObsoleteSctpSdp = false;
 
-    RTCOfferAnswerOptions() = default;
+    RtcOfferAnswerOptions() = default;
 
-    RTCOfferAnswerOptions(int offer_to_receive_video,
+    RtcOfferAnswerOptions(int offer_to_receive_video,
                           int offer_to_receive_audio,
                           bool voice_activity_detection,
                           bool ice_restart,

@@ -194,7 +194,7 @@ uint16_t *I210Buffer::MutableDataV()
     return const_cast<uint16_t *>(DataV());
 }
 
-void I210Buffer::CropAndScaleFrom(const I210BufferInterface &src,
+void I210Buffer::cropAndScaleFrom(const I210BufferInterface &src,
                                   int offsetX,
                                   int offsetY,
                                   int cropWidth,
@@ -232,6 +232,6 @@ void I210Buffer::CropAndScaleFrom(const I210BufferInterface &src,
 
 void I210Buffer::scaleFrom(const I210BufferInterface &src)
 {
-    CropAndScaleFrom(src, 0, 0, src.width(), src.height());
+    cropAndScaleFrom(src, 0, 0, src.width(), src.height());
 }
 OCTK_END_NAMESPACE

@@ -49,7 +49,7 @@ void EncodedFrame::CopyCodecSpecific(const RTPVideoHeader *header)
         {
             case kVideoCodecVP8:
             {
-                const auto &vp8_header = octk::get<RTPVideoHeaderVP8>(header->video_type_header);
+                const auto &vp8_header = utils::get<RTPVideoHeaderVP8>(header->video_type_header);
                 if (_codecSpecificInfo.codecType != kVideoCodecVP8)
                 {
                     // This is the first packet for this frame.
@@ -72,7 +72,7 @@ void EncodedFrame::CopyCodecSpecific(const RTPVideoHeader *header)
             }
             case kVideoCodecVP9:
             {
-                const auto &vp9_header = octk::get<RTPVideoHeaderVP9>(header->video_type_header);
+                const auto &vp9_header = utils::get<RTPVideoHeaderVP9>(header->video_type_header);
                 if (_codecSpecificInfo.codecType != kVideoCodecVP9)
                 {
                     // This is the first packet for this frame.

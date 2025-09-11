@@ -34,7 +34,6 @@
 #include <mutex>
 
 OCTK_BEGIN_NAMESPACE
-
 /**
  * @brief VideoBroadcaster broadcast video frames to sinks and combines VideoSinkWants from its sinks.
  * @details It does that by implementing VideoSourceInterface and VideoSinkInterface.
@@ -84,14 +83,14 @@ public:
 protected:
     void UpdateWants() OCTK_ATTRIBUTE_EXCLUSIVE_LOCKS_REQUIRED(mSinksAndWantsMutex);
     const std::shared_ptr<VideoFrameBuffer> &GetBlackFrameBuffer(int width, int height)
-        OCTK_ATTRIBUTE_EXCLUSIVE_LOCKS_REQUIRED(mSinksAndWantsMutex);
+    OCTK_ATTRIBUTE_EXCLUSIVE_LOCKS_REQUIRED(mSinksAndWantsMutex);
 
     mutable std::mutex mSinksAndWantsMutex;
 
     VideoSinkWants mCurrentWants OCTK_ATTRIBUTE_GUARDED_BY(mSinksAndWantsMutex);
-    std::shared_ptr<VideoFrameBuffer> black_frame_buffer_;
+    std::shared_ptr<VideoFrameBuffer> mBlackFrameBuffer;
     bool mPreviousFrameSentToAllSinks OCTK_ATTRIBUTE_GUARDED_BY(mSinksAndWantsMutex) = true;
-    Optional<VideoTrackSourceConstraints> last_constraints_ OCTK_ATTRIBUTE_GUARDED_BY(mSinksAndWantsMutex);
+    Optional <VideoTrackSourceConstraints> mLastConstraints OCTK_ATTRIBUTE_GUARDED_BY(mSinksAndWantsMutex);
 };
 
 OCTK_END_NAMESPACE

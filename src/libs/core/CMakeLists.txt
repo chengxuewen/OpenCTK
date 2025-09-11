@@ -69,6 +69,11 @@ octk_add_library(core
 	source/memory/octk_aligned_malloc.cpp
 	source/memory/octk_aligned_malloc.hpp
 	source/memory/octk_memory.hpp
+	source/memory/octk_nullability.hpp
+	source/memory/octk_ref_count.hpp
+	source/memory/octk_ref_counted_object.hpp
+	source/memory/octk_ref_ptr.hpp
+	source/memory/octk_scoped_refptr.hpp
 	source/memory/octk_shared_memory.cpp
 	source/memory/octk_shared_memory.hpp
 	source/memory/octk_zero_memory.cpp
@@ -161,11 +166,8 @@ octk_add_library(core
 	source/tools/octk_optional.hpp
 	source/tools/octk_random.cpp
 	source/tools/octk_random.hpp
-	source/tools/octk_ref_count.hpp
-	source/tools/octk_ref_counted_object.hpp
 	source/tools/octk_result.hpp
 	source/tools/octk_scope_guard.hpp
-	source/tools/octk_scoped_refptr.hpp
 	source/tools/octk_shared_buffer.cpp
 	source/tools/octk_shared_buffer.hpp
 	source/tools/octk_source_location.hpp

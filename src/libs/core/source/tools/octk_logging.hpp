@@ -33,6 +33,8 @@
 #include <vector>
 #include <string>
 
+#define OCTK_LOGGING_BUFFER_SIZE_MAX 102400 // 100kb
+
 OCTK_BEGIN_NAMESPACE
 
 enum class LogLevel : int

@@ -152,7 +152,7 @@ public:
     void setSpatialLayerFrameSize(int spatial_index, size_t size_bytes);
 
     const ColorSpace* colorSpace() const { return mColorSpace ? &*mColorSpace : nullptr; }
-    void setColorSpace(const Optional<octk::ColorSpace>& color_space) { mColorSpace = color_space; }
+    void setColorSpace(const Optional<octk::ColorSpace>& colorSpace) { mColorSpace = colorSpace; }
 
     Optional<VideoPlayoutDelay> playoutDelay() const { return playout_delay_; }
 

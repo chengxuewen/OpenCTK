@@ -117,6 +117,22 @@ octk_add_test(octk_media_tst_rtc_context
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_media_tst_rtc_stats
+	SOURCES
+	tst_rtc_stats.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_media_tst_rtc_stats_report
+	SOURCES
+	tst_rtc_stats_report.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_media_tst_rtp_parameters
 	SOURCES
 	tst_rtp_parameters.cpp

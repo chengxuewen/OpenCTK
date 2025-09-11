@@ -28,9 +28,9 @@
 
 #include <unordered_map>
 #ifndef OCTK_OS_WIN32
-#   include <stdlib.h> // abort
+#    include <stdlib.h> // abort
 #else
-#   include <windows.h>
+#    include <windows.h>
 #endif
 
 OCTK_DEFINE_LOGGER("octk", OCTK_LOGGER)
@@ -141,10 +141,7 @@ std::vector<Logger::Ptr> Logger::allLoggers()
     std::transform(detail::loggersNameMap().begin(),
                    detail::loggersNameMap().end(),
                    std::back_inserter(loggers),
-                   [](const std::pair<std::string, Logger::Ptr> &pair)
-                   {
-                       return pair.second;
-                   });
+                   [](const std::pair<std::string, Logger::Ptr> &pair) { return pair.second; });
     return loggers;
 }
 
@@ -218,8 +215,8 @@ void Logger::output(const Context &context, const char *message)
 void Logger::vlogging(const Context &context, const char *format, va_list args)
 {
     OCTK_D(Logger);
-    char message[OCTK_LINE_MAX] = {0};
-    vsnprintf(message, OCTK_LINE_MAX, format, args);
+    char message[OCTK_LOGGING_BUFFER_SIZE_MAX] = {0};
+    vsnprintf(message, OCTK_LOGGING_BUFFER_SIZE_MAX, format, args);
     if (!d->messageHandlerOutput(context, message))
     {
         if (d->mNoSource)

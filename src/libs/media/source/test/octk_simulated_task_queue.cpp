@@ -28,15 +28,15 @@ OCTK_BEGIN_NAMESPACE
 
 SimulatedTaskQueue::SimulatedTaskQueue(sim_time_impl::SimulatedTimeControllerImpl *handler,
                                        StringView name)
-    : handler_(handler), name_(new char[name.size()])
+    : handler_(handler), mName(new char[name.size()])
 {
-    std::copy_n(name.begin(), name.size(), name_);
+    std::copy_n(name.begin(), name.size(), mName);
 }
 
 SimulatedTaskQueue::~SimulatedTaskQueue()
 {
     handler_->Unregister(this);
-    delete[] name_;
+    delete[] mName;
 }
 
 void SimulatedTaskQueue::Delete()

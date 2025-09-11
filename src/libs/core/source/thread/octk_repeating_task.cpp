@@ -48,15 +48,15 @@ public:
     void operator()() &&;
 
 private:
-    TaskQueue *const task_queue_;
+    TaskQueue *const mTaskQueue;
     const TaskQueue::DelayPrecision precision_;
     Clock *const clock_;
     const SourceLocation location_;
     Invocable<TimeDelta()> task_;
     // This is always finite.
-    Timestamp next_run_time_ OCTK_ATTRIBUTE_GUARDED_BY(task_queue_);
+    Timestamp next_run_time_ OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
     ScopedRefPtr<PendingTaskSafetyFlag> alive_flag_
-    OCTK_ATTRIBUTE_GUARDED_BY(task_queue_);
+    OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
 };
 
 RepeatingTask::RepeatingTask(TaskQueue *task_queue,
@@ -66,12 +66,12 @@ RepeatingTask::RepeatingTask(TaskQueue *task_queue,
                              Clock *clock,
                              ScopedRefPtr<PendingTaskSafetyFlag> alive_flag,
                              const SourceLocation &location)
-    : task_queue_(task_queue), precision_(precision), clock_(clock), location_(location), task_(std::move(task))
+    : mTaskQueue(task_queue), precision_(precision), clock_(clock), location_(location), task_(std::move(task))
     , next_run_time_(clock_->CurrentTime() + first_delay), alive_flag_(std::move(alive_flag)) {}
 
 void RepeatingTask::operator()() &&
 {
-    OCTK_DCHECK_RUN_ON(task_queue_);
+    OCTK_DCHECK_RUN_ON(mTaskQueue);
     if (!alive_flag_->alive())
     {
         return;
@@ -93,7 +93,7 @@ void RepeatingTask::operator()() &&
     delay -= lost_time;
     delay = std::max(delay, TimeDelta::Zero());
 
-    task_queue_->PostDelayedTaskWithPrecision(precision_, std::move(*this), delay,
+    mTaskQueue->PostDelayedTaskWithPrecision(precision_, std::move(*this), delay,
                                               location_);
 }
 }  // namespace

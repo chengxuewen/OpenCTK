@@ -20,7 +20,7 @@ VideoAdaptationCounters VideoAdaptationCounters::operator+(const VideoAdaptation
                                    fps_adaptations + other.fps_adaptations);
 }
 
-std::string VideoAdaptationCounters::ToString() const
+std::string VideoAdaptationCounters::toString() const
 {
     // rtc::StringBuilder ss;
     std::stringstream ss;

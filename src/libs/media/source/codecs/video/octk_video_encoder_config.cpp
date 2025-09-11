@@ -24,7 +24,7 @@ VideoStream::VideoStream(const VideoStream &other) = default;
 
 VideoStream::~VideoStream() = default;
 
-std::string VideoStream::ToString() const
+std::string VideoStream::toString() const
 {
     // char buf[1024];
     // rtc::SimpleStringBuilder ss(buf);
@@ -64,7 +64,7 @@ VideoEncoderConfig::VideoEncoderConfig(VideoEncoderConfig &&) = default;
 
 VideoEncoderConfig::~VideoEncoderConfig() = default;
 
-std::string VideoEncoderConfig::ToString() const
+std::string VideoEncoderConfig::toString() const
 {
     // char buf[1024];
     // rtc::SimpleStringBuilder ss(buf);

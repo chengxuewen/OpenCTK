@@ -59,9 +59,9 @@ public:
     };
 
     FrameGeneratorCapturer(Clock *clock,
-                           std::unique_ptr<FrameGeneratorInterface> frame_generator,
-                           int target_fps,
-                           TaskQueueFactory &task_queue_factory);
+                           std::unique_ptr<FrameGeneratorInterface> frameGenerator,
+                           int targetFps,
+                           TaskQueueFactory &taskQueueFactory);
     virtual ~FrameGeneratorCapturer();
 
     void start() override;
@@ -88,7 +88,7 @@ public:
 
     void forceFrame();
     void setFakeRotation(VideoRotation rotation);
-    void setFakeColorSpace(Optional<ColorSpace> color_space);
+    void setFakeColorSpace(Optional<ColorSpace> colorSpace);
 
     bool init();
 
@@ -110,7 +110,7 @@ private:
     VideoRotation mFakeRotation = VideoRotation::Angle0;
     Optional<ColorSpace> mFakeColorSpace OCTK_ATTRIBUTE_GUARDED_BY(&mMutex);
 
-    std::unique_ptr<TaskQueue, TaskQueueDeleter> task_queue_;
+    std::unique_ptr<TaskQueue, TaskQueueDeleter> mTaskQueue;
 };
 
 /**

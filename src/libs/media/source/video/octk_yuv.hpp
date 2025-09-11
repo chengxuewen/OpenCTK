@@ -22,8 +22,8 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef MSRTC_OCTK_YUV_HPP
-#define MSRTC_OCTK_YUV_HPP
+#ifndef _OCTK_YUV_HPP
+#define _OCTK_YUV_HPP
 
 #include <octk_video_frame_buffer.hpp>
 #include <octk_media_global.hpp>
@@ -155,4 +155,4 @@ int ConvertVideoType(VideoType video_type);
 
 OCTK_END_NAMESPACE
 
-#endif //MSRTC_OCTK_YUV_HPP
+#endif // _OCTK_YUV_HPP

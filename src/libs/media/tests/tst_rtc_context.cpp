@@ -99,7 +99,7 @@ TEST(RtcContextTest, DefaultRtcContextHasAllUtilities)
 
     // Try to use each utility, expect no crashes.
     env.clock().CurrentTime();
-    EXPECT_THAT(env.task_queue_factory().CreateTaskQueue("test", TaskQueueFactory::Priority::NORMAL), NotNull());
+    EXPECT_THAT(env.taskQueueFactory().CreateTaskQueue("test", TaskQueueFactory::Priority::NORMAL), NotNull());
     env.event_log().Log(utils::make_unique<FakeEvent>());
     env.field_trials().Lookup("WebRTC-Debugging-RtpDump");
 }
@@ -112,7 +112,7 @@ TEST(RtcContextTest, UsesProvidedUtilitiesWithOwnership)
     auto owned_event_log = utils::make_unique<RtcEventLogNull>();
 
     FieldTrialsView &field_trials = *owned_field_trials;
-    TaskQueueFactory &task_queue_factory = *owned_task_queue_factory;
+    TaskQueueFactory &taskQueueFactory = *owned_task_queue_factory;
     Clock &clock = *owned_clock;
     RtcEventLog &event_log = *owned_event_log;
 
@@ -122,7 +122,7 @@ TEST(RtcContextTest, UsesProvidedUtilitiesWithOwnership)
                                       std::move(owned_event_log));
 
     EXPECT_THAT(env.field_trials(), Ref(field_trials));
-    EXPECT_THAT(env.task_queue_factory(), Ref(task_queue_factory));
+    EXPECT_THAT(env.taskQueueFactory(), Ref(taskQueueFactory));
     EXPECT_THAT(env.clock(), Ref(clock));
     EXPECT_THAT(env.event_log(), Ref(event_log));
 }
@@ -130,14 +130,14 @@ TEST(RtcContextTest, UsesProvidedUtilitiesWithOwnership)
 TEST(RtcContextTest, UsesProvidedUtilitiesWithoutOwnership)
 {
     FakeFieldTrials field_trials;
-    FakeTaskQueueFactory task_queue_factory;
+    FakeTaskQueueFactory taskQueueFactory;
     SimulatedClock clock(Timestamp::Zero());
     RtcEventLogNull event_log;
 
-    RtcContext env = CreateRtcContext(&field_trials, &clock, &task_queue_factory, &event_log);
+    RtcContext env = CreateRtcContext(&field_trials, &clock, &taskQueueFactory, &event_log);
 
     EXPECT_THAT(env.field_trials(), Ref(field_trials));
-    EXPECT_THAT(env.task_queue_factory(), Ref(task_queue_factory));
+    EXPECT_THAT(env.taskQueueFactory(), Ref(taskQueueFactory));
     EXPECT_THAT(env.clock(), Ref(clock));
     EXPECT_THAT(env.event_log(), Ref(event_log));
 }
@@ -210,7 +210,7 @@ TEST(RtcContextTest, FactoryCanBeReusedToCreateDifferentRtcContexts)
     auto owned_task_queue_factory = utils::make_unique<FakeTaskQueueFactory>();
     auto owned_field_trials1 = utils::make_unique<FakeFieldTrials>();
     auto owned_field_trials2 = utils::make_unique<FakeFieldTrials>();
-    TaskQueueFactory &task_queue_factory = *owned_task_queue_factory;
+    TaskQueueFactory &taskQueueFactory = *owned_task_queue_factory;
     FieldTrialsView &field_trials1 = *owned_field_trials1;
     FieldTrialsView &field_trials2 = *owned_field_trials2;
 
@@ -222,8 +222,8 @@ TEST(RtcContextTest, FactoryCanBeReusedToCreateDifferentRtcContexts)
     RtcContext env2 = factory.Create();
 
     // RtcContexts share the same custom task queue factory.
-    EXPECT_THAT(env1.task_queue_factory(), Ref(task_queue_factory));
-    EXPECT_THAT(env2.task_queue_factory(), Ref(task_queue_factory));
+    EXPECT_THAT(env1.taskQueueFactory(), Ref(taskQueueFactory));
+    EXPECT_THAT(env2.taskQueueFactory(), Ref(taskQueueFactory));
 
     // RtcContexts have different field trials.
     EXPECT_THAT(env1.field_trials(), Ref(field_trials1));
@@ -241,7 +241,7 @@ TEST(RtcContextTest, FactoryCanCreateNewRtcContextFromExistingOne)
     EXPECT_THAT(env2.clock(), Ref(env1.clock()));
 
     // RtcContexts share the same custom task queue factory.
-    EXPECT_THAT(env2.task_queue_factory(), Ref(env1.task_queue_factory()));
+    EXPECT_THAT(env2.taskQueueFactory(), Ref(env1.taskQueueFactory()));
 
     // RtcContexts have different field trials.
     EXPECT_THAT(env2.field_trials(), Not(Ref(env1.field_trials())));
@@ -280,14 +280,14 @@ TEST(RtcContextTest, DestroysUtilitiesInReverseProvidedOrder)
     std::vector<std::string> destroyed;
     auto field_trials = utils::make_unique<FakeFieldTrials>(
         /*on_destroyed=*/[&] { destroyed.push_back("field_trials"); });
-    auto task_queue_factory = utils::make_unique<FakeTaskQueueFactory>(
-        /*on_destroyed=*/[&] { destroyed.push_back("task_queue_factory"); });
+    auto taskQueueFactory = utils::make_unique<FakeTaskQueueFactory>(
+        /*on_destroyed=*/[&] { destroyed.push_back("taskQueueFactory"); });
 
-    Optional<RtcContext> env = CreateRtcContext(std::move(field_trials), std::move(task_queue_factory));
+    Optional<RtcContext> env = CreateRtcContext(std::move(field_trials), std::move(taskQueueFactory));
 
     ASSERT_THAT(destroyed, IsEmpty());
     env = utils::nullopt;
-    EXPECT_THAT(destroyed, ElementsAre("task_queue_factory", "field_trials"));
+    EXPECT_THAT(destroyed, ElementsAre("taskQueueFactory", "field_trials"));
 }
 
 } // namespace
