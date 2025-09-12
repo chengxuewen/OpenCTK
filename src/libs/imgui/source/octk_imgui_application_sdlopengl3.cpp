@@ -148,10 +148,10 @@ bool ImguiApplicationSDLOpenGL3::init()
         d->mImGuiIO = &ImGui::GetIO();
         d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+        d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
         // Setup Dear ImGui style
-        ImGui::StyleColorsDark();
-        //ImGui::StyleColorsLight();
+        ImGui::StyleColorsLight();
 
         // Setup scaling
         ImGuiStyle &style = ImGui::GetStyle();
@@ -192,6 +192,15 @@ bool ImguiApplicationSDLOpenGL3::exec()
     if (!this->init())
     {
         return false;
+    }
+
+    // Init callback
+    {
+        SpinLock::Locker locker(d->mCallbackSpinLock);
+        if (d->mInitFunction)
+        {
+            d->mInitFunction();
+        }
     }
 
     // Our state

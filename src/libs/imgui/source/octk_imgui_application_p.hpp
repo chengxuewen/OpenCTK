@@ -69,6 +69,7 @@ public:
 
     Properties mProperties;
     std::string mLastError;
+    Callback mInitFunction;
     Callback mDrawFunction;
     Callback mQuitFunction;
     mutable SpinLock mCallbackSpinLock;

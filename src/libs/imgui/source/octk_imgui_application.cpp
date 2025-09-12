@@ -27,6 +27,77 @@
 
 namespace ImGui
 {
+namespace ChronoShenanigans
+{
+class ClockSeconds_
+{
+private:
+    using Clock = std::chrono::high_resolution_clock;
+    using second = std::chrono::duration<float, std::ratio<1>>;
+    std::chrono::time_point<Clock> mStart;
+
+public:
+    ClockSeconds_()
+        : mStart(Clock::now())
+    {
+    }
+
+    float elapsed() const { return std::chrono::duration_cast<second>(Clock::now() - mStart).count(); }
+};
+
+float ClockSeconds()
+{
+    static ClockSeconds_ watch;
+    return watch.elapsed();
+}
+
+} // namespace ChronoShenanigans
+static std::deque<float> gFrameTimes;
+
+void UpdateFrameRateStats()
+{
+    float now = ChronoShenanigans::ClockSeconds();
+    gFrameTimes.push_back(now);
+
+    size_t maxFrameCount = 300;
+    while (gFrameTimes.size() > maxFrameCount)
+    {
+        gFrameTimes.pop_front();
+    }
+};
+float FrameRate(float durationForMean)
+{
+    if (gFrameTimes.size() <= 1)
+    {
+        return 0.f;
+    }
+
+    float lastFrameTime = gFrameTimes.back();
+    int lastFrameIdx = (int)gFrameTimes.size() - 1;
+
+    // Go back in frame times to find the first frame that is not too old
+    int i = (int)gFrameTimes.size() - 1;
+    while (i > 0)
+    {
+        if (lastFrameTime - gFrameTimes[i] > durationForMean)
+        {
+            break;
+        }
+        --i;
+    }
+    if (i == lastFrameIdx)
+    {
+        return 0.f;
+    }
+    // printf("i=%d, lastFrameIdx=%d\n", i, lastFrameIdx);
+
+    // Compute the mean frame rate
+    float totalTime = lastFrameTime - gFrameTimes[i];
+    int nbFrames = lastFrameIdx - i;
+    float fps = (float)nbFrames / totalTime;
+    return fps;
+}
+
 void StyleColorsCinder(ImGuiStyle *dst)
 {
     ImGuiStyle *style = dst ? dst : &::ImGui::GetStyle();
@@ -89,10 +160,7 @@ void StyleColorsCinder(ImGuiStyle *dst)
     colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.22f, 0.27f, 0.73f);
 }
 
-void StyleColorsSpectrum(ImGuiStyle *dst)
-{
-    ::ImGui::Spectrum::StyleColorsSpectrum(dst);
-}
+void StyleColorsSpectrum(ImGuiStyle *dst) { ::ImGui::Spectrum::StyleColorsSpectrum(dst); }
 } // namespace ImGui
 
 OCTK_BEGIN_NAMESPACE
@@ -179,6 +247,13 @@ std::string ImGuiApplication::lastError() const
 {
     OCTK_D(const ImGuiApplication);
     return d->mLastError;
+}
+
+void ImGuiApplication::setInitFunction(Callback func)
+{
+    OCTK_D(ImGuiApplication);
+    SpinLock::Locker locker(d->mCallbackSpinLock);
+    d->mInitFunction = func;
 }
 
 void ImGuiApplication::setDrawFunction(Callback func)

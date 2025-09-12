@@ -114,13 +114,12 @@ bool ImGuiApplicationSDLGPU3::init()
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         d->mImGuiIO = &ImGui::GetIO();
-        // ImGuiIO &io = ImGui::GetIO(); //TODO::DEL
-        // (void)io;
         d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+        d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        d->mImGuiIO->ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
 
         // Setup Dear ImGui style
-        // ImGui::StyleColorsDark();
         ImGui::StyleColorsLight();
 
         // Setup scaling
@@ -167,6 +166,15 @@ bool ImGuiApplicationSDLGPU3::exec()
     if (!this->init())
     {
         return false;
+    }
+
+    // Init callback
+    {
+        SpinLock::Locker locker(d->mCallbackSpinLock);
+        if (d->mInitFunction)
+        {
+            d->mInitFunction();
+        }
     }
 
     // Our state

@@ -46,7 +46,6 @@ octk_add_library(imgui
 	source/3rdparty/imgui_spectrum.h
 	source/octk_imgui.cpp
 	source/octk_imgui.hpp
-	source/octk_imgui.h
 	source/octk_imgui_application.cpp
 	source/octk_imgui_application.hpp
 	source/octk_imgui_application_p.hpp

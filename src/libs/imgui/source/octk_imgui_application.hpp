@@ -95,6 +95,7 @@ public:
     bool isFinished() const;
     std::string lastError() const;
 
+    void setInitFunction(Callback func);
     void setDrawFunction(Callback func);
     void setQuitFunction(Callback func);
 
