@@ -25,12 +25,50 @@
 #include <private/octk_imgui_application_p.hpp>
 #include "octk_imgui_application_sdlgpu3.hpp"
 
-#include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlgpu3.h>
+#include <imgui_impl_sdl3.h>
+#include <SDL3/SDL_gpu.h>
+#include <SDL3/SDL.h>
 
 OCTK_BEGIN_NAMESPACE
 
 OCTK_IMGUI_REGISTER_APPLICATION(ImGuiApplicationSDLGPU3, constants::kImGuiApplicationSDLGPU3)
+
+class ImGuiApplicationSDLGPU3Image : public ImGuiImage
+{
+public:
+    ImGuiApplicationSDLGPU3Image(SDL_GPUDevice *gpuDevice,
+                                 SDL_GPUTexture *texture,
+                                 SDL_GPUTextureCreateInfo textureInfo,
+                                 Format format,
+                                 float width,
+                                 float height)
+        : ImGuiImage(format, width, height)
+        , mGPUDevice(gpuDevice)
+        , mGPUTexture(texture)
+        , mGPUTextureInfo(textureInfo)
+    {
+    }
+    ~ImGuiApplicationSDLGPU3Image() override
+    {
+        if (mGPUDevice)
+        {
+            // SDL_ReleaseGPUTexture(mGPUDevice, mGPUDevice);
+        }
+    }
+
+    size_t textureId() override { return reinterpret_cast<size_t>(mGPUDevice); }
+    void update(const uint8_t *data) override
+    {
+        // SDL_UpdateGPUTexture(gpuTexture, NULL, pixels, pitch)
+            // SDL_UpdateTexture(mTexture, nullptr, data, this->pitchSize());
+    }
+
+private:
+    SDL_GPUDevice *mGPUDevice{nullptr};
+    SDL_GPUTexture *mGPUTexture{nullptr};
+    SDL_GPUTextureCreateInfo mGPUTextureInfo;
+};
 
 class ImGuiApplicationSDLGPU3Private : public ImGuiApplicationPrivate
 {
@@ -44,7 +82,7 @@ public:
 
     ImGuiIO *mImGuiIO{nullptr};
     SDL_Window *mSDLWindow{nullptr};
-    SDL_GPUDevice *mGPUDevice{nullptr};
+    SDL_GPUDevice *mSDLGPUDevice{nullptr};
 };
 
 ImGuiApplicationSDLGPU3Private::ImGuiApplicationSDLGPU3Private(ImGuiApplicationSDLGPU3 *p)
@@ -75,11 +113,11 @@ bool ImGuiApplicationSDLGPU3::init()
         }
         // Create SDL window graphics context
         float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
-        SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+        SDL_WindowFlags windowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
         d->mSDLWindow = SDL_CreateWindow(d->title("Dear ImGui SDL3+SDL_GPU example").c_str(),
                                          (int)(d->width() * main_scale),
                                          (int)(d->height() * main_scale),
-                                         window_flags);
+                                         windowFlags);
         if (!d->mSDLWindow)
         {
             d->setError(std::string("SDL_CreateWindow() failed:") + SDL_GetError());
@@ -89,23 +127,23 @@ bool ImGuiApplicationSDLGPU3::init()
         SDL_ShowWindow(d->mSDLWindow);
 
         // Create GPU Device
-        d->mGPUDevice =
-            SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_METALLIB,
-                                true,
-                                nullptr);
-        if (!d->mGPUDevice)
+        d->mSDLGPUDevice = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL |
+                                                   SDL_GPU_SHADERFORMAT_METALLIB,
+                                               true,
+                                               nullptr);
+        if (!d->mSDLGPUDevice)
         {
             d->setError(std::string("SDL_CreateGPUDevice() failed:") + SDL_GetError());
             return false;
         }
 
         // Claim window for GPU Device
-        if (!SDL_ClaimWindowForGPUDevice(d->mGPUDevice, d->mSDLWindow))
+        if (!SDL_ClaimWindowForGPUDevice(d->mSDLGPUDevice, d->mSDLWindow))
         {
             d->setError(std::string("SDL_ClaimWindowForGPUDevice() failed:") + SDL_GetError());
             return false;
         }
-        SDL_SetGPUSwapchainParameters(d->mGPUDevice,
+        SDL_SetGPUSwapchainParameters(d->mSDLGPUDevice,
                                       d->mSDLWindow,
                                       SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
                                       SDL_GPU_PRESENTMODE_VSYNC);
@@ -134,8 +172,8 @@ bool ImGuiApplicationSDLGPU3::init()
         // Setup Platform/Renderer backends
         ImGui_ImplSDL3_InitForSDLGPU(d->mSDLWindow);
         ImGui_ImplSDLGPU3_InitInfo init_info = {};
-        init_info.Device = d->mGPUDevice;
-        init_info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(d->mGPUDevice, d->mSDLWindow);
+        init_info.Device = d->mSDLGPUDevice;
+        init_info.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(d->mSDLGPUDevice, d->mSDLWindow);
         init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;
         ImGui_ImplSDLGPU3_Init(&init_info);
 
@@ -233,7 +271,7 @@ bool ImGuiApplicationSDLGPU3::exec()
         const bool is_minimized = (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f);
 
         // Acquire a GPU command buffer
-        SDL_GPUCommandBuffer *command_buffer = SDL_AcquireGPUCommandBuffer(d->mGPUDevice);
+        SDL_GPUCommandBuffer *command_buffer = SDL_AcquireGPUCommandBuffer(d->mSDLGPUDevice);
 
         SDL_GPUTexture *swapchain_texture;
         SDL_WaitAndAcquireGPUSwapchainTexture(command_buffer,
@@ -287,13 +325,13 @@ void ImGuiApplicationSDLGPU3::destroy()
         {
             // Cleanup
             // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppQuit() function]
-            SDL_WaitForGPUIdle(d->mGPUDevice);
+            SDL_WaitForGPUIdle(d->mSDLGPUDevice);
             ImGui_ImplSDL3_Shutdown();
             ImGui_ImplSDLGPU3_Shutdown();
             ImGui::DestroyContext();
 
-            SDL_ReleaseWindowFromGPUDevice(d->mGPUDevice, d->mSDLWindow);
-            SDL_DestroyGPUDevice(d->mGPUDevice);
+            SDL_ReleaseWindowFromGPUDevice(d->mSDLGPUDevice, d->mSDLWindow);
+            SDL_DestroyGPUDevice(d->mSDLGPUDevice);
             SDL_DestroyWindow(d->mSDLWindow);
 
             ImGuiApplication::destroy();
@@ -303,5 +341,39 @@ void ImGuiApplicationSDLGPU3::destroy()
 }
 
 StringView ImGuiApplicationSDLGPU3::typeName() const { return constants::kImGuiApplicationSDLGPU3; }
+
+ImGuiImageResult
+ImGuiApplicationSDLGPU3::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
+{
+    OCTK_D(ImGuiApplicationSDLGPU3);
+    SDL_GPUTextureCreateInfo textureInfo;
+    textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
+    textureInfo.width = width;
+    textureInfo.height = height;
+    textureInfo.layer_count_or_depth = 1;
+    textureInfo.num_levels = 1;
+    textureInfo.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    switch (format)
+    {
+        case ImGuiImage::Format::BGR: textureInfo.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM; break;
+        // case ImGuiImage::Format::RGB: textureInfo.format = SDL_GPU_TEXTUREFORMAT_RGB_UNORM; break;
+        case ImGuiImage::Format::BGRA: textureInfo.format = SDL_GPU_TEXTUREFORMAT_B8G8R8A8_UNORM; break;
+        case ImGuiImage::Format::RGBA: textureInfo.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM; break;
+        default: break;
+    }
+    SDL_GPUTexture *gpuTexture = SDL_CreateGPUTexture(d->mSDLGPUDevice, &textureInfo);
+    if (gpuTexture)
+    {
+        auto image = std::make_shared<ImGuiApplicationSDLGPU3Image>(d->mSDLGPUDevice,
+                                                                    gpuTexture,
+                                                                    textureInfo,
+                                                                    format,
+                                                                    width,
+                                                                    height);
+        image->update(binary.data());
+        return image;
+    }
+    return utils::makeUnexpected(std::string("SDL_CreateTexture failed:") + SDL_GetError());
+}
 
 OCTK_END_NAMESPACE

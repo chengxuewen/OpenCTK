@@ -42,6 +42,30 @@ OCTK_BEGIN_NAMESPACE
 
 OCTK_IMGUI_REGISTER_APPLICATION(ImguiApplicationSDLOpenGL3, constants::kImguiApplicationSDLOpenGL3)
 
+class ImguiApplicationSDLOpenGL3Image : public ImGuiImage
+{
+public:
+    ImguiApplicationSDLOpenGL3Image(GLuint gluint, GLint glFormat, Format format, float width, float height)
+        : ImGuiImage(format, width, height)
+        , mTextureID(gluint)
+        , mGLFormat(glFormat)
+    {
+    }
+    ~ImguiApplicationSDLOpenGL3Image() override { }
+
+    size_t textureId() override { return static_cast<size_t>(mTextureID); }
+    void update(const uint8_t *data) override
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat, this->width(), this->height(), 0, mGLFormat, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+private:
+    GLuint mTextureID{0};
+    GLint mGLFormat;
+};
+
 class ImguiApplicationSDLOpenGL3Private : public ImGuiApplicationPrivate
 {
     OCTK_DECLARE_PUBLIC(ImguiApplicationSDLOpenGL3)
@@ -119,8 +143,8 @@ bool ImguiApplicationSDLOpenGL3::init()
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
         float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
-        SDL_WindowFlags window_flags =
-            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+        SDL_WindowFlags window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN |
+                                       SDL_WINDOW_HIGH_PIXEL_DENSITY;
         d->mSDLWindow = SDL_CreateWindow("Dear ImGui SDL3+OpenGL3 example",
                                          (int)(1280 * main_scale),
                                          (int)(720 * main_scale),
@@ -310,5 +334,30 @@ void ImguiApplicationSDLOpenGL3::destroy()
 }
 
 StringView ImguiApplicationSDLOpenGL3::typeName() const { return constants::kImguiApplicationSDLOpenGL3; }
+
+ImGuiImageResult
+ImguiApplicationSDLOpenGL3::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
+{
+    OCTK_D(ImguiApplicationSDLOpenGL3);
+    GLint pixelFormat = 0;
+    switch (format)
+    {
+        case ImGuiImage::Format::BGR: pixelFormat = GL_BGR; break;
+        case ImGuiImage::Format::RGB: pixelFormat = GL_RGB; break;
+        case ImGuiImage::Format::BGRA: pixelFormat = GL_BGRA; break;
+        case ImGuiImage::Format::RGBA: pixelFormat = GL_RGBA; break;
+        default: break;
+    }
+    GLuint textureID = 0;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    if (textureID > 0)
+    {
+        auto image = std::make_shared<ImguiApplicationSDLOpenGL3Image>(textureID, pixelFormat, format, width, height);
+        image->update(binary.data());
+        return image;
+    }
+    return utils::makeUnexpected(std::string("SDL_CreateTexture failed:") + SDL_GetError());
+}
 
 OCTK_END_NAMESPACE

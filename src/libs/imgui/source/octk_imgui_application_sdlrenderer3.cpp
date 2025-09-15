@@ -27,6 +27,8 @@
 
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
+#include <absl/strings/str_format.h>
+#include <absl/strings/internal/str_format/parser.h>
 
 #ifdef __EMSCRIPTEN__
 #    include "../libs/emscripten/emscripten_mainloop_stub.h"
@@ -35,6 +37,29 @@
 OCTK_BEGIN_NAMESPACE
 
 OCTK_IMGUI_REGISTER_APPLICATION(ImGuiApplicationSDLRenderer3, constants::kImGuiApplicationSDLRenderer3)
+
+class ImGuiApplicationSDLRenderer3Image : public ImGuiImage
+{
+public:
+    ImGuiApplicationSDLRenderer3Image(SDL_Texture *texture, Format format, float width, float height)
+        : ImGuiImage(format, width, height)
+        , mTexture(texture)
+    {
+    }
+    ~ImGuiApplicationSDLRenderer3Image() override
+    {
+        if (mTexture)
+        {
+            SDL_DestroyTexture(mTexture);
+        }
+    }
+
+    size_t textureId() override { return reinterpret_cast<size_t>(mTexture); }
+    void update(const uint8_t *data) override { SDL_UpdateTexture(mTexture, nullptr, data, this->pitchSize()); }
+
+private:
+    SDL_Texture *mTexture{nullptr};
+};
 
 class ImGuiApplicationSDLRenderer3Private : public ImGuiApplicationPrivate
 {
@@ -270,5 +295,35 @@ void ImGuiApplicationSDLRenderer3::destroy()
 }
 
 StringView ImGuiApplicationSDLRenderer3::typeName() const { return constants::kImGuiApplicationSDLRenderer3; }
+
+ImGuiImageResult
+ImGuiApplicationSDLRenderer3::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
+{
+    OCTK_D(ImGuiApplicationSDLRenderer3);
+    SDL_PixelFormat pixelFormat = SDL_PIXELFORMAT_UNKNOWN;
+    switch (format)
+    {
+#if OCTK_BYTE_ORDER == OCTK_LITTLE_ENDIAN
+        case ImGuiImage::Format::BGR: pixelFormat = SDL_PIXELFORMAT_RGB24; break;
+        case ImGuiImage::Format::RGB: pixelFormat = SDL_PIXELFORMAT_BGR24; break;
+        case ImGuiImage::Format::BGRA: pixelFormat = SDL_PIXELFORMAT_ARGB8888; break;
+        case ImGuiImage::Format::RGBA: pixelFormat = SDL_PIXELFORMAT_ABGR8888; break;
+#else
+        case ImGuiImage::Format::BGR: pixelFormat = SDL_PIXELFORMAT_BGR24; break;
+        case ImGuiImage::Format::RGB: pixelFormat = SDL_PIXELFORMAT_RGB24; break;
+        case ImGuiImage::Format::BGRA: pixelFormat = SDL_PIXELFORMAT_BGRA8888; break;
+        case ImGuiImage::Format::RGBA: pixelFormat = SDL_PIXELFORMAT_RGBA8888; break;
+#endif
+        default: break;
+    }
+    auto texture = SDL_CreateTexture(d->mSDLRenderer, pixelFormat, SDL_TEXTUREACCESS_STREAMING, width, height);
+    if (texture)
+    {
+        auto image = std::make_shared<ImGuiApplicationSDLRenderer3Image>(texture, format, width, height);
+        image->update(binary.data());
+        return image;
+    }
+    return utils::makeUnexpected(std::string("SDL_CreateTexture failed:") + SDL_GetError());
+}
 
 OCTK_END_NAMESPACE

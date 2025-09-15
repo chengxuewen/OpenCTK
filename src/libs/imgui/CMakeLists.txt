@@ -27,6 +27,7 @@
 octk_find_package(WrapImGui PROVIDED_TARGETS OCTK3rdparty::WrapImGui)
 octk_find_package(WrapGLFW PROVIDED_TARGETS OCTK3rdparty::WrapGLFW)
 octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
+octk_find_package(WrapSTB PROVIDED_TARGETS OCTK3rdparty::WrapSTB)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -47,8 +48,8 @@ octk_add_library(imgui
 	source/octk_imgui_application.cpp
 	source/octk_imgui_application.hpp
 	source/octk_imgui_application_p.hpp
-	source/octk_imgui_application_sdlgpu3.cpp
-	source/octk_imgui_application_sdlgpu3.hpp
+#	source/octk_imgui_application_sdlgpu3.cpp
+#	source/octk_imgui_application_sdlgpu3.hpp
 	source/octk_imgui_application_sdlrenderer3.cpp
 	source/octk_imgui_application_sdlrenderer3.hpp
 	source/octk_imgui_constants.hpp
@@ -66,6 +67,7 @@ octk_add_library(imgui
 	LIBRARIES
 	OCTK3rdparty::WrapGLFW
 	OCTK3rdparty::WrapSDL
+	OCTK3rdparty::WrapSTB
 	octk::core_private
 	PUBLIC_LIBRARIES
 	OCTK3rdparty::WrapImGui

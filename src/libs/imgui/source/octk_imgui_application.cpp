@@ -23,6 +23,10 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_imgui_application_p.hpp>
+#include <octk_processor.hpp>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -141,5 +145,36 @@ bool ImGuiApplication::init()
 bool ImGuiApplication::exec() { return true; }
 
 void ImGuiApplication::destroy() { }
+
+ImGuiImageResult ImGuiApplication::loadImage(StringView path)
+{
+    int width, height, channels;
+    auto expected = this->readImage(path.data(), &width, &height, &channels);
+    if (expected.has_value())
+    {
+        return this->createImage(ImGuiImage::Format::RGBA, expected.value(), width, height);
+    }
+    return utils::makeUnexpected(std::string("imreadBMP failed:") + expected.error());
+}
+
+Expected<Binary, std::string> ImGuiApplication::readImage(const char *path, int *width, int *height, int *channels)
+{
+    unsigned char *imageData = stbi_load(path, width, height, channels, 4);
+    if (imageData)
+    {
+// #if OCTK_BYTE_ORDER == OCTK_LITTLE_ENDIAN
+//         /* ABGR in little-endian, convert to RGBA */
+//         for (int i = 0; i < (*width) * (*height); i++)
+//         {
+//             std::swap(imageData[i * 4], imageData[i * 4 + 3]);
+//             std::swap(imageData[i * 4 + 1], imageData[i * 4 + 2]);
+//         }
+// #endif
+        Binary binary(imageData, imageData + (*width) * (*height) * (*channels));
+        stbi_image_free(imageData);
+        return binary;
+    }
+    return utils::makeUnexpected(std::string("stbi_load failed:") + stbi_failure_reason());
+}
 
 OCTK_END_NAMESPACE

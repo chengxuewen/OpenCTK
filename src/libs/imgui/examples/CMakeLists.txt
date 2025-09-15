@@ -45,12 +45,36 @@ list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::imgui)
 #-----------------------------------------------------------------------------------------------------------------------
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/test.bmp" "./"
+	WORKING_DIRECTORY "${OCTK_EXAMPLE_OUTPUT_DIR}")
+
 octk_add_executable(octk_imgui_exp_dockspace
 	SOURCES
 	exp_imgui_dockspace.cpp
 	INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_SOURCE_DIR}
 	LIBRARIES
+	${OCTK_EXAMPLE_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_EXAMPLE_OUTPUT_DIR})
+octk_add_executable(octk_imgui_exp_image
+	SOURCES
+	exp_imgui_image.cpp
+	INCLUDE_DIRECTORIES
+	${CMAKE_CURRENT_SOURCE_DIR}
+	LIBRARIES
+	OCTK3rdparty::WrapSDL
+	${OCTK_EXAMPLE_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_EXAMPLE_OUTPUT_DIR})
+octk_add_executable(octk_imgui_exp_rwbmp
+	SOURCES
+	exp_imgui_rwbmp.cpp
+	INCLUDE_DIRECTORIES
+	${CMAKE_CURRENT_SOURCE_DIR}
+	LIBRARIES
+	OCTK3rdparty::WrapSDL
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})

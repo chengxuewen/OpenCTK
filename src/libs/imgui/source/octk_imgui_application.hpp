@@ -28,6 +28,8 @@
 #include <octk_imgui_constants.hpp>
 #include <octk_string_view.hpp>
 #include <octk_optional.hpp>
+#include <octk_expected.hpp>
+#include <octk_result.hpp>
 #include <octk_memory.hpp>
 #include <octk_assert.hpp>
 #include <octk_imgui.hpp>
@@ -35,6 +37,48 @@
 #include <functional>
 
 OCTK_BEGIN_NAMESPACE
+
+struct ImGuiImage
+{
+    enum class Format
+    {
+        BGR,
+        RGB,
+        BGRA,
+        RGBA
+    };
+    using SharedPtr = std::shared_ptr<ImGuiImage>;
+
+    ImGuiImage(Format format, float width, float height)
+        : mFormat(format)
+        , mWidth(width)
+        , mHeight(height)
+    {
+    }
+    virtual ~ImGuiImage() { }
+
+    virtual size_t textureId() = 0;
+    virtual void update(const uint8_t *data) = 0;
+
+    float width() const { return mWidth; }
+    float height() const { return mHeight; }
+    ImVec2 scaledSize(float width, float height) const
+    {
+        const auto length = std::min(width, height);
+        const auto aspectRatio = this->aspectRatio();
+        return ImVec2{length * aspectRatio, length / aspectRatio};
+    }
+    float aspectRatio() const { return this->width() / this->height(); }
+    Format format() const { return mFormat; }
+    int pitchSize() const { return mWidth * this->pixelSize(); }
+    int pixelSize() const { return (Format::BGRA == mFormat || Format::RGB == mFormat) ? 3 : 4; }
+
+private:
+    float mWidth{0};
+    float mHeight{0};
+    Format mFormat{Format::RGBA};
+};
+using ImGuiImageResult = Expected<ImGuiImage::SharedPtr, std::string>;
 
 class ImGuiApplicationPrivate;
 class OCTK_IMGUI_API ImGuiApplication
@@ -92,6 +136,21 @@ public:
 
     virtual bool exec();
     virtual StringView typeName() const = 0;
+
+    virtual ImGuiImageResult loadImage(StringView path);
+    virtual ImGuiImageResult createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
+    {
+        return nullptr;
+    };
+
+    /**
+     * @param path
+     * @param width
+     * @param height
+     * @param channels
+     * @return Return RGBA images data.
+     */
+    static Expected<Binary, std::string> readImage(const char *path, int *width, int *height, int *channels);
 
 protected:
     virtual bool init();
