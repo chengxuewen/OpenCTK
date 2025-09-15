@@ -42,8 +42,6 @@ octk_add_library(imgui
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3_shaders.h
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
-	source/3rdparty/imgui_spectrum.cpp
-	source/3rdparty/imgui_spectrum.h
 	source/octk_imgui.cpp
 	source/octk_imgui.hpp
 	source/octk_imgui_application.cpp
@@ -55,14 +53,16 @@ octk_add_library(imgui
 	source/octk_imgui_application_sdlrenderer3.hpp
 	source/octk_imgui_constants.hpp
 	source/octk_imgui_global.hpp
+	source/octk_imgui_theme.cpp
+	source/octk_imgui_theme.hpp
 	source/octk_sdl_p.hpp
 	PRECOMPILED_HEADER
 	source/octk_imgui_pch.hpp
 	EXTERNAL_HEADERS_DIRS
 	${OCTKWrapImGui_INSTALL_DIR}/include
 	INCLUDE_DIRECTORIES
-	${OCTKWrapImGui_SOURCE_DIR}/backends
 	${OCTKWrapImGui_SOURCE_DIR}
+	${OCTKWrapImGui_SOURCE_DIR}/backends
 	LIBRARIES
 	OCTK3rdparty::WrapGLFW
 	OCTK3rdparty::WrapSDL

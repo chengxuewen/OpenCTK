@@ -27,21 +27,12 @@
 
 #include <octk_imgui_constants.hpp>
 #include <octk_string_view.hpp>
-#include <octk_imgui_global.hpp>
 #include <octk_optional.hpp>
 #include <octk_memory.hpp>
 #include <octk_assert.hpp>
-
-#define IMGUI_API OCTK_IMGUI_API
-#include <imgui/imgui.h>
+#include <octk_imgui.hpp>
 
 #include <functional>
-
-namespace ImGui
-{
-OCTK_IMGUI_API void StyleColorsCinder(ImGuiStyle *dst = NULL);
-OCTK_IMGUI_API void StyleColorsSpectrum(ImGuiStyle *dst = NULL);
-} // namespace ImGui
 
 OCTK_BEGIN_NAMESPACE
 

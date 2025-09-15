@@ -61,6 +61,8 @@ if(NOT TARGET ImGui)
 endif()
 target_link_libraries(OCTK3rdparty::WrapImGui INTERFACE ImGui)
 execute_process(
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imgui_internal.h"
+	"${OCTKWrapImGui_INSTALL_DIR}/include/imgui/imgui_internal.h"
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imconfig.h"
 	"${OCTKWrapImGui_INSTALL_DIR}/include/imgui/imconfig.h"
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imgui.h"

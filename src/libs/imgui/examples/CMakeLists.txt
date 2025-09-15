@@ -54,6 +54,15 @@ octk_add_executable(octk_imgui_exp_dockspace
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
+octk_add_executable(octk_imgui_exp_theme
+	SOURCES
+	exp_imgui_theme.cpp
+	INCLUDE_DIRECTORIES
+	${CMAKE_CURRENT_SOURCE_DIR}
+	LIBRARIES
+	${OCTK_EXAMPLE_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(octk_imgui_exp_window
 	SOURCES
 	exp_imgui_window.cpp

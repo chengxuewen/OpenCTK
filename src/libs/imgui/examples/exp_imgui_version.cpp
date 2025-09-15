@@ -22,15 +22,17 @@
 **
 ***********************************************************************************************************************/
 
+#include "../source/octk_imgui.hpp"
+
+
 #include <iostream>
 
-#include <octk_imgui.h>
 #include <octk_logging.hpp>
 
 int main()
 {
     std::cout << "exp_gui_version start!" << std::endl;
-    octk_imgui_init();
-    OCTK_INFO("octk_gui_version=%s", octk_imgui_version());
+    octk::IMGui::init();
+    OCTK_INFO("octk_gui_version=%s", octk::IMGui::version());
     return 0;
 }

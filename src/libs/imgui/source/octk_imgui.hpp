@@ -27,6 +27,10 @@
 
 #include <octk_imgui_global.hpp>
 
+#define IMGUI_API OCTK_IMGUI_API
+#include <imgui/imgui_internal.h>
+#include <imgui/imgui.h>
+
 OCTK_BEGIN_NAMESPACE
 
 class OCTK_IMGUI_API IMGui

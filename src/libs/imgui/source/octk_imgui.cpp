@@ -57,11 +57,3 @@ const char *IMGui::sdlVersion()
 }
 
 OCTK_END_NAMESPACE
-
-#include <octk_imgui.h>
-
-const char *octk_imgui_version() { return octk::IMGui::version(); }
-
-const char *octk_sdl_version() { return octk::IMGui::sdlVersion(); }
-
-void octk_imgui_init() { octk::IMGui::init(); }
