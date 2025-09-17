@@ -54,19 +54,19 @@ int PrintVideoFrame(const I420BufferInterface &frame, FILE *file)
 {
     int width = frame.width();
     int height = frame.height();
-    int chroma_width = frame.ChromaWidth();
-    int chroma_height = frame.ChromaHeight();
+    int chroma_width = frame.chromaWidth();
+    int chroma_height = frame.chromaHeight();
 
-    if (PrintPlane(frame.DataY(), width, height, frame.StrideY(), file) < 0)
+    if (PrintPlane(frame.dataY(), width, height, frame.strideY(), file) < 0)
     {
         return -1;
     }
-    if (PrintPlane(frame.DataU(), chroma_width, chroma_height, frame.StrideU(),
+    if (PrintPlane(frame.dataU(), chroma_width, chroma_height, frame.strideU(),
                    file) < 0)
     {
         return -1;
     }
-    if (PrintPlane(frame.DataV(), chroma_width, chroma_height, frame.StrideV(),
+    if (PrintPlane(frame.dataV(), chroma_width, chroma_height, frame.strideV(),
                    file) < 0)
     {
         return -1;
@@ -130,19 +130,19 @@ TEST_F(TestLibYuv, ConvertTest)
 
     double psnr = 0.0;
 
-    std::shared_ptr<I420Buffer> res_i420_buffer = I420Buffer::Create(width_, height_);
+    std::shared_ptr<I420Buffer> res_i420_buffer = I420Buffer::create(width_, height_);
 
     printf("\nConvert #%d I420 <-> I420 \n", j);
     std::unique_ptr<uint8_t[]> out_i420_buffer(new uint8_t[frame_length_]);
     EXPECT_EQ(0, utils::ConvertFromI420(*orig_frame_, VideoType::kI420, 0, out_i420_buffer.get()));
     int y_size = width_ * height_;
-    int u_size = res_i420_buffer->ChromaWidth() * res_i420_buffer->ChromaHeight();
+    int u_size = res_i420_buffer->chromaWidth() * res_i420_buffer->chromaHeight();
     int ret = libyuv::I420Copy(
         out_i420_buffer.get(), width_, out_i420_buffer.get() + y_size,
         width_ >> 1, out_i420_buffer.get() + y_size + u_size, width_ >> 1,
-        res_i420_buffer.get()->MutableDataY(), res_i420_buffer.get()->StrideY(),
-        res_i420_buffer.get()->MutableDataU(), res_i420_buffer.get()->StrideU(),
-        res_i420_buffer.get()->MutableDataV(), res_i420_buffer.get()->StrideV(),
+        res_i420_buffer.get()->MutableDataY(), res_i420_buffer.get()->strideY(),
+        res_i420_buffer.get()->MutableDataU(), res_i420_buffer.get()->strideU(),
+        res_i420_buffer.get()->MutableDataV(), res_i420_buffer.get()->strideV(),
         width_, height_);
     EXPECT_EQ(0, ret);
 
@@ -150,7 +150,7 @@ TEST_F(TestLibYuv, ConvertTest)
     {
         return;
     }
-    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->GetI420(), *res_i420_buffer);
+    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->getI420(), *res_i420_buffer);
     EXPECT_EQ(48.0, psnr);
     j++;
 
@@ -160,13 +160,13 @@ TEST_F(TestLibYuv, ConvertTest)
     int stride_y = 0;
     int stride_uv = 0;
     Calc16ByteAlignedStride(width_, &stride_y, &stride_uv);
-    res_i420_buffer = I420Buffer::Create(width_, height_, stride_y, stride_uv, stride_uv);
+    res_i420_buffer = I420Buffer::create(width_, height_, stride_y, stride_uv, stride_uv);
     EXPECT_EQ(0, utils::ConvertFromI420(*orig_frame_, VideoType::kRGB24, 0, res_rgb_buffer2.get()));
 
     ret = libyuv::ConvertToI420(res_rgb_buffer2.get(), 0, res_i420_buffer.get()->MutableDataY(),
-                                res_i420_buffer.get()->StrideY(), res_i420_buffer.get()->MutableDataU(),
-                                res_i420_buffer.get()->StrideU(), res_i420_buffer.get()->MutableDataV(),
-                                res_i420_buffer.get()->StrideV(), 0, 0, width_, height_,
+                                res_i420_buffer.get()->strideY(), res_i420_buffer.get()->MutableDataU(),
+                                res_i420_buffer.get()->strideU(), res_i420_buffer.get()->MutableDataV(),
+                                res_i420_buffer.get()->strideV(), 0, 0, width_, height_,
                                 res_i420_buffer->width(), res_i420_buffer->height(), libyuv::kRotate0,
                                 utils::ConvertVideoType(VideoType::kRGB24));
 
@@ -175,7 +175,7 @@ TEST_F(TestLibYuv, ConvertTest)
     {
         return;
     }
-    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->GetI420(), *res_i420_buffer);
+    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->getI420(), *res_i420_buffer);
 
     // Optimization Speed- quality trade-off => 45 dB only (platform dependant).
     EXPECT_GT(ceil(psnr), 44);
@@ -186,14 +186,14 @@ TEST_F(TestLibYuv, ConvertTest)
     EXPECT_EQ(0, utils::ConvertFromI420(*orig_frame_, VideoType::kUYVY, 0, out_uyvy_buffer.get()));
 
     ret = libyuv::ConvertToI420(out_uyvy_buffer.get(), 0, res_i420_buffer.get()->MutableDataY(),
-                                res_i420_buffer.get()->StrideY(), res_i420_buffer.get()->MutableDataU(),
-                                res_i420_buffer.get()->StrideU(), res_i420_buffer.get()->MutableDataV(),
-                                res_i420_buffer.get()->StrideV(), 0, 0, width_, height_,
+                                res_i420_buffer.get()->strideY(), res_i420_buffer.get()->MutableDataU(),
+                                res_i420_buffer.get()->strideU(), res_i420_buffer.get()->MutableDataV(),
+                                res_i420_buffer.get()->strideV(), 0, 0, width_, height_,
                                 res_i420_buffer->width(), res_i420_buffer->height(), libyuv::kRotate0,
                                 utils::ConvertVideoType(VideoType::kUYVY));
 
     EXPECT_EQ(0, ret);
-    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->GetI420(), *res_i420_buffer);
+    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->getI420(), *res_i420_buffer);
     EXPECT_EQ(48.0, psnr);
     if (PrintVideoFrame(*res_i420_buffer, output_file) < 0)
     {
@@ -206,9 +206,9 @@ TEST_F(TestLibYuv, ConvertTest)
     EXPECT_EQ(0, utils::ConvertFromI420(*orig_frame_, VideoType::kYUY2, 0, out_yuy2_buffer.get()));
 
     ret = libyuv::ConvertToI420(out_yuy2_buffer.get(), 0, res_i420_buffer.get()->MutableDataY(),
-                                res_i420_buffer.get()->StrideY(), res_i420_buffer.get()->MutableDataU(),
-                                res_i420_buffer.get()->StrideU(), res_i420_buffer.get()->MutableDataV(),
-                                res_i420_buffer.get()->StrideV(), 0, 0, width_, height_,
+                                res_i420_buffer.get()->strideY(), res_i420_buffer.get()->MutableDataU(),
+                                res_i420_buffer.get()->strideU(), res_i420_buffer.get()->MutableDataV(),
+                                res_i420_buffer.get()->strideV(), 0, 0, width_, height_,
                                 res_i420_buffer->width(), res_i420_buffer->height(), libyuv::kRotate0,
                                 utils::ConvertVideoType(VideoType::kYUY2));
 
@@ -219,7 +219,7 @@ TEST_F(TestLibYuv, ConvertTest)
         return;
     }
 
-    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->GetI420(), *res_i420_buffer);
+    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->getI420(), *res_i420_buffer);
     EXPECT_EQ(48.0, psnr);
 
     printf("\nConvert #%d I420 <-> RGB565\n", j);
@@ -227,9 +227,9 @@ TEST_F(TestLibYuv, ConvertTest)
     EXPECT_EQ(0, utils::ConvertFromI420(*orig_frame_, VideoType::kRGB565, 0, out_rgb565_buffer.get()));
 
     ret = libyuv::ConvertToI420(out_rgb565_buffer.get(), 0, res_i420_buffer.get()->MutableDataY(),
-                                res_i420_buffer.get()->StrideY(), res_i420_buffer.get()->MutableDataU(),
-                                res_i420_buffer.get()->StrideU(), res_i420_buffer.get()->MutableDataV(),
-                                res_i420_buffer.get()->StrideV(), 0, 0, width_, height_,
+                                res_i420_buffer.get()->strideY(), res_i420_buffer.get()->MutableDataU(),
+                                res_i420_buffer.get()->strideU(), res_i420_buffer.get()->MutableDataV(),
+                                res_i420_buffer.get()->strideV(), 0, 0, width_, height_,
                                 res_i420_buffer->width(), res_i420_buffer->height(), libyuv::kRotate0,
                                 utils::ConvertVideoType(VideoType::kRGB565));
 
@@ -240,7 +240,7 @@ TEST_F(TestLibYuv, ConvertTest)
     }
     j++;
 
-    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->GetI420(), *res_i420_buffer);
+    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->getI420(), *res_i420_buffer);
 // TODO(leozwang) Investigate the right psnr should be set for I420ToRGB565,
 // Another example is I420ToRGB24, the psnr is 44
 // TODO(mikhal): Add psnr for RGB565, 1555, 4444, convert to ARGB.
@@ -251,9 +251,9 @@ TEST_F(TestLibYuv, ConvertTest)
     EXPECT_EQ(0, utils::ConvertFromI420(*orig_frame_, VideoType::kARGB, 0, out_argb8888_buffer.get()));
 
     ret = libyuv::ConvertToI420(out_argb8888_buffer.get(), 0, res_i420_buffer.get()->MutableDataY(),
-                                res_i420_buffer.get()->StrideY(), res_i420_buffer.get()->MutableDataU(),
-                                res_i420_buffer.get()->StrideU(), res_i420_buffer.get()->MutableDataV(),
-                                res_i420_buffer.get()->StrideV(), 0, 0, width_, height_,
+                                res_i420_buffer.get()->strideY(), res_i420_buffer.get()->MutableDataU(),
+                                res_i420_buffer.get()->strideU(), res_i420_buffer.get()->MutableDataV(),
+                                res_i420_buffer.get()->strideV(), 0, 0, width_, height_,
                                 res_i420_buffer->width(), res_i420_buffer->height(), libyuv::kRotate0,
                                 utils::ConvertVideoType(VideoType::kARGB));
 
@@ -264,7 +264,7 @@ TEST_F(TestLibYuv, ConvertTest)
         return;
     }
 
-    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->GetI420(), *res_i420_buffer);
+    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->getI420(), *res_i420_buffer);
 // TODO(leozwang) Investigate the right psnr should be set for
 // I420ToARGB8888,
     EXPECT_GT(ceil(psnr), 42);
@@ -286,16 +286,16 @@ TEST_F(TestLibYuv, ConvertAlignedFrame)
     int stride_uv = 0;
     Calc16ByteAlignedStride(width_, &stride_y, &stride_uv);
 
-    std::shared_ptr<I420Buffer> res_i420_buffer = I420Buffer::Create(width_, height_, stride_y, stride_uv, stride_uv);
+    std::shared_ptr<I420Buffer> res_i420_buffer = I420Buffer::create(width_, height_, stride_y, stride_uv, stride_uv);
     std::unique_ptr<uint8_t[]> out_i420_buffer(new uint8_t[frame_length_]);
     EXPECT_EQ(0, utils::ConvertFromI420(*orig_frame_, VideoType::kI420, 0, out_i420_buffer.get()));
     int y_size = width_ * height_;
-    int u_size = res_i420_buffer->ChromaWidth() * res_i420_buffer->ChromaHeight();
+    int u_size = res_i420_buffer->chromaWidth() * res_i420_buffer->chromaHeight();
     int ret = libyuv::I420Copy(out_i420_buffer.get(), width_, out_i420_buffer.get() + y_size,
                                width_ >> 1, out_i420_buffer.get() + y_size + u_size, width_ >> 1,
-                               res_i420_buffer.get()->MutableDataY(), res_i420_buffer.get()->StrideY(),
-                               res_i420_buffer.get()->MutableDataU(), res_i420_buffer.get()->StrideU(),
-                               res_i420_buffer.get()->MutableDataV(), res_i420_buffer.get()->StrideV(),
+                               res_i420_buffer.get()->MutableDataY(), res_i420_buffer.get()->strideY(),
+                               res_i420_buffer.get()->MutableDataU(), res_i420_buffer.get()->strideU(),
+                               res_i420_buffer.get()->MutableDataV(), res_i420_buffer.get()->strideV(),
                                width_, height_);
 
     EXPECT_EQ(0, ret);
@@ -304,7 +304,7 @@ TEST_F(TestLibYuv, ConvertAlignedFrame)
     {
         return;
     }
-    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->GetI420(), *res_i420_buffer);
+    psnr = utils::I420PSNR(*orig_frame_->videoFrameBuffer()->getI420(), *res_i420_buffer);
     EXPECT_EQ(48.0, psnr);
 }
 

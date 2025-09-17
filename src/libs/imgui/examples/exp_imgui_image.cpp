@@ -9,25 +9,26 @@
 
 int main()
 {
-    octk::StringView type = octk::constants::kImguiApplicationSDLOpenGL3;
+    // octk::StringView type = octk::constants::kImguiApplicationSDLOpenGL3;
+    octk::StringView type = octk::constants::kImGuiApplicationSDLRenderer3;
     octk::ImGuiApplication::Properties properties;
     properties.title = "exp_imgui_theme.cpp";
     auto imguiApp = octk::ImGuiApplication::Factory::create(type, properties);
     octk::ImGuiImage::SharedPtr image;
+    auto expected = imguiApp->loadImage("test.bmp");
+    if (expected.has_value())
+    {
+        image = expected.value();
+        auto aspectRatio = image->aspectRatio();
+        std::cout << "aspectRatio: " << aspectRatio << std::endl;
+    }
+    else
+    {
+        std::cerr << "Failed to load image, " << expected.error() << std::endl;
+    }
     imguiApp->setInitFunction(
-        [&]()
-        {
-            auto expected = imguiApp->loadImage("test.bmp");
-            if (expected.has_value())
-            {
-                image = expected.value();
-                auto aspectRatio = image->aspectRatio();
-                std::cout << "aspectRatio: " << aspectRatio << std::endl;
-            }
-            else
-            {
-                std::cerr << "Failed to load image, " << expected.error() << std::endl;
-            }
+        [&]() {
+
         });
     imguiApp->setDrawFunction(
         [&]()
@@ -35,6 +36,7 @@ int main()
             if (image)
             {
                 ImGui::Begin("ImGuiImage");
+                image->checkUpdateTexture();
                 ImGui::Image(image->textureId(), image->scaledSize(500, 500));
                 ImGui::End();
             }

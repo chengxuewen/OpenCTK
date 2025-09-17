@@ -237,7 +237,7 @@ const std::shared_ptr<VideoFrameBuffer> &VideoBroadcaster::GetBlackFrameBuffer(i
 {
     if (!mBlackFrameBuffer || mBlackFrameBuffer->width() != width || mBlackFrameBuffer->height() != height)
     {
-        std::shared_ptr<I420Buffer> buffer = I420Buffer::Create(width, height);
+        std::shared_ptr<I420Buffer> buffer = I420Buffer::create(width, height);
         I420Buffer::SetBlack(buffer.get());
         mBlackFrameBuffer = buffer;
     }

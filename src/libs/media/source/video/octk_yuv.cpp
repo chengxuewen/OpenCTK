@@ -85,12 +85,12 @@ int ExtractBuffer(const std::shared_ptr<I420BufferInterface> &input_frame,
         return -1;
     }
 
-    int chroma_width = input_frame->ChromaWidth();
-    int chroma_height = input_frame->ChromaHeight();
+    int chroma_width = input_frame->chromaWidth();
+    int chroma_height = input_frame->chromaHeight();
 
-    libyuv::I420Copy(input_frame->DataY(), input_frame->StrideY(),
-                     input_frame->DataU(), input_frame->StrideU(),
-                     input_frame->DataV(), input_frame->StrideV(), buffer, width,
+    libyuv::I420Copy(input_frame->dataY(), input_frame->strideY(),
+                     input_frame->dataU(), input_frame->strideU(),
+                     input_frame->dataV(), input_frame->strideV(), buffer, width,
                      buffer + width * height, chroma_width,
                      buffer + width * height + chroma_width * chroma_height,
                      chroma_width, width, height);
@@ -100,7 +100,7 @@ int ExtractBuffer(const std::shared_ptr<I420BufferInterface> &input_frame,
 
 int ExtractBuffer(const VideoFrame &input_frame, size_t size, uint8_t *buffer)
 {
-    return ExtractBuffer(input_frame.videoFrameBuffer()->ToI420(), size,
+    return ExtractBuffer(input_frame.videoFrameBuffer()->toI420(), size,
                          buffer);
 }
 
@@ -146,10 +146,10 @@ int ConvertFromI420(const VideoFrame &src_frame,
                     uint8_t *dst_frame)
 {
     std::shared_ptr<I420BufferInterface> i420_buffer =
-        src_frame.videoFrameBuffer()->ToI420();
+        src_frame.videoFrameBuffer()->toI420();
     return libyuv::ConvertFromI420(
-        i420_buffer->DataY(), i420_buffer->StrideY(), i420_buffer->DataU(),
-        i420_buffer->StrideU(), i420_buffer->DataV(), i420_buffer->StrideV(),
+        i420_buffer->dataY(), i420_buffer->strideY(), i420_buffer->dataU(),
+        i420_buffer->strideU(), i420_buffer->dataV(), i420_buffer->strideV(),
         dst_frame, dst_sample_size, src_frame.width(), src_frame.height(),
         ConvertVideoType(dst_video_type));
 }
@@ -160,19 +160,19 @@ std::shared_ptr<I420ABufferInterface> ScaleI420ABuffer(
     int target_height)
 {
     std::shared_ptr<I420Buffer> yuv_buffer =
-        I420Buffer::Create(target_width, target_height);
+        I420Buffer::create(target_width, target_height);
     yuv_buffer->scaleFrom(buffer);
     std::shared_ptr<I420Buffer> axx_buffer =
-        I420Buffer::Create(target_width, target_height);
-    libyuv::ScalePlane(buffer.DataA(), buffer.StrideA(), buffer.width(),
+        I420Buffer::create(target_width, target_height);
+    libyuv::ScalePlane(buffer.dataA(), buffer.strideA(), buffer.width(),
                        buffer.height(), axx_buffer->MutableDataY(),
-                       axx_buffer->StrideY(), target_width, target_height,
+                       axx_buffer->strideY(), target_width, target_height,
                        libyuv::kFilterBox);
-    std::shared_ptr<I420ABufferInterface> merged_buffer = utils::WrapI420ABuffer(
-        yuv_buffer->width(), yuv_buffer->height(), yuv_buffer->DataY(),
-        yuv_buffer->StrideY(), yuv_buffer->DataU(), yuv_buffer->StrideU(),
-        yuv_buffer->DataV(), yuv_buffer->StrideV(), axx_buffer->DataY(),
-        axx_buffer->StrideY(),
+    std::shared_ptr<I420ABufferInterface> merged_buffer = utils::wrapI420ABuffer(
+        yuv_buffer->width(), yuv_buffer->height(), yuv_buffer->dataY(),
+        yuv_buffer->strideY(), yuv_buffer->dataU(), yuv_buffer->strideU(),
+        yuv_buffer->dataV(), yuv_buffer->strideV(), axx_buffer->dataY(),
+        axx_buffer->strideY(),
         // To keep references alive.
         [yuv_buffer, axx_buffer] {});
     return merged_buffer;
@@ -184,7 +184,7 @@ std::shared_ptr<I420BufferInterface> ScaleVideoFrameBuffer(
     int dst_height)
 {
     std::shared_ptr<I420Buffer> scaled_buffer =
-        I420Buffer::Create(dst_width, dst_height);
+        I420Buffer::create(dst_width, dst_height);
     scaled_buffer->scaleFrom(source);
     return scaled_buffer;
 }
@@ -197,16 +197,16 @@ double I420SSE(const I420BufferInterface &ref_buffer,
     const uint64_t width = test_buffer.width();
     const uint64_t height = test_buffer.height();
     const uint64_t sse_y = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataY(), ref_buffer.StrideY(), test_buffer.DataY(),
-        test_buffer.StrideY(), width, height);
+        ref_buffer.dataY(), ref_buffer.strideY(), test_buffer.dataY(),
+        test_buffer.strideY(), width, height);
     const int width_uv = (width + 1) >> 1;
     const int height_uv = (height + 1) >> 1;
     const uint64_t sse_u = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataU(), ref_buffer.StrideU(), test_buffer.DataU(),
-        test_buffer.StrideU(), width_uv, height_uv);
+        ref_buffer.dataU(), ref_buffer.strideU(), test_buffer.dataU(),
+        test_buffer.strideU(), width_uv, height_uv);
     const uint64_t sse_v = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataV(), ref_buffer.StrideV(), test_buffer.DataV(),
-        test_buffer.StrideV(), width_uv, height_uv);
+        ref_buffer.dataV(), ref_buffer.strideV(), test_buffer.dataV(),
+        test_buffer.strideV(), width_uv, height_uv);
     const double samples = width * height + 2 * (width_uv * height_uv);
     const double sse = sse_y + sse_u + sse_v;
     return sse / (samples * 255.0 * 255.0);
@@ -228,19 +228,19 @@ double I420APSNR(const I420ABufferInterface &ref_buffer,
     const int width = test_buffer.width();
     const int height = test_buffer.height();
     const uint64_t sse_y = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataY(), ref_buffer.StrideY(), test_buffer.DataY(),
-        test_buffer.StrideY(), width, height);
+        ref_buffer.dataY(), ref_buffer.strideY(), test_buffer.dataY(),
+        test_buffer.strideY(), width, height);
     const int width_uv = (width + 1) >> 1;
     const int height_uv = (height + 1) >> 1;
     const uint64_t sse_u = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataU(), ref_buffer.StrideU(), test_buffer.DataU(),
-        test_buffer.StrideU(), width_uv, height_uv);
+        ref_buffer.dataU(), ref_buffer.strideU(), test_buffer.dataU(),
+        test_buffer.strideU(), width_uv, height_uv);
     const uint64_t sse_v = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataV(), ref_buffer.StrideV(), test_buffer.DataV(),
-        test_buffer.StrideV(), width_uv, height_uv);
+        ref_buffer.dataV(), ref_buffer.strideV(), test_buffer.dataV(),
+        test_buffer.strideV(), width_uv, height_uv);
     const uint64_t sse_a = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataA(), ref_buffer.StrideA(), test_buffer.DataA(),
-        test_buffer.StrideA(), width, height);
+        ref_buffer.dataA(), ref_buffer.strideA(), test_buffer.dataA(),
+        test_buffer.strideA(), width, height);
     const uint64_t samples = 2 * (uint64_t)width * (uint64_t)height +
                              2 * ((uint64_t)width_uv * (uint64_t)height_uv);
     const uint64_t sse = sse_y + sse_u + sse_v + sse_a;
@@ -259,8 +259,8 @@ double I420APSNR(const VideoFrame *ref_frame, const VideoFrame *test_frame)
                 VideoFrameBuffer::Type::kI420A);
     OCTK_DCHECK(test_frame->videoFrameBuffer()->type() ==
                 VideoFrameBuffer::Type::kI420A);
-    return I420APSNR(*ref_frame->videoFrameBuffer()->GetI420A(),
-                     *test_frame->videoFrameBuffer()->GetI420A());
+    return I420APSNR(*ref_frame->videoFrameBuffer()->getI420A(),
+                     *test_frame->videoFrameBuffer()->getI420A());
 }
 
 // Compute PSNR for an I420 frame (all planes). Can upscale test frame.
@@ -273,15 +273,15 @@ double I420PSNR(const I420BufferInterface &ref_buffer,
         (ref_buffer.height() != test_buffer.height()))
     {
         std::shared_ptr<I420Buffer> scaled_buffer =
-            I420Buffer::Create(ref_buffer.width(), ref_buffer.height());
+            I420Buffer::create(ref_buffer.width(), ref_buffer.height());
         scaled_buffer->scaleFrom(test_buffer);
         return I420PSNR(ref_buffer, *scaled_buffer);
     }
     double psnr = libyuv::I420Psnr(
-        ref_buffer.DataY(), ref_buffer.StrideY(), ref_buffer.DataU(),
-        ref_buffer.StrideU(), ref_buffer.DataV(), ref_buffer.StrideV(),
-        test_buffer.DataY(), test_buffer.StrideY(), test_buffer.DataU(),
-        test_buffer.StrideU(), test_buffer.DataV(), test_buffer.StrideV(),
+        ref_buffer.dataY(), ref_buffer.strideY(), ref_buffer.dataU(),
+        ref_buffer.strideU(), ref_buffer.dataV(), ref_buffer.strideV(),
+        test_buffer.dataY(), test_buffer.strideY(), test_buffer.dataU(),
+        test_buffer.strideU(), test_buffer.dataV(), test_buffer.strideV(),
         test_buffer.width(), test_buffer.height());
     // LibYuv sets the max psnr value to 128, we restrict it here.
     // In case of 0 mse in one frame, 128 can skew the results significantly.
@@ -295,8 +295,8 @@ double I420PSNR(const VideoFrame *ref_frame, const VideoFrame *test_frame)
     {
         return -1;
     }
-    return I420PSNR(*ref_frame->videoFrameBuffer()->ToI420(),
-                    *test_frame->videoFrameBuffer()->ToI420());
+    return I420PSNR(*ref_frame->videoFrameBuffer()->toI420(),
+                    *test_frame->videoFrameBuffer()->toI420());
 }
 
 double I420WeightedPSNR(const I420BufferInterface &ref_buffer,
@@ -308,7 +308,7 @@ double I420WeightedPSNR(const I420BufferInterface &ref_buffer,
         (ref_buffer.height() != test_buffer.height()))
     {
         std::shared_ptr<I420Buffer> scaled_ref_buffer =
-            I420Buffer::Create(test_buffer.width(), test_buffer.height());
+            I420Buffer::create(test_buffer.width(), test_buffer.height());
         scaled_ref_buffer->scaleFrom(ref_buffer);
         return I420WeightedPSNR(*scaled_ref_buffer, test_buffer);
     }
@@ -317,8 +317,8 @@ double I420WeightedPSNR(const I420BufferInterface &ref_buffer,
     int width_y = test_buffer.width();
     int height_y = test_buffer.height();
     uint64_t sse_y = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataY(), ref_buffer.StrideY(), test_buffer.DataY(),
-        test_buffer.StrideY(), width_y, height_y);
+        ref_buffer.dataY(), ref_buffer.strideY(), test_buffer.dataY(),
+        test_buffer.strideY(), width_y, height_y);
     uint64_t num_samples_y = (uint64_t)width_y * (uint64_t)height_y;
     double psnr_y = libyuv::SumSquareErrorToPsnr(sse_y, num_samples_y);
 
@@ -326,13 +326,13 @@ double I420WeightedPSNR(const I420BufferInterface &ref_buffer,
     int width_uv = (width_y + 1) >> 1;
     int height_uv = (height_y + 1) >> 1;
     uint64_t sse_u = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataU(), ref_buffer.StrideU(), test_buffer.DataU(),
-        test_buffer.StrideU(), width_uv, height_uv);
+        ref_buffer.dataU(), ref_buffer.strideU(), test_buffer.dataU(),
+        test_buffer.strideU(), width_uv, height_uv);
     uint64_t num_samples_uv = (uint64_t)width_uv * (uint64_t)height_uv;
     double psnr_u = libyuv::SumSquareErrorToPsnr(sse_u, num_samples_uv);
     uint64_t sse_v = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.DataV(), ref_buffer.StrideV(), test_buffer.DataV(),
-        test_buffer.StrideV(), width_uv, height_uv);
+        ref_buffer.dataV(), ref_buffer.strideV(), test_buffer.dataV(),
+        test_buffer.strideV(), width_uv, height_uv);
     double psnr_v = libyuv::SumSquareErrorToPsnr(sse_v, num_samples_uv);
 
     // Weights from Ohm et. al 2012.
@@ -354,14 +354,14 @@ double I420ASSIM(const I420ABufferInterface &ref_buffer,
         return I420ASSIM(ref_buffer, *scaled_buffer);
     }
     const double yuv_ssim = libyuv::I420Ssim(
-        ref_buffer.DataY(), ref_buffer.StrideY(), ref_buffer.DataU(),
-        ref_buffer.StrideU(), ref_buffer.DataV(), ref_buffer.StrideV(),
-        test_buffer.DataY(), test_buffer.StrideY(), test_buffer.DataU(),
-        test_buffer.StrideU(), test_buffer.DataV(), test_buffer.StrideV(),
+        ref_buffer.dataY(), ref_buffer.strideY(), ref_buffer.dataU(),
+        ref_buffer.strideU(), ref_buffer.dataV(), ref_buffer.strideV(),
+        test_buffer.dataY(), test_buffer.strideY(), test_buffer.dataU(),
+        test_buffer.strideU(), test_buffer.dataV(), test_buffer.strideV(),
         test_buffer.width(), test_buffer.height());
     const double a_ssim = libyuv::CalcFrameSsim(
-        ref_buffer.DataA(), ref_buffer.StrideA(), test_buffer.DataA(),
-        test_buffer.StrideA(), test_buffer.width(), test_buffer.height());
+        ref_buffer.dataA(), ref_buffer.strideA(), test_buffer.dataA(),
+        test_buffer.strideA(), test_buffer.width(), test_buffer.height());
     return (yuv_ssim + (a_ssim * 0.8)) / 1.8;
 }
 
@@ -376,8 +376,8 @@ double I420ASSIM(const VideoFrame *ref_frame, const VideoFrame *test_frame)
                 VideoFrameBuffer::Type::kI420A);
     OCTK_DCHECK(test_frame->videoFrameBuffer()->type() ==
                 VideoFrameBuffer::Type::kI420A);
-    return I420ASSIM(*ref_frame->videoFrameBuffer()->GetI420A(),
-                     *test_frame->videoFrameBuffer()->GetI420A());
+    return I420ASSIM(*ref_frame->videoFrameBuffer()->getI420A(),
+                     *test_frame->videoFrameBuffer()->getI420A());
 }
 
 // Compute SSIM for an I420 frame (all planes). Can upscale test_buffer.
@@ -390,15 +390,15 @@ double I420SSIM(const I420BufferInterface &ref_buffer,
         (ref_buffer.height() != test_buffer.height()))
     {
         std::shared_ptr<I420Buffer> scaled_buffer =
-            I420Buffer::Create(ref_buffer.width(), ref_buffer.height());
+            I420Buffer::create(ref_buffer.width(), ref_buffer.height());
         scaled_buffer->scaleFrom(test_buffer);
         return I420SSIM(ref_buffer, *scaled_buffer);
     }
     return libyuv::I420Ssim(
-        ref_buffer.DataY(), ref_buffer.StrideY(), ref_buffer.DataU(),
-        ref_buffer.StrideU(), ref_buffer.DataV(), ref_buffer.StrideV(),
-        test_buffer.DataY(), test_buffer.StrideY(), test_buffer.DataU(),
-        test_buffer.StrideU(), test_buffer.DataV(), test_buffer.StrideV(),
+        ref_buffer.dataY(), ref_buffer.strideY(), ref_buffer.dataU(),
+        ref_buffer.strideU(), ref_buffer.dataV(), ref_buffer.strideV(),
+        test_buffer.dataY(), test_buffer.strideY(), test_buffer.dataU(),
+        test_buffer.strideU(), test_buffer.dataV(), test_buffer.strideV(),
         test_buffer.width(), test_buffer.height());
 }
 
@@ -408,8 +408,8 @@ double I420SSIM(const VideoFrame *ref_frame, const VideoFrame *test_frame)
     {
         return -1;
     }
-    return I420SSIM(*ref_frame->videoFrameBuffer()->ToI420(),
-                    *test_frame->videoFrameBuffer()->ToI420());
+    return I420SSIM(*ref_frame->videoFrameBuffer()->toI420(),
+                    *test_frame->videoFrameBuffer()->toI420());
 }
 
 void NV12Scale(uint8_t *tmp_buffer,

@@ -31,6 +31,7 @@
 #include <octk_scope_guard.hpp>
 #include <octk_once_flag.hpp>
 #include <octk_spinlock.hpp>
+#include <unordered_set>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -60,12 +61,31 @@ public:
     void setError(const std::string &error) { mLastError = error; }
     void quit() { mFinished.store(true); }
 
+    void initImages(void *data = nullptr)
+    {
+        auto images = std::move(mImagesSet);
+        for (auto &image : images)
+        {
+            image->init(data);
+            mInitedImagesSet.insert(image);
+        }
+    }
+    void destroyImages()
+    {
+        for (auto &image : mInitedImagesSet)
+        {
+            image->destroy();
+        }
+    }
+
     OnceFlag mInitOnceFlag;
     OnceFlag mDestroyOnceFlag;
 
     std::atomic_bool mFinished{false};
     std::atomic_bool mInitSuccess{false};
     const ImVec4 mClearColor{0.45f, 0.55f, 0.60f, 1.00f};
+    std::unordered_set<ImGuiImage::SharedPtr> mImagesSet;
+    std::unordered_set<ImGuiImage::SharedPtr> mInitedImagesSet;
 
     Properties mProperties;
     std::string mLastError;

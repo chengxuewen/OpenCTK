@@ -50,18 +50,14 @@ VideoFramePrivate::VideoFramePrivate(VideoFrame *p)
 {
 }
 
-VideoFramePrivate::~VideoFramePrivate()
-{
-}
+VideoFramePrivate::~VideoFramePrivate() { }
 
 // VideoFrame::VideoFrame(VideoFramePrivate *d)
 //     : mDPtr(d)
 // {
 // }
 
-VideoFrame::~VideoFrame()
-{
-}
+VideoFrame::~VideoFrame() { }
 
 void VideoFrame::UpdateRect::unionRect(const UpdateRect &other)
 {
@@ -114,8 +110,8 @@ VideoFrame::UpdateRect VideoFrame::UpdateRect::scaleWithFrame(int frame_width,
                                                               int crop_y,
                                                               int cropWidth,
                                                               int cropHeight,
-                                                              int scaled_width,
-                                                              int scaled_height) const
+                                                              int scaledWidth,
+                                                              int scaledHeight) const
 {
     OCTK_DCHECK_GT(frame_width, 0);
     OCTK_DCHECK_GT(frame_height, 0);
@@ -126,8 +122,8 @@ VideoFrame::UpdateRect VideoFrame::UpdateRect::scaleWithFrame(int frame_width,
     OCTK_DCHECK_LE(cropWidth + crop_x, frame_width);
     OCTK_DCHECK_LE(cropHeight + crop_y, frame_height);
 
-    OCTK_DCHECK_GT(scaled_width, 0);
-    OCTK_DCHECK_GT(scaled_height, 0);
+    OCTK_DCHECK_GT(scaledWidth, 0);
+    OCTK_DCHECK_GT(scaledHeight, 0);
 
     // Check if update rect is out of the cropped area.
     if (offsetX + width < crop_x || offsetX > crop_x + cropWidth || offsetY + height < crop_y ||
@@ -152,11 +148,11 @@ VideoFrame::UpdateRect VideoFrame::UpdateRect::scaleWithFrame(int frame_width,
     }
 
     // Lower corner is rounded down.
-    x = x * scaled_width / cropWidth;
-    y = y * scaled_height / cropHeight;
+    x = x * scaledWidth / cropWidth;
+    y = y * scaledHeight / cropHeight;
     // Upper corner is rounded up.
-    w = (w * scaled_width + cropWidth - 1) / cropWidth;
-    h = (h * scaled_height + cropHeight - 1) / cropHeight;
+    w = (w * scaledWidth + cropWidth - 1) / cropWidth;
+    h = (h * scaledHeight + cropHeight - 1) / cropHeight;
 
     // Round to full 2x2 blocks due to possible subsampling in the pixel data.
     if (x % 2)
@@ -180,7 +176,7 @@ VideoFrame::UpdateRect VideoFrame::UpdateRect::scaleWithFrame(int frame_width,
 
     // Expand the update rect by 2 pixels in each direction to include any
     // possible scaling artifacts.
-    if (scaled_width != cropWidth || scaled_height != cropHeight)
+    if (scaledWidth != cropWidth || scaledHeight != cropHeight)
     {
         if (x > 0)
         {
@@ -197,13 +193,13 @@ VideoFrame::UpdateRect VideoFrame::UpdateRect::scaleWithFrame(int frame_width,
     }
 
     // Ensure update rect is inside frame dimensions.
-    if (x + w > scaled_width)
+    if (x + w > scaledWidth)
     {
-        w = scaled_width - x;
+        w = scaledWidth - x;
     }
-    if (y + h > scaled_height)
+    if (y + h > scaledHeight)
     {
-        h = scaled_height - y;
+        h = scaledHeight - y;
     }
     OCTK_DCHECK_GE(w, 0);
     OCTK_DCHECK_GE(h, 0);
@@ -225,8 +221,18 @@ VideoFrame::Builder::~Builder() = default;
 VideoFrame VideoFrame::Builder::build()
 {
     OCTK_CHECK(mVideoFrameBuffer != nullptr);
-    return VideoFrame(mId, mVideoFrameBuffer, mTimestampUSecs, mPresentationTimestamp, mReferenceTime, mRtpTimestamp,
-                      mNtpTimeMSecs, mRotation, mColorSpace, mRenderParameters, mUpdateRect, mPacketInfos);
+    return VideoFrame(mId,
+                      mVideoFrameBuffer,
+                      mTimestampUSecs,
+                      mPresentationTimestamp,
+                      mReferenceTime,
+                      mRtpTimestamp,
+                      mNtpTimeMSecs,
+                      mRotation,
+                      mColorSpace,
+                      mRenderParameters,
+                      mUpdateRect,
+                      mPacketInfos);
 }
 
 VideoFrame::Builder &VideoFrame::Builder::setVideoFrameBuffer(const std::shared_ptr<VideoFrameBuffer> &buffer)
@@ -283,11 +289,12 @@ VideoFrame::Builder &VideoFrame::Builder::setPacketInfos(RtpPacketInfos packetIn
     return *this;
 }
 
-VideoFrame::VideoFrame(const std::shared_ptr<VideoFrameBuffer> &buffer,
-                       VideoRotation rotation,
-                       int64_t timestampUSecs)
-    : mVideoFrameBuffer(buffer), mRtpTimestamp(0), mNtpTimeMSecs(0), mTimestampUSecs(timestampUSecs), mRotation(
-    rotation)
+VideoFrame::VideoFrame(const std::shared_ptr<VideoFrameBuffer> &buffer, VideoRotation rotation, int64_t timestampUSecs)
+    : mVideoFrameBuffer(buffer)
+    , mRtpTimestamp(0)
+    , mNtpTimeMSecs(0)
+    , mTimestampUSecs(timestampUSecs)
+    , mRotation(rotation)
 {
 }
 
@@ -295,17 +302,29 @@ VideoFrame::VideoFrame(const std::shared_ptr<VideoFrameBuffer> &buffer,
                        uint32_t rtpTimestamp,
                        int64_t renderTimeMSecs,
                        VideoRotation rotation)
-    : mVideoFrameBuffer(buffer), mRtpTimestamp(rtpTimestamp), mNtpTimeMSecs(0), mTimestampUSecs(
-    renderTimeMSecs * DateTime::kUSecsPerMSec), mRotation(rotation)
+    : mVideoFrameBuffer(buffer)
+    , mRtpTimestamp(rtpTimestamp)
+    , mNtpTimeMSecs(0)
+    , mTimestampUSecs(renderTimeMSecs * DateTime::kUSecsPerMSec)
+    , mRotation(rotation)
 {
     OCTK_DCHECK(buffer);
 }
 
 VideoFrame VideoFrame::copy(const VideoFrame &other)
 {
-    return VideoFrame(other.id(), other.videoFrameBuffer(), other.timestampUSecs(), other.presentationTimestamp(),
-                      other.referenceTime(), other.rtpTimestamp(), other.ntpTimeMSecs(), other.rotation(),
-                      other.colorSpace(), other.renderParameters(), other.updateRect(), other.packetInfos());
+    return VideoFrame(other.id(),
+                      other.videoFrameBuffer(),
+                      other.timestampUSecs(),
+                      other.presentationTimestamp(),
+                      other.referenceTime(),
+                      other.rtpTimestamp(),
+                      other.ntpTimeMSecs(),
+                      other.rotation(),
+                      other.colorSpace(),
+                      other.renderParameters(),
+                      other.updateRect(),
+                      other.packetInfos());
 }
 
 VideoFrame::VideoFrame(uint16_t id,
@@ -342,25 +361,13 @@ VideoFrame::VideoFrame(uint16_t id,
     }
 }
 
-int VideoFrame::width() const
-{
-    return mVideoFrameBuffer ? mVideoFrameBuffer->width() : 0;
-}
+int VideoFrame::width() const { return mVideoFrameBuffer ? mVideoFrameBuffer->width() : 0; }
 
-int VideoFrame::height() const
-{
-    return mVideoFrameBuffer ? mVideoFrameBuffer->height() : 0;
-}
+int VideoFrame::height() const { return mVideoFrameBuffer ? mVideoFrameBuffer->height() : 0; }
 
-uint32_t VideoFrame::size() const
-{
-    return width() * height();
-}
+uint32_t VideoFrame::size() const { return width() * height(); }
 
-std::shared_ptr<VideoFrameBuffer> VideoFrame::videoFrameBuffer() const
-{
-    return mVideoFrameBuffer;
-}
+std::shared_ptr<VideoFrameBuffer> VideoFrame::videoFrameBuffer() const { return mVideoFrameBuffer; }
 
 void VideoFrame::setVideoFrameBuffer(const std::shared_ptr<VideoFrameBuffer> &buffer)
 {
@@ -368,8 +375,6 @@ void VideoFrame::setVideoFrameBuffer(const std::shared_ptr<VideoFrameBuffer> &bu
     mVideoFrameBuffer = buffer;
 }
 
-int64_t VideoFrame::renderTimeMSecs() const
-{
-    return timestampUSecs() / DateTime::kUSecsPerMSec;
-}
+int64_t VideoFrame::renderTimeMSecs() const { return timestampUSecs() / DateTime::kUSecsPerMSec; }
+
 OCTK_END_NAMESPACE

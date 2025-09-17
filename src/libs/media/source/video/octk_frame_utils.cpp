@@ -81,16 +81,16 @@ bool FrameBufsEqual(const std::shared_ptr<VideoFrameBuffer> &f1,
         return false;
     }
 
-    std::shared_ptr<I420BufferInterface> f1_i420 = f1->ToI420();
-    std::shared_ptr<I420BufferInterface> f2_i420 = f2->ToI420();
-    return EqualPlane(f1_i420->DataY(), f2_i420->DataY(), f1_i420->StrideY(),
-                      f2_i420->StrideY(), f1_i420->width(), f1_i420->height()) &&
-           EqualPlane(f1_i420->DataU(), f2_i420->DataU(), f1_i420->StrideU(),
-                      f2_i420->StrideU(), f1_i420->ChromaWidth(),
-                      f1_i420->ChromaHeight()) &&
-           EqualPlane(f1_i420->DataV(), f2_i420->DataV(), f1_i420->StrideV(),
-                      f2_i420->StrideV(), f1_i420->ChromaWidth(),
-                      f1_i420->ChromaHeight());
+    std::shared_ptr<I420BufferInterface> f1_i420 = f1->toI420();
+    std::shared_ptr<I420BufferInterface> f2_i420 = f2->toI420();
+    return EqualPlane(f1_i420->dataY(), f2_i420->dataY(), f1_i420->strideY(),
+                      f2_i420->strideY(), f1_i420->width(), f1_i420->height()) &&
+           EqualPlane(f1_i420->dataU(), f2_i420->dataU(), f1_i420->strideU(),
+                      f2_i420->strideU(), f1_i420->chromaWidth(),
+                      f1_i420->chromaHeight()) &&
+           EqualPlane(f1_i420->dataV(), f2_i420->dataV(), f1_i420->strideV(),
+                      f2_i420->strideV(), f1_i420->chromaWidth(),
+                      f1_i420->chromaHeight());
 }
 
 std::shared_ptr<I420Buffer> ReadI420Buffer(int width, int height, FILE *f)
@@ -98,7 +98,7 @@ std::shared_ptr<I420Buffer> ReadI420Buffer(int width, int height, FILE *f)
     int half_width = (width + 1) / 2;
     std::shared_ptr<I420Buffer> buffer(
         // Explicit stride, no padding between rows.
-        I420Buffer::Create(width, height, width, half_width, half_width));
+        I420Buffer::create(width, height, width, half_width, half_width));
     size_t size_y = static_cast<size_t>(width) * height;
     size_t size_uv = static_cast<size_t>(half_width) * ((height + 1) / 2);
 
@@ -119,7 +119,7 @@ std::shared_ptr<I420Buffer> ReadI420Buffer(int width, int height, FILE *f)
 
 std::shared_ptr<NV12Buffer> ReadNV12Buffer(int width, int height, FILE *f)
 {
-    std::shared_ptr<NV12Buffer> buffer(NV12Buffer::Create(width, height));
+    std::shared_ptr<NV12Buffer> buffer(NV12Buffer::create(width, height));
     size_t size_y = static_cast<size_t>(width) * height;
     size_t size_uv = static_cast<size_t>(width + width % 2) * ((height + 1) / 2);
 

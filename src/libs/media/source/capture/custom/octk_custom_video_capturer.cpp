@@ -74,8 +74,8 @@ void CustomVideoCapturer::onFrame(const VideoFrame &original_frame)
         // Video adapter has requested a down-scale. Allocate a new buffer and
         // return scaled version.
         // For simplicity, only scale here without cropping.
-        std::shared_ptr<I420Buffer> scaled_buffer = I420Buffer::Create(out_width, out_height);
-        scaled_buffer->scaleFrom(*frame.videoFrameBuffer()->ToI420());
+        std::shared_ptr<I420Buffer> scaled_buffer = I420Buffer::create(out_width, out_height);
+        scaled_buffer->scaleFrom(*frame.videoFrameBuffer()->toI420());
         VideoFrame::Builder new_frame_builder =
             VideoFrame::Builder()
                 .setVideoFrameBuffer(scaled_buffer)

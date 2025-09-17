@@ -44,23 +44,23 @@ public:
     NV12Buffer(int width, int height, int stride_y, int stride_uv);
     ~NV12Buffer() override;
 
-    static std::shared_ptr<NV12Buffer> Create(int width, int height);
-    static std::shared_ptr<NV12Buffer> Create(int width,
+    static std::shared_ptr<NV12Buffer> create(int width, int height);
+    static std::shared_ptr<NV12Buffer> create(int width,
                                               int height,
                                               int stride_y,
                                               int stride_uv);
     static std::shared_ptr<NV12Buffer> Copy(const I420BufferInterface &i420_buffer);
 
-    std::shared_ptr<I420BufferInterface> ToI420() override;
+    std::shared_ptr<I420BufferInterface> toI420() override;
 
     int width() const override;
     int height() const override;
 
-    int StrideY() const override;
-    int StrideUV() const override;
+    int strideY() const override;
+    int strideUV() const override;
 
-    const uint8_t *DataY() const override;
-    const uint8_t *DataUV() const override;
+    const uint8_t *dataY() const override;
+    const uint8_t *dataUV() const override;
 
     uint8_t *MutableDataY();
     uint8_t *MutableDataUV();

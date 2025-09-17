@@ -54,17 +54,17 @@ public:
     static std::shared_ptr<I010Buffer> Rotate(const I010BufferInterface &src, VideoRotation rotation);
 
     // VideoFrameBuffer implementation.
-    std::shared_ptr<I420BufferInterface> ToI420() override;
+    std::shared_ptr<I420BufferInterface> toI420() override;
 
     // PlanarYuv16BBuffer implementation.
     int width() const override;
     int height() const override;
-    const uint16_t *DataY() const override;
-    const uint16_t *DataU() const override;
-    const uint16_t *DataV() const override;
-    int StrideY() const override;
-    int StrideU() const override;
-    int StrideV() const override;
+    const uint16_t *dataY() const override;
+    const uint16_t *dataU() const override;
+    const uint16_t *dataV() const override;
+    int strideY() const override;
+    int strideU() const override;
+    int strideV() const override;
 
     uint16_t *MutableDataY();
     uint16_t *MutableDataU();

@@ -42,8 +42,8 @@ public:
     I420Buffer(int width, int height, int stride_y, int stride_u, int stride_v);
     ~I420Buffer() override;
 
-    static std::shared_ptr<I420Buffer> Create(int width, int height);
-    static std::shared_ptr<I420Buffer> Create(int width,
+    static std::shared_ptr<I420Buffer> create(int width, int height);
+    static std::shared_ptr<I420Buffer> create(int width,
                                               int height,
                                               int stride_y,
                                               int stride_u,
@@ -54,7 +54,7 @@ public:
     // Deprecated.
     static std::shared_ptr<I420Buffer> Copy(const VideoFrameBuffer &buffer)
     {
-        return Copy(*buffer.GetI420());
+        return Copy(*buffer.getI420());
     }
 
     static std::shared_ptr<I420Buffer> Copy(int width,
@@ -73,7 +73,7 @@ public:
     static std::shared_ptr<I420Buffer> Rotate(const VideoFrameBuffer &src,
                                               VideoRotation rotation)
     {
-        return Rotate(*src.GetI420(), rotation);
+        return Rotate(*src.getI420(), rotation);
     }
 
     // Sets the buffer to all black.
@@ -87,17 +87,17 @@ public:
     // issues are resolved in a better way. Or in the mean time, use SetBlack.
     void InitializeData();
 
-    std::shared_ptr<I420BufferInterface> ToI420() override;
+    std::shared_ptr<I420BufferInterface> toI420() override;
 
     int width() const override;
     int height() const override;
-    const uint8_t *DataY() const override;
-    const uint8_t *DataU() const override;
-    const uint8_t *DataV() const override;
+    const uint8_t *dataY() const override;
+    const uint8_t *dataU() const override;
+    const uint8_t *dataV() const override;
 
-    int StrideY() const override;
-    int StrideU() const override;
-    int StrideV() const override;
+    int strideY() const override;
+    int strideU() const override;
+    int strideV() const override;
 
     uint8_t *MutableDataY();
     uint8_t *MutableDataU();

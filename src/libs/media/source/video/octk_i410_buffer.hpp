@@ -65,8 +65,8 @@ public:
     static std::shared_ptr<I410Buffer> Rotate(const I410BufferInterface &src,
                                               VideoRotation rotation);
 
-    std::shared_ptr<I420BufferInterface> ToI420() final;
-    const I420BufferInterface *GetI420() const final { return nullptr; }
+    std::shared_ptr<I420BufferInterface> toI420() final;
+    const I420BufferInterface *getI420() const final { return nullptr; }
 
     // Sets all three planes to all zeros. Used to work around for
     // quirks in memory checkers
@@ -78,13 +78,13 @@ public:
 
     int width() const override;
     int height() const override;
-    const uint16_t *DataY() const override;
-    const uint16_t *DataU() const override;
-    const uint16_t *DataV() const override;
+    const uint16_t *dataY() const override;
+    const uint16_t *dataU() const override;
+    const uint16_t *dataV() const override;
 
-    int StrideY() const override;
-    int StrideU() const override;
-    int StrideV() const override;
+    int strideY() const override;
+    int strideU() const override;
+    int strideV() const override;
 
     uint16_t *MutableDataY();
     uint16_t *MutableDataU();

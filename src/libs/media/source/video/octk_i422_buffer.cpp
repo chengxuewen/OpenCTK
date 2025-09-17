@@ -68,13 +68,13 @@ I422Buffer::I422Buffer(int width,
 I422Buffer::~I422Buffer() {}
 
 // static
-std::shared_ptr<I422Buffer> I422Buffer::Create(int width, int height)
+std::shared_ptr<I422Buffer> I422Buffer::create(int width, int height)
 {
     return std::make_shared<I422Buffer>(width, height);
 }
 
 // static
-std::shared_ptr<I422Buffer> I422Buffer::Create(int width,
+std::shared_ptr<I422Buffer> I422Buffer::create(int width,
                                                int height,
                                                int stride_y,
                                                int stride_u,
@@ -87,9 +87,9 @@ std::shared_ptr<I422Buffer> I422Buffer::Create(int width,
 std::shared_ptr<I422Buffer> I422Buffer::Copy(const I422BufferInterface &source)
 {
     return Copy(source.width(), source.height(),
-                source.DataY(), source.StrideY(),
-                source.DataU(), source.StrideU(),
-                source.DataV(), source.StrideV());
+                source.dataY(), source.strideY(),
+                source.dataU(), source.strideU(),
+                source.dataV(), source.strideV());
 }
 
 // static
@@ -97,13 +97,13 @@ std::shared_ptr<I422Buffer> I422Buffer::Copy(const I420BufferInterface &source)
 {
     const int width = source.width();
     const int height = source.height();
-    std::shared_ptr<I422Buffer> buffer = Create(width, height);
-    int res = libyuv::I420ToI422(source.DataY(), source.StrideY(),
-                                 source.DataU(), source.StrideU(),
-                                 source.DataV(), source.StrideV(),
-                                 buffer->MutableDataY(), buffer->StrideY(),
-                                 buffer->MutableDataU(), buffer->StrideU(),
-                                 buffer->MutableDataV(), buffer->StrideV(),
+    std::shared_ptr<I422Buffer> buffer = create(width, height);
+    int res = libyuv::I420ToI422(source.dataY(), source.strideY(),
+                                 source.dataU(), source.strideU(),
+                                 source.dataV(), source.strideV(),
+                                 buffer->MutableDataY(), buffer->strideY(),
+                                 buffer->MutableDataU(), buffer->strideU(),
+                                 buffer->MutableDataV(), buffer->strideV(),
                                  width, height);
     OCTK_DCHECK_EQ(res, 0);
 
@@ -121,13 +121,13 @@ std::shared_ptr<I422Buffer> I422Buffer::Copy(int width,
                                              int stride_v)
 {
     // Note: May use different strides than the input data.
-    std::shared_ptr<I422Buffer> buffer = Create(width, height);
+    std::shared_ptr<I422Buffer> buffer = create(width, height);
     int res = libyuv::I422Copy(data_y, stride_y,
                                data_u, stride_u,
                                data_v, stride_v,
-                               buffer->MutableDataY(), buffer->StrideY(),
-                               buffer->MutableDataU(), buffer->StrideU(),
-                               buffer->MutableDataV(), buffer->StrideV(),
+                               buffer->MutableDataY(), buffer->strideY(),
+                               buffer->MutableDataU(), buffer->strideU(),
+                               buffer->MutableDataV(), buffer->strideV(),
                                width, height);
     OCTK_DCHECK_EQ(res, 0);
 
@@ -137,9 +137,9 @@ std::shared_ptr<I422Buffer> I422Buffer::Copy(int width,
 // static
 std::shared_ptr<I422Buffer> I422Buffer::Rotate(const I422BufferInterface &src, VideoRotation rotation)
 {
-    OCTK_CHECK(src.DataY());
-    OCTK_CHECK(src.DataU());
-    OCTK_CHECK(src.DataV());
+    OCTK_CHECK(src.dataY());
+    OCTK_CHECK(src.dataU());
+    OCTK_CHECK(src.dataV());
 
     int rotated_width = src.width();
     int rotated_height = src.height();
@@ -148,29 +148,29 @@ std::shared_ptr<I422Buffer> I422Buffer::Rotate(const I422BufferInterface &src, V
         std::swap(rotated_width, rotated_height);
     }
 
-    std::shared_ptr<I422Buffer> buffer = I422Buffer::Create(rotated_width, rotated_height);
+    std::shared_ptr<I422Buffer> buffer = I422Buffer::create(rotated_width, rotated_height);
 
-    int res = libyuv::I422Rotate(src.DataY(), src.StrideY(),
-                                 src.DataU(), src.StrideU(),
-                                 src.DataV(), src.StrideV(),
-                                 buffer->MutableDataY(), buffer->StrideY(),
-                                 buffer->MutableDataU(), buffer->StrideU(),
-                                 buffer->MutableDataV(), buffer->StrideV(),
+    int res = libyuv::I422Rotate(src.dataY(), src.strideY(),
+                                 src.dataU(), src.strideU(),
+                                 src.dataV(), src.strideV(),
+                                 buffer->MutableDataY(), buffer->strideY(),
+                                 buffer->MutableDataU(), buffer->strideU(),
+                                 buffer->MutableDataV(), buffer->strideV(),
                                  src.width(), src.height(),
                                  static_cast<libyuv::RotationMode>(rotation));
     OCTK_DCHECK_EQ(res, 0);
     return buffer;
 }
 
-std::shared_ptr<I420BufferInterface> I422Buffer::ToI420()
+std::shared_ptr<I420BufferInterface> I422Buffer::toI420()
 {
-    std::shared_ptr<I420Buffer> i420_buffer = I420Buffer::Create(width(), height());
-    int res = libyuv::I422ToI420(DataY(), StrideY(),
-                                 DataU(), StrideU(),
-                                 DataV(), StrideV(),
-                                 i420_buffer->MutableDataY(), i420_buffer->StrideY(),
-                                 i420_buffer->MutableDataU(), i420_buffer->StrideU(),
-                                 i420_buffer->MutableDataV(), i420_buffer->StrideV(),
+    std::shared_ptr<I420Buffer> i420_buffer = I420Buffer::create(width(), height());
+    int res = libyuv::I422ToI420(dataY(), strideY(),
+                                 dataU(), strideU(),
+                                 dataV(), strideV(),
+                                 i420_buffer->MutableDataY(), i420_buffer->strideY(),
+                                 i420_buffer->MutableDataU(), i420_buffer->strideU(),
+                                 i420_buffer->MutableDataV(), i420_buffer->strideV(),
                                  width(), height());
     OCTK_DCHECK_EQ(res, 0);
 
@@ -193,43 +193,43 @@ int I422Buffer::height() const
     return height_;
 }
 
-const uint8_t *I422Buffer::DataY() const
+const uint8_t *I422Buffer::dataY() const
 {
     return data_.get();
 }
-const uint8_t *I422Buffer::DataU() const
+const uint8_t *I422Buffer::dataU() const
 {
     return data_.get() + stride_y_ * height_;
 }
-const uint8_t *I422Buffer::DataV() const
+const uint8_t *I422Buffer::dataV() const
 {
     return data_.get() + stride_y_ * height_ + stride_u_ * height_;
 }
 
-int I422Buffer::StrideY() const
+int I422Buffer::strideY() const
 {
     return stride_y_;
 }
-int I422Buffer::StrideU() const
+int I422Buffer::strideU() const
 {
     return stride_u_;
 }
-int I422Buffer::StrideV() const
+int I422Buffer::strideV() const
 {
     return stride_v_;
 }
 
 uint8_t *I422Buffer::MutableDataY()
 {
-    return const_cast<uint8_t *>(DataY());
+    return const_cast<uint8_t *>(dataY());
 }
 uint8_t *I422Buffer::MutableDataU()
 {
-    return const_cast<uint8_t *>(DataU());
+    return const_cast<uint8_t *>(dataU());
 }
 uint8_t *I422Buffer::MutableDataV()
 {
-    return const_cast<uint8_t *>(DataV());
+    return const_cast<uint8_t *>(dataV());
 }
 
 void I422Buffer::cropAndScaleFrom(const I422BufferInterface &src,
@@ -250,17 +250,17 @@ void I422Buffer::cropAndScaleFrom(const I422BufferInterface &src,
     const int uv_offset_y = offsetY;
     offsetX = uv_offset_x * 2;
 
-    const uint8_t *y_plane = src.DataY() + src.StrideY() * offsetY + offsetX;
-    const uint8_t *u_plane = src.DataU() + src.StrideU() * uv_offset_y + uv_offset_x;
-    const uint8_t *v_plane = src.DataV() + src.StrideV() * uv_offset_y + uv_offset_x;
+    const uint8_t *yPlane = src.dataY() + src.strideY() * offsetY + offsetX;
+    const uint8_t *uPlane = src.dataU() + src.strideU() * uv_offset_y + uv_offset_x;
+    const uint8_t *vPlane = src.dataV() + src.strideV() * uv_offset_y + uv_offset_x;
 
-    int res = libyuv::I422Scale(y_plane, src.StrideY(),
-                                u_plane, src.StrideU(),
-                                v_plane, src.StrideV(),
+    int res = libyuv::I422Scale(yPlane, src.strideY(),
+                                uPlane, src.strideU(),
+                                vPlane, src.strideV(),
                                 cropWidth, cropHeight,
-                                MutableDataY(), StrideY(),
-                                MutableDataU(), StrideU(),
-                                MutableDataV(), StrideV(),
+                                MutableDataY(), strideY(),
+                                MutableDataU(), strideU(),
+                                MutableDataV(), strideV(),
                                 width(), height(),
                                 libyuv::kFilterBox);
     OCTK_DCHECK_EQ(res, 0);

@@ -62,13 +62,13 @@ NV12Buffer::NV12Buffer(int width, int height, int stride_y, int stride_uv)
 NV12Buffer::~NV12Buffer() = default;
 
 // static
-std::shared_ptr<NV12Buffer> NV12Buffer::Create(int width, int height)
+std::shared_ptr<NV12Buffer> NV12Buffer::create(int width, int height)
 {
     return std::make_shared<NV12Buffer>(width, height);
 }
 
 // static
-std::shared_ptr<NV12Buffer> NV12Buffer::Create(int width,
+std::shared_ptr<NV12Buffer> NV12Buffer::create(int width,
                                                int height,
                                                int stride_y,
                                                int stride_uv)
@@ -79,24 +79,24 @@ std::shared_ptr<NV12Buffer> NV12Buffer::Create(int width,
 // static
 std::shared_ptr<NV12Buffer> NV12Buffer::Copy(const I420BufferInterface &i420_buffer)
 {
-    std::shared_ptr<NV12Buffer> buffer = NV12Buffer::Create(i420_buffer.width(), i420_buffer.height());
-    libyuv::I420ToNV12(i420_buffer.DataY(), i420_buffer.StrideY(),
-                       i420_buffer.DataU(), i420_buffer.StrideU(),
-                       i420_buffer.DataV(), i420_buffer.StrideV(),
-                       buffer->MutableDataY(), buffer->StrideY(),
-                       buffer->MutableDataUV(), buffer->StrideUV(),
+    std::shared_ptr<NV12Buffer> buffer = NV12Buffer::create(i420_buffer.width(), i420_buffer.height());
+    libyuv::I420ToNV12(i420_buffer.dataY(), i420_buffer.strideY(),
+                       i420_buffer.dataU(), i420_buffer.strideU(),
+                       i420_buffer.dataV(), i420_buffer.strideV(),
+                       buffer->MutableDataY(), buffer->strideY(),
+                       buffer->MutableDataUV(), buffer->strideUV(),
                        buffer->width(), buffer->height());
     return buffer;
 }
 
-std::shared_ptr<I420BufferInterface> NV12Buffer::ToI420()
+std::shared_ptr<I420BufferInterface> NV12Buffer::toI420()
 {
-    std::shared_ptr<I420Buffer> i420_buffer = I420Buffer::Create(width(), height());
-    libyuv::NV12ToI420(DataY(), StrideY(),
-                       DataUV(), StrideUV(),
-                       i420_buffer->MutableDataY(), i420_buffer->StrideY(),
-                       i420_buffer->MutableDataU(), i420_buffer->StrideU(),
-                       i420_buffer->MutableDataV(), i420_buffer->StrideV(),
+    std::shared_ptr<I420Buffer> i420_buffer = I420Buffer::create(width(), height());
+    libyuv::NV12ToI420(dataY(), strideY(),
+                       dataUV(), strideUV(),
+                       i420_buffer->MutableDataY(), i420_buffer->strideY(),
+                       i420_buffer->MutableDataU(), i420_buffer->strideU(),
+                       i420_buffer->MutableDataV(), i420_buffer->strideV(),
                        width(), height());
     return i420_buffer;
 }
@@ -110,21 +110,21 @@ int NV12Buffer::height() const
     return height_;
 }
 
-int NV12Buffer::StrideY() const
+int NV12Buffer::strideY() const
 {
     return stride_y_;
 }
-int NV12Buffer::StrideUV() const
+int NV12Buffer::strideUV() const
 {
     return stride_uv_;
 }
 
-const uint8_t *NV12Buffer::DataY() const
+const uint8_t *NV12Buffer::dataY() const
 {
     return data_.get();
 }
 
-const uint8_t *NV12Buffer::DataUV() const
+const uint8_t *NV12Buffer::dataUV() const
 {
     return data_.get() + UVOffset();
 }
@@ -168,17 +168,18 @@ void NV12Buffer::cropAndScaleFrom(const NV12BufferInterface &src,
     offsetX = uv_offset_x * 2;
     offsetY = uv_offset_y * 2;
 
-    const uint8_t *y_plane = src.DataY() + src.StrideY() * offsetY + offsetX;
-    const uint8_t *uv_plane = src.DataUV() + src.StrideUV() * uv_offset_y + uv_offset_x * 2;
+    const uint8_t *yPlane = src.dataY() + src.strideY() * offsetY + offsetX;
+    const uint8_t *uv_plane = src.dataUV() + src.strideUV() * uv_offset_y + uv_offset_x * 2;
 
-    int res = libyuv::NV12Scale(y_plane, src.StrideY(),
-                                uv_plane, src.StrideUV(),
+    int res = libyuv::NV12Scale(yPlane, src.strideY(),
+                                uv_plane, src.strideUV(),
                                 cropWidth, cropHeight,
-                                MutableDataY(), StrideY(),
-                                MutableDataUV(), StrideUV(),
+                                MutableDataY(), strideY(),
+                                MutableDataUV(), strideUV(),
                                 width(), height(),
                                 libyuv::kFilterBox);
 
     OCTK_DCHECK_EQ(res, 0);
 }
+
 OCTK_END_NAMESPACE

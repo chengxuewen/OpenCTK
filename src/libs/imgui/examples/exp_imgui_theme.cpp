@@ -18,7 +18,7 @@ OCTK_STATIC_CONSTANT_STRING(kOutputLogInfoWindow, "OutputLogInfo");
 OCTK_STATIC_CONSTANT_STRING(kOutputStatusWindow, "OutputStatus");
 }; // namespace constants
 
-struct WindowData
+struct AppData
 {
     ImVec2 statusBarPos()
     {
@@ -99,7 +99,7 @@ void ShowThemeTweakGuiWindow(bool* p_open, octk::ImGuiTheme::TweakedTheme &tweak
 
 int main()
 {
-    WindowData windowData;
+    AppData windowData;
     octk::StringView type = octk::constants::kImGuiApplicationSDLGPU3;
     octk::ImGuiApplication::Properties properties;
     properties.title = "exp_imgui_theme.cpp";

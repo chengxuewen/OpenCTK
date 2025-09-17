@@ -24,6 +24,7 @@
 
 #include <private/octk_imgui_application_p.hpp>
 #include "octk_imgui_application_sdlopengl3.hpp"
+#include <octk_processor.hpp>
 
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_opengl3.h>
@@ -45,20 +46,71 @@ OCTK_IMGUI_REGISTER_APPLICATION(ImguiApplicationSDLOpenGL3, constants::kImguiApp
 class ImguiApplicationSDLOpenGL3Image : public ImGuiImage
 {
 public:
-    ImguiApplicationSDLOpenGL3Image(GLuint gluint, GLint glFormat, Format format, float width, float height)
+    ImguiApplicationSDLOpenGL3Image(GLint glFormat, Format format, float width, float height)
         : ImGuiImage(format, width, height)
-        , mTextureID(gluint)
         , mGLFormat(glFormat)
     {
     }
     ~ImguiApplicationSDLOpenGL3Image() override { }
 
-    size_t textureId() override { return static_cast<size_t>(mTextureID); }
-    void update(const uint8_t *data) override
+
+    void init(void * /*data*/) override
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat, this->width(), this->height(), 0, mGLFormat, GL_UNSIGNED_BYTE, data);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        if (0 == mTextureID)
+        {
+            GLuint textureID = 0;
+            glGenTextures(1, &textureID);
+            if (textureID > 0)
+            {
+                glBindTexture(GL_TEXTURE_2D, textureID);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexImage2D(GL_TEXTURE_2D,
+                             0,
+                             mGLFormat,
+                             this->width(),
+                             this->height(),
+                             0,
+                             mGLFormat,
+                             GL_UNSIGNED_BYTE,
+                             nullptr);
+                glBindTexture(GL_TEXTURE_2D, 0);
+                mTextureID = textureID;
+            }
+            else
+            {
+                mInitResult = "glGenTextures failed";
+            }
+        }
+    }
+    void destroy() override
+    {
+        if (mTextureID > 0)
+        {
+            glDeleteTextures(1, &mTextureID);
+            mTextureID = 0;
+        }
+    }
+    size_t textureId() override { return static_cast<size_t>(mTextureID); }
+    void updateTexture() override
+    {
+        if (mTextureID > 0)
+        {
+            glBindTexture(GL_TEXTURE_2D, mTextureID);
+            glActiveTexture(mTextureID);
+            glTexSubImage2D(GL_TEXTURE_2D,
+                            0,
+                            0,
+                            0,
+                            this->width(),
+                            this->height(),
+                            mGLFormat,
+                            GL_UNSIGNED_BYTE,
+                            this->frameData());
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
 
 private:
@@ -165,6 +217,7 @@ bool ImguiApplicationSDLOpenGL3::init()
         SDL_GL_SetSwapInterval(1); // Enable vsync
         SDL_SetWindowPosition(d->mSDLWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
         SDL_ShowWindow(d->mSDLWindow);
+        d->initImages();
 
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
@@ -319,6 +372,8 @@ void ImguiApplicationSDLOpenGL3::destroy()
         {
             // Cleanup
             // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppQuit() function]
+            d->destroyImages();
+
             ImGui_ImplOpenGL3_Shutdown();
             ImGui_ImplSDL3_Shutdown();
             ImGui::DestroyContext();
@@ -335,29 +390,21 @@ void ImguiApplicationSDLOpenGL3::destroy()
 
 StringView ImguiApplicationSDLOpenGL3::typeName() const { return constants::kImguiApplicationSDLOpenGL3; }
 
-ImGuiImageResult
+ImGuiImage::SharedPtr
 ImguiApplicationSDLOpenGL3::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
 {
     OCTK_D(ImguiApplicationSDLOpenGL3);
     GLint pixelFormat = 0;
     switch (format)
     {
-        case ImGuiImage::Format::BGR: pixelFormat = GL_BGR; break;
-        case ImGuiImage::Format::RGB: pixelFormat = GL_RGB; break;
-        case ImGuiImage::Format::BGRA: pixelFormat = GL_BGRA; break;
-        case ImGuiImage::Format::RGBA: pixelFormat = GL_RGBA; break;
+        case ImGuiImage::Format::RGB24: pixelFormat = GL_RGB; break;
+        case ImGuiImage::Format::RGBA32: pixelFormat = GL_RGBA; break;
         default: break;
     }
-    GLuint textureID = 0;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    if (textureID > 0)
-    {
-        auto image = std::make_shared<ImguiApplicationSDLOpenGL3Image>(textureID, pixelFormat, format, width, height);
-        image->update(binary.data());
-        return image;
-    }
-    return utils::makeUnexpected(std::string("SDL_CreateTexture failed:") + SDL_GetError());
+    auto image = std::make_shared<ImguiApplicationSDLOpenGL3Image>(pixelFormat, format, width, height);
+    image->setFrameData(binary.data());
+    d->mImagesSet.insert(image);
+    return image;
 }
 
 OCTK_END_NAMESPACE

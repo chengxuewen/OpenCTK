@@ -58,10 +58,10 @@ public:
     }
 
     size_t textureId() override { return reinterpret_cast<size_t>(mGPUDevice); }
-    void update(const uint8_t *data) override
+    void updateTexture() override
     {
         // SDL_UpdateGPUTexture(gpuTexture, NULL, pixels, pitch)
-            // SDL_UpdateTexture(mTexture, nullptr, data, this->pitchSize());
+        // SDL_UpdateTexture(mTexture, nullptr, data, this->pitchSize());
     }
 
 private:
@@ -341,39 +341,5 @@ void ImGuiApplicationSDLGPU3::destroy()
 }
 
 StringView ImGuiApplicationSDLGPU3::typeName() const { return constants::kImGuiApplicationSDLGPU3; }
-
-ImGuiImageResult
-ImGuiApplicationSDLGPU3::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
-{
-    OCTK_D(ImGuiApplicationSDLGPU3);
-    SDL_GPUTextureCreateInfo textureInfo;
-    textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
-    textureInfo.width = width;
-    textureInfo.height = height;
-    textureInfo.layer_count_or_depth = 1;
-    textureInfo.num_levels = 1;
-    textureInfo.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER;
-    switch (format)
-    {
-        case ImGuiImage::Format::BGR: textureInfo.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM; break;
-        // case ImGuiImage::Format::RGB: textureInfo.format = SDL_GPU_TEXTUREFORMAT_RGB_UNORM; break;
-        case ImGuiImage::Format::BGRA: textureInfo.format = SDL_GPU_TEXTUREFORMAT_B8G8R8A8_UNORM; break;
-        case ImGuiImage::Format::RGBA: textureInfo.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM; break;
-        default: break;
-    }
-    SDL_GPUTexture *gpuTexture = SDL_CreateGPUTexture(d->mSDLGPUDevice, &textureInfo);
-    if (gpuTexture)
-    {
-        auto image = std::make_shared<ImGuiApplicationSDLGPU3Image>(d->mSDLGPUDevice,
-                                                                    gpuTexture,
-                                                                    textureInfo,
-                                                                    format,
-                                                                    width,
-                                                                    height);
-        image->update(binary.data());
-        return image;
-    }
-    return utils::makeUnexpected(std::string("SDL_CreateTexture failed:") + SDL_GetError());
-}
 
 OCTK_END_NAMESPACE

@@ -18,7 +18,7 @@ OCTK_STATIC_CONSTANT_STRING(kOutputLogInfoWindow, "OutputLogInfo");
 OCTK_STATIC_CONSTANT_STRING(kOutputStatusWindow, "OutputStatus");
 }; // namespace constants
 
-struct WindowData
+struct AppData
 {
     ImVec2 statusBarPos()
     {
@@ -74,7 +74,7 @@ struct WindowData
     } dockLayout;
 };
 
-void setDockSpace(WindowData &windowData)
+void setDockSpace(AppData &windowData)
 {
     const auto dockSpaceId = ImGui::GetID(constants::kDockSpace);
     const auto viewport = ImGui::GetMainViewport();
@@ -162,7 +162,7 @@ void setDockSpace(WindowData &windowData)
     ImGui::End();
 }
 
-void setMainMenuBar(WindowData &windowData)
+void setMainMenuBar(AppData &windowData)
 {
     if (ImGui::BeginMainMenuBar())
     {
@@ -224,7 +224,7 @@ void setMainMenuBar(WindowData &windowData)
     }
 }
 
-void showMainMenuBar(WindowData &windowData)
+void showMainMenuBar(AppData &windowData)
 {
     auto &toolsMenu = windowData.mainMenu.toolsMenu;
     if (toolsMenu.showMetrics)
@@ -245,7 +245,7 @@ void showMainMenuBar(WindowData &windowData)
     }
 }
 
-void showStatusBar(WindowData &windowData)
+void showStatusBar(AppData &windowData)
 {
     auto &viewMenu = windowData.mainMenu.viewMenu;
     if (viewMenu.showStatusBar)
@@ -271,7 +271,7 @@ void showStatusBar(WindowData &windowData)
 
 int main()
 {
-    WindowData windowData;
+    AppData windowData;
     octk::StringView type = octk::constants::kImGuiApplicationSDLGPU3;
     octk::ImGuiApplication::Properties properties;
     properties.title = "test";

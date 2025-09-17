@@ -45,8 +45,15 @@ public:
         Event_Quit = SDL_EVENT_USER + 2
     };
 
-    VideoRenderer(const std::string &windowTitle, size_t width, size_t height)
+    enum class VideoType
+    {
+        I420,
+        RGBA
+    };
+
+    VideoRenderer(VideoType videoType, const std::string &windowTitle, size_t width, size_t height)
         : mWindowTitle(windowTitle)
+        , mVideoType(videoType)
     {
         mWindowWidth = width;
         mWindowHeight = height;
@@ -78,14 +85,17 @@ public:
     {
         bool success = false;
         std::call_once(mInitFlag,
-                       [this, &success]() {
+                       [this, &success]()
+                       {
                            if (!SDL_Init(SDL_INIT_VIDEO))
                            {
                                OCTK_ERROR("SDL_Init failed, err:%s", SDL_GetError());
                                return;
                            }
 
-                           mSDLWindow = SDL_CreateWindow(mWindowTitle.c_str(), mWindowWidth, mWindowHeight,
+                           mSDLWindow = SDL_CreateWindow(mWindowTitle.c_str(),
+                                                         mWindowWidth,
+                                                         mWindowHeight,
                                                          SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
                            if (!mSDLWindow)
                            {
@@ -100,8 +110,26 @@ public:
                                return;
                            }
 
-                           mSDLTexture = SDL_CreateTexture(mSDLRender, SDL_PIXELFORMAT_IYUV,
-                                                           SDL_TEXTUREACCESS_STREAMING, mVideoWidth, mVideoHeight);
+                           if (VideoType::I420 == mVideoType)
+                           {
+                               mSDLTexture = SDL_CreateTexture(mSDLRender,
+                                                               SDL_PIXELFORMAT_IYUV,
+                                                               SDL_TEXTUREACCESS_STREAMING,
+                                                               mVideoWidth,
+                                                               mVideoHeight);
+                           }
+                           else if (VideoType::RGBA == mVideoType)
+                           {
+                               mSDLTexture = SDL_CreateTexture(mSDLRender,
+                                                               SDL_PIXELFORMAT_RGBA32,
+                                                               SDL_TEXTUREACCESS_STREAMING,
+                                                               mVideoWidth,
+                                                               mVideoHeight);
+                           }
+                           else
+                           {
+                               assert(false);
+                           }
                            if (!mSDLTexture)
                            {
                                OCTK_ERROR("SDL_CreateTexture failed, err:%s", SDL_GetError());
@@ -151,9 +179,25 @@ public:
                 }
                 case Event_Refresh:
                 {
-                    OCTK_TRACE("Event_Refresh width:%d, height:%d, tid:%s", mWindowWidth, mWindowHeight,
-                               octk::PlatformThread::currentThreadIdHexString().c_str());
-                    SDL_UpdateTexture(mSDLTexture, NULL, mVideoBuff, mVideoWidth);
+                    if (0)
+                    {
+                        OCTK_TRACE("Event_Refresh width:%d, height:%d, tid:%s",
+                                   mWindowWidth,
+                                   mWindowHeight,
+                                   octk::PlatformThread::currentThreadIdHexString().c_str());
+                    }
+                    if (VideoType::I420 == mVideoType)
+                    {
+                        SDL_UpdateTexture(mSDLTexture, nullptr, mVideoBuff, mVideoWidth);
+                    }
+                    else if (VideoType::RGBA == mVideoType)
+                    {
+                        SDL_UpdateTexture(mSDLTexture, nullptr, mVideoBuff, mVideoWidth * 4);
+                    }
+                    else
+                    {
+                        assert(false);
+                    }
 
                     mSDLRect.x = 0;
                     mSDLRect.y = 0;
@@ -163,12 +207,11 @@ public:
                     mSDLRect.h = mVideoHeight * h_ratio;
 
                     SDL_RenderClear(mSDLRender);
-                    SDL_RenderTexture(mSDLRender, mSDLTexture, NULL, &mSDLRect);
+                    SDL_RenderTexture(mSDLRender, mSDLTexture, nullptr, &mSDLRect);
                     SDL_RenderPresent(mSDLRender);
                     break;
                 }
-                default:
-                    break;
+                default: break;
             }
         }
     }
@@ -176,14 +219,33 @@ public:
     void onFrame(const octk::VideoFrame &frame) override
     {
         auto frameBuffer = frame.videoFrameBuffer();
-        auto i420Buffer = frameBuffer->ToI420();
-        this->resetVideoBuffer(frame.width(), frame.height(), i420Buffer->DataY());
+        if (VideoType::I420 == mVideoType)
+        {
+            auto i420Buffer = frameBuffer->toI420();
+            this->resetVideoBuffer(frame.width(), frame.height(), i420Buffer->dataY());
+        }
+        else if (VideoType::RGBA == mVideoType)
+        {
+            auto rgbaBuffer = frameBuffer->toRGBA();
+            this->resetVideoBuffer(frame.width(), frame.height(), rgbaBuffer->data());
+        }
+        else
+        {
+            assert(false);
+        }
         const auto timestampUSecs = frame.timestampUSecs();
         const auto timestampMSecs = timestampUSecs / octk::DateTime::kUSecsPerMSec;
-        OCTK_TRACE("VideoRenderer::onFrame:type=%d, width:%d, height:%d, ntp:%lld, ts:%lld(%s), tid:%s",
-                   frameBuffer->type(), frame.width(), frame.height(),
-                   frame.ntpTimeMSecs(), timestampUSecs, octk::DateTime::localTimeStringFromSteadyTimeMSecs(timestampMSecs).c_str(),
-                   octk::PlatformThread::currentThreadIdHexString().c_str());
+        if (0)
+        {
+            OCTK_TRACE("VideoRenderer::onFrame:type=%d, width:%d, height:%d, ntp:%lld, ts:%lld(%s), tid:%s",
+                       frameBuffer->type(),
+                       frame.width(),
+                       frame.height(),
+                       frame.ntpTimeMSecs(),
+                       timestampUSecs,
+                       octk::DateTime::localTimeStringFromSteadyTimeMSecs(timestampMSecs).c_str(),
+                       octk::PlatformThread::currentThreadIdHexString().c_str());
+        }
 
         SDL_Event event;
         event.type = Event_Refresh;
@@ -191,14 +253,10 @@ public:
     }
 
     // Should be called by the source when it discards the frame due to rate limiting.
-    void onDiscardedFrame() override
-    {
-    }
+    void onDiscardedFrame() override { }
 
     // Called on the network thread when video constraints change.
-    void onConstraintsChanged(const octk::VideoTrackSourceConstraints & /* constraints */) override
-    {
-    }
+    void onConstraintsChanged(const octk::VideoTrackSourceConstraints & /* constraints */) override { }
 
 protected:
     void resetVideoBuffer(int width, int height, const uint8_t *buffer = nullptr)
@@ -207,15 +265,26 @@ protected:
         {
             mVideoWidth = width;
             mVideoHeight = height;
-            mYFrameLength = width * height;
-            mUFrameLength = width * height / 4;
-            mVFrameLength = width * height / 4;
-            mFrameLength = mYFrameLength + mUFrameLength + mVFrameLength;
+            if (VideoType::I420 == mVideoType)
+            {
+                const auto yLength = width * height;
+                const auto uLength = width * height / 4;
+                const auto vLength = width * height / 4;
+                mFrameLength = yLength + uLength + vLength;
+            }
+            else if (VideoType::RGBA == mVideoType)
+            {
+                mFrameLength = width * height * 4;
+            }
+            else
+            {
+                assert(false);
+            }
             if (mVideoBuff)
             {
                 free(mVideoBuff);
             }
-            mVideoBuff = (uint8_t *)malloc(mFrameLength);
+            mVideoBuff = (uint8_t *)std::realloc(mVideoBuff, mFrameLength);
             if (!mVideoBuff)
             {
                 OCTK_FATAL("malloc video_buff failed");
@@ -231,15 +300,13 @@ protected:
     int mWindowHeight;
     int mVideoWidth = -1;
     int mVideoHeight = -1;
-    int mYFrameLength;
-    int mUFrameLength;
-    int mVFrameLength;
     int mFrameLength;
     std::once_flag mInitFlag;
     std::atomic<bool> mLooping;
     std::atomic<bool> mExit;
-    uint8_t *mVideoBuff = NULL;
+    uint8_t *mVideoBuff{nullptr};
     const std::string mWindowTitle;
+    const VideoType mVideoType{VideoType::I420};
 
     SDL_FRect mSDLRect;
     SDL_Event mSDLEvent;

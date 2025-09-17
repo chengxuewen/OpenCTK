@@ -41,8 +41,8 @@ int main()
     auto msecs = DateTime::steadyTimeMSecs();
     OCTK_WARNING("ts:%s", DateTime::localTimeStringFromSteadyTimeMSecs(msecs).c_str());
     octk::FrameGeneratorCapturerVideoTrackSource::Config config;
-    config.width = 1920;
-    config.height = 1080;
+    config.width = 1080;
+    config.height = 720;
     config.frames_per_second = 25;
     auto capturer = utils::make_unique<octk::SquareGenerator>(config.width, config.height,
                                                               SquareGenerator::OutputType::kI420,
@@ -52,11 +52,12 @@ int main()
                                                                                   Clock::GetRealTimeClock(),
                                                                                   false);
 
-    std::unique_ptr<VideoRenderer> renderer = octk::utils::make_unique<VideoRenderer>("SquareGenerator",
+    std::unique_ptr<VideoRenderer> renderer = octk::utils::make_unique<VideoRenderer>(VideoRenderer::VideoType::RGBA,
+                                                                                      "SquareGenerator",
                                                                                       config.width,
                                                                                       config.height);
     trackSource->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
-
+    trackSource->start();
     if (renderer->init())
     {
         renderer->loop();

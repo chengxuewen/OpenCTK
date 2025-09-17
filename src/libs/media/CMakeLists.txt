@@ -164,6 +164,11 @@ octk_add_library(media
 	source/video/octk_nv12_buffer.hpp
 	source/video/octk_recordable_encoded_frame.hpp
 	source/video/octk_render_resolution.hpp
+	source/video/octk_rgba_buffer.cpp
+	source/video/octk_rgba_buffer.hpp
+	source/video/octk_video_adaptation_counters.cpp
+	source/video/octk_video_adaptation_counters.hpp
+	source/video/octk_video_adaptation_reason.hpp
 	source/video/octk_video_adapter.cpp
 	source/video/octk_video_adapter.hpp
 	source/video/octk_video_bitrate_allocation.cpp

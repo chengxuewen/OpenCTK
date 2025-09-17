@@ -38,7 +38,6 @@ public:
 
     bool exec() override;
     StringView typeName() const override;
-    ImGuiImageResult createImage(ImGuiImage::Format format, const Binary &binary, int width, int height) override;
 
 protected:
     bool init() override;

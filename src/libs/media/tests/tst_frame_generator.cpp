@@ -104,15 +104,15 @@ protected:
                              uint8_t v)
     {
         // Check that frame is valid, has the correct color and timestamp are clean.
-        auto i420_buffer = frame.buffer->ToI420();
+        auto i420_buffer = frame.buffer->toI420();
         const uint8_t *buffer;
-        buffer = i420_buffer->DataY();
+        buffer = i420_buffer->dataY();
         for (int i = 0; i < y_size; ++i)
             ASSERT_EQ(y, buffer[i]);
-        buffer = i420_buffer->DataU();
+        buffer = i420_buffer->dataU();
         for (int i = 0; i < uv_size; ++i)
             ASSERT_EQ(u, buffer[i]);
-        buffer = i420_buffer->DataV();
+        buffer = i420_buffer->dataV();
         for (int i = 0; i < uv_size; ++i)
             ASSERT_EQ(v, buffer[i]);
     }
@@ -121,18 +121,18 @@ protected:
     {
         // Generate a 64-bit hash from the frame's buffer.
         uint64_t hash = 19;
-        auto i420_buffer = frame.buffer->ToI420();
-        const uint8_t *buffer = i420_buffer->DataY();
+        auto i420_buffer = frame.buffer->toI420();
+        const uint8_t *buffer = i420_buffer->dataY();
         for (int i = 0; i < y_size; ++i)
         {
             hash = (37 * hash) + buffer[i];
         }
-        buffer = i420_buffer->DataU();
+        buffer = i420_buffer->dataU();
         for (int i = 0; i < uv_size; ++i)
         {
             hash = (37 * hash) + buffer[i];
         }
-        buffer = i420_buffer->DataV();
+        buffer = i420_buffer->dataV();
         for (int i = 0; i < uv_size; ++i)
         {
             hash = (37 * hash) + buffer[i];

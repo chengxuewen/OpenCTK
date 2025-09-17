@@ -94,12 +94,21 @@ public:
 
     virtual Resolution getResolution() const = 0;
 
+    virtual StringView typeString() const = 0;
     /**
      * @return Returns the frames per second this generator is supposed to provide according to its data source.
      * Not all frame generators know the frames per second of the data source, in such case this method
      * returns utils::nullopt.
      */
     virtual Optional<int> fps() const = 0;
+
+    virtual std::string name() const
+    {
+        std::stringstream ss;
+        const auto resolution = this->getResolution();
+        ss << this->typeString() << "-" << resolution.width << "x" << resolution.height;
+        return ss.str();
+    }
 };
 
 /**
@@ -110,12 +119,15 @@ public:
 class OCTK_MEDIA_API SquareGenerator : public FrameGeneratorInterface
 {
 public:
+    using UniquePtr = std::unique_ptr<SquareGenerator>;
+
     SquareGenerator(int width, int height, OutputType type, int num_squares);
 
     void changeResolution(size_t width, size_t height) override;
     VideoFrameData nextFrame() override;
     Resolution getResolution() const override;
 
+    StringView typeString() const override { return "SquareGenerator"; }
     Optional<int> fps() const override { return utils::nullopt; }
 
 private:
@@ -160,6 +172,7 @@ public:
     }
     Resolution getResolution() const override;
 
+    StringView typeString() const override { return "YuvFileGenerator"; }
     Optional<int> fps() const override { return utils::nullopt; }
 
 private:
@@ -193,6 +206,7 @@ public:
     }
     Resolution getResolution() const override;
 
+    StringView typeString() const override { return "NV12FileGenerator"; }
     Optional<int> fps() const override { return utils::nullopt; }
 
 private:
@@ -227,6 +241,7 @@ public:
     }
     Resolution getResolution() const override;
 
+    StringView typeString() const override { return "SlideGenerator"; }
     Optional<int> fps() const override { return utils::nullopt; }
 
 private:
@@ -262,6 +277,7 @@ public:
     }
     Resolution getResolution() const override;
 
+    StringView typeString() const override { return "ScrollingImageFrameGenerator"; }
     Optional<int> fps() const override { return utils::nullopt; }
 
 private:

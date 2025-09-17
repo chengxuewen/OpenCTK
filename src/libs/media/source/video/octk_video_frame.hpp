@@ -100,7 +100,7 @@ public:
 
     struct OCTK_MEDIA_API ProcessingTime
     {
-        TimeDelta Elapsed() const { return finish - start; }
+        TimeDelta elapsed() const { return finish - start; }
         Timestamp start;
         Timestamp finish;
     };
@@ -276,14 +276,14 @@ public:
     bool hasUpdateRect() const { return mUpdateRect.has_value(); }
 
     // Returns updateRect set by the builder or setUpdateRect() or whole frame rect if no update rect is available.
-    UpdateRect updateRect() const { return mUpdateRect.value_or(UpdateRect{0, 0, width(), height()}); }
+    UpdateRect updateRect() const { return mUpdateRect.value_or(UpdateRect{0, 0, this->width(), this->height()}); }
     // Rectangle must be within the frame dimensions.
     void setUpdateRect(const VideoFrame::UpdateRect &updateRect)
     {
         OCTK_DCHECK_GE(updateRect.offsetX, 0);
         OCTK_DCHECK_GE(updateRect.offsetY, 0);
-        OCTK_DCHECK_LE(updateRect.offsetX + updateRect.width, width());
-        OCTK_DCHECK_LE(updateRect.offsetY + updateRect.height, height());
+        OCTK_DCHECK_LE(updateRect.offsetX + updateRect.width, this->width());
+        OCTK_DCHECK_LE(updateRect.offsetY + updateRect.height, this->height());
         mUpdateRect = updateRect;
     }
 

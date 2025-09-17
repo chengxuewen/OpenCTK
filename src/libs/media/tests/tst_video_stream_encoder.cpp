@@ -217,10 +217,10 @@ public:
                                                 int offset_y,
                                                 int crop_width,
                                                 int crop_height,
-                                                int scaled_width,
-                                                int scaled_height) override
+                                                int scaledWidth,
+                                                int scaledHeight) override
     {
-        return rtc::make_ref_counted<FakeNativeBuffer>(nullptr, scaled_width, scaled_height);
+        return rtc::make_ref_counted<FakeNativeBuffer>(nullptr, scaledWidth, scaledHeight);
     }
 
 private:

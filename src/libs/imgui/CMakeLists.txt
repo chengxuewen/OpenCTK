@@ -48,8 +48,8 @@ octk_add_library(imgui
 	source/octk_imgui_application.cpp
 	source/octk_imgui_application.hpp
 	source/octk_imgui_application_p.hpp
-#	source/octk_imgui_application_sdlgpu3.cpp
-#	source/octk_imgui_application_sdlgpu3.hpp
+	source/octk_imgui_application_sdlgpu3.cpp
+	source/octk_imgui_application_sdlgpu3.hpp
 	source/octk_imgui_application_sdlrenderer3.cpp
 	source/octk_imgui_application_sdlrenderer3.hpp
 	source/octk_imgui_constants.hpp

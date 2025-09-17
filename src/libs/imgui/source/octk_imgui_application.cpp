@@ -26,6 +26,9 @@
 #include <octk_processor.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
+#include "../../core/source/tools/octk_checks.hpp"
+
+
 #include <stb_image.h>
 
 OCTK_BEGIN_NAMESPACE
@@ -146,15 +149,29 @@ bool ImGuiApplication::exec() { return true; }
 
 void ImGuiApplication::destroy() { }
 
-ImGuiImageResult ImGuiApplication::loadImage(StringView path)
+Expected<ImGuiImage::SharedPtr, std::string> ImGuiApplication::loadImage(StringView path)
 {
     int width, height, channels;
     auto expected = this->readImage(path.data(), &width, &height, &channels);
     if (expected.has_value())
     {
-        return this->createImage(ImGuiImage::Format::RGBA, expected.value(), width, height);
+        return this->createImage(ImGuiImage::Format::RGBA32, expected.value(), width, height);
     }
     return utils::makeUnexpected(std::string("imreadBMP failed:") + expected.error());
+}
+
+ImGuiImage::SharedPtr ImGuiApplication::createImage(ImGuiImage::Format format, int width, int height)
+{
+    Binary binary(ImGuiImage::sizeInBytes(format, width, height));
+    std::fill(binary.begin(), binary.end(), 0xFF);
+    return this->createImage(format, binary, width, height);
+}
+
+ImGuiImage::SharedPtr
+ImGuiApplication::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
+{
+    OCTK_CHECK_NOTREACHED();
+    return nullptr;
 }
 
 Expected<Binary, std::string> ImGuiApplication::readImage(const char *path, int *width, int *height, int *channels)
@@ -162,14 +179,6 @@ Expected<Binary, std::string> ImGuiApplication::readImage(const char *path, int 
     unsigned char *imageData = stbi_load(path, width, height, channels, 4);
     if (imageData)
     {
-// #if OCTK_BYTE_ORDER == OCTK_LITTLE_ENDIAN
-//         /* ABGR in little-endian, convert to RGBA */
-//         for (int i = 0; i < (*width) * (*height); i++)
-//         {
-//             std::swap(imageData[i * 4], imageData[i * 4 + 3]);
-//             std::swap(imageData[i * 4 + 1], imageData[i * 4 + 2]);
-//         }
-// #endif
         Binary binary(imageData, imageData + (*width) * (*height) * (*channels));
         stbi_image_free(imageData);
         return binary;

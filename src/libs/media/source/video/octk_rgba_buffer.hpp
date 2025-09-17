@@ -22,32 +22,50 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_desktop_capture_source.hpp>
-#include <octk_memory.hpp>
+#ifndef _RGBA_BUFFER_HPP
+#define _RGBA_BUFFER_HPP
 
-#include "video_renderer.hpp"
+#include <octk_video_frame_buffer.hpp>
+#include <octk_aligned_malloc.hpp>
 
-#include <iostream>
-#include <thread>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 
-int main()
+OCTK_BEGIN_NAMESPACE
+
+class OCTK_MEDIA_API RGBABuffer : public RGBABufferInterface
 {
-    OCTK_LOGGER().switchLevel(octk::LogLevel::Trace);
-    auto capturer = octk::utils::make_unique<octk::DesktopCapturer>(15, 2);
-    capturer->startCapture();
+public:
+    RGBABuffer(int width, int height);
+    ~RGBABuffer() override;
 
-    std::unique_ptr<VideoRenderer> renderer = octk::utils::make_unique<VideoRenderer>(VideoRenderer::VideoType::I420,
-                                                                                      capturer->windowTitle(),
-                                                                                      640,
-                                                                                      480);
-    capturer->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
+    static std::shared_ptr<RGBABuffer> create(int width, int height);
+    static std::shared_ptr<RGBABuffer> copy(const I420BufferInterface &i420Buffer);
+    static std::shared_ptr<RGBABuffer> copy(const RGBABufferInterface &rgbaBuffer);
 
-    if (renderer->init())
-    {
-        renderer->loop();
-    }
-    capturer->removeSink(renderer.get());
+    std::shared_ptr<I420BufferInterface> toI420() override;
+    std::shared_ptr<RGBABufferInterface> toRGBA() override;
 
-    OCTK_INFO() << "Demo exit";
-    return 0;
-}
+    void InitializeData();
+
+    int width() const override;
+    int height() const override;
+
+    int stride() const override;
+
+    uint8_t *mutableData();
+    const uint8_t *data() const override;
+
+    // Scale the cropped area of `src` to the size of `this` buffer, and write the result into `this`.
+    void cropAndScaleFrom(const RGBABufferInterface &src, int offsetX, int offsetY, int cropWidth, int cropHeight);
+
+private:
+    const int mWidth;
+    const int mHeight;
+    const std::unique_ptr<uint8_t, AlignedFreeDeleter> mData;
+};
+
+OCTK_END_NAMESPACE
+
+#endif // _RGBA_BUFFER_HPP

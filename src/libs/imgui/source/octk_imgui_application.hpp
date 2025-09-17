@@ -42,43 +42,73 @@ struct ImGuiImage
 {
     enum class Format
     {
-        BGR,
-        RGB,
-        BGRA,
-        RGBA
+        RGB24,
+        RGBA32
     };
     using SharedPtr = std::shared_ptr<ImGuiImage>;
 
-    ImGuiImage(Format format, float width, float height)
+    ImGuiImage(Format format, int width, int height)
         : mFormat(format)
         , mWidth(width)
         , mHeight(height)
+        , mFrameData(sizeInBytes(format, width, height))
     {
+        std::memset(mFrameData.data(), 0XFF, mFrameData.size());
     }
     virtual ~ImGuiImage() { }
 
     virtual size_t textureId() = 0;
-    virtual void update(const uint8_t *data) = 0;
+    virtual void updateTexture() = 0;
 
-    float width() const { return mWidth; }
-    float height() const { return mHeight; }
+    void checkUpdateTexture()
+    {
+        if (mChanged.exchange(false))
+        {
+            this->updateTexture();
+        }
+    }
+
+    bool valid() const { return mInitResult.empty(); }
+    std::string lastError() const { return mInitResult; }
+
+    const uint8_t *frameData() const { return mFrameData.data(); }
+    void setFrameData(const uint8_t *data)
+    {
+        std::memcpy(mFrameData.data(), data, mFrameData.size());
+        mChanged.store(true);
+    }
+
+    int width() const { return mWidth; }
+    int height() const { return mHeight; }
     ImVec2 scaledSize(float width, float height) const
     {
         const auto length = std::min(width, height);
         const auto aspectRatio = this->aspectRatio();
         return ImVec2{length * aspectRatio, length / aspectRatio};
     }
-    float aspectRatio() const { return this->width() / this->height(); }
+    float aspectRatio() const { return static_cast<float>(this->width()) / this->height(); }
+
     Format format() const { return mFormat; }
+    int pixelSize() const { return pixelSize(mFormat); }
     int pitchSize() const { return mWidth * this->pixelSize(); }
-    int pixelSize() const { return (Format::BGRA == mFormat || Format::RGB == mFormat) ? 3 : 4; }
+    int bytesPerLine() const { return mWidth * this->pixelSize(); }
+    int sizeInBytes() const { return mHeight * this->bytesPerLine(); }
+    static int pixelSize(Format format) { return (Format::RGB24 == format) ? 3 : 4; }
+    static int sizeInBytes(Format format, int width, int height) { return pixelSize(format) * width * height; }
+
+protected:
+    virtual void init(void *data = nullptr) = 0;
+    virtual void destroy() = 0;
+    std::string mInitResult;
 
 private:
-    float mWidth{0};
-    float mHeight{0};
-    Format mFormat{Format::RGBA};
+    int mWidth{0};
+    int mHeight{0};
+    Binary mFrameData;
+    Format mFormat{Format::RGBA32};
+    std::atomic_bool mChanged{true};
+    friend class ImGuiApplicationPrivate;
 };
-using ImGuiImageResult = Expected<ImGuiImage::SharedPtr, std::string>;
 
 class ImGuiApplicationPrivate;
 class OCTK_IMGUI_API ImGuiApplication
@@ -137,18 +167,16 @@ public:
     virtual bool exec();
     virtual StringView typeName() const = 0;
 
-    virtual ImGuiImageResult loadImage(StringView path);
-    virtual ImGuiImageResult createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
-    {
-        return nullptr;
-    };
+    virtual Expected<ImGuiImage::SharedPtr, std::string> loadImage(StringView path);
+    virtual ImGuiImage::SharedPtr createImage(ImGuiImage::Format format, int width, int height);
+    virtual ImGuiImage::SharedPtr createImage(ImGuiImage::Format format, const Binary &binary, int width, int height);
 
     /**
      * @param path
      * @param width
      * @param height
      * @param channels
-     * @return Return RGBA images data.
+     * @return Return RGBA32 images data.
      */
     static Expected<Binary, std::string> readImage(const char *path, int *width, int *height, int *channels);
 
@@ -167,7 +195,7 @@ OCTK_END_NAMESPACE
 #define OCTK_IMGUI_REGISTER_APPLICATION(Type, Name)                                                                    \
     namespace internal                                                                                                 \
     {                                                                                                                  \
-    static octk::ImGuiApplication::Registrar<Type> imguiRegistrar##Type(Name);                                         \
+    static octk::ImGuiApplication::Registrar<Type> imguiRegistrar## Type(Name);                                         \
     }
 
 #endif // _OCTK_IMGUI_APPLICATION_HPP

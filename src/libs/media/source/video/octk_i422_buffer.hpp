@@ -42,8 +42,8 @@ public:
     I422Buffer(int width, int height, int stride_y, int stride_u, int stride_v);
     ~I422Buffer() override;
 
-    static std::shared_ptr<I422Buffer> Create(int width, int height);
-    static std::shared_ptr<I422Buffer> Create(int width,
+    static std::shared_ptr<I422Buffer> create(int width, int height);
+    static std::shared_ptr<I422Buffer> create(int width,
                                               int height,
                                               int stride_y,
                                               int stride_u,
@@ -67,8 +67,8 @@ public:
     static std::shared_ptr<I422Buffer> Rotate(const I422BufferInterface &src,
                                               VideoRotation rotation);
 
-    std::shared_ptr<I420BufferInterface> ToI420() final;
-    const I420BufferInterface *GetI420() const final { return nullptr; }
+    std::shared_ptr<I420BufferInterface> toI420() final;
+    const I420BufferInterface *getI420() const final { return nullptr; }
 
     // Sets the buffer to all black.
     static void SetBlack(I422Buffer *buffer);
@@ -83,13 +83,13 @@ public:
 
     int width() const override;
     int height() const override;
-    const uint8_t *DataY() const override;
-    const uint8_t *DataU() const override;
-    const uint8_t *DataV() const override;
+    const uint8_t *dataY() const override;
+    const uint8_t *dataU() const override;
+    const uint8_t *dataV() const override;
 
-    int StrideY() const override;
-    int StrideU() const override;
-    int StrideV() const override;
+    int strideY() const override;
+    int strideU() const override;
+    int strideV() const override;
 
     uint8_t *MutableDataY();
     uint8_t *MutableDataU();
