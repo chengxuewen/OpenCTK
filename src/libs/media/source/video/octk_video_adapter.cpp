@@ -407,9 +407,9 @@ void VideoAdapter::OnSinkWants(const VideoSinkWants &sink_wants)
 {
     std::lock_guard<std::mutex> lock(mMutex);
     mResolutionRequestMaxPixelCount = sink_wants.maxPixelCount;
-    mResolutionRequestTargetPixelCount = sink_wants.target_pixel_count.value_or(mResolutionRequestMaxPixelCount);
-    mMaxFramerateRequest = sink_wants.max_framerate_fps;
-    mResolutionAlignment = utils::lcm(mSourceResolutionAlignment, sink_wants.resolution_alignment);
+    mResolutionRequestTargetPixelCount = sink_wants.targetPixelCount.value_or(mResolutionRequestMaxPixelCount);
+    mMaxFramerateRequest = sink_wants.maxFramerateFps;
+    mResolutionAlignment = utils::lcm(mSourceResolutionAlignment, sink_wants.resolutionAlignment);
     // Convert from Optional<rtc::VideoSinkWants::FrameSize> to
     // Optional<webrtc::Resolution>. Both are {int,int}.
     mScaleResolutionDownTo = utils::nullopt;
@@ -448,7 +448,7 @@ void VideoAdapter::OnSinkWants(const VideoSinkWants &sink_wants)
     // TODO(https://crbug.com/webrtc/366284861): Delete the code below as part of
     // deleting this flag and only supporting the standard behavior.
 
-    if (sink_wants.aggregates.has_value() && sink_wants.aggregates->any_active_without_requested_resolution)
+    if (sink_wants.aggregates.has_value() && sink_wants.aggregates->anyActiveWithoutRequestedResolution)
     {
         return;
     }

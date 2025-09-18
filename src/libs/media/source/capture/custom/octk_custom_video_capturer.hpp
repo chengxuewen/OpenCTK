@@ -50,17 +50,15 @@ public:
     void removeSink(VideoSinkInterface<VideoFrame> *sink) override;
     void setFramePreprocessor(std::unique_ptr<FramePreprocessor> preprocessor)
     {
-        Mutex::Locker locker(&lock_);
-        preprocessor_ = std::move(preprocessor);
+        Mutex::Locker locker(&mMutex);
+        mPreprocessor = std::move(preprocessor);
     }
     void setEnableAdaptation(bool enable_adaptation)
     {
-        Mutex::Locker locker(&lock_);
-        enable_adaptation_ = enable_adaptation;
+        Mutex::Locker locker(&mMutex);
+        mEnableAdaptation = enable_adaptation;
     }
-    void onOutputFormatRequest(int width,
-                               int height,
-                               const Optional<int> &max_fps);
+    void onOutputFormatRequest(int width, int height, const Optional<int> &max_fps);
 
     // Starts or resumes video capturing. Can be called multiple times during
     // lifetime of this object.
@@ -80,11 +78,11 @@ private:
     void updateVideoAdapter();
     VideoFrame maybePreprocess(const VideoFrame &frame);
 
-    Mutex lock_;
-    std::unique_ptr<FramePreprocessor> preprocessor_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
-    bool enable_adaptation_ OCTK_ATTRIBUTE_GUARDED_BY(lock_) = true;
-    VideoBroadcaster broadcaster_;
-    VideoAdapter video_adapter_;
+    Mutex mMutex;
+    std::unique_ptr<FramePreprocessor> mPreprocessor OCTK_ATTRIBUTE_GUARDED_BY(mMutex);
+    bool mEnableAdaptation OCTK_ATTRIBUTE_GUARDED_BY(mMutex) = true;
+    VideoBroadcaster mBroadcaster;
+    VideoAdapter mVideoAdapter;
 };
 OCTK_END_NAMESPACE
 

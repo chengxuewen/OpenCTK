@@ -149,7 +149,7 @@ void VideoBroadcaster::UpdateWants()
 {
     VideoSinkWants wants;
     wants.rotationApplied = false;
-    wants.resolution_alignment = 1;
+    wants.resolutionAlignment = 1;
     wants.aggregates.emplace(VideoSinkWants::Aggregates());
     wants.isActive = false;
 
@@ -190,17 +190,17 @@ void VideoBroadcaster::UpdateWants()
         // that we don't over utilize the resources for any one.
         // TODO(sprang): Consider using the median instead, since the limit can be
         // expressed by maxPixelCount.
-        if (sink.wants.target_pixel_count &&
-            (!wants.target_pixel_count || (*sink.wants.target_pixel_count < *wants.target_pixel_count)))
+        if (sink.wants.targetPixelCount &&
+            (!wants.targetPixelCount || (*sink.wants.targetPixelCount < *wants.targetPixelCount)))
         {
-            wants.target_pixel_count = sink.wants.target_pixel_count;
+            wants.targetPixelCount = sink.wants.targetPixelCount;
         }
         // Select the minimum for the requested max framerates.
-        if (sink.wants.max_framerate_fps < wants.max_framerate_fps)
+        if (sink.wants.maxFramerateFps < wants.maxFramerateFps)
         {
-            wants.max_framerate_fps = sink.wants.max_framerate_fps;
+            wants.maxFramerateFps = sink.wants.maxFramerateFps;
         }
-        wants.resolution_alignment = utils::lcm(wants.resolution_alignment, sink.wants.resolution_alignment);
+        wants.resolutionAlignment = utils::lcm(wants.resolutionAlignment, sink.wants.resolutionAlignment);
 
         // Pick MAX(requestedResolution) since the actual can be downscaled in
         // encoder instead.
@@ -220,15 +220,15 @@ void VideoBroadcaster::UpdateWants()
         }
         else if (sink.wants.isActive)
         {
-            wants.aggregates->any_active_without_requested_resolution = true;
+            wants.aggregates->anyActiveWithoutRequestedResolution = true;
         }
 
         wants.isActive |= sink.wants.isActive;
     }
 
-    if (wants.target_pixel_count && *wants.target_pixel_count >= wants.maxPixelCount)
+    if (wants.targetPixelCount && *wants.targetPixelCount >= wants.maxPixelCount)
     {
-        wants.target_pixel_count.emplace(wants.maxPixelCount);
+        wants.targetPixelCount.emplace(wants.maxPixelCount);
     }
     mCurrentWants = wants;
 }

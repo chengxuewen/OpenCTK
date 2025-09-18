@@ -28,6 +28,7 @@
 #include <octk_imgui_constants.hpp>
 #include <octk_string_view.hpp>
 #include <octk_optional.hpp>
+#include <octk_spinlock.hpp>
 #include <octk_expected.hpp>
 #include <octk_result.hpp>
 #include <octk_memory.hpp>
@@ -68,12 +69,17 @@ struct ImGuiImage
         }
     }
 
-    bool valid() const { return mInitResult.empty(); }
-    std::string lastError() const { return mInitResult; }
+    bool valid() const { return mLastError.empty(); }
+    std::string lastError() const { return mLastError; }
 
-    const uint8_t *frameData() const { return mFrameData.data(); }
+    Binary frameData() const
+    {
+        SpinLock::Locker locker(mSpinLock);
+        return mFrameData;
+    }
     void setFrameData(const uint8_t *data)
     {
+        SpinLock::Locker locker(mSpinLock);
         std::memcpy(mFrameData.data(), data, mFrameData.size());
         mChanged.store(true);
     }
@@ -99,14 +105,14 @@ struct ImGuiImage
 protected:
     virtual void init(void *data = nullptr) = 0;
     virtual void destroy() = 0;
-    std::string mInitResult;
 
-private:
-    int mWidth{0};
-    int mHeight{0};
     Binary mFrameData;
-    Format mFormat{Format::RGBA32};
+    const int mWidth{0};
+    const int mHeight{0};
+    std::string mLastError;
+    mutable SpinLock mSpinLock;
     std::atomic_bool mChanged{true};
+    const Format mFormat{Format::RGBA32};
     friend class ImGuiApplicationPrivate;
 };
 
@@ -195,7 +201,7 @@ OCTK_END_NAMESPACE
 #define OCTK_IMGUI_REGISTER_APPLICATION(Type, Name)                                                                    \
     namespace internal                                                                                                 \
     {                                                                                                                  \
-    static octk::ImGuiApplication::Registrar<Type> imguiRegistrar## Type(Name);                                         \
+    static octk::ImGuiApplication::Registrar<Type> imguiRegistrar##Type(Name);                                         \
     }
 
 #endif // _OCTK_IMGUI_APPLICATION_HPP

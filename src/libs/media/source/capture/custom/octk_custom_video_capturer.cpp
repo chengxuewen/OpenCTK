@@ -33,13 +33,11 @@ OCTK_BEGIN_NAMESPACE
 
 CustomVideoCapturer::~CustomVideoCapturer() = default;
 
-void CustomVideoCapturer::onOutputFormatRequest(int width,
-                                              int height,
-                                              const Optional<int> &max_fps)
+void CustomVideoCapturer::onOutputFormatRequest(int width, int height, const Optional<int> &max_fps)
 {
     Optional<std::pair<int, int>> target_aspect_ratio = std::make_pair(width, height);
     Optional<int> max_pixel_count = width * height;
-    video_adapter_.onOutputFormatRequest(target_aspect_ratio, max_pixel_count, max_fps);
+    mVideoAdapter.onOutputFormatRequest(target_aspect_ratio, max_pixel_count, max_fps);
 }
 
 void CustomVideoCapturer::onFrame(const VideoFrame &original_frame)
@@ -53,17 +51,22 @@ void CustomVideoCapturer::onFrame(const VideoFrame &original_frame)
 
     bool enable_adaptation;
     {
-        Mutex::Locker locker(&lock_);
-        enable_adaptation = enable_adaptation_;
+        Mutex::Locker locker(&mMutex);
+        enable_adaptation = mEnableAdaptation;
     }
     if (!enable_adaptation)
     {
-        broadcaster_.onFrame(frame);
+        mBroadcaster.onFrame(frame);
         return;
     }
 
-    if (!video_adapter_.adaptFrameResolution(frame.width(), frame.height(), frame.timestampUSecs() * 1000,
-                                             &cropped_width, &cropped_height, &out_width, &out_height))
+    if (!mVideoAdapter.adaptFrameResolution(frame.width(),
+                                            frame.height(),
+                                            frame.timestampUSecs() * 1000,
+                                            &cropped_width,
+                                            &cropped_height,
+                                            &out_width,
+                                            &out_height))
     {
         // Drop frame in order to respect frame rate constraint.
         return;
@@ -76,56 +79,54 @@ void CustomVideoCapturer::onFrame(const VideoFrame &original_frame)
         // For simplicity, only scale here without cropping.
         std::shared_ptr<I420Buffer> scaled_buffer = I420Buffer::create(out_width, out_height);
         scaled_buffer->scaleFrom(*frame.videoFrameBuffer()->toI420());
-        VideoFrame::Builder new_frame_builder =
-            VideoFrame::Builder()
-                .setVideoFrameBuffer(scaled_buffer)
-                .setRotation(VideoRotation::Angle0)
-                .setTimestampUSecs(frame.timestampUSecs())
-                .setId(frame.id());
+        VideoFrame::Builder new_frame_builder = VideoFrame::Builder()
+                                                    .setVideoFrameBuffer(scaled_buffer)
+                                                    .setRotation(VideoRotation::Angle0)
+                                                    .setTimestampUSecs(frame.timestampUSecs())
+                                                    .setId(frame.id());
         if (frame.hasUpdateRect())
         {
-            VideoFrame::UpdateRect new_rect = frame.updateRect().scaleWithFrame(
-                frame.width(), frame.height(), 0, 0, frame.width(), frame.height(),
-                out_width, out_height);
+            VideoFrame::UpdateRect new_rect = frame.updateRect().scaleWithFrame(frame.width(),
+                                                                                frame.height(),
+                                                                                0,
+                                                                                0,
+                                                                                frame.width(),
+                                                                                frame.height(),
+                                                                                out_width,
+                                                                                out_height);
             new_frame_builder.setUpdateRect(new_rect);
         }
-        broadcaster_.onFrame(new_frame_builder.build());
+        mBroadcaster.onFrame(new_frame_builder.build());
     }
     else
     {
         // No adaptations needed, just return the frame as is.
-        broadcaster_.onFrame(frame);
+        mBroadcaster.onFrame(frame);
     }
 }
 
-VideoSinkWants CustomVideoCapturer::getSinkWants()
-{
-    return broadcaster_.wants();
-}
+VideoSinkWants CustomVideoCapturer::getSinkWants() { return mBroadcaster.wants(); }
 
 void CustomVideoCapturer::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
-    broadcaster_.addOrUpdateSink(sink, wants);
+    mBroadcaster.addOrUpdateSink(sink, wants);
     this->updateVideoAdapter();
 }
 
 void CustomVideoCapturer::removeSink(VideoSinkInterface<VideoFrame> *sink)
 {
-    broadcaster_.removeSink(sink);
+    mBroadcaster.removeSink(sink);
     this->updateVideoAdapter();
 }
 
-void CustomVideoCapturer::updateVideoAdapter()
-{
-    video_adapter_.OnSinkWants(broadcaster_.wants());
-}
+void CustomVideoCapturer::updateVideoAdapter() { mVideoAdapter.OnSinkWants(mBroadcaster.wants()); }
 
 VideoFrame CustomVideoCapturer::maybePreprocess(const VideoFrame &frame)
 {
-    Mutex::Locker locker(&lock_);
-    if (preprocessor_ != nullptr)
+    Mutex::Locker locker(&mMutex);
+    if (mPreprocessor != nullptr)
     {
-        return preprocessor_->Preprocess(frame);
+        return mPreprocessor->Preprocess(frame);
     }
     else
     {

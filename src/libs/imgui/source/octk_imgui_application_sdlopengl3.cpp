@@ -53,7 +53,6 @@ public:
     }
     ~ImguiApplicationSDLOpenGL3Image() override { }
 
-
     void init(void * /*data*/) override
     {
         if (0 == mTextureID)
@@ -67,21 +66,13 @@ public:
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexImage2D(GL_TEXTURE_2D,
-                             0,
-                             mGLFormat,
-                             this->width(),
-                             this->height(),
-                             0,
-                             mGLFormat,
-                             GL_UNSIGNED_BYTE,
-                             nullptr);
+                glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat, mWidth, mHeight, 0, mGLFormat, GL_UNSIGNED_BYTE, nullptr);
                 glBindTexture(GL_TEXTURE_2D, 0);
                 mTextureID = textureID;
             }
             else
             {
-                mInitResult = "glGenTextures failed";
+                mLastError = "glGenTextures failed";
             }
         }
     }
@@ -100,15 +91,8 @@ public:
         {
             glBindTexture(GL_TEXTURE_2D, mTextureID);
             glActiveTexture(mTextureID);
-            glTexSubImage2D(GL_TEXTURE_2D,
-                            0,
-                            0,
-                            0,
-                            this->width(),
-                            this->height(),
-                            mGLFormat,
-                            GL_UNSIGNED_BYTE,
-                            this->frameData());
+            SpinLock::Locker locker(mSpinLock);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, mGLFormat, GL_UNSIGNED_BYTE, mFrameData.data());
             glBindTexture(GL_TEXTURE_2D, 0);
         }
     }

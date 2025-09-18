@@ -191,13 +191,13 @@ void FrameGeneratorCapturer::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sin
             mSinkWantsObserver->OnSinkWantsChanged(sink, wants);
         }
     }
-    changeFramerate(this->getSinkWants().max_framerate_fps);
+    this->changeFramerate(this->getSinkWants().maxFramerateFps);
 }
 
 void FrameGeneratorCapturer::removeSink(VideoSinkInterface<VideoFrame> *sink)
 {
     CustomVideoCapturer::removeSink(sink);
-    changeFramerate(this->getSinkWants().max_framerate_fps);
+    this->changeFramerate(this->getSinkWants().maxFramerateFps);
 }
 
 void FrameGeneratorCapturer::forceFrame()
@@ -259,8 +259,10 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
     , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
-    d->mFrameGeneratorCapturer =
-        utils::make_unique<FrameGeneratorCapturer>(clock, std::move(frameGenerator), targetFps, *d->mTaskQueueFactory);
+    d->mFrameGeneratorCapturer = utils::make_unique<FrameGeneratorCapturer>(clock,
+                                                                            std::move(frameGenerator),
+                                                                            targetFps,
+                                                                            *d->mTaskQueueFactory);
 }
 
 FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(

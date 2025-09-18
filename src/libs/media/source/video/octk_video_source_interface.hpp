@@ -70,16 +70,16 @@ struct OCTK_MEDIA_API VideoSinkWants
     // have improved after an earlier downgrade. The source should select the
     // closest resolution to this pixel count, but if maxPixelCount is set, it
     // still sets the absolute upper bound.
-    Optional<int> target_pixel_count;
+    Optional<int> targetPixelCount;
     // Tells the source the maximum framerate the sink wants.
-    int max_framerate_fps = utils::numericMax<int>();
+    int maxFramerateFps = utils::numericMax<int>();
 
     // Tells the source that the sink wants width and height of the video frames
     // to be divisible by `resolution_alignment`.
     // For example: With I420, this value would be a multiple of 2.
     // Note that this field is unrelated to any horizontal or vertical stride
     // requirements the encoder has on the incoming video frame buffers.
-    int resolution_alignment = 1;
+    int resolutionAlignment = 1;
 
     // The resolutions that sink is configured to consume. If the sink is an
     // encoder this is what the encoder is configured to encode. In singlecast we
@@ -122,7 +122,7 @@ struct OCTK_MEDIA_API VideoSinkWants
         // when aggregating sink wants if there exists any sink (encoder) that is
         // active but has not set the `requestedResolution`, i.e is relying on
         // onOutputFormatRequest to handle encode resolution.
-        bool any_active_without_requested_resolution = false;
+        bool anyActiveWithoutRequestedResolution = false;
     };
     Optional<Aggregates> aggregates;
 };

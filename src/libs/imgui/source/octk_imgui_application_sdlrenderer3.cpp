@@ -55,15 +55,15 @@ public:
             auto texture = SDL_CreateTexture(static_cast<SDL_Renderer *>(data),
                                              mSDLPixelFormat,
                                              SDL_TEXTUREACCESS_STREAMING,
-                                             this->width(),
-                                             this->height());
+                                             mWidth,
+                                             mHeight);
             if (texture)
             {
                 mSDLTexture = texture;
             }
             else
             {
-                mInitResult = std::string("SDL_CreateTexture failed:") + SDL_GetError();
+                mLastError = std::string("SDL_CreateTexture failed:") + SDL_GetError();
             }
         }
     }
@@ -79,7 +79,8 @@ public:
     {
         if (mSDLTexture)
         {
-            SDL_UpdateTexture(mSDLTexture, nullptr, this->frameData(), this->pitchSize());
+            SpinLock::Locker locker(mSpinLock);
+            SDL_UpdateTexture(mSDLTexture, nullptr, mFrameData.data(), this->pitchSize());
         }
     }
 
