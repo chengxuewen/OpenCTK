@@ -24,14 +24,57 @@
 
 #include <private/octk_imgui_application_p.hpp>
 #include <octk_processor.hpp>
+#include <octk_checks.hpp>
+
+#include <libyuv.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../core/source/tools/octk_checks.hpp"
-
-
 #include <stb_image.h>
 
 OCTK_BEGIN_NAMESPACE
+
+void ImGuiImage::setFrameData(const uint8_t *data, int width, int height)
+{
+    SpinLock::Locker locker(mSpinLock);
+    if (width != mWidth || height != mHeight)
+    {
+        if (Format::RGB24 == mFormat)
+        {
+            const auto bufferSize = (width * height * 4);
+            Binary buffer(bufferSize);
+            libyuv::RGB24ToARGB(data, 3 * width, buffer.data(), 4 * width, width, height);
+            const auto scaledSize = (mWidth * mHeight * 4);
+            Binary scaledBuffer(scaledSize);
+            libyuv::ARGBScale(buffer.data(),
+                              4 * width,
+                              width,
+                              height,
+                              scaledBuffer.data(),
+                              4 * mWidth,
+                              mWidth,
+                              mHeight,
+                              libyuv::kFilterBox);
+            libyuv::ARGBToRGB24(scaledBuffer.data(), 4 * mWidth, mFrameData.data(), 3 * mWidth, mWidth, mHeight);
+        }
+        else if (Format::RGBA32 == mFormat)
+        {
+            libyuv::ARGBScale(data,
+                              4 * width,
+                              width,
+                              height,
+                              mFrameData.data(),
+                              this->pitchSize(),
+                              mWidth,
+                              mHeight,
+                              libyuv::kFilterBox);
+        }
+    }
+    else
+    {
+        std::memcpy(mFrameData.data(), data, mFrameData.size());
+    }
+    mChanged.store(true);
+}
 
 namespace internal
 {

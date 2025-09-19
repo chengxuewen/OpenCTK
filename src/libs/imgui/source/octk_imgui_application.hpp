@@ -83,6 +83,7 @@ struct ImGuiImage
         std::memcpy(mFrameData.data(), data, mFrameData.size());
         mChanged.store(true);
     }
+    void setFrameData(const uint8_t *data, int width, int height);
 
     int width() const { return mWidth; }
     int height() const { return mHeight; }

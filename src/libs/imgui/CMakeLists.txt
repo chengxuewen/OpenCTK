@@ -24,6 +24,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
+octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 octk_find_package(WrapImGui PROVIDED_TARGETS OCTK3rdparty::WrapImGui)
 octk_find_package(WrapGLFW PROVIDED_TARGETS OCTK3rdparty::WrapGLFW)
 octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
@@ -65,6 +66,7 @@ octk_add_library(imgui
 	${OCTKWrapImGui_SOURCE_DIR}
 	${OCTKWrapImGui_SOURCE_DIR}/backends
 	LIBRARIES
+	OCTK3rdparty::WrapLibyuv
 	OCTK3rdparty::WrapGLFW
 	OCTK3rdparty::WrapSDL
 	OCTK3rdparty::WrapSTB
