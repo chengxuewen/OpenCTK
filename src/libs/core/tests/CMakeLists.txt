@@ -149,6 +149,14 @@ octk_add_test(octk_core_tst_fake_clock
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_filesystem
+	SOURCES
+	tst_filesystem.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_frequency
 	SOURCES
 	tst_frequency.cpp
