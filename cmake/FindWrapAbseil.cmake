@@ -84,7 +84,8 @@ if(NOT EXISTS "${OCTKWrapAbseil_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OCTK3rdparty::WrapAbseil INTERFACE IMPORTED)
-find_package(absl PATHS ${OCTKWrapAbseil_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+set(absl_DIR "${OCTKWrapAbseil_INSTALL_DIR}/lib/cmake/absl")
+find_package(absl PATHS "${OCTKWrapAbseil_INSTALL_DIR}" NO_DEFAULT_PATH REQUIRED)
 target_link_libraries(OCTK3rdparty::WrapAbseil INTERFACE
     absl::atomic_hook
     absl::errno_saver

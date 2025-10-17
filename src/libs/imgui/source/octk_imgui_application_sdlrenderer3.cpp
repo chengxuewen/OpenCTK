@@ -27,8 +27,6 @@
 
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
-#include <absl/strings/str_format.h>
-#include <absl/strings/internal/str_format/parser.h>
 
 #ifdef __EMSCRIPTEN__
 #    include "../libs/emscripten/emscripten_mainloop_stub.h"

@@ -82,6 +82,7 @@ if(NOT EXISTS "${OCTKWrapJson_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OCTK3rdparty::WrapJson INTERFACE IMPORTED)
-find_package(nlohmann_json PATHS ${OCTKWrapJson_INSTALL_DIR} REQUIRED)
+set(nlohmann_json_DIR "${OCTKWrapJson_INSTALL_DIR}/share/cmake/nlohmann_json")
+find_package(nlohmann_json PATHS "${OCTKWrapJson_INSTALL_DIR}" NO_DEFAULT_PATH REQUIRED)
 target_link_libraries(OCTK3rdparty::WrapJson INTERFACE nlohmann_json::nlohmann_json)
 set(OCTKWrapJson_FOUND ON)

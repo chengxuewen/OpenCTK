@@ -83,6 +83,6 @@ if(NOT EXISTS "${OCTKWrapBenchmark_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OCTK3rdparty::WrapBenchmark INTERFACE IMPORTED)
-find_package(benchmark PATHS ${OCTKWrapBenchmark_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+find_package(benchmark HINTS ${OCTKWrapBenchmark_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
 target_link_libraries(OCTK3rdparty::WrapBenchmark INTERFACE benchmark::benchmark benchmark::benchmark_main)
 set(OCTKWrapBenchmark_FOUND ON)
