@@ -26,7 +26,7 @@
 #define _OCTK_SHARED_BUFFER_HPP
 
 #include <octk_ref_counted_object.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_string_view.hpp>
 #include <octk_type_traits.hpp>
 #include <octk_buffer.hpp>
@@ -60,12 +60,12 @@ public:
     // source array may be (const) uint8_t*, int8_t*, or char*.
     template <typename T,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     SharedBuffer(const T *data, size_t size)
         : SharedBuffer(data, size, size) {}
     template <typename T,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     SharedBuffer(const T *data, size_t size, size_t capacity)
         : SharedBuffer(size, capacity)
     {
@@ -81,7 +81,7 @@ public:
     template <typename T,
         size_t N,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     SharedBuffer(const T (&array)[N])  // NOLINT: runtime/explicit
         : SharedBuffer(array, N) {}
 
@@ -91,7 +91,7 @@ public:
         typename std::enable_if<
             !std::is_same<VecT, SharedBuffer>::value &&
             HasDataAndSize<VecT, ElemT>::value &&
-            internal::BufferCompat<uint8_t, ElemT>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, ElemT>::value>::type * = nullptr>
     explicit SharedBuffer(const VecT &v)
         : SharedBuffer(v.data(), v.size()) {}
 
@@ -102,7 +102,7 @@ public:
         typename std::enable_if<
             !std::is_same<VecT, SharedBuffer>::value &&
             HasDataAndSize<VecT, ElemT>::value &&
-            internal::BufferCompat<uint8_t, ElemT>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, ElemT>::value>::type * = nullptr>
     explicit SharedBuffer(const VecT &v, size_t capacity)
         : SharedBuffer(v.data(), v.size(), capacity) {}
 
@@ -112,7 +112,7 @@ public:
     // but you may also use .data<int8_t>() and .data<char>().
     template <typename T = uint8_t,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     const T *data() const
     {
         return cdata<T>();
@@ -122,7 +122,7 @@ public:
     // data if it is shared with other buffers.
     template <typename T = uint8_t,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     T *MutableData()
     {
         OCTK_DCHECK(IsConsistent());
@@ -138,7 +138,7 @@ public:
     // underlying data if it is shared with other buffers.
     template <typename T = uint8_t,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     const T *cdata() const
     {
         OCTK_DCHECK(IsConsistent());
@@ -208,7 +208,7 @@ public:
     // constructors.
     template <typename T,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     void SetData(const T *data, size_t size)
     {
         OCTK_DCHECK(IsConsistent());
@@ -233,7 +233,7 @@ public:
     template <typename T,
         size_t N,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     void SetData(const T (&array)[N])
     {
         SetData(array, N);
@@ -254,7 +254,7 @@ public:
     // Append data to the buffer. Accepts the same types as the constructors.
     template <typename T,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     void AppendData(const T *data, size_t size)
     {
         OCTK_DCHECK(IsConsistent());
@@ -280,7 +280,7 @@ public:
     template <typename T,
         size_t N,
         typename std::enable_if<
-            internal::BufferCompat<uint8_t, T>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, T>::value>::type * = nullptr>
     void AppendData(const T (&array)[N])
     {
         AppendData(array, N);
@@ -291,7 +291,7 @@ public:
                   decltype(std::declval<VecT>().data())>::type,
         typename std::enable_if<
             HasDataAndSize<VecT, ElemT>::value &&
-            internal::BufferCompat<uint8_t, ElemT>::value>::type * = nullptr>
+            detail::BufferCompat<uint8_t, ElemT>::value>::type * = nullptr>
     void AppendData(const VecT &v)
     {
         AppendData(v.data(), v.size());
@@ -351,7 +351,7 @@ private:
     }
 
     // buffer_ is either null, or points to an rtc::Buffer with capacity > 0.
-    ScopedRefPtr<RefCountedBuffer> buffer_;
+    SharedRefPtr<RefCountedBuffer> buffer_;
     // This buffer may represent a slice of a original data.
     size_t offset_;  // Offset of a current slice in the original data in buffer_.
     // Should be 0 if the buffer_ is empty.

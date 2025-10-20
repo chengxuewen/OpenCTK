@@ -28,7 +28,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace internal
+namespace detail
 {
 
 SequenceCheckerImpl::SequenceCheckerImpl(bool attach_to_current_thread)
@@ -103,5 +103,5 @@ std::string SequenceCheckerImpl::ExpectationToString() const
     return message.str();
 }
 #endif  // OCTK_DCHECK_IS_ON
-}  // namespace internal
+}  // namespace detail
 OCTK_END_NAMESPACE

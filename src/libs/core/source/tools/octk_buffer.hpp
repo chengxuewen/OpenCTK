@@ -40,7 +40,7 @@
 #include <stdint.h>
 
 OCTK_BEGIN_NAMESPACE
-namespace internal
+namespace detail
 {
 
 // (Internal; please don't use outside this file.) Determines if elements of
@@ -57,7 +57,7 @@ struct BufferCompat
                                    ? (std::is_integral<U>::value && sizeof(U) == 1)
                                    : (std::is_same<T, typename std::remove_const<U>::type>::value));
 };
-}  // namespace internal
+}  // namespace detail
 
 // Basic buffer class, can be grown and shrunk dynamically.
 // Unlike std::string/vector, does not initialize data when increasing size.
@@ -109,10 +109,10 @@ public:
     }
 
     // Construct a buffer and copy the specified number of elements into it.
-    template <typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     BufferT(const U *data, size_t size) : BufferT(data, size, size) {}
 
-    template <typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     BufferT(U *data, size_t size, size_t capacity) : BufferT(size, capacity)
     {
         static_assert(sizeof(T) == sizeof(U), "");
@@ -124,14 +124,14 @@ public:
     }
 
     // Construct a buffer from the contents of an array.
-    template <typename U, size_t N, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, size_t N, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     BufferT(U (&array)[N]) : BufferT(array, N) {}
 
     ~BufferT() { MaybeZeroCompleteBuffer(); }
 
     // Implicit conversion to StringView if T is compatible with char.
     template <typename U = T>
-    operator typename std::enable_if<internal::BufferCompat<U, char>::value,
+    operator typename std::enable_if<detail::BufferCompat<U, char>::value,
                                      StringView>::type() const
     {
         return StringView(data<char>(), size());
@@ -140,14 +140,14 @@ public:
     // Get a pointer to the data. Just .data() will give you a (const) T*, but if
     // T is a byte-sized integer, you may also use .data<U>() for any other
     // byte-sized integer U.
-    template <typename U = T, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U = T, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     const U *data() const
     {
         OCTK_DCHECK(IsConsistent());
         return reinterpret_cast<U *>(mData.get());
     }
 
-    template <typename U = T, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U = T, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     U *data()
     {
         OCTK_DCHECK(IsConsistent());
@@ -230,7 +230,7 @@ public:
 
     // The SetData functions replace the contents of the buffer. They accept the
     // same input types as the constructors.
-    template <typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     void SetData(const U *data, size_t size)
     {
         OCTK_DCHECK(IsConsistent());
@@ -243,7 +243,7 @@ public:
         }
     }
 
-    template <typename U, size_t N, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, size_t N, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     void SetData(const U (&array)[N])
     {
         SetData(array, N);
@@ -264,7 +264,7 @@ public:
     // `max_elements` that describes the area where it should write the data; it
     // should return the number of elements actually written. (If it doesn't fill
     // the whole ArrayView, it should leave the unused space at the end.)
-    template <typename U = T, typename F, typename std::enable_if<internal::BufferCompat<T,
+    template <typename U = T, typename F, typename std::enable_if<detail::BufferCompat<T,
                                                                                          U>::value>::type * = nullptr>
     size_t SetData(size_t max_elements, F &&setter)
     {
@@ -281,7 +281,7 @@ public:
 
     // The AppendData functions add data to the end of the buffer. They accept
     // the same input types as the constructors.
-    template <typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     void AppendData(const U *data, size_t size)
     {
         if (size == 0)
@@ -298,7 +298,7 @@ public:
         OCTK_DCHECK(IsConsistent());
     }
 
-    template <typename U, size_t N, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, size_t N, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     void AppendData(const U (&array)[N])
     {
         AppendData(array, N);
@@ -310,7 +310,7 @@ public:
         AppendData(w.data(), w.size());
     }
 
-    template <typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     void AppendData(const U &item)
     {
         AppendData(&item, 1);
@@ -327,7 +327,7 @@ public:
     // the whole ArrayView, it should leave the unused space at the end.)
     template <
         typename U = T, typename F,
-        typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+        typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     size_t AppendData(size_t max_elements, F &&setter)
     {
         OCTK_DCHECK(IsConsistent());

@@ -176,7 +176,7 @@ std::string ProjectRootPath()
     return IOSRootPath();
 #elif defined(OCTK_OS_MAC)
     std::string path;
-    // internal::GetNSExecutablePath(&path);
+    // detail::GetNSExecutablePath(&path);
     std::string exe_dir = DirName(path);
     // On Mac, tests execute in out/Whatever, so src is two levels up except if
     // the test is bundled (which our tests are not), in which case it's 5 levels.

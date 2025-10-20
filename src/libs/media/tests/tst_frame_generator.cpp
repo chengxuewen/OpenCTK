@@ -11,7 +11,7 @@
 #include <octk_create_frame_generator.hpp>
 #include <octk_video_frame_buffer.hpp>
 #include <octk_frame_generator.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_file_utils.hpp>
 
 #include <gmock/gmock.h>

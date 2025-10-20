@@ -26,7 +26,7 @@
 #ifndef _OCTK_RTC_STATS_REPORT_HPP
 #define _OCTK_RTC_STATS_REPORT_HPP
 
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_media_global.hpp>
 #include <octk_rtc_stats.hpp>
 #include <octk_timestamp.hpp>
@@ -48,7 +48,7 @@ class OCTK_MEDIA_API RtcStatsReport final : public RefCountedNonVirtual<RtcStats
 public:
     using StatsMap = std::map<std::string, std::unique_ptr<const RtcStats>>;
     using SharedPtr = std::shared_ptr<RtcStatsReport>;
-    using RefPtr = ScopedRefPtr<RtcStatsReport>;
+    using RefPtr = SharedRefPtr<RtcStatsReport>;
 
     class OCTK_MEDIA_API ConstIterator
     {
@@ -65,19 +65,19 @@ public:
 
     private:
         friend class RtcStatsReport;
-        ConstIterator(const ScopedRefPtr<const RtcStatsReport> &report, StatsMap::const_iterator iter);
+        ConstIterator(const SharedRefPtr<const RtcStatsReport> &report, StatsMap::const_iterator iter);
 
         // Reference report to make sure it is kept alive.
-        ScopedRefPtr<const RtcStatsReport> mReport;
+        SharedRefPtr<const RtcStatsReport> mReport;
         StatsMap::const_iterator mIter;
     };
 
-    static ScopedRefPtr<RtcStatsReport> create(Timestamp timestamp);
+    static SharedRefPtr<RtcStatsReport> create(Timestamp timestamp);
 
     explicit RtcStatsReport(Timestamp timestamp);
 
     RtcStatsReport(const RtcStatsReport &other) = delete;
-    ScopedRefPtr<RtcStatsReport> copy() const;
+    SharedRefPtr<RtcStatsReport> copy() const;
 
     Timestamp timestamp() const { return mTimestamp; }
     void addStats(std::unique_ptr<const RtcStats> stats);
@@ -129,7 +129,7 @@ public:
      * @brief Takes ownership of all the stats in `other`, leaving it empty.
      * @param other
      */
-    void takeMembersFrom(ScopedRefPtr<RtcStatsReport> other);
+    void takeMembersFrom(SharedRefPtr<RtcStatsReport> other);
 
     /**
      * @brief Stats iterators. Stats are ordered lexicographically on `RtcStats::id`.

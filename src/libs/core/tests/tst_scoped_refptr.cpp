@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -35,7 +35,7 @@ public:
     ScopedRefCounted(const ScopedRefCounted &) = delete;
     ScopedRefCounted &operator=(const ScopedRefCounted &) = delete;
 
-    void AddRef()
+    void addRef()
     {
         ++called_.addref;
         ++ref_count_;
@@ -59,8 +59,8 @@ private:
 TEST(ScopedRefptrTest, IsCopyConstructable)
 {
     FunctionsCalled called;
-    ScopedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
-    ScopedRefPtr<ScopedRefCounted> another_ptr = ptr;
+    SharedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
+    SharedRefPtr<ScopedRefCounted> another_ptr = ptr;
 
     EXPECT_TRUE(ptr);
     EXPECT_TRUE(another_ptr);
@@ -70,8 +70,8 @@ TEST(ScopedRefptrTest, IsCopyConstructable)
 TEST(ScopedRefptrTest, IsCopyAssignable)
 {
     FunctionsCalled called;
-    ScopedRefPtr<ScopedRefCounted> another_ptr;
-    ScopedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
+    SharedRefPtr<ScopedRefCounted> another_ptr;
+    SharedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
     another_ptr = ptr;
 
     EXPECT_TRUE(ptr);
@@ -82,8 +82,8 @@ TEST(ScopedRefptrTest, IsCopyAssignable)
 TEST(ScopedRefptrTest, IsMoveConstructableWithoutExtraAddRefRelease)
 {
     FunctionsCalled called;
-    ScopedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
-    ScopedRefPtr<ScopedRefCounted> another_ptr = std::move(ptr);
+    SharedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
+    SharedRefPtr<ScopedRefCounted> another_ptr = std::move(ptr);
 
     EXPECT_FALSE(ptr);
     EXPECT_TRUE(another_ptr);
@@ -94,8 +94,8 @@ TEST(ScopedRefptrTest, IsMoveConstructableWithoutExtraAddRefRelease)
 TEST(ScopedRefptrTest, IsMoveAssignableWithoutExtraAddRefRelease)
 {
     FunctionsCalled called;
-    ScopedRefPtr<ScopedRefCounted> another_ptr;
-    ScopedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
+    SharedRefPtr<ScopedRefCounted> another_ptr;
+    SharedRefPtr<ScopedRefCounted> ptr(new ScopedRefCounted(&called));
     another_ptr = std::move(ptr);
 
     EXPECT_FALSE(ptr);
@@ -106,11 +106,11 @@ TEST(ScopedRefptrTest, IsMoveAssignableWithoutExtraAddRefRelease)
 
 TEST(ScopedRefptrTest, MovableDuringVectorReallocation)
 {
-    static_assert(std::is_nothrow_move_constructible<ScopedRefPtr<ScopedRefCounted>>(), "");
+    static_assert(std::is_nothrow_move_constructible<SharedRefPtr<ScopedRefCounted>>(), "");
 // Test below describes a scenario where it is helpful for move constructor
 // to be noexcept.
     FunctionsCalled called;
-    std::vector<ScopedRefPtr<ScopedRefCounted>> ptrs;
+    std::vector<SharedRefPtr<ScopedRefCounted>> ptrs;
     ptrs.reserve(1);
 // Insert more elements than reserved to provoke reallocation.
     ptrs.emplace_back(new ScopedRefCounted(&called));

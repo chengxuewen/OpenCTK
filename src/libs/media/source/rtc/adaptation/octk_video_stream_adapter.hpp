@@ -28,7 +28,7 @@ public:
     // calculation purposes.
     virtual void OnVideoSourceRestrictionsUpdated(VideoSourceRestrictions restrictions,
                                                   const VideoAdaptationCounters &adaptation_counters,
-                                                  ScopedRefPtr<Resource> reason,
+                                                  SharedRefPtr<Resource> reason,
                                                   const VideoSourceRestrictions &unfiltered_restrictions) = 0;
 };
 
@@ -138,7 +138,7 @@ public:
     Adaptation GetAdaptDownResolution();
 
     // Updates source_restrictions() the Adaptation.
-    void ApplyAdaptation(const Adaptation &adaptation, ScopedRefPtr<Resource> resource);
+    void ApplyAdaptation(const Adaptation &adaptation, SharedRefPtr<Resource> resource);
 
     struct RestrictionsWithCounters
     {
@@ -150,7 +150,7 @@ public:
 
 private:
     void BroadcastVideoRestrictionsUpdate(const VideoStreamInputState &input_state,
-                                          const ScopedRefPtr<Resource> &resource);
+                                          const SharedRefPtr<Resource> &resource);
 
     bool HasSufficientInputForAdaptation(const VideoStreamInputState &input_state) const
         OCTK_RUN_ON(&sequence_checker_);

@@ -39,7 +39,7 @@ public:
                   TimeDelta first_delay,
                   Invocable<TimeDelta()> task,
                   Clock *clock,
-                  ScopedRefPtr<PendingTaskSafetyFlag> alive_flag,
+                  SharedRefPtr<PendingTaskSafetyFlag> alive_flag,
                   const SourceLocation &location);
     RepeatingTask(RepeatingTask &&) = default;
     RepeatingTask &operator=(RepeatingTask &&) = delete;
@@ -55,7 +55,7 @@ private:
     Invocable<TimeDelta()> task_;
     // This is always finite.
     Timestamp next_run_time_ OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
-    ScopedRefPtr<PendingTaskSafetyFlag> alive_flag_
+    SharedRefPtr<PendingTaskSafetyFlag> alive_flag_
     OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
 };
 
@@ -64,7 +64,7 @@ RepeatingTask::RepeatingTask(TaskQueue *task_queue,
                              TimeDelta first_delay,
                              Invocable<TimeDelta()> task,
                              Clock *clock,
-                             ScopedRefPtr<PendingTaskSafetyFlag> alive_flag,
+                             SharedRefPtr<PendingTaskSafetyFlag> alive_flag,
                              const SourceLocation &location)
     : mTaskQueue(task_queue), precision_(precision), clock_(clock), location_(location), task_(std::move(task))
     , next_run_time_(clock_->CurrentTime() + first_delay), alive_flag_(std::move(alive_flag)) {}
@@ -77,7 +77,7 @@ void RepeatingTask::operator()() &&
         return;
     }
 
-    internal::RepeatingTaskImplDTraceProbeRun();
+    detail::RepeatingTaskImplDTraceProbeRun();
     TimeDelta delay = task_();
     OCTK_DCHECK_GE(delay, TimeDelta::Zero());
 
@@ -105,7 +105,7 @@ RepeatingTaskHandle RepeatingTaskHandle::Start(TaskQueue *task_queue,
                                                const SourceLocation &location)
 {
     auto alive_flag = PendingTaskSafetyFlag::CreateDetached();
-    internal::RepeatingTaskHandleDTraceProbeStart();
+    detail::RepeatingTaskHandleDTraceProbeStart();
     task_queue->PostTask(RepeatingTask(task_queue, precision, TimeDelta::Zero(),
                                        std::move(closure), clock, alive_flag, location),
                          location);
@@ -122,7 +122,7 @@ RepeatingTaskHandle RepeatingTaskHandle::DelayedStart(TaskQueue *task_queue,
                                                       const SourceLocation &location)
 {
     auto alive_flag = PendingTaskSafetyFlag::CreateDetached();
-    internal::RepeatingTaskHandleDTraceProbeDelayedStart();
+    detail::RepeatingTaskHandleDTraceProbeDelayedStart();
     task_queue->PostDelayedTaskWithPrecision(precision,
                                              RepeatingTask(task_queue, precision, first_delay, std::move(closure),
                                                            clock, alive_flag, location),
@@ -144,12 +144,12 @@ bool RepeatingTaskHandle::Running() const
     return repeating_task_ != nullptr;
 }
 
-namespace internal
+namespace detail
 {
 // These methods are empty, but can be externally equipped with actions using
 // dtrace.
 void RepeatingTaskHandleDTraceProbeStart() {}
 void RepeatingTaskHandleDTraceProbeDelayedStart() {}
 void RepeatingTaskImplDTraceProbeRun() {}
-}  // namespace internal
+}  // namespace detail
 OCTK_END_NAMESPACE

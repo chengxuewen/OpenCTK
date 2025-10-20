@@ -212,8 +212,8 @@ public:
     VideoFrameBuffer::Type type() const override { return Type::kNative; }
     int width() const override { return width_; }
     int height() const override { return height_; }
-    ScopedRefPtr<I420BufferInterface> ToI420() override { return nullptr; }
-    ScopedRefPtr<VideoFrameBuffer> CropAndScale(int offset_x,
+    SharedRefPtr<I420BufferInterface> ToI420() override { return nullptr; }
+    SharedRefPtr<VideoFrameBuffer> CropAndScale(int offset_x,
                                                 int offset_y,
                                                 int crop_width,
                                                 int crop_height,
@@ -248,8 +248,8 @@ public:
     VideoFrameBuffer::Type type() const override { return Type::kNative; }
     int width() const override { return nv12_buffer_->width(); }
     int height() const override { return nv12_buffer_->height(); }
-    ScopedRefPtr<I420BufferInterface> ToI420() override { return nv12_buffer_->ToI420(); }
-    ScopedRefPtr<VideoFrameBuffer> GetMappedFrameBuffer(ArrayView<VideoFrameBuffer::Type> types) override
+    SharedRefPtr<I420BufferInterface> ToI420() override { return nv12_buffer_->ToI420(); }
+    SharedRefPtr<VideoFrameBuffer> GetMappedFrameBuffer(ArrayView<VideoFrameBuffer::Type> types) override
     {
         if (absl::c_find(types, Type::kNV12) != types.end())
         {
@@ -266,7 +266,7 @@ private:
         if (event_)
             event_->Set();
     }
-    ScopedRefPtr<NV12Buffer> nv12_buffer_;
+    SharedRefPtr<NV12Buffer> nv12_buffer_;
     Event *const event_;
 };
 
@@ -320,7 +320,7 @@ public:
     // VideoSourceRestrictionsListener implementation.
     void OnVideoSourceRestrictionsUpdated(VideoSourceRestrictions restrictions,
                                           const VideoAdaptationCounters &adaptation_counters,
-                                          ScopedRefPtr<Resource> reason,
+                                          SharedRefPtr<Resource> reason,
                                           const VideoSourceRestrictions &unfiltered_restrictions) override
     {
         was_restrictions_updated_ = true;
@@ -557,8 +557,8 @@ public:
 
     TimeController *const time_controller_;
     CpuOveruseDetectorProxy *overuse_detector_proxy_;
-    ScopedRefPtr<FakeResource> fake_cpu_resource_;
-    ScopedRefPtr<FakeResource> fake_quality_resource_;
+    SharedRefPtr<FakeResource> fake_cpu_resource_;
+    SharedRefPtr<FakeResource> fake_quality_resource_;
     FakeAdaptationConstraint fake_adaptation_constraint_;
 };
 
@@ -778,7 +778,7 @@ public:
         using FakeEncoder::FakeEncoder;
         MOCK_METHOD(CodecSpecificInfo,
                     EncodeHook,
-                    (EncodedImage & encoded_image, ScopedRefPtr<EncodedImageBuffer> buffer),
+                    (EncodedImage & encoded_image, SharedRefPtr<EncodedImageBuffer> buffer),
                     (override));
         MOCK_METHOD(VideoEncoder::EncoderInfo, GetEncoderInfo, (), (const, override));
     };
@@ -1251,7 +1251,7 @@ public:
             encoded_image_callback_->OnEncodedImage(image, codec_specific_info);
         }
 
-        void SetEncodedImageData(ScopedRefPtr<EncodedImageBufferInterface> encoded_image_data)
+        void SetEncodedImageData(SharedRefPtr<EncodedImageBufferInterface> encoded_image_data)
         {
             MutexLock lock(&local_mutex_);
             encoded_image_data_ = encoded_image_data;
@@ -1344,7 +1344,7 @@ public:
             return result;
         }
 
-        CodecSpecificInfo EncodeHook(EncodedImage &encoded_image, ScopedRefPtr<EncodedImageBuffer> buffer) override
+        CodecSpecificInfo EncodeHook(EncodedImage &encoded_image, SharedRefPtr<EncodedImageBuffer> buffer) override
         {
             CodecSpecificInfo codec_specific;
             {
@@ -1435,7 +1435,7 @@ public:
         uint32_t requested_resolution_alignment_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = 1;
         bool apply_alignment_to_all_simulcast_layers_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = false;
         bool is_hardware_accelerated_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = false;
-        ScopedRefPtr<EncodedImageBufferInterface> encoded_image_data_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
+        SharedRefPtr<EncodedImageBufferInterface> encoded_image_data_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
         std::unique_ptr<Vp8FrameBufferController> frame_buffer_controller_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
         std::optional<bool> temporal_layers_supported_[kMaxSpatialLayers] OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
         bool force_init_encode_failed_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = false;
@@ -8975,7 +8975,7 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, EncoderMapsNativeI420)
     WaitForEncodedFrame(codec_width_, codec_height_);
 
     auto mappable_native_buffer = test::GetMappableNativeBufferFromVideoFrame(native_i420_frame);
-    std::vector<ScopedRefPtr<VideoFrameBuffer>> mapped_frame_buffers = mappable_native_buffer->GetMappedFramedBuffers();
+    std::vector<SharedRefPtr<VideoFrameBuffer>> mapped_frame_buffers = mappable_native_buffer->GetMappedFramedBuffers();
     ASSERT_EQ(mapped_frame_buffers.size(), 1u);
     EXPECT_EQ(mapped_frame_buffers[0]->width(), codec_width_);
     EXPECT_EQ(mapped_frame_buffers[0]->height(), codec_height_);
@@ -8990,7 +8990,7 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, EncoderMapsNativeNV12)
     WaitForEncodedFrame(codec_width_, codec_height_);
 
     auto mappable_native_buffer = test::GetMappableNativeBufferFromVideoFrame(native_nv12_frame);
-    std::vector<ScopedRefPtr<VideoFrameBuffer>> mapped_frame_buffers = mappable_native_buffer->GetMappedFramedBuffers();
+    std::vector<SharedRefPtr<VideoFrameBuffer>> mapped_frame_buffers = mappable_native_buffer->GetMappedFramedBuffers();
     ASSERT_EQ(mapped_frame_buffers.size(), 1u);
     EXPECT_EQ(mapped_frame_buffers[0]->width(), codec_width_);
     EXPECT_EQ(mapped_frame_buffers[0]->height(), codec_height_);
@@ -9597,7 +9597,7 @@ TEST(VideoStreamEncoderFrameCadenceTest, UpdatesQualityConvergence)
     PassAFrame(encoder_queue, video_stream_encoder_callback, /*ntp_time_ms=*/1);
     EXPECT_CALL(factory.GetMockFakeEncoder(), EncodeHook)
         .WillRepeatedly(Invoke(
-            [](EncodedImage &encoded_image, ScopedRefPtr<EncodedImageBuffer> buffer)
+            [](EncodedImage &encoded_image, SharedRefPtr<EncodedImageBuffer> buffer)
             {
                 encoded_image.qp_ = kVp8SteadyStateQpThreshold + 1;
                 CodecSpecificInfo codec_specific;
@@ -9614,7 +9614,7 @@ TEST(VideoStreamEncoderFrameCadenceTest, UpdatesQualityConvergence)
     PassAFrame(encoder_queue, video_stream_encoder_callback, /*ntp_time_ms=*/2);
     EXPECT_CALL(factory.GetMockFakeEncoder(), EncodeHook)
         .WillRepeatedly(Invoke(
-            [](EncodedImage &encoded_image, ScopedRefPtr<EncodedImageBuffer> buffer)
+            [](EncodedImage &encoded_image, SharedRefPtr<EncodedImageBuffer> buffer)
             {
                 // This sets simulcast index 0 content to be at target quality, while
                 // index 1 content is not.
@@ -9732,7 +9732,7 @@ protected:
     std::unique_ptr<NiceMock<MockFrameCadenceAdapter>> adapter_{std::make_unique<NiceMock<MockFrameCadenceAdapter>>()};
     NiceMock<MockFrameCadenceAdapter> *adapter_ptr_;
     TaskQueue *encoder_queue_{nullptr};
-    ScopedRefPtr<FakeResource> fake_resource_;
+    SharedRefPtr<FakeResource> fake_resource_;
     VideoSourceRestrictions restrictions_;
     std::unique_ptr<SimpleVideoStreamEncoderFactory::AdaptedVideoStreamEncoder> video_stream_encoder_;
 };

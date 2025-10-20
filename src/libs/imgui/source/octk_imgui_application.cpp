@@ -76,7 +76,7 @@ void ImGuiImage::setFrameData(const uint8_t *data, int width, int height)
     mChanged.store(true);
 }
 
-namespace internal
+namespace detail
 {
 using ImGuiApplicationCreaterMap = std::unordered_map<std::string, ImGuiApplication::Factory::CreaterFunction>;
 using ImGuiApplicationCreaterMapItem = std::pair<std::string, ImGuiApplication::Factory::CreaterFunction>;
@@ -85,17 +85,17 @@ static ImGuiApplicationCreaterMap &imGuiApplicationCreaterMap()
     static ImGuiApplicationCreaterMap map;
     return map;
 }
-} // namespace internal
+} // namespace detail
 
 std::vector<std::string> ImGuiApplication::Factory::registeredTypes()
 {
     std::vector<std::string> keys;
-    auto map = internal::imGuiApplicationCreaterMap();
+    auto map = detail::imGuiApplicationCreaterMap();
     keys.reserve(map.size());
     std::transform(map.begin(),
                    map.end(),
                    std::back_inserter(keys),
-                   [](const internal::ImGuiApplicationCreaterMapItem &pair) { return pair.first; });
+                   [](const detail::ImGuiApplicationCreaterMapItem &pair) { return pair.first; });
     return keys;
 }
 
@@ -105,7 +105,7 @@ ImGuiApplication::UniquePtr ImGuiApplication::Factory::create(StringView typeNam
     {
         typeName = constants::kImGuiApplicationSDLGPU3;
     }
-    auto map = internal::imGuiApplicationCreaterMap();
+    auto map = detail::imGuiApplicationCreaterMap();
     const auto iter = map.find(typeName.data());
     if (map.cend() != iter)
     {
@@ -120,7 +120,7 @@ ImGuiApplication::UniquePtr ImGuiApplication::Factory::create(StringView typeNam
 
 void ImGuiApplication::Factory::registerApplication(StringView typeName, CreaterFunction func)
 {
-    internal::imGuiApplicationCreaterMap().insert(std::make_pair(typeName, func));
+    detail::imGuiApplicationCreaterMap().insert(std::make_pair(typeName, func));
 }
 
 ImGuiApplicationPrivate::ImGuiApplicationPrivate(ImGuiApplication *p)

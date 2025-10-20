@@ -34,7 +34,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace internal
+namespace detail
 {
 void GetNSExecutablePath(std::string *path)
 {
@@ -57,5 +57,5 @@ void GetNSExecutablePath(std::string *path)
 
     *path = full_path;
 }
-} // namespace internal
+} // namespace detail
 OCTK_END_NAMESPACE

@@ -26,11 +26,11 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace internal
+namespace detail
 {
 thread_local OnceFlag localOnceFlag;
-} // namespace internal
+} // namespace detail
 
-OnceFlag *OnceFlag::localOnceFlag() { return &internal::localOnceFlag; }
+OnceFlag *OnceFlag::localOnceFlag() { return &detail::localOnceFlag; }
 
 OCTK_END_NAMESPACE

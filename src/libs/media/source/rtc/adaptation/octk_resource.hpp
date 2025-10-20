@@ -11,7 +11,7 @@
 #ifndef _OCTK_RESOURCE_HPP
 #define _OCTK_RESOURCE_HPP
 
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_media_global.hpp>
 #include <octk_ref_count.hpp>
 
@@ -34,7 +34,7 @@ class OCTK_MEDIA_API ResourceListener
 public:
     virtual ~ResourceListener();
 
-    virtual void OnResourceUsageStateMeasured(ScopedRefPtr<Resource> resource, ResourceUsageState usage_state) = 0;
+    virtual void OnResourceUsageStateMeasured(SharedRefPtr<Resource> resource, ResourceUsageState usage_state) = 0;
 };
 
 // A Resource monitors an implementation-specific resource. It may report

@@ -50,7 +50,7 @@ class NV12BufferInterface;
 // ToI420() that returns a frame buffer in I420 format, converting from the
 // underlying representation if necessary. I420 is the most widely accepted
 // format and serves as a fallback for video sinks that can only handle I420,
-// e.g. the internal WebRTC software encoders. A special enum value 'kNative' is
+// e.g. the namespace detail WebRTC software encoders. A special enum value 'kNative' is
 // provided for external clients to implement their own frame buffer
 // representations, e.g. as textures. The external client can produce such
 // native frame buffers from custom video sources, and then cast it back to the

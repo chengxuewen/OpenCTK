@@ -84,13 +84,13 @@ public:
     // that may be sent with the transceiver's mid. The sender is always present,
     // regardless of the direction of media.
     // https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiver-sender
-    virtual ScopedRefPtr<RtpSenderInterface> sender() const = 0;
+    virtual SharedRefPtr<RtpSenderInterface> sender() const = 0;
 
     // The receiver attribute exposes the RtpReceiver corresponding to the RTP
     // media that may be received with the transceiver's mid. The receiver is
     // always present, regardless of the direction of media.
     // https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiver-receiver
-    virtual ScopedRefPtr<RtpReceiverInterface> receiver() const = 0;
+    virtual SharedRefPtr<RtpReceiverInterface> receiver() const = 0;
 
     // The stopped attribute indicates that the sender of this transceiver will no
     // longer send, and that the receiver will no longer receive. It is true if

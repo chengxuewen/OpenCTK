@@ -33,7 +33,7 @@ OCTK_BEGIN_NAMESPACE
 
 namespace utils
 {
-namespace internal
+namespace detail
 {
 
 enum DstSign { DST_UNSIGNED, DST_SIGNED };
@@ -186,14 +186,14 @@ inline constexpr RangeCheckResult RangeCheck(Src value)
     static_assert(std::numeric_limits<Dst>::is_specialized, "result must be numeric");
     return RangeCheckImpl<Dst, Src>::Check(value);
 }
-}  // namespace internal
+}  // namespace detail
 
 // Convenience function that returns true if the supplied value is in range
 // for the destination type.
 template <typename Dst, typename Src>
 inline constexpr bool IsValueInRangeForNumericType(Src value)
 {
-    return internal::RangeCheck<Dst>(value) == internal::TYPE_VALID;
+    return detail::RangeCheck<Dst>(value) == detail::TYPE_VALID;
 }
 
 // checked_cast<> and dchecked_cast<> are analogous to static_cast<> for
@@ -225,16 +225,16 @@ inline Dst saturated_cast(Src value)
         return static_cast<Dst>(value);
     }
 
-    switch (internal::RangeCheck<Dst>(value))
+    switch (detail::RangeCheck<Dst>(value))
     {
-        case internal::TYPE_VALID:
+        case detail::TYPE_VALID:
             return static_cast<Dst>(value);
-        case internal::TYPE_UNDERFLOW:
+        case detail::TYPE_UNDERFLOW:
             return utils::numericMin<Dst>();
-        case internal::TYPE_OVERFLOW:
+        case detail::TYPE_OVERFLOW:
             return utils::numericMax<Dst>();
             // Should fail only on attempting to assign NaN to a saturated integer.
-        case internal::TYPE_INVALID:
+        case detail::TYPE_INVALID:
             OCTK_CHECK_NOTREACHED();
     }
     OCTK_CHECK_NOTREACHED();

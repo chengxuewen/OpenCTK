@@ -15,7 +15,7 @@ OCTK_BEGIN_NAMESPACE
 class FakeResource : public Resource
 {
 public:
-    static ScopedRefPtr<FakeResource> Create(StringView name) { return utils::makeRefCounted<FakeResource>(name); }
+    static SharedRefPtr<FakeResource> Create(StringView name) { return utils::makeRefCounted<FakeResource>(name); }
 
     explicit FakeResource(StringView name)
         : Resource()
@@ -29,7 +29,7 @@ public:
     {
         if (listener_)
         {
-            listener_->OnResourceUsageStateMeasured(ScopedRefPtr<Resource>(this), usage_state);
+            listener_->OnResourceUsageStateMeasured(SharedRefPtr<Resource>(this), usage_state);
         }
     }
 

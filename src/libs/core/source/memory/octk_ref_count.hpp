@@ -30,17 +30,17 @@
 OCTK_BEGIN_NAMESPACE
 // Refcounted objects should implement the following informal interface:
 //
-// void AddRef() const ;
+// void addRef() const ;
 // RefCountReleaseStatus Release() const;
 //
-// You may access members of a reference-counted object, including the AddRef()
+// You may access members of a reference-counted object, including the addRef()
 // and Release() methods, only if you already own a reference to it, or if
 // you're borrowing someone else's reference. (A newly created object is a
 // special case: the reference count is zero on construction, and the code that
-// creates the object should immediately call AddRef(), bringing the reference
-// count from zero to one, e.g., by constructing an ScopedRefPtr).
+// creates the object should immediately call addRef(), bringing the reference
+// count from zero to one, e.g., by constructing an SharedRefPtr).
 //
-// AddRef() creates a new reference to the object.
+// addRef() creates a new reference to the object.
 //
 // Release() releases a reference to the object; the caller now has one less
 // reference than before the call. Returns kDroppedLastRef if the number of
@@ -56,9 +56,9 @@ OCTK_BEGIN_NAMESPACE
 // users of the object, but the object can go away at any time, e.g., as the
 // result of another thread calling Release().
 //
-// Calling AddRef() and Release() manually is discouraged. It's recommended to
-// use ScopedRefPtr to manage all pointers to reference counted objects.
-// Note that ScopedRefPtr depends on compile-time duck-typing; formally
+// Calling addRef() and Release() manually is discouraged. It's recommended to
+// use SharedRefPtr to manage all pointers to reference counted objects.
+// Note that SharedRefPtr depends on compile-time duck-typing; formally
 // implementing the below RefCountInterface is not required.
 
 enum class RefCountReleaseStatus
@@ -74,7 +74,7 @@ enum class RefCountReleaseStatus
 class RefCountInterface
 {
 public:
-    virtual void AddRef() const = 0;
+    virtual void addRef() const = 0;
     virtual RefCountReleaseStatus Release() const = 0;
 
     // Non-public destructor, because Release() has exclusive responsibility for
@@ -83,7 +83,7 @@ protected:
     virtual ~RefCountInterface() { }
 };
 
-namespace internal
+namespace detail
 {
 class RefCounter
 {
@@ -94,7 +94,7 @@ public:
     }
     RefCounter() = delete;
 
-    void IncRef()
+    void incRef()
     {
         // Relaxed memory order: The current thread is allowed to act on the
         // resource protected by the reference counter both before and after the
@@ -141,7 +141,7 @@ public:
 private:
     std::atomic<int> ref_count_;
 };
-} // namespace internal
+} // namespace detail
 
 class RefCountedBase
 {
@@ -151,7 +151,7 @@ public:
     RefCountedBase(const RefCountedBase &) = delete;
     RefCountedBase &operator=(const RefCountedBase &) = delete;
 
-    void AddRef() const { ref_count_.IncRef(); }
+    void addRef() const { ref_count_.incRef(); }
     RefCountReleaseStatus Release() const
     {
         const auto status = ref_count_.DecRef();
@@ -170,7 +170,7 @@ protected:
     virtual ~RefCountedBase() = default;
 
 private:
-    mutable internal::RefCounter ref_count_{0};
+    mutable detail::RefCounter ref_count_{0};
 };
 
 // Template based version of `RefCountedBase` for simple implementations that do
@@ -182,7 +182,7 @@ private:
 //     int foo_ = 0;
 //   };
 //
-//   ScopedRefPtr<MyInt> my_int(new MyInt());
+//   SharedRefPtr<MyInt> my_int(new MyInt());
 //
 // sizeof(MyInt) on a 32 bit system would then be 8, int + refcount and no
 // vtable generated.
@@ -194,7 +194,7 @@ public:
     RefCountedNonVirtual(const RefCountedNonVirtual &) = delete;
     RefCountedNonVirtual &operator=(const RefCountedNonVirtual &) = delete;
 
-    void AddRef() const { ref_count_.IncRef(); }
+    void addRef() const { ref_count_.incRef(); }
     RefCountReleaseStatus Release() const
     {
         // If you run into this assert, T has virtual methods. There are two
@@ -221,7 +221,7 @@ protected:
     ~RefCountedNonVirtual() = default;
 
 private:
-    mutable internal::RefCounter ref_count_{0};
+    mutable detail::RefCounter ref_count_{0};
 };
 
 OCTK_END_NAMESPACE

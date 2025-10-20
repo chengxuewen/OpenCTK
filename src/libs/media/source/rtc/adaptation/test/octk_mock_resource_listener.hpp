@@ -6,7 +6,7 @@
 #define _OCTK_MOCK_RESOURCE_LISTENER_HPP
 
 #include <octk_resource.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 
 #include <gmock/gmock.h>
 
@@ -17,7 +17,7 @@ class MockResourceListener : public ResourceListener
 public:
     MOCK_METHOD(void,
                 OnResourceUsageStateMeasured,
-                (ScopedRefPtr<Resource> resource, ResourceUsageState usage_state),
+                (SharedRefPtr<Resource> resource, ResourceUsageState usage_state),
                 (override));
 };
 

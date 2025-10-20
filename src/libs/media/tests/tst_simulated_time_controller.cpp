@@ -59,7 +59,8 @@ TEST(SimulatedTimeControllerTest, TaskIsStoppedOnStop)
     time_simulation.AdvanceTime(kShortInterval * (kShortIntervalCount + kMargin));
     EXPECT_EQ(counter.load(), kShortIntervalCount);
 
-    task_queue->PostTask([handle = std::move(handle)]() mutable { handle.Stop(); });
+    auto handleWrapper = utils::makeMoveWrapper(std::move(handle));
+    task_queue->PostTask([handleWrapper]() mutable { handleWrapper.move().Stop(); });
 
     // Sleep long enough that the task would run at least once more if not
     // stopped.

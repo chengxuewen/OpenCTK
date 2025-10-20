@@ -11,7 +11,7 @@
 #ifndef _OCTK_BROADCAST_RESOURCE_LISTENER_HPP
 #define _OCTK_BROADCAST_RESOURCE_LISTENER_HPP
 
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_resource.hpp>
 #include <octk_mutex.hpp>
 
@@ -34,36 +34,36 @@ OCTK_BEGIN_NAMESPACE
 class BroadcastResourceListener : public ResourceListener
 {
 public:
-    explicit BroadcastResourceListener(ScopedRefPtr<Resource> source_resource);
+    explicit BroadcastResourceListener(SharedRefPtr<Resource> source_resource);
     ~BroadcastResourceListener() override;
 
-    ScopedRefPtr<Resource> SourceResource() const;
+    SharedRefPtr<Resource> SourceResource() const;
     void StartListening();
     void StopListening();
 
     // Creates a Resource that redirects any resource usage measurements that
     // BroadcastResourceListener receives to its listener.
-    ScopedRefPtr<Resource> CreateAdapterResource();
+    SharedRefPtr<Resource> CreateAdapterResource();
 
     // Unregister the adapter from the BroadcastResourceListener; it will no
     // longer receive resource usage measurement and will no longer be referenced.
     // Use this to prevent memory leaks of old adapters.
-    void RemoveAdapterResource(ScopedRefPtr<Resource> resource);
-    std::vector<ScopedRefPtr<Resource>> GetAdapterResources();
+    void RemoveAdapterResource(SharedRefPtr<Resource> resource);
+    std::vector<SharedRefPtr<Resource>> GetAdapterResources();
 
     // ResourceListener implementation.
-    void OnResourceUsageStateMeasured(ScopedRefPtr<Resource> resource, ResourceUsageState usage_state) override;
+    void OnResourceUsageStateMeasured(SharedRefPtr<Resource> resource, ResourceUsageState usage_state) override;
 
 private:
     class AdapterResource;
     friend class AdapterResource;
 
-    const ScopedRefPtr<Resource> source_resource_;
+    const SharedRefPtr<Resource> source_resource_;
     Mutex lock_;
     bool is_listening_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
     // The AdapterResource unregisters itself prior to destruction, guaranteeing
     // that these pointers are safe to use.
-    std::vector<ScopedRefPtr<AdapterResource>> adapters_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
+    std::vector<SharedRefPtr<AdapterResource>> adapters_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
 };
 
 OCTK_END_NAMESPACE

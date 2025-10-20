@@ -173,7 +173,7 @@ TEST(SequenceCheckerTest, ExpectationToString)
                 HasSubstr("# Expected: TQ:"));
 
     // Test for the base class
-    internal::SequenceCheckerImpl *sequence_checker_base = &sequence_checker;
+    detail::SequenceCheckerImpl *sequence_checker_base = &sequence_checker;
     EXPECT_THAT(ExpectationToString(sequence_checker_base),
                 HasSubstr("# Expected: TQ:"));
 

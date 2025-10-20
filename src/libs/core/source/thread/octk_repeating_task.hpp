@@ -36,13 +36,13 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace internal
+namespace detail
 {
 // Methods simplifying external tracing of RepeatingTaskHandle operations.
 void RepeatingTaskHandleDTraceProbeStart();
 void RepeatingTaskHandleDTraceProbeDelayedStart();
 void RepeatingTaskImplDTraceProbeRun();
-}  // namespace internal
+}  // namespace detail
 
 // Allows starting tasks that repeat themselves on a TaskQueue indefinately
 // until they are stopped or the TaskQueue is destroyed. It allows starting and
@@ -93,9 +93,9 @@ public:
     bool Running() const;
 
 private:
-    explicit RepeatingTaskHandle(ScopedRefPtr<PendingTaskSafetyFlag> alive_flag)
+    explicit RepeatingTaskHandle(SharedRefPtr<PendingTaskSafetyFlag> alive_flag)
         : repeating_task_(std::move(alive_flag)) {}
-    ScopedRefPtr<PendingTaskSafetyFlag> repeating_task_;
+    SharedRefPtr<PendingTaskSafetyFlag> repeating_task_;
 };
 OCTK_END_NAMESPACE
 

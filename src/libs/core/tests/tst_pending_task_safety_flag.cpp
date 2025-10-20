@@ -10,7 +10,7 @@
 
 #include <octk_pending_task_safety_flag.hpp>
 #include <octk_task_queue_for_test.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_task_event.hpp>
 #include <octk_checks.hpp>
 #include <octk_memory.hpp>
@@ -25,7 +25,7 @@ using namespace octk;
 
 TEST(PendingTaskSafetyFlagTest, Basic)
 {
-    ScopedRefPtr<PendingTaskSafetyFlag> safety_flag;
+    SharedRefPtr<PendingTaskSafetyFlag> safety_flag;
     {
 // Scope for the `owner` instance.
         class Owner
@@ -34,7 +34,7 @@ TEST(PendingTaskSafetyFlagTest, Basic)
             Owner() = default;
             ~Owner() { flag_->SetNotAlive(); }
 
-            ScopedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::Create();
+            SharedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::Create();
         } owner;
         EXPECT_TRUE(owner.flag_->alive());
         safety_flag = owner.flag_;
@@ -46,7 +46,7 @@ TEST(PendingTaskSafetyFlagTest, Basic)
 
 TEST(PendingTaskSafetyFlagTest, BasicScoped)
 {
-    ScopedRefPtr<PendingTaskSafetyFlag> safety_flag;
+    SharedRefPtr<PendingTaskSafetyFlag> safety_flag;
     {
         struct Owner
         {
@@ -77,7 +77,7 @@ TEST(PendingTaskSafetyFlagTest, PendingTaskSuccess)
         void DoStuff()
         {
             OCTK_DCHECK(!tq_main_->IsCurrent());
-            ScopedRefPtr<PendingTaskSafetyFlag> safe = flag_;
+            SharedRefPtr<PendingTaskSafetyFlag> safe = flag_;
             auto safeRef = std::move(safe);
             tq_main_->PostTask([safeRef, this]() {
                 if (!safeRef->alive())
@@ -93,7 +93,7 @@ TEST(PendingTaskSafetyFlagTest, PendingTaskSuccess)
     private:
         TaskQueue *const tq_main_;
         bool stuff_done_ = false;
-        ScopedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::Create();
+        SharedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::Create();
     };
 
     std::unique_ptr<Owner> owner;
@@ -196,7 +196,7 @@ TEST(PendingTaskSafetyFlagTest, PendingTaskInitializedForTaskQueue)
 
 TEST(PendingTaskSafetyFlagTest, SafeTask)
 {
-    ScopedRefPtr<PendingTaskSafetyFlag> flag = PendingTaskSafetyFlag::Create();
+    SharedRefPtr<PendingTaskSafetyFlag> flag = PendingTaskSafetyFlag::Create();
 
     int count = 0;
 // Create two identical tasks that increment the `count`.

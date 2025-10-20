@@ -26,7 +26,7 @@
 #define _OCTK_PENDING_TASK_SAFETY_FLAG_HPP
 
 #include <octk_sequence_checker.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_move_wrapper.hpp>
 #include <octk_nullability.hpp>
 #include <octk_task_queue.hpp>
@@ -50,7 +50,7 @@ OCTK_BEGIN_NAMESPACE
 //
 // class ExampleClass {
 // ....
-//    ScopedRefPtr<PendingTaskSafetyFlag> flag = safety_flag_;
+//    SharedRefPtr<PendingTaskSafetyFlag> flag = safety_flag_;
 //    my_task_queue_->PostTask(
 //        [flag = std::move(flag), this] {
 //          // Now running on the main thread.
@@ -73,20 +73,20 @@ OCTK_BEGIN_NAMESPACE
 class OCTK_CORE_API PendingTaskSafetyFlag final : public RefCountedNonVirtual<PendingTaskSafetyFlag>
 {
 public:
-    static ScopedRefPtr<PendingTaskSafetyFlag> Create();
+    static SharedRefPtr<PendingTaskSafetyFlag> Create();
 
 // Creates a flag, but with its SequenceChecker initially detached. Hence, it
 // may be created on a different thread than the flag will be used on.
-    static ScopedRefPtr<PendingTaskSafetyFlag> CreateDetached();
+    static SharedRefPtr<PendingTaskSafetyFlag> CreateDetached();
 
 // Creates a flag, but with its SequenceChecker explicitly initialized for
 // a given task queue and the `alive()` flag specified.
-    static ScopedRefPtr<PendingTaskSafetyFlag> CreateAttachedToTaskQueue(bool alive,
+    static SharedRefPtr<PendingTaskSafetyFlag> CreateAttachedToTaskQueue(bool alive,
                                                                          Nonnull<TaskQueue *> attached_queue);
 
 // Same as `CreateDetached()` except the initial state of the returned flag
 // will be `!alive()`.
-    static ScopedRefPtr<PendingTaskSafetyFlag> CreateDetachedInactive();
+    static SharedRefPtr<PendingTaskSafetyFlag> CreateDetachedInactive();
 
     ~
     PendingTaskSafetyFlag() = default;
@@ -116,7 +116,7 @@ protected:
         : alive_(alive), main_sequence_(attached_queue) {}
 
 private:
-    static ScopedRefPtr<PendingTaskSafetyFlag> CreateInternal(bool alive);
+    static SharedRefPtr<PendingTaskSafetyFlag> CreateInternal(bool alive);
 
     bool alive_ = true;
     OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker main_sequence_;
@@ -140,14 +140,14 @@ class OCTK_CORE_API ScopedTaskSafety final
 {
 public:
     ScopedTaskSafety() = default;
-    explicit ScopedTaskSafety(ScopedRefPtr<PendingTaskSafetyFlag> flag) : flag_(std::move(flag)) {}
+    explicit ScopedTaskSafety(SharedRefPtr<PendingTaskSafetyFlag> flag) : flag_(std::move(flag)) {}
     ~ScopedTaskSafety() { flag_->SetNotAlive(); }
 
 // Returns a new reference to the safety flag.
-    ScopedRefPtr<PendingTaskSafetyFlag> flag() const { return flag_; }
+    SharedRefPtr<PendingTaskSafetyFlag> flag() const { return flag_; }
 
 // Marks the current flag as not-alive and attaches to a new one.
-    void reset(ScopedRefPtr<PendingTaskSafetyFlag> new_flag =
+    void reset(SharedRefPtr<PendingTaskSafetyFlag> new_flag =
     PendingTaskSafetyFlag::Create())
     {
         flag_->SetNotAlive();
@@ -155,7 +155,7 @@ public:
     }
 
 private:
-    ScopedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::Create();
+    SharedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::Create();
 };
 
 // Like ScopedTaskSafety, but allows construction on a different thread than
@@ -167,13 +167,13 @@ public:
     ~ScopedTaskSafetyDetached() { flag_->SetNotAlive(); }
 
 // Returns a new reference to the safety flag.
-    ScopedRefPtr<PendingTaskSafetyFlag> flag() const { return flag_; }
+    SharedRefPtr<PendingTaskSafetyFlag> flag() const { return flag_; }
 
 private:
-    ScopedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::CreateDetached();
+    SharedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::CreateDetached();
 };
 
-inline TaskQueue::Task SafeTask(ScopedRefPtr<PendingTaskSafetyFlag> flag,
+inline TaskQueue::Task SafeTask(SharedRefPtr<PendingTaskSafetyFlag> flag,
                                 TaskQueue::Task task)
 {
     auto moveFlag = utils::makeMoveWrapper(std::move(flag));

@@ -28,15 +28,15 @@ struct Conjunction<Arg, Args...> : std::conditional<!bool(Arg::value), Arg, Conj
 template <typename F, typename... Args>
 using InvokeResult = std::invoke_result<F, Args...>;
 #else
-namespace internal
+namespace detail
 {
 template <typename F, typename... Args>
 struct InvokeResultImpl { using type = typename std::result_of<F(Args...)>::type; };
 template <typename F, typename... Args>
 using InvokeResultType = typename InvokeResultImpl<F, Args...>::type;
-} // namespace internal
+} // namespace detail
 template <typename F, typename... Args>
-struct InvokeResult { using type = internal::InvokeResultType<F, Args...>; };
+struct InvokeResult { using type = detail::InvokeResultType<F, Args...>; };
 #endif
 
 /***********************************************************************************************************************

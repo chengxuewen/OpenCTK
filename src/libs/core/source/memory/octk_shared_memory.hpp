@@ -48,11 +48,11 @@ public:
     static const Handle kInvalidHandle;
 #endif
 
-    void *data() const { return data_; }
-    size_t size() const { return size_; }
+    void *data() const { return mData; }
+    size_t size() const { return mSize; }
 
     // Platform-specific handle of the buffer.
-    Handle handle() const { return handle_; }
+    Handle handle() const { return mHandle; }
 
     // Integer identifier that can be used used by consumers of DesktopCapturer
     // interface to identify shared memory buffers it created.
@@ -66,10 +66,10 @@ public:
 protected:
     SharedMemory(void *data, size_t size, Handle handle, int id);
 
-    void *const data_;
-    const size_t size_;
-    const Handle handle_;
     const int mId;
+    void *const mData;
+    const size_t mSize;
+    const Handle mHandle;
 };
 
 // Interface used to create SharedMemory instances.

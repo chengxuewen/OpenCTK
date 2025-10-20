@@ -26,7 +26,7 @@
 #define _OCTK_FRAME_TRANSFORMER_INTERFACE_HPP
 
 #include <octk_video_frame_metadata.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_array_view.hpp>
 #include <octk_timestamp.hpp>
 #include <octk_ref_count.hpp>
@@ -155,8 +155,8 @@ public:
     // Transforms `frame` using the implementing class' processing logic.
     virtual void Transform(std::unique_ptr<TransformableFrameInterface> transformable_frame) = 0;
 
-    virtual void RegisterTransformedFrameCallback(ScopedRefPtr<TransformedFrameCallback>) {}
-    virtual void RegisterTransformedFrameSinkCallback(ScopedRefPtr<TransformedFrameCallback>,
+    virtual void RegisterTransformedFrameCallback(SharedRefPtr<TransformedFrameCallback>) {}
+    virtual void RegisterTransformedFrameSinkCallback(SharedRefPtr<TransformedFrameCallback>,
                                                       uint32_t /* ssrc */) {}
     virtual void UnregisterTransformedFrameCallback() {}
     virtual void UnregisterTransformedFrameSinkCallback(uint32_t /* ssrc */) {}
@@ -171,7 +171,7 @@ class FrameTransformerHost
 {
 public:
     virtual ~FrameTransformerHost() {}
-    virtual void SetFrameTransformer(ScopedRefPtr<FrameTransformerInterface> frame_transformer) = 0;
+    virtual void SetFrameTransformer(SharedRefPtr<FrameTransformerInterface> frame_transformer) = 0;
     // TODO: bugs.webrtc.org/15929 - To be added:
     // virtual AddIncomingMediaType(RtpCodec codec) = 0;
     // virtual AddOutgoingMediaType(RtpCodec codec) = 0;

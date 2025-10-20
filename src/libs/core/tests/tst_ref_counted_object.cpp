@@ -87,9 +87,9 @@ public:
 
 TEST(RefCountedObject, HasOneRef)
 {
-    ScopedRefPtr<RefCountedObject<RefClass>> aref(new RefCountedObject<RefClass>());
+    SharedRefPtr<RefCountedObject<RefClass>> aref(new RefCountedObject<RefClass>());
     EXPECT_TRUE(aref->HasOneRef());
-    aref->AddRef();
+    aref->addRef();
     EXPECT_FALSE(aref->HasOneRef());
     EXPECT_EQ(aref->Release(), RefCountReleaseStatus::kOtherRefsRemained);
     EXPECT_TRUE(aref->HasOneRef());
@@ -98,7 +98,7 @@ TEST(RefCountedObject, HasOneRef)
 TEST(RefCountedObject, SupportRValuesInCtor)
 {
     std::unique_ptr<A> a(new A());
-    ScopedRefPtr<RefClassWithRvalue> ref(new RefCountedObject<RefClassWithRvalue>(std::move(a)));
+    SharedRefPtr<RefClassWithRvalue> ref(new RefCountedObject<RefClassWithRvalue>(std::move(a)));
     EXPECT_TRUE(ref->a_.get() != nullptr);
     EXPECT_TRUE(a.get() == nullptr);
 }
@@ -108,7 +108,7 @@ TEST(RefCountedObject, SupportMixedTypesInCtor)
     std::unique_ptr<A> a(new A());
     int b = 9;
     std::string c = "hello";
-    ScopedRefPtr<RefClassWithMixedValues> ref(new RefCountedObject<RefClassWithMixedValues>(std::move(a), b, c));
+    SharedRefPtr<RefClassWithMixedValues> ref(new RefCountedObject<RefClassWithMixedValues>(std::move(a), b, c));
     EXPECT_TRUE(ref->a_.get() != nullptr);
     EXPECT_TRUE(a.get() == nullptr);
     EXPECT_EQ(b, ref->b_);
@@ -119,11 +119,11 @@ TEST(FinalRefCountedObject, CanWrapIntoScopedRefptr)
 {
     using WrappedTyped = FinalRefCountedObject<A>;
     static_assert(!std::is_polymorphic<WrappedTyped>::value, "");
-    ScopedRefPtr<WrappedTyped> ref(new WrappedTyped());
+    SharedRefPtr<WrappedTyped> ref(new WrappedTyped());
     EXPECT_TRUE(ref.get());
     EXPECT_TRUE(ref->HasOneRef());
     // Test reference counter is updated on some simple operations.
-    ScopedRefPtr<WrappedTyped> ref2 = ref;
+    SharedRefPtr<WrappedTyped> ref2 = ref;
     EXPECT_FALSE(ref->HasOneRef());
     EXPECT_FALSE(ref2->HasOneRef());
 
@@ -149,7 +149,7 @@ TEST(FinalRefCountedObject, CanCreateFromMovedType)
     EXPECT_EQ(ref->a(), 5);
 }
 
-// This test is mostly a compile-time test for ScopedRefPtr compatibility.
+// This test is mostly a compile-time test for SharedRefPtr compatibility.
 TEST(RefCounted, SmartPointers)
 {
     // Sanity compile-time tests. FooItf is virtual, Foo is not, FooItf inherits
@@ -167,7 +167,7 @@ TEST(RefCounted, SmartPointers)
         EXPECT_EQ(p->foo_, 5);  // the FooItf ctor just stores 2+3 in foo_.
 
         // Declaring what should result in the same type as `p` is of.
-        ScopedRefPtr<FooItf> p2 = p;
+        SharedRefPtr<FooItf> p2 = p;
     }
 
     {
@@ -175,6 +175,6 @@ TEST(RefCounted, SmartPointers)
         auto p = utils::makeRefCounted<Foo>(2, 3);
         EXPECT_NE(p.get(), nullptr);
         EXPECT_EQ(p->foo_, 5);
-        ScopedRefPtr<FinalRefCountedObject<Foo>> p2 = p;
+        SharedRefPtr<FinalRefCountedObject<Foo>> p2 = p;
     }
 }

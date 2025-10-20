@@ -200,7 +200,7 @@ protected:
 OCTK_END_NAMESPACE
 
 #define OCTK_IMGUI_REGISTER_APPLICATION(Type, Name)                                                                    \
-    namespace internal                                                                                                 \
+    namespace detail                                                                                                 \
     {                                                                                                                  \
     static octk::ImGuiApplication::Registrar<Type> imguiRegistrar##Type(Name);                                         \
     }

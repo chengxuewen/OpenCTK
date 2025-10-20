@@ -29,7 +29,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace internal
+namespace detail
 {
 // `IsNullabilityCompatible` checks whether its first argument is a class
 // explicitly tagged as supporting nullability annotations. The tag is the type
@@ -95,7 +95,7 @@ using NullableImpl OCTK_CPP_ATTRIBUTE_CLANG_ANNOTATE("Nullable") = T;
 
 template <typename T, typename = typename EnableNullabilityUnknown<T>::type>
 using NullabilityUnknownImpl OCTK_CPP_ATTRIBUTE_CLANG_ANNOTATE("Nullability_Unspecified") = T;
-} // namespace internal
+} // namespace detail
 
 // absl::Nonnull
 //
@@ -111,7 +111,7 @@ using NullabilityUnknownImpl OCTK_CPP_ATTRIBUTE_CLANG_ANNOTATE("Nullability_Unsp
 //   pay(*employee);  // OK to dereference
 // }
 template <typename T>
-using Nonnull = internal::NonnullImpl<T>;
+using Nonnull = detail::NonnullImpl<T>;
 
 // absl::Nullable
 //
@@ -128,7 +128,7 @@ using Nonnull = internal::NonnullImpl<T>;
 //   }
 // }
 template <typename T>
-using Nullable = internal::NullableImpl<T>;
+using Nullable = detail::NullableImpl<T>;
 
 // absl::NullabilityUnknown (default)
 //
@@ -160,7 +160,7 @@ using Nullable = internal::NullableImpl<T>;
 //   Pay(*employee); // Potentially dangerous. API provider should investigate.
 // }
 template <typename T>
-using NullabilityUnknown = internal::NullabilityUnknownImpl<T>;
+using NullabilityUnknown = detail::NullabilityUnknownImpl<T>;
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_NULLABILITY_HPP

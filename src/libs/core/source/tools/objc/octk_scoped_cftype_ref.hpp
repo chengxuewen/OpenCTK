@@ -37,7 +37,7 @@ OCTK_BEGIN_NAMESPACE
 // ScopedTypeRef takes over ownership.
 enum class RetainPolicy { RETAIN, ASSUME };
 
-namespace internal
+namespace detail
 {
 template <typename T>
 struct CFTypeRefTraits
@@ -134,10 +134,10 @@ public:
 private:
     T ptr_;
 };
-}  // namespace internal
+}  // namespace detail
 
 template <typename T>
-using ScopedCFTypeRef = internal::ScopedTypeRef<T, internal::CFTypeRefTraits<T>>;
+using ScopedCFTypeRef = detail::ScopedTypeRef<T, detail::CFTypeRefTraits<T>>;
 
 template <typename T>
 static ScopedCFTypeRef<T> AdoptCF(T cftype)

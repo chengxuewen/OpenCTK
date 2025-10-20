@@ -33,7 +33,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace internal
+namespace detail
 {
 
 // Real implementation of SequenceChecker, for use in debug mode, or
@@ -99,7 +99,7 @@ ExpectationToString(const ThreadLikeObject *)
 {
     return std::string();
 }
-} // namespace internal
+} // namespace detail
 
 // SequenceChecker is a helper class used to help verify that some methods
 // of a class are called on the same task queue or thread. A
@@ -122,13 +122,13 @@ ExpectationToString(const ThreadLikeObject *)
 // In Release mode, IsCurrent will always return true.
 class OCTK_ATTRIBUTE_LOCKABLE SequenceChecker
 #if OCTK_DCHECK_IS_ON
-    : public internal::SequenceCheckerImpl
+    : public detail::SequenceCheckerImpl
 {
-    using Impl = internal::SequenceCheckerImpl;
+    using Impl = detail::SequenceCheckerImpl;
 #else
-    : public internal::SequenceCheckerDoNothing
+    : public detail::SequenceCheckerDoNothing
 {
-    using Impl = internal::SequenceCheckerDoNothing;
+    using Impl = detail::SequenceCheckerDoNothing;
 #endif
 public:
     enum InitialState : bool
@@ -225,7 +225,7 @@ public:
 // Such annotation has to be attached to a function, and that function has to be
 // called. Thus current implementation creates a noop lambda and calls it.
 #define OCTK_DCHECK_RUN_ON(x)                                                                                          \
-    OCTK_DCHECK((x)->IsCurrent()) << octk::internal::ExpectationToString(x);                                           \
+    OCTK_DCHECK((x)->IsCurrent()) << octk::detail::ExpectationToString(x);                                           \
     []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) { }()
 OCTK_END_NAMESPACE
 

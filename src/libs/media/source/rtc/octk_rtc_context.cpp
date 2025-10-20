@@ -14,12 +14,12 @@ OCTK_BEGIN_NAMESPACE
 namespace
 {
 
-template <typename T> void Store(Nonnull<std::unique_ptr<T>> value, ScopedRefPtr<const RefCountedBase> &leaf)
+template <typename T> void Store(Nonnull<std::unique_ptr<T>> value, SharedRefPtr<const RefCountedBase> &leaf)
 {
     class StorageNode : public RefCountedBase
     {
     public:
-        StorageNode(ScopedRefPtr<const RefCountedBase> parent, Nonnull<std::unique_ptr<T>> value)
+        StorageNode(SharedRefPtr<const RefCountedBase> parent, Nonnull<std::unique_ptr<T>> value)
             : parent_(std::move(parent))
             , value_(std::move(value))
         {
@@ -31,7 +31,7 @@ template <typename T> void Store(Nonnull<std::unique_ptr<T>> value, ScopedRefPtr
         ~StorageNode() override = default;
 
     private:
-        ScopedRefPtr<const RefCountedBase> parent_;
+        SharedRefPtr<const RefCountedBase> parent_;
         Nonnull<std::unique_ptr<T>> value_;
     };
 

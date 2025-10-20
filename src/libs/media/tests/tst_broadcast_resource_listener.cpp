@@ -22,15 +22,15 @@ using ::testing::StrictMock;
 
 TEST(BroadcastResourceListenerTest, CreateAndRemoveAdapterResource)
 {
-    ScopedRefPtr<FakeResource> source_resource = FakeResource::Create("SourceResource");
+    SharedRefPtr<FakeResource> source_resource = FakeResource::Create("SourceResource");
     BroadcastResourceListener broadcast_resource_listener(source_resource);
     broadcast_resource_listener.StartListening();
 
     EXPECT_TRUE(broadcast_resource_listener.GetAdapterResources().empty());
-    ScopedRefPtr<Resource> adapter = broadcast_resource_listener.CreateAdapterResource();
+    SharedRefPtr<Resource> adapter = broadcast_resource_listener.CreateAdapterResource();
     StrictMock<MockResourceListener> listener;
     adapter->SetResourceListener(&listener);
-    EXPECT_EQ(std::vector<ScopedRefPtr<Resource>>{adapter}, broadcast_resource_listener.GetAdapterResources());
+    EXPECT_EQ(std::vector<SharedRefPtr<Resource>>{adapter}, broadcast_resource_listener.GetAdapterResources());
 
     // The removed adapter is not referenced by the broadcaster.
     broadcast_resource_listener.RemoveAdapterResource(adapter);
@@ -45,11 +45,11 @@ TEST(BroadcastResourceListenerTest, CreateAndRemoveAdapterResource)
 
 TEST(BroadcastResourceListenerTest, AdapterNameIsBasedOnSourceResourceName)
 {
-    ScopedRefPtr<FakeResource> source_resource = FakeResource::Create("FooBarResource");
+    SharedRefPtr<FakeResource> source_resource = FakeResource::Create("FooBarResource");
     BroadcastResourceListener broadcast_resource_listener(source_resource);
     broadcast_resource_listener.StartListening();
 
-    ScopedRefPtr<Resource> adapter = broadcast_resource_listener.CreateAdapterResource();
+    SharedRefPtr<Resource> adapter = broadcast_resource_listener.CreateAdapterResource();
     EXPECT_EQ("FooBarResourceAdapter", adapter->Name());
 
     broadcast_resource_listener.RemoveAdapterResource(adapter);
@@ -58,22 +58,22 @@ TEST(BroadcastResourceListenerTest, AdapterNameIsBasedOnSourceResourceName)
 
 TEST(BroadcastResourceListenerTest, AdaptersForwardsUsageMeasurements)
 {
-    ScopedRefPtr<FakeResource> source_resource = FakeResource::Create("SourceResource");
+    SharedRefPtr<FakeResource> source_resource = FakeResource::Create("SourceResource");
     BroadcastResourceListener broadcast_resource_listener(source_resource);
     broadcast_resource_listener.StartListening();
 
     StrictMock<MockResourceListener> destination_listener1;
     StrictMock<MockResourceListener> destination_listener2;
-    ScopedRefPtr<Resource> adapter1 = broadcast_resource_listener.CreateAdapterResource();
+    SharedRefPtr<Resource> adapter1 = broadcast_resource_listener.CreateAdapterResource();
     adapter1->SetResourceListener(&destination_listener1);
-    ScopedRefPtr<Resource> adapter2 = broadcast_resource_listener.CreateAdapterResource();
+    SharedRefPtr<Resource> adapter2 = broadcast_resource_listener.CreateAdapterResource();
     adapter2->SetResourceListener(&destination_listener2);
 
     // Expect kOveruse to be echoed.
     EXPECT_CALL(destination_listener1, OnResourceUsageStateMeasured(_, _))
         .Times(1)
         .WillOnce(
-            [adapter1](ScopedRefPtr<Resource> resource, ResourceUsageState usage_state)
+            [adapter1](SharedRefPtr<Resource> resource, ResourceUsageState usage_state)
             {
                 EXPECT_EQ(adapter1, resource);
                 EXPECT_EQ(ResourceUsageState::kOveruse, usage_state);
@@ -81,7 +81,7 @@ TEST(BroadcastResourceListenerTest, AdaptersForwardsUsageMeasurements)
     EXPECT_CALL(destination_listener2, OnResourceUsageStateMeasured(_, _))
         .Times(1)
         .WillOnce(
-            [adapter2](ScopedRefPtr<Resource> resource, ResourceUsageState usage_state)
+            [adapter2](SharedRefPtr<Resource> resource, ResourceUsageState usage_state)
             {
                 EXPECT_EQ(adapter2, resource);
                 EXPECT_EQ(ResourceUsageState::kOveruse, usage_state);
@@ -92,7 +92,7 @@ TEST(BroadcastResourceListenerTest, AdaptersForwardsUsageMeasurements)
     EXPECT_CALL(destination_listener1, OnResourceUsageStateMeasured(_, _))
         .Times(1)
         .WillOnce(
-            [adapter1](ScopedRefPtr<Resource> resource, ResourceUsageState usage_state)
+            [adapter1](SharedRefPtr<Resource> resource, ResourceUsageState usage_state)
             {
                 EXPECT_EQ(adapter1, resource);
                 EXPECT_EQ(ResourceUsageState::kUnderuse, usage_state);
@@ -100,7 +100,7 @@ TEST(BroadcastResourceListenerTest, AdaptersForwardsUsageMeasurements)
     EXPECT_CALL(destination_listener2, OnResourceUsageStateMeasured(_, _))
         .Times(1)
         .WillOnce(
-            [adapter2](ScopedRefPtr<Resource> resource, ResourceUsageState usage_state)
+            [adapter2](SharedRefPtr<Resource> resource, ResourceUsageState usage_state)
             {
                 EXPECT_EQ(adapter2, resource);
                 EXPECT_EQ(ResourceUsageState::kUnderuse, usage_state);

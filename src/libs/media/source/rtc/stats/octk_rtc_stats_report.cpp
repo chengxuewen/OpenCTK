@@ -27,7 +27,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-RtcStatsReport::ConstIterator::ConstIterator(const ScopedRefPtr<const RtcStatsReport> &report,
+RtcStatsReport::ConstIterator::ConstIterator(const SharedRefPtr<const RtcStatsReport> &report,
                                              StatsMap::const_iterator iter)
     : mReport(report)
     , mIter(iter)
@@ -60,9 +60,9 @@ bool RtcStatsReport::ConstIterator::operator!=(const RtcStatsReport::ConstIterat
     return !(*this == other);
 }
 
-ScopedRefPtr<RtcStatsReport> RtcStatsReport::create(Timestamp timestamp)
+SharedRefPtr<RtcStatsReport> RtcStatsReport::create(Timestamp timestamp)
 {
-    return ScopedRefPtr<RtcStatsReport>(new RtcStatsReport(timestamp));
+    return SharedRefPtr<RtcStatsReport>(new RtcStatsReport(timestamp));
 }
 
 RtcStatsReport::RtcStatsReport(Timestamp timestamp)
@@ -70,9 +70,9 @@ RtcStatsReport::RtcStatsReport(Timestamp timestamp)
 {
 }
 
-ScopedRefPtr<RtcStatsReport> RtcStatsReport::copy() const
+SharedRefPtr<RtcStatsReport> RtcStatsReport::copy() const
 {
-    ScopedRefPtr<RtcStatsReport> copy = this->create(mTimestamp);
+    SharedRefPtr<RtcStatsReport> copy = this->create(mTimestamp);
     for (auto iter = mStatsMap.begin(); iter != mStatsMap.end(); ++iter)
     {
         copy->addStats(iter->second->copy());
@@ -114,7 +114,7 @@ std::unique_ptr<const RtcStats> RtcStatsReport::take(const std::string &id)
     return nullptr;
 }
 
-void RtcStatsReport::takeMembersFrom(ScopedRefPtr<RtcStatsReport> other)
+void RtcStatsReport::takeMembersFrom(SharedRefPtr<RtcStatsReport> other)
 {
     for (StatsMap::iterator iter = other->mStatsMap.begin(); iter != other->mStatsMap.end(); ++iter)
     {
@@ -125,12 +125,12 @@ void RtcStatsReport::takeMembersFrom(ScopedRefPtr<RtcStatsReport> other)
 
 RtcStatsReport::ConstIterator RtcStatsReport::begin() const
 {
-    return ConstIterator(ScopedRefPtr<const RtcStatsReport>(this), mStatsMap.cbegin());
+    return ConstIterator(SharedRefPtr<const RtcStatsReport>(this), mStatsMap.cbegin());
 }
 
 RtcStatsReport::ConstIterator RtcStatsReport::end() const
 {
-    return ConstIterator(ScopedRefPtr<const RtcStatsReport>(this), mStatsMap.cend());
+    return ConstIterator(SharedRefPtr<const RtcStatsReport>(this), mStatsMap.cend());
 }
 
 std::string RtcStatsReport::toJson() const

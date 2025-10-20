@@ -8,16 +8,16 @@ OCTK_BEGIN_NAMESPACE
 
 std::vector<std::string> RtpReceiverInterface::stream_ids() const { return {}; }
 
-std::vector<ScopedRefPtr<MediaStreamInterface>> RtpReceiverInterface::streams() const { return {}; }
+std::vector<SharedRefPtr<MediaStreamInterface>> RtpReceiverInterface::streams() const { return {}; }
 
 std::vector<RtpSource> RtpReceiverInterface::GetSources() const { return {}; }
 
-void RtpReceiverInterface::SetFrameDecryptor(ScopedRefPtr<FrameDecryptorInterface> /* frame_decryptor */) { }
+void RtpReceiverInterface::SetFrameDecryptor(SharedRefPtr<FrameDecryptorInterface> /* frame_decryptor */) { }
 
-ScopedRefPtr<FrameDecryptorInterface> RtpReceiverInterface::GetFrameDecryptor() const { return nullptr; }
+SharedRefPtr<FrameDecryptorInterface> RtpReceiverInterface::GetFrameDecryptor() const { return nullptr; }
 
-// ScopedRefPtr<DtlsTransportInterface> RtpReceiverInterface::dtls_transport() const { return nullptr; }
+// SharedRefPtr<DtlsTransportInterface> RtpReceiverInterface::dtls_transport() const { return nullptr; }
 
-void RtpReceiverInterface::SetFrameTransformer(ScopedRefPtr<FrameTransformerInterface> /* frame_transformer */) { }
+void RtpReceiverInterface::SetFrameTransformer(SharedRefPtr<FrameTransformerInterface> /* frame_transformer */) { }
 
 OCTK_END_NAMESPACE

@@ -58,12 +58,12 @@ public:
     // Returns true if successful in setting the track.
     // Fails if an audio track is set on a video RtpSender, or vice-versa.
     virtual bool SetTrack(MediaStreamTrackInterface *track) = 0;
-    virtual ScopedRefPtr<MediaStreamTrackInterface> track() const = 0;
+    virtual SharedRefPtr<MediaStreamTrackInterface> track() const = 0;
 
     // The dtlsTransport attribute exposes the DTLS transport on which the
     // media is sent. It may be null.
     // https://w3c.github.io/webrtc-pc/#dom-rtcrtpsender-transport
-    virtual ScopedRefPtr<DtlsTransportInterface> dtls_transport() const = 0;
+    virtual SharedRefPtr<DtlsTransportInterface> dtls_transport() const = 0;
 
     // Returns primary SSRC used by this sender for sending media.
     // Returns 0 if not yet determined.
@@ -108,21 +108,21 @@ public:
     virtual void SetObserver(RtpSenderObserverInterface * /* observer */) { }
 
     // Returns null for a video sender.
-    virtual ScopedRefPtr<DtmfSenderInterface> GetDtmfSender() const = 0;
+    virtual SharedRefPtr<DtmfSenderInterface> GetDtmfSender() const = 0;
 
     // Sets a user defined frame encryptor that will encrypt the entire frame
     // before it is sent across the network. This will encrypt the entire frame
     // using the user provided encryption mechanism regardless of whether SRTP is
     // enabled or not.
-    virtual void SetFrameEncryptor(ScopedRefPtr<FrameEncryptorInterface> frame_encryptor) = 0;
+    virtual void SetFrameEncryptor(SharedRefPtr<FrameEncryptorInterface> frame_encryptor) = 0;
 
     // Returns a pointer to the frame encryptor set previously by the
     // user. This can be used to update the state of the object.
-    virtual ScopedRefPtr<FrameEncryptorInterface> GetFrameEncryptor() const = 0;
+    virtual SharedRefPtr<FrameEncryptorInterface> GetFrameEncryptor() const = 0;
 
     // TODO: bugs.webrtc.org/15929 - add [[deprecated("Use SetFrameTransformer")]]
     // when usage in Chrome is removed
-    virtual void SetEncoderToPacketizerFrameTransformer(ScopedRefPtr<FrameTransformerInterface> frame_transformer)
+    virtual void SetEncoderToPacketizerFrameTransformer(SharedRefPtr<FrameTransformerInterface> frame_transformer)
     {
         SetFrameTransformer(std::move(frame_transformer));
     }
@@ -134,7 +134,7 @@ public:
 
     // Default implementation of SetFrameTransformer.
     // TODO: bugs.webrtc.org/15929 - remove when all implementations are good
-    void SetFrameTransformer(ScopedRefPtr<FrameTransformerInterface>
+    void SetFrameTransformer(SharedRefPtr<FrameTransformerInterface>
                              /* frame_transformer */) override
     {
     }

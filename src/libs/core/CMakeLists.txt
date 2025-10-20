@@ -74,9 +74,9 @@ octk_add_library(core
 	source/memory/octk_ref_count.hpp
 	source/memory/octk_ref_counted_object.hpp
 	source/memory/octk_ref_ptr.hpp
-	source/memory/octk_scoped_refptr.hpp
 	source/memory/octk_shared_memory.cpp
 	source/memory/octk_shared_memory.hpp
+	source/memory/octk_shared_ref_ptr.hpp
 	source/memory/octk_zero_memory.cpp
 	source/memory/octk_zero_memory.hpp
 	source/numerics/octk_divide_round.hpp

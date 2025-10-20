@@ -30,14 +30,14 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace internal
+namespace detail
 {
 #ifdef OCTK_OS_MAC
 OCTK_CORE_API void GetNSExecutablePath(std::string *path);
 #else
 { OCTK_UNUSED(path); }
 #endif
-} // namespace internal
+} // namespace detail
 
 namespace utils
 {

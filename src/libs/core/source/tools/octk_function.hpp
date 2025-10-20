@@ -22,19 +22,18 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_shared_memory.hpp>
+#ifndef _OCTK_FUNCTION_HPP
+#define _OCTK_FUNCTION_HPP
+
+#include <octk_global.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-#if defined(OCTK_OS_WINDOWS)
-const SharedMemory::Handle SharedMemory::kInvalidHandle = NULL;
-#else
-const SharedMemory::Handle SharedMemory::kInvalidHandle = -1;
-#endif
-
-SharedMemory::SharedMemory(void* data, size_t size, Handle handle, int id)
-    : mData(data), mSize(size), mHandle(handle), mId(id)
+namespace detail
 {
-}
+
+} // namespace detail
 
 OCTK_END_NAMESPACE
+
+#endif // _OCTK_FUNCTION_HPP

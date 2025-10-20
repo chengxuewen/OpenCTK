@@ -30,7 +30,7 @@
 #include <octk_frame_decryptor_interface.hpp>
 #include <octk_media_stream_interface.hpp>
 #include <octk_rtp_parameters.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_media_types.hpp>
 #include <octk_rtp_source.hpp>
 #include <octk_ref_count.hpp>
@@ -61,13 +61,13 @@ protected:
 class OCTK_MEDIA_API RtpReceiverInterface : public RefCountInterface, public FrameTransformerHost
 {
 public:
-    virtual ScopedRefPtr<MediaStreamTrackInterface> track() const = 0;
+    virtual SharedRefPtr<MediaStreamTrackInterface> track() const = 0;
 
     // The dtlsTransport attribute exposes the DTLS transport on which the
     // media is received. It may be null.
     // https://w3c.github.io/webrtc-pc/#dom-rtcrtpreceiver-transport
     // TODO(https://bugs.webrtc.org/907849) remove default implementation
-    // virtual ScopedRefPtr<DtlsTransportInterface> dtls_transport() const;
+    // virtual SharedRefPtr<DtlsTransportInterface> dtls_transport() const;
 
     // The list of streams that `track` is associated with. This is the same as
     // the [[AssociatedRemoteMediaStreams]] internal slot in the spec.
@@ -77,7 +77,7 @@ public:
     // stream_ids() as soon as downstream projects are no longer dependent on
     // stream objects.
     virtual std::vector<std::string> stream_ids() const;
-    virtual std::vector<ScopedRefPtr<MediaStreamInterface>> streams() const;
+    virtual std::vector<SharedRefPtr<MediaStreamInterface>> streams() const;
 
     // Audio or video receiver?
     virtual MediaType media_type() const = 0;
@@ -114,26 +114,26 @@ public:
     // using the user provided decryption mechanism regardless of whether SRTP is
     // enabled or not.
     // TODO(bugs.webrtc.org/12772): Remove.
-    virtual void SetFrameDecryptor(ScopedRefPtr<FrameDecryptorInterface> frame_decryptor);
+    virtual void SetFrameDecryptor(SharedRefPtr<FrameDecryptorInterface> frame_decryptor);
 
     // Returns a pointer to the frame decryptor set previously by the
     // user. This can be used to update the state of the object.
     // TODO(bugs.webrtc.org/12772): Remove.
-    virtual ScopedRefPtr<FrameDecryptorInterface> GetFrameDecryptor() const;
+    virtual SharedRefPtr<FrameDecryptorInterface> GetFrameDecryptor() const;
 
     // Sets a frame transformer between the depacketizer and the decoder to enable
     // client code to transform received frames according to their own processing
     // logic.
     // TODO: bugs.webrtc.org/15929 - add [[deprecated("Use SetFrameTransformer")]]
     // when usage in Chrome is removed
-    virtual void SetDepacketizerToDecoderFrameTransformer(ScopedRefPtr<FrameTransformerInterface> frame_transformer)
+    virtual void SetDepacketizerToDecoderFrameTransformer(SharedRefPtr<FrameTransformerInterface> frame_transformer)
     {
         SetFrameTransformer(std::move(frame_transformer));
     }
 
     // Default implementation of SetFrameTransformer.
     // TODO: bugs.webrtc.org/15929 - Make pure virtual.
-    void SetFrameTransformer(ScopedRefPtr<FrameTransformerInterface> frame_transformer) override;
+    void SetFrameTransformer(SharedRefPtr<FrameTransformerInterface> frame_transformer) override;
 
 protected:
     ~RtpReceiverInterface() override = default;

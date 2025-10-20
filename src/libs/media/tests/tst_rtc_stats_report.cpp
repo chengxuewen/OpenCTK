@@ -64,7 +64,7 @@ OCTK_IMPLEMENT_RTCSTATS(RtcTestStats3, RtcStats, "test-stats-3", AttributeInit("
 
 TEST(RtcStatsReport, AddAndgetStats)
 {
-    ScopedRefPtr<RtcStatsReport> report = RtcStatsReport::create(Timestamp::Micros(1337));
+    SharedRefPtr<RtcStatsReport> report = RtcStatsReport::create(Timestamp::Micros(1337));
     EXPECT_EQ(report->timestamp().us_or(-1), 1337u);
     EXPECT_EQ(report->size(), static_cast<size_t>(0));
     report->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("a0", Timestamp::Micros(1))));
@@ -102,7 +102,7 @@ TEST(RtcStatsReport, AddAndgetStats)
 
 TEST(RtcStatsReport, StatsOrder)
 {
-    ScopedRefPtr<RtcStatsReport> report = RtcStatsReport::create(Timestamp::Micros(1337));
+    SharedRefPtr<RtcStatsReport> report = RtcStatsReport::create(Timestamp::Micros(1337));
     EXPECT_EQ(report->timestamp().us(), 1337u);
     EXPECT_EQ(report->timestamp().us_or(-1), 1337u);
     report->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("C", Timestamp::Micros(2))));
@@ -123,7 +123,7 @@ TEST(RtcStatsReport, StatsOrder)
 
 TEST(RtcStatsReport, take)
 {
-    ScopedRefPtr<RtcStatsReport> report = RtcStatsReport::create(Timestamp::Zero());
+    SharedRefPtr<RtcStatsReport> report = RtcStatsReport::create(Timestamp::Zero());
     report->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("A", Timestamp::Micros(1))));
     report->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("B", Timestamp::Micros(2))));
     EXPECT_TRUE(report->get("A"));
@@ -137,12 +137,12 @@ TEST(RtcStatsReport, take)
 
 TEST(RtcStatsReport, takeMembersFrom)
 {
-    ScopedRefPtr<RtcStatsReport> a = RtcStatsReport::create(Timestamp::Micros(1337));
+    SharedRefPtr<RtcStatsReport> a = RtcStatsReport::create(Timestamp::Micros(1337));
     EXPECT_EQ(a->timestamp().us_or(-1), 1337u);
     a->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("B", Timestamp::Micros(1))));
     a->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("C", Timestamp::Micros(2))));
     a->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("E", Timestamp::Micros(4))));
-    ScopedRefPtr<RtcStatsReport> b = RtcStatsReport::create(Timestamp::Micros(1338));
+    SharedRefPtr<RtcStatsReport> b = RtcStatsReport::create(Timestamp::Micros(1338));
     EXPECT_EQ(b->timestamp().us_or(-1), 1338u);
     b->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("A", Timestamp::Micros(0))));
     b->addStats(std::unique_ptr<RtcStats>(new RtcTestStats1("D", Timestamp::Micros(3))));

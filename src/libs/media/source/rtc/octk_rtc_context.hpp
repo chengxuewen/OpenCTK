@@ -13,7 +13,7 @@
 
 #include <octk_task_queue_factory.hpp>
 #include <octk_field_trials_view.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_nullability.hpp>
 #include <octk_ref_count.hpp>
 #include <octk_clock.hpp>
@@ -48,7 +48,7 @@ class TaskQueueFactory;
 //
 //      const FieldTrialsView& trials() const { return env_.field_trials(); }
 //
-//      ScopedRefPtr<RtpTransceiverInterface> AddTransceiver(...) {
+//      SharedRefPtr<RtpTransceiverInterface> AddTransceiver(...) {
 //        return make_ref_counted<RtpTransceiverImpl>(env_, ...);
 //      }
 //
@@ -91,7 +91,7 @@ public:
 
 private:
     friend class RtcContextFactory;
-    RtcContext(ScopedRefPtr<const RefCountedBase> storage,
+    RtcContext(SharedRefPtr<const RefCountedBase> storage,
                Nonnull<const FieldTrialsView *> field_trials,
                Nonnull<Clock *> clock,
                Nonnull<TaskQueueFactory *> taskQueueFactory,
@@ -110,7 +110,7 @@ private:
     // be copyable. It is up to the `RtcContextFactory` to provide an object that
     // ensures references to utilties below are valid while object in the
     // `storage_` is alive.
-    ScopedRefPtr<const RefCountedBase> storage_;
+    SharedRefPtr<const RefCountedBase> storage_;
 
     Nonnull<const FieldTrialsView *> field_trials_;
     Nonnull<Clock *> clock_;
@@ -173,7 +173,7 @@ public:
 private:
     RtcContext CreateWithDefaults() &&;
 
-    ScopedRefPtr<const RefCountedBase> leaf_;
+    SharedRefPtr<const RefCountedBase> leaf_;
 
     Nullable<const FieldTrialsView *> field_trials_ = nullptr;
     Nullable<Clock *> clock_ = nullptr;
@@ -231,7 +231,7 @@ inline void RtcContextFactory::Set(Nullable<RtcEventLog *> utility)
     }
 }
 
-namespace internal
+namespace detail
 {
 
 inline void Set(RtcContextFactory & /* factory */) { }
@@ -243,12 +243,12 @@ void Set(RtcContextFactory &factory, FirstUtility &&first, Utilities &&...utilit
     Set(factory, std::forward<Utilities>(utilities)...);
 }
 
-} // namespace internal
+} // namespace detail
 
 template <typename... Utilities> RtcContext CreateRtcContext(Utilities &&...utilities)
 {
     RtcContextFactory factory;
-    internal::Set(factory, std::forward<Utilities>(utilities)...);
+    detail::Set(factory, std::forward<Utilities>(utilities)...);
     return factory.Create();
 }
 

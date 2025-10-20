@@ -57,8 +57,8 @@ public:
     // TODO(https://crbug.com/webrtc/11565): When the ResourceAdaptationProcessor
     // is moved to Call this method could be deleted altogether in favor of
     // Call-level APIs only.
-    virtual void AddAdaptationResource(ScopedRefPtr<Resource> resource) = 0;
-    virtual std::vector<ScopedRefPtr<Resource>> GetAdaptationResources() = 0;
+    virtual void AddAdaptationResource(SharedRefPtr<Resource> resource) = 0;
+    virtual std::vector<SharedRefPtr<Resource>> GetAdaptationResources() = 0;
 
     // Sets the source that will provide video frames to the VideoStreamEncoder's
     // OnFrame method. `degradation_preference` control whether or not resolution

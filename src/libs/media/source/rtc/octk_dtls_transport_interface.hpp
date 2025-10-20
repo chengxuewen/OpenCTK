@@ -27,7 +27,7 @@
 
 #include <octk_ice_transport_interface.hpp>
 #include <octk_ssl_certificate.hpp>
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_media_global.hpp>
 #include <octk_ref_count.hpp>
 #include <octk_rtc_error.hpp>
@@ -121,7 +121,7 @@ class DtlsTransportInterface : public RefCountInterface
 {
 public:
     // Returns a pointer to the ICE transport that is owned by the DTLS transport.
-    virtual ScopedRefPtr<IceTransportInterface> ice_transport() = 0;
+    virtual SharedRefPtr<IceTransportInterface> ice_transport() = 0;
     // Returns information on the state of the DtlsTransport.
     // This function can be called from other threads.
     virtual DtlsTransportInformation Information() = 0;

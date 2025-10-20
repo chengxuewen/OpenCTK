@@ -34,7 +34,7 @@
 #ifndef _OCTK_ICE_TRANSPORT_INTERFACE_HPP
 #define _OCTK_ICE_TRANSPORT_INTERFACE_HPP
 
-#include <octk_scoped_refptr.hpp>
+#include <octk_shared_ref_ptr.hpp>
 #include <octk_media_global.hpp>
 #include <octk_ref_count.hpp>
 
@@ -136,7 +136,7 @@ public:
     // requires the returned transport to be constructed and destroyed on the
     // network thread and an ICE transport factory that intends to work with a
     // peer connection should offer transports compatible with these assumptions.
-    virtual ScopedRefPtr<IceTransportInterface>
+    virtual SharedRefPtr<IceTransportInterface>
     CreateIceTransport(const std::string &transport_name, int component, IceTransportInit init) = 0;
 };
 

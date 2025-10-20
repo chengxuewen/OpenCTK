@@ -37,7 +37,7 @@ OCTK_BEGIN_NAMESPACE
 
 namespace
 {
-namespace internal
+namespace detail
 {
 int stdSecureRandom(uint8_t *buf, size_t len)
 {
@@ -49,7 +49,7 @@ int stdSecureRandom(uint8_t *buf, size_t len)
     }
     return len;
 }
-} // namespace internal
+} // namespace detail
 
 // The OpenSSL/std RNG.
 class SecureRandomGenerator : public RandomGenerator
@@ -61,7 +61,7 @@ public:
     bool Generate(void *buf, size_t len) override
     {
         // return (RAND_bytes(reinterpret_cast<unsigned char *>(buf), len) > 0);
-        return (internal::stdSecureRandom(reinterpret_cast<unsigned char *>(buf), len) > 0);
+        return (detail::stdSecureRandom(reinterpret_cast<unsigned char *>(buf), len) > 0);
     }
 };
 
