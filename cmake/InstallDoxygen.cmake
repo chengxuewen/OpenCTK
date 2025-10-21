@@ -23,7 +23,6 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-message(OCTKDoxygen_FOUND=${OCTKDoxygen_FOUND})
 if(TARGET OCTK3rdparty::Doxygen)
     set(OCTKDoxygen_FOUND ON)
     return()

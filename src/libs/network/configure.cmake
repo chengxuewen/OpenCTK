@@ -20,3 +20,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
+
+octk_configure_feature("USE_BOOST_BACKEND" PUBLIC
+	LABEL "Enable this to build use network boost backend"
+	CONDITION OFF)

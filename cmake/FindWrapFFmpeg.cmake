@@ -28,70 +28,87 @@ if(TARGET OCTK3rdparty::WrapFFmpeg)
     return()
 endif()
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/3rdparty/ffmpeg7-${OCTK_PLATFORM_NAME}.7z")
-    #:x64-osx // no support : alsa,qsv,nvcodec
-    #./vcpkg install ffmpeg[avcodec,avdevice,avfilter,avformat,avresample,swresample,swscale,fdk-aac,opus,snappy,soxr,speex,openh264,vpx,amf]:x64-osx --recurse
-    #:x64-linux //
-    #./vcpkg install ffmpeg[alsa,avcodec,avdevice,avfilter,avformat,avresample,swresample,swscale,fdk-aac,opus,snappy,soxr,speex,openh264,vpx,nvcodec,amf,qsv]:x64-linux --recurse
-    #:x64-windows // no support : alsa
-    #.\vcpkg.exe install ffmpeg[avcodec,avdevice,avfilter,avformat,avresample,swresample,swscale,fdk-aac,opus,snappy,soxr,speex,openh264,vpx,nvcodec,amf,qsv]:x64-windows-static-md --recurse
-    set(OCTKWrapFFmpeg_DIR_NAME "ffmpeg7-${OCTK_PLATFORM_NAME}")
-    set(OCTKWrapFFmpeg_PKG_NAME "ffmpeg7-${OCTK_PLATFORM_NAME}.7z")
-    set(OCTKWrapFFmpeg_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapFFmpeg_PKG_NAME}")
-    set(OCTKWrapFFmpeg_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapFFmpeg_DIR_NAME}")
-    set(OCTKWrapFFmpeg_BUILD_DIR "${OCTKWrapFFmpeg_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-    set(OCTKWrapFFmpeg_SOURCE_DIR "${OCTKWrapFFmpeg_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-    set(OCTKWrapFFmpeg_INSTALL_DIR "${OCTKWrapFFmpeg_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(OCTKWrapFFmpeg_LIBS_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/debug/bin")
-        set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/debug/lib")
-    else()
-        set(OCTKWrapFFmpeg_LIBS_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/bin")
-        set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/lib")
-    endif()
-    octk_stamp_file_info(OCTKWrapFFmpeg OUTPUT_DIR "${OCTKWrapFFmpeg_ROOT_DIR}")
-    octk_fetch_3rdparty(OCTKWrapFFmpeg URL "${OCTKWrapFFmpeg_URL_PATH}")
-    octk_pkg_check_modules(FFmpeg REQUIRED
-        PATH "${OCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
-        IMPORTED_TARGET
-        libavcodec
-        libavdevice
-        libavformat
-        libavfilter
-        libavutil
-        libswresample
-        libswscale)
-    add_library(OCTK3rdparty::WrapFFmpeg INTERFACE IMPORTED)
-    target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
-    # copy lib to build dir
-    execute_process(
-#        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapFFmpeg_LIBS_DIR}" "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_DLLDIR}/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapFFmpeg_INSTALL_DIR}/tools" "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/"
-        WORKING_DIRECTORY "${OCTKWrapFFmpeg_ROOT_DIR}"
-        ERROR_QUIET)
-    if(WIN32)
-#        octk_install(
-#            DIRECTORY "${OCTKWrapFFmpeg_LIBS_DIR}"
-#            DESTINATION "${CMAKE_INSTALL_PREFIX}"
-#            PATTERN "bin/*" PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
-        octk_install(
-            DIRECTORY "${OCTKWrapFFmpeg_INSTALL_DIR}/tools"
-            DESTINATION "${CMAKE_INSTALL_PREFIX}"
-            PATTERN "tools/*" PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
-    else()
-#        octk_install(
-#            DIRECTORY "${OCTKWrapFFmpeg_LIBS_DIR}"
-#            DESTINATION "${CMAKE_INSTALL_PREFIX}/${OCTK_DEFAULT_DLLDIR}"
-#            PATTERN "lib/*" PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
-        octk_install(
-            DIRECTORY "${OCTKWrapFFmpeg_INSTALL_DIR}/tools"
-            DESTINATION "${CMAKE_INSTALL_PREFIX}/${OCTK_DEFAULT_LIBEXEC}"
-            PATTERN "tools/*" PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
-    endif()
+include(InstallVcpkg)
+set(OCTKWrapFFmpeg_NAME "ffmpeg")
+set(OCTKWrapFFmpeg_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapFFmpeg_NAME}")
+if(WIN32)
+    set(OCTKWrapFFmpeg_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-static-md)
 else()
-    octk_pkg_check_modules(FFmpeg REQUIRED
-        IMPORTED_TARGET libavcodec libavdevice libavformat libavfilter libavutil libswresample libswscale libpostproc)
-    add_library(OCTK3rdparty::WrapFFmpeg INTERFACE IMPORTED)
-    target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
+    set(OCTKWrapFFmpeg_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
 endif()
+set(OCTKWrapFFmpeg_INSTALL_DIR "${OCTKWrapFFmpeg_ROOT_DIR}/installed/${OCTKWrapFFmpeg_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
+if(NOT EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}")
+    execute_process(
+        COMMAND ${OCTKVcpkg_EXECUTABLE} list ffmpeg:${OCTKWrapFFmpeg_VCPKG_TRIPLET}
+        WORKING_DIRECTORY "${OCTKVcpkg_ROOT_DIR}"
+        OUTPUT_VARIABLE FIND_OUTPUT
+        RESULT_VARIABLE FIND_RESULT)
+    if("X${FIND_OUTPUT}" STREQUAL "X")
+        message(STATUS "${OCTKWrapFFmpeg_NAME} not installed, start install...")
+        list(APPEND OCTKWrapFFmpeg_COMPONENTS
+            swresample
+            avresample
+            avdevice
+            avfilter
+            avformat
+            avcodec
+            openh264
+            swscale
+            fdk-aac
+            snappy
+            speex
+            opus
+            soxr
+            vpx)
+        if(WIN32)
+            list(APPEND OCTKWrapFFmpeg_COMPONENTS nvcodec amf)
+        elseif(NOT OCTK_SYSTEM_DARWIN)
+            list(APPEND OCTKWrapFFmpeg_COMPONENTS nvcodec qsv amf)
+        endif()
+        unset(OCTKWrapFFmpeg_COMPONENTS_CONFIGS)
+        foreach(component IN LISTS OCTKWrapFFmpeg_COMPONENTS)
+            if(NOT "${OCTKWrapFFmpeg_COMPONENTS_CONFIGS}" STREQUAL "")
+                set(OCTKWrapFFmpeg_COMPONENTS_CONFIGS "${OCTKWrapFFmpeg_COMPONENTS_CONFIGS},")
+            endif()
+            set(OCTKWrapFFmpeg_COMPONENTS_CONFIGS "${OCTKWrapFFmpeg_COMPONENTS_CONFIGS}${component}")
+        endforeach()
+        set(OCTKWrapFFmpeg_VCPKG_CONFIGS ffmpeg[${OCTKWrapFFmpeg_COMPONENTS_CONFIGS}]:${OCTKWrapFFmpeg_VCPKG_TRIPLET})
+        message(STATUS "${OCTKWrapFFmpeg_NAME} vcpkg install configs: ${OCTKWrapFFmpeg_VCPKG_CONFIGS}")
+        execute_process(
+            COMMAND "${OCTKVcpkg_EXECUTABLE}" install ${OCTKWrapFFmpeg_VCPKG_CONFIGS} --recurse
+            WORKING_DIRECTORY "${OCTKVcpkg_ROOT_DIR}"
+            RESULT_VARIABLE INSTALL_RESULT
+            COMMAND_ECHO STDOUT)
+        if(NOT (INSTALL_RESULT MATCHES 0))
+            message(FATAL_ERROR "${OCTKWrapFFmpeg_NAME} install failed.")
+        endif()
+    endif()
+
+    execute_process(
+        COMMAND "${OCTKVcpkg_EXECUTABLE}" export ${OCTKWrapFFmpeg_NAME}:${OCTKWrapFFmpeg_VCPKG_TRIPLET}
+        --raw --output=${OCTKWrapFFmpeg_NAME} --output-dir=${PROJECT_BINARY_DIR}/3rdparty
+        WORKING_DIRECTORY "${OCTKVcpkg_ROOT_DIR}"
+        RESULT_VARIABLE EXPORT_RESULT
+        COMMAND_ECHO STDOUT)
+    if(NOT (EXPORT_RESULT MATCHES 0))
+        message(FATAL_ERROR "${OCTKWrapFFmpeg_NAME} export failed.")
+    endif()
+endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/debug/lib")
+else()
+    set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/lib")
+endif()
+octk_pkg_check_modules(FFmpeg REQUIRED
+    PATH "${OCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
+    IMPORTED_TARGET
+    libswresample
+    libavdevice
+    libavformat
+    libavfilter
+    libavcodec
+    libavutil
+    libswscale)
+add_library(OCTK3rdparty::WrapFFmpeg INTERFACE IMPORTED)
+target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
 set(OCTKWrapFFmpeg_FOUND ON)

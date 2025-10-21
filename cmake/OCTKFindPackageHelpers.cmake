@@ -164,7 +164,7 @@ macro(octk_find_package)
     # message(OpenCTK${ARGV0}_FOUND=${OpenCTK${ARGV0}_FOUND})
     # message(arg_PROVIDED_TARGETS=${arg_PROVIDED_TARGETS})
     # message(_octk_find_package_skip_find_package=${_octk_find_package_skip_find_package})
-    if(OpenCTK${ARGV0}_FOUND AND arg_PROVIDED_TARGETS AND NOT _octk_find_package_skip_find_package)
+    if(OCTK${ARGV0}_FOUND AND arg_PROVIDED_TARGETS AND NOT _octk_find_package_skip_find_package)
         # If package was found, associate each target with its package name. This will be used
         # later when creating Config files for OpenCTK libraries, to generate correct find_dependency()
         # calls. Also make the provided targets global, so that the properties can be read in

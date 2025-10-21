@@ -24,7 +24,6 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-#octk_find_package(WrapFFmpeg PROVIDED_TARGETS OCTK3rdparty::WrapFFmpeg)
 octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 
 
@@ -227,9 +226,16 @@ endif()
 if(OCTK_FEATURE_ENABLE_CAPTURE_VIDEO)
 	add_subdirectory(source/capture/video)
 endif()
-#octk_internal_extend_target(octk_media # for static ffmpeg
-#	CONDITION OCTK_SYSTEM_LINUX
-#	LINK_OPTIONS "-Wl,-Bsymbolic")
+if(OCTK_FEATURE_USE_FFMPEG)
+	octk_find_package(WrapFFmpeg PROVIDED_TARGETS OCTK3rdparty::WrapFFmpeg)
+	octk_internal_extend_target(octk_media
+		#		SOURCES
+		LIBRARIES
+		OCTK3rdparty::WrapFFmpeg)
+	octk_internal_extend_target(octk_media # for static ffmpeg
+		CONDITION OCTK_SYSTEM_LINUX
+		LINK_OPTIONS "-Wl,-Bsymbolic")
+endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

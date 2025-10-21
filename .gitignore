@@ -83,6 +83,7 @@ CMakeLists.txt.user
 # --------
 cmake-build*
 build*
+vcpkg
 
 # Temp dirs
 # --------

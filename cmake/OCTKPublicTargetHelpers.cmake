@@ -302,8 +302,7 @@ endfunction()
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
 function(__octk_internal_promote_target_to_global_checked target)
-    # With CMake version 3.21 we use a different mechanism that allows us to promote all targets
-    # within a scope.
+    # With CMake version 3.21 we use a different mechanism that allows us to promote all targets within a scope.
     if(OCTK_PROMOTE_TO_GLOBAL_TARGETS AND CMAKE_VERSION VERSION_LESS 3.21)
         __octk_internal_promote_target_to_global(${target})
     endif()
