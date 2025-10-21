@@ -33,7 +33,7 @@ include(.cmake.conf)
 #-----------------------------------------------------------------------------------------------------------------------
 # Set project name and version
 #-----------------------------------------------------------------------------------------------------------------------
-project(OpenCTK VERSION 0.1.1.1 LANGUAGES CXX C)
+project(OpenCTK VERSION 0.1.2.1 LANGUAGES CXX C)
 set(OCTK_VERSION_NAME ${PROJECT_VERSION})
 set(OCTK_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(OCTK_VERSION_MINOR ${PROJECT_VERSION_MINOR})

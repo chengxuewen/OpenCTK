@@ -235,6 +235,9 @@ if(OCTK_FEATURE_USE_FFMPEG)
 	octk_internal_extend_target(octk_media # for static ffmpeg
 		CONDITION OCTK_SYSTEM_LINUX
 		LINK_OPTIONS "-Wl,-Bsymbolic")
+	octk_internal_extend_target(octk_media # for static ffmpeg
+		CONDITION OCTK_SYSTEM_DARWIN
+		LINK_OPTIONS "-Wl,-w")
 endif()
 
 

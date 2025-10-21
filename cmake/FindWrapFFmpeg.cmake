@@ -94,21 +94,35 @@ if(NOT EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}")
         message(FATAL_ERROR "${OCTKWrapFFmpeg_NAME} export failed.")
     endif()
 endif()
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/debug/lib")
+
+if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake")
+    add_library(OCTK3rdparty::WrapFFmpeg INTERFACE IMPORTED)
+    set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
+    set(CMAKE_MODULE_PATH "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
+    find_package(FFMPEG  REQUIRED)
+    foreach(library IN LISTS FFMPEG_LIBRARIES)
+        if(EXISTS "${library}")
+            target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE ${library})
+        endif()
+    endforeach()
+    target_include_directories(OCTK3rdparty::WrapFFmpeg INTERFACE ${FFMPEG_INCLUDE_DIRS})
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_CACHE})
 else()
-    set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/lib")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/debug/lib")
+    else()
+        set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/lib")
+    endif()
+    octk_pkg_check_modules(FFmpeg REQUIRED
+        PATH "${OCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
+        IMPORTED_TARGET
+        libswresample
+        libavdevice
+        libavformat
+        libavfilter
+        libavcodec
+        libavutil
+        libswscale)
+    target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
 endif()
-octk_pkg_check_modules(FFmpeg REQUIRED
-    PATH "${OCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
-    IMPORTED_TARGET
-    libswresample
-    libavdevice
-    libavformat
-    libavfilter
-    libavcodec
-    libavutil
-    libswscale)
-add_library(OCTK3rdparty::WrapFFmpeg INTERFACE IMPORTED)
-target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
 set(OCTKWrapFFmpeg_FOUND ON)
