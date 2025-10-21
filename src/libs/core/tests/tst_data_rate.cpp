@@ -39,7 +39,7 @@ TEST(DataRateTest, ConstExpr)
     constexpr int64_t kValue = 12345;
     constexpr DataRate kDataRateZero = DataRate::Zero();
     constexpr DataRate kDataRateInf = DataRate::Infinity();
-    static_assert(DataRate() == kDataRateZero);
+    OCTK_CXX17_CONSTEXPR_ASSERT(DataRate() == kDataRateZero);
     static_assert(kDataRateZero.IsZero(), "");
     static_assert(kDataRateInf.IsInfinite(), "");
     static_assert(kDataRateInf.bps_or(-1) == -1, "");

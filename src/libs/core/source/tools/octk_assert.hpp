@@ -94,4 +94,12 @@ static inline void octk_noop(void) { }
 #    define OCTK_CXX14_CONSTEXPR_ASSERT_X(Condition, Message) OCTK_ASSERT_X(Condition, OCTK_STRFILELINE, Message)
 #endif
 
+#if OCTK_CC_CPP17_OR_GREATER
+#    define OCTK_CXX17_CONSTEXPR_ASSERT(Condition)            OCTK_STATIC_ASSERT(Condition)
+#    define OCTK_CXX17_CONSTEXPR_ASSERT_X(Condition, Message) OCTK_STATIC_ASSERT_X(Condition, Message)
+#else
+#    define OCTK_CXX17_CONSTEXPR_ASSERT(Condition)            OCTK_ASSERT(Condition)
+#    define OCTK_CXX17_CONSTEXPR_ASSERT_X(Condition, Message) OCTK_ASSERT_X(Condition, OCTK_STRFILELINE, Message)
+#endif
+
 #endif // _OCTK_ASSERT_HPP
