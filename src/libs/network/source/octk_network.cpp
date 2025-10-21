@@ -25,6 +25,8 @@
 #include <octk_network.hpp>
 #include <octk_core_config.hpp>
 
+#include <curl/curl.h>
+
 #include <mutex>
 
 OCTK_BEGIN_NAMESPACE
@@ -35,7 +37,7 @@ Network::Network()
 
 void Network::init()
 {
-
+curl_ws_frame f;
 }
 
 const char *Network::version()

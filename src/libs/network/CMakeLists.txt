@@ -24,7 +24,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-#octk_find_package(WrapOpenSSL PROVIDED_TARGETS OCTK3rdparty::WrapOpenSSL)
+octk_find_package(WrapOpenSSL PROVIDED_TARGETS OCTK3rdparty::WrapOpenSSL)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -45,6 +45,7 @@ octk_add_library(network
 	PRECOMPILED_HEADER
 	source/octk_network_pch.hpp
 	LIBRARIES
+	OCTK3rdparty::WrapOpenSSL
 	octk::core_private
 	PUBLIC_LIBRARIES
 	octk::core)
@@ -52,16 +53,16 @@ if(OCTK_FEATURE_USE_BOOST_BACKEND)
 	octk_find_package(WrapBoostAsio PROVIDED_TARGETS OCTK3rdparty::WrapBoostAsio)
 	octk_find_package(WrapBoostBeast PROVIDED_TARGETS OCTK3rdparty::WrapBoostBeast)
 	octk_internal_extend_target(octk_network
-#		SOURCES
+		SOURCES
 		LIBRARIES
 		OCTK3rdparty::WrapBoostAsio
 		OCTK3rdparty::WrapBoostBeast)
 else()
-	octk_find_package(WrapLibhv PROVIDED_TARGETS OCTK3rdparty::WrapLibhv)
+	octk_find_package(WrapLibcurl PROVIDED_TARGETS OCTK3rdparty::WrapLibcurl)
 	octk_internal_extend_target(octk_network
-		#		SOURCES
+		SOURCES
 		LIBRARIES
-		OCTK3rdparty::WrapLibhv)
+		OCTK3rdparty::WrapLibcurl)
 endif()
 
 
