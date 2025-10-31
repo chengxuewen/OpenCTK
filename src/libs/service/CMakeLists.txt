@@ -21,10 +21,34 @@
 #
 ########################################################################################################################
 
-add_subdirectory(core)
-octk_add_subdirectory(imgui OCTK_ENABLE_LIB_IMGUI)
-octk_add_subdirectory(network OCTK_ENABLE_LIB_NETWORK)
-octk_add_subdirectory(platform OCTK_ENABLE_LIB_PLATFORM)
-octk_add_subdirectory(graphics OCTK_ENABLE_LIB_GRAPHICS)
-octk_add_subdirectory(media OCTK_ENABLE_LIB_MEDIA AND OCTK_ENABLE_LIB_NETWORK)
-octk_add_subdirectory(service OCTK_ENABLE_LIB_SERVICE AND OCTK_ENABLE_LIB_REMOTE)
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib link libraries
+#-----------------------------------------------------------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib target
+#-----------------------------------------------------------------------------------------------------------------------
+octk_add_library(service
+	EXCEPTIONS
+	SOURCES
+	source/octk_service.cpp
+	source/octk_service.hpp
+	source/octk_service_framework.cpp
+	source/octk_service_framework.hpp
+	source/octk_service_framework_p.hpp
+	source/octk_service_global.hpp
+	PRECOMPILED_HEADER
+	source/octk_service_pch.hpp
+	LIBRARIES
+	octk::network_private
+	octk::core_private
+	PUBLIC_LIBRARIES
+	octk::network)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Add lib examples and tests
+#-----------------------------------------------------------------------------------------------------------------------
+octk_add_subdirectory(examples OCTK_BUILD_EXAMPLES)
+octk_add_subdirectory(tests OCTK_BUILD_TESTS)

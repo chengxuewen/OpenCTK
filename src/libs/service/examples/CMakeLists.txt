@@ -21,10 +21,18 @@
 #
 ########################################################################################################################
 
-add_subdirectory(core)
-octk_add_subdirectory(imgui OCTK_ENABLE_LIB_IMGUI)
-octk_add_subdirectory(network OCTK_ENABLE_LIB_NETWORK)
-octk_add_subdirectory(platform OCTK_ENABLE_LIB_PLATFORM)
-octk_add_subdirectory(graphics OCTK_ENABLE_LIB_GRAPHICS)
-octk_add_subdirectory(media OCTK_ENABLE_LIB_MEDIA AND OCTK_ENABLE_LIB_NETWORK)
-octk_add_subdirectory(service OCTK_ENABLE_LIB_SERVICE AND OCTK_ENABLE_LIB_REMOTE)
+#-----------------------------------------------------------------------------------------------------------------------
+# Set example output path
+#-----------------------------------------------------------------------------------------------------------------------
+set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Set example link libraries
+#-----------------------------------------------------------------------------------------------------------------------
+list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::service)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Add examples
+#-----------------------------------------------------------------------------------------------------------------------
