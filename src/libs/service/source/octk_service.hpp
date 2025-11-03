@@ -47,9 +47,9 @@ public:
     explicit Service();
     virtual ~Service();
 
-    std::string location() const;
-    State state() const;
-    Id id() const;
+    // std::string location() const;
+    // State state() const;
+    // Id id() const;
 };
 
 OCTK_END_NAMESPACE

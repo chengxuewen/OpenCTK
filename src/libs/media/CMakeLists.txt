@@ -24,6 +24,8 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
+octk_find_package(WrapZLMediaKit PROVIDED_TARGETS OCTK3rdparty::WrapZLMediaKit)
+octk_find_package(WrapLibsrtp PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
 octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 
 

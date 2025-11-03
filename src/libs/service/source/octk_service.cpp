@@ -30,8 +30,6 @@ OCTK_BEGIN_NAMESPACE
 
 Service::Service() { }
 
-void Service::init() { }
-
-const char *Service::version() { return OCTK_VERSION_NAME; }
+Service::~Service() {}
 
 OCTK_END_NAMESPACE
