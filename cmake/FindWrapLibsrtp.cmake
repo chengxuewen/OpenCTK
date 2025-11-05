@@ -29,7 +29,6 @@ if(TARGET OCTK3rdparty::WrapLibsrtp)
 endif()
 
 octk_find_package(WrapOpenSSL PROVIDED_TARGETS OCTK3rdparty::WrapOpenSSL)
-#octk_find_package(WrapMbedTLS PROVIDED_TARGETS OCTK3rdparty::WrapMbedTLS)
 set(OCTKWrapLibsrtp_NAME "libsrtp-2.7.0")
 set(OCTKWrapLibsrtp_PKG_NAME "${OCTKWrapLibsrtp_NAME}.tar.gz")
 set(OCTKWrapLibsrtp_DIR_NAME "${OCTKWrapLibsrtp_NAME}-${OCTK_LOWER_BUILD_TYPE}")

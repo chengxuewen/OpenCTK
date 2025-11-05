@@ -51,6 +51,8 @@ if(NOT EXISTS "${OCTKWrapZLMediaKit_STAMP_FILE_PATH}")
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
         -DENABLE_WEBRTC=ON
+        -DENABLE_CXX_API=ON
+        -DENABLE_API_STATIC_LIB=ON
         -DSRTP_PREFIX=${OCTKWrapLibsrtp_INSTALL_DIR}
         -DOPENSSL_ROOT_DIR=${OCTKWrapOpenSSL_INSTALL_DIR}
         -DCMAKE_POLICY_VERSION_MINIMUM=3.5
@@ -65,7 +67,6 @@ if(NOT EXISTS "${OCTKWrapZLMediaKit_STAMP_FILE_PATH}")
     endif()
     message(STATUS "${OCTKWrapZLMediaKit_DIR_NAME} configure success")
 
-#    return()
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS}
         --config ${CMAKE_BUILD_TYPE} --target install
@@ -88,6 +89,50 @@ if(NOT EXISTS "${OCTKWrapZLMediaKit_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OCTK3rdparty::WrapZLMediaKit INTERFACE IMPORTED)
-#find_package(cppzmq PATHS ${OCTKWrapZLMediaKit_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-#target_link_libraries(OCTK3rdparty::WrapZLMediaKit INTERFACE cppzmq-static)
+target_include_directories(OCTK3rdparty::WrapZLMediaKit INTERFACE
+    "${OCTKWrapZLMediaKit_INSTALL_DIR}/include")
+if(WIN32)
+    target_link_libraries(OCTK3rdparty::WrapZLMediaKit INTERFACE
+        "${OCTKWrapZLMediaKit_INSTALL_DIR}/lib/mk_api.lib"
+        "${OCTKWrapZLMediaKit_INSTALL_DIR}/lib/zltoolkit.lib"
+        "${OCTKWrapZLMediaKit_INSTALL_DIR}/lib/zlmediakit.lib")
+else()
+    target_link_libraries(OCTK3rdparty::WrapZLMediaKit INTERFACE
+        "${OCTKWrapZLMediaKit_INSTALL_DIR}/lib/libmk_api.a"
+        "${OCTKWrapZLMediaKit_INSTALL_DIR}/lib/libzltoolkit.a"
+        "${OCTKWrapZLMediaKit_INSTALL_DIR}/lib/libzlmediakit.a")
+endif()
+if(NOT EXISTS "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit")
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapZLMediaKit_INSTALL_DIR}/bin/"
+        "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit"
+        WORKING_DIRECTORY "${OCTKWrapZLMediaKit_ROOT_DIR}"
+        RESULT_VARIABLE COPY_RESULT)
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit/www"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapZLMediaKit_SOURCE_DIR}/www/webrtc/"
+        "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit/www"
+        WORKING_DIRECTORY "${OCTKWrapZLMediaKit_ROOT_DIR}"
+        RESULT_VARIABLE COPY_RESULT)
+endif()
+if(NOT EXISTS "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit")
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapZLMediaKit_INSTALL_DIR}/bin/"
+        "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit"
+        WORKING_DIRECTORY "${OCTKWrapZLMediaKit_ROOT_DIR}"
+        RESULT_VARIABLE COPY_RESULT)
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit/www"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapZLMediaKit_SOURCE_DIR}/www/webrtc/"
+        "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit/www"
+        WORKING_DIRECTORY "${OCTKWrapZLMediaKit_ROOT_DIR}"
+        RESULT_VARIABLE COPY_RESULT)
+endif()
+octk_install(
+    DIRECTORY "${OCTKWrapZLMediaKit_INSTALL_DIR}/bin/"
+    DESTINATION "${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit"
+    PATTERN "*" PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+octk_install(
+    DIRECTORY "${OCTKWrapZLMediaKit_SOURCE_DIR}/www/webrtc"
+    DESTINATION "${OCTK_DEFAULT_LIBEXEC}/ZLMediaKit/www")
 set(OCTKWrapZLMediaKit_FOUND ON)
