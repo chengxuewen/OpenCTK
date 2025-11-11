@@ -24,6 +24,12 @@
 octk_configure_feature("USE_FFMPEG" PUBLIC
 	LABEL "Enable this to build use ffmpeg"
 	CONDITION OFF)
+octk_configure_feature("USE_LIBSRTP" PUBLIC
+	LABEL "Enable this to build use libsrtp"
+	CONDITION OFF)
+octk_configure_feature("USE_ZLMEDIAKIT" PUBLIC
+	LABEL "Enable this to build use ZLMediaKit"
+	CONDITION ON)
 octk_configure_feature("ENABLE_CAPTURE_DESKTOP" PUBLIC
 	LABEL "Enable this to build use capture desktop function"
 	CONDITION OFF)

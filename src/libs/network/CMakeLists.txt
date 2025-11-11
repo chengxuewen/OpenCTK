@@ -64,6 +64,12 @@ else()
 		LIBRARIES
 		OCTK3rdparty::WrapLibcurl)
 endif()
+if(OCTK_FEATURE_USE_LIBCPR)
+	octk_find_package(WrapLibcpr PROVIDED_TARGETS OCTK3rdparty::WrapLibcpr)
+	octk_internal_extend_target(octk_network
+		LIBRARIES
+		OCTK3rdparty::WrapLibcpr)
+endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

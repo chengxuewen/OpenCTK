@@ -24,3 +24,6 @@
 octk_configure_feature("USE_BOOST_BACKEND" PUBLIC
 	LABEL "Enable this to build use network boost backend"
 	CONDITION OFF)
+octk_configure_feature("USE_LIBCPR" PUBLIC
+	LABEL "Enable this to build use libcpr"
+	CONDITION OFF)

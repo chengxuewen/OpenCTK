@@ -24,8 +24,6 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapZLMediaKit PROVIDED_TARGETS OCTK3rdparty::WrapZLMediaKit)
-octk_find_package(WrapLibsrtp PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
 octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 
 
@@ -240,6 +238,18 @@ if(OCTK_FEATURE_USE_FFMPEG)
 	octk_internal_extend_target(octk_media # for static ffmpeg
 		CONDITION OCTK_SYSTEM_DARWIN
 		LINK_OPTIONS "-Wl,-w")
+endif()
+if(OCTK_FEATURE_USE_ZLMEDIAKIT)
+	octk_find_package(WrapZLMediaKit PROVIDED_TARGETS OCTK3rdparty::WrapZLMediaKit)
+	octk_internal_extend_target(octk_media
+		LIBRARIES
+		OCTK3rdparty::WrapZLMediaKit)
+endif()
+if(OCTK_FEATURE_USE_LIBSRTP)
+	octk_find_package(WrapZLMediaKit PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
+	octk_internal_extend_target(octk_media
+		LIBRARIES
+		OCTK3rdparty::WrapLibsrtp)
 endif()
 
 

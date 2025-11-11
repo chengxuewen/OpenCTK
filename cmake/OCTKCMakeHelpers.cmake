@@ -233,8 +233,8 @@ endfunction()
 #
 # octk_parse_all_arguments(arg "test_func" "" "OUTPUT;INPUT;CONTENT" "" ${ARGN})
 #-----------------------------------------------------------------------------------------------------------------------
-macro(octk_parse_all_arguments result type flags options multiopts)
-    cmake_parse_arguments(${result} "${flags}" "${options}" "${multiopts}" ${ARGN})
+macro(octk_parse_all_arguments result type options oneValueArgs multiValueArgs)
+    cmake_parse_arguments(${result} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(DEFINED ${result}_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR "Unknown arguments were passed to ${type} (${${result}_UNPARSED_ARGUMENTS}).")
