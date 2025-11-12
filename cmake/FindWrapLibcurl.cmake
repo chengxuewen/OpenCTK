@@ -43,7 +43,7 @@ if(NOT EXISTS "${OCTKWrapLibcurl_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapLibcurl_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapLibcurl_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapLibcurl_ROOT_DIR} TARGET_NAME build)
+    octk_reset_dir(${OCTKWrapLibcurl_ROOT_DIR})
 
     message(STATUS "Configure ${OCTKWrapLibcurl_NAME} lib...")
     execute_process(

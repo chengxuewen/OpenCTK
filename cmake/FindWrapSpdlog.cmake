@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapSpdlog_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapSpdlog_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapSpdlog_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapSpdlog_ROOT_DIR} TARGET_NAME build)
+    octk_reset_dir(${OCTKWrapSpdlog_ROOT_DIR})
 
     message(STATUS "Configure ${OCTKWrapSpdlog_DIR_NAME} lib...")
     execute_process(

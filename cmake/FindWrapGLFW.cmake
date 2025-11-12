@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapGLFW_STAMP_FILE_PATH}")
 	if(NOT EXISTS ${OCTKWrapGLFW_SOURCE_DIR})
 		message(FATAL_ERROR "${OCTKWrapGLFW_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(PARENT_DIR ${OCTKWrapGLFW_ROOT_DIR} TARGET_NAME build)
+	octk_reset_dir(${OCTKWrapGLFW_ROOT_DIR})
 
 	message(STATUS "Configure ${OCTKWrapGLFW_DIR_NAME} lib...")
 	execute_process(

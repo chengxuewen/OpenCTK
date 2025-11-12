@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapAssimp_STAMP_FILE_PATH}")
 	if(NOT EXISTS ${OCTKWrapAssimp_SOURCE_DIR})
 		message(FATAL_ERROR "${OCTKWrapAssimp_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(PARENT_DIR ${OCTKWrapAssimp_ROOT_DIR} TARGET_NAME build)
+	octk_reset_dir(${OCTKWrapAssimp_BUILD_DIR})
 
 	message(STATUS "Configure ${OCTKWrapAssimp_DIR_NAME} lib...")
 	execute_process(

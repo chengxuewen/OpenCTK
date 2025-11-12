@@ -529,30 +529,26 @@ endfunction()
 
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
-function(octk_reset_dir)
-    octk_parse_all_arguments(arg "" "" "PARENT_DIR;TARGET_NAME" "" ${ARGN})
-    if(EXISTS "${arg_PARENT_DIR}")
-        if(NOT "${arg_TARGET_NAME}" STREQUAL "")
-            execute_process(
-                COMMAND ${CMAKE_COMMAND} -E remove_directory ${arg_TARGET_NAME}
-                WORKING_DIRECTORY "${arg_PARENT_DIR}"
-                RESULT_VARIABLE RMDIR_RESULT)
-            if(NOT (RMDIR_RESULT MATCHES 0))
-                message(FATAL_ERROR "${arg_PARENT_DIR}/${arg_TARGET_NAME} dir remove failed.")
-            endif()
-            execute_process(
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${arg_TARGET_NAME}
-                WORKING_DIRECTORY "${arg_PARENT_DIR}"
-                RESULT_VARIABLE MKDIR_RESULT)
-            if(NOT (MKDIR_RESULT MATCHES 0))
-                message(FATAL_ERROR "${arg_PARENT_DIR}/${arg_TARGET_NAME} dir create failed.")
-            endif()
-        else()
-            message(FATAL_ERROR "TARGET_NAME can not empty.")
-        endif()
-    else()
-        message(FATAL_ERROR "PARENT_DIR ${arg_PARENT_DIR} not exists.")
-    endif()
+function(octk_reset_dir DIR)
+	set(WORKING_DIR "${DIR}")
+	while(NOT EXISTS "${WORKING_DIR}")
+		get_filename_component(WORKING_DIR ${WORKING_DIR} DIRECTORY)
+	endwhile()
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E remove_directory "${DIR}"
+		WORKING_DIRECTORY "${WORKING_DIR}"
+		RESULT_VARIABLE RMDIR_RESULT)
+	if(NOT (RMDIR_RESULT MATCHES 0))
+		message(FATAL_ERROR "${DIR} dir remove failed.")
+	endif()
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E echo "mkdir ${DIR}"
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${DIR}"
+		WORKING_DIRECTORY "${WORKING_DIR}"
+		RESULT_VARIABLE MKDIR_RESULT)
+	if(NOT (MKDIR_RESULT MATCHES 0))
+		message(FATAL_ERROR "${DIR} dir create failed.")
+	endif()
 endfunction()
 
 

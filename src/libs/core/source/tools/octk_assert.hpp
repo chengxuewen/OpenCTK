@@ -63,12 +63,15 @@ static inline void octk_noop(void) { }
  * The implementation should abort the program as quickly as possible and ideally it should not be possible
  * to ignore the abort request.
  */
-#define OCTK_INTERNAL_HARDENING_ABORT()                                                                                \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        OCTK_INTERNAL_IMMEDIATE_ABORT();                                                                               \
-        OCTK_INTERNAL_UNREACHABLE();                                                                                   \
-    } while (false)
+#if (OCTK_CC_HAS_BUILTIN(__builtin_trap) && OCTK_CC_HAS_BUILTIN(__builtin_unreachable)) || (defined(__GNUC__) && !defined(__clang__))
+#   define OCTK_INTERNAL_HARDENING_ABORT() \
+        do { \
+            __builtin_trap(); \
+            __builtin_unreachable(); \
+        } while (false)
+#else
+#   define OCTK_INTERNAL_HARDENING_ABORT() abort()
+#endif
 
 /**
  * @brief `OCTK_HARDENING_ASSERT()` is like `OCTK_ASSERT()`, but used to implement runtime assertions that should
@@ -79,8 +82,8 @@ static inline void octk_noop(void) { }
  */
 #if OCTK_FEATURE_ENABLE_HARDENING_ASSERT && defined(NDEBUG)
 #    define OCTK_HARDENING_ASSERT(expr)                                                                                \
-        (OCTK_LIKELY((expr)) ? static_cast<void>(0) : [] { ABSL_INTERNAL_HARDENING_ABORT(); }())
-#    define OCTK_UNREACHABLE() ABSL_INTERNAL_HARDENING_ABORT()
+        (OCTK_LIKELY((expr)) ? static_cast<void>(0) : [] { OCTK_INTERNAL_HARDENING_ABORT(); }())
+#    define OCTK_UNREACHABLE() OCTK_INTERNAL_HARDENING_ABORT()
 #else
 #    define OCTK_HARDENING_ASSERT(expr) OCTK_ASSERT(expr)
 #    define OCTK_UNREACHABLE()          OCTK_ASSERT_X("OCTK_UNREACHABLE reached")

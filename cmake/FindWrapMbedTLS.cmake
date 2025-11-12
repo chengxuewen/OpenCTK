@@ -41,7 +41,7 @@ if(NOT EXISTS "${OCTKWrapMbedTLS_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapMbedTLS_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapMbedTLS_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapMbedTLS_ROOT_DIR} TARGET_NAME build)
+    octk_reset_dir(${OCTKWrapMbedTLS_ROOT_DIR})
 
     message(STATUS "Configure ${OCTKWrapMbedTLS_DIR_NAME} lib...")
     execute_process(

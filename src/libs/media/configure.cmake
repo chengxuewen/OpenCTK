@@ -29,7 +29,7 @@ octk_configure_feature("USE_LIBSRTP" PUBLIC
 	CONDITION OFF)
 octk_configure_feature("USE_ZLMEDIAKIT" PUBLIC
 	LABEL "Enable this to build use ZLMediaKit"
-	CONDITION ON)
+	CONDITION OFF)
 octk_configure_feature("ENABLE_CAPTURE_DESKTOP" PUBLIC
 	LABEL "Enable this to build use capture desktop function"
 	CONDITION OFF)

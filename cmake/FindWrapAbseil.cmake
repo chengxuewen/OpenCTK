@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapAbseil_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapAbseil_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapAbseil_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapAbseil_ROOT_DIR} TARGET_NAME build)
+    octk_reset_dir(${OCTKWrapAbseil_BUILD_DIR})
 
     message(STATUS "Configure ${OCTKWrapAbseil_NAME} lib...")
     execute_process(

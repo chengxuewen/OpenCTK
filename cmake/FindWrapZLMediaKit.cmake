@@ -30,22 +30,47 @@ endif()
 
 octk_find_package(WrapOpenSSL PROVIDED_TARGETS OCTK3rdparty::WrapOpenSSL)
 octk_find_package(WrapLibsrtp PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
-set(OCTKWrapZLMediaKit_NAME "ZLMediaKit-8.0")
-set(OCTKWrapZLMediaKit_PKG_NAME "${OCTKWrapZLMediaKit_NAME}.7z")
+set(OCTKWrapZLMediaKit_NAME "ZLMediaKit")
 set(OCTKWrapZLMediaKit_DIR_NAME "${OCTKWrapZLMediaKit_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapZLMediaKit_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapZLMediaKit_PKG_NAME}")
 set(OCTKWrapZLMediaKit_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapZLMediaKit_DIR_NAME}")
 set(OCTKWrapZLMediaKit_BUILD_DIR "${OCTKWrapZLMediaKit_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
 set(OCTKWrapZLMediaKit_SOURCE_DIR "${OCTKWrapZLMediaKit_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
 set(OCTKWrapZLMediaKit_INSTALL_DIR "${OCTKWrapZLMediaKit_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
 octk_stamp_file_info(OCTKWrapZLMediaKit OUTPUT_DIR "${OCTKWrapZLMediaKit_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapZLMediaKit URL "${OCTKWrapZLMediaKit_URL_PATH}" OUTPUT_NAME "${OCTKWrapZLMediaKit_DIR_NAME}")
 if(NOT EXISTS "${OCTKWrapZLMediaKit_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapZLMediaKit_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapZLMediaKit_DIR_NAME} FetchContent failed.")
-    endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapZLMediaKit_ROOT_DIR} TARGET_NAME build)
-    message(OCTKWrapLibsrtp_INSTALL_DIR=${OCTKWrapLibsrtp_INSTALL_DIR})
+	find_package(Git REQUIRED)
+	if(GIT_EXECUTABLE)
+		set(OCTKWrapZLMediaKit_REPO_URL "https://github.com/ZLMediaKit/ZLMediaKit.git")
+		set(OCTKWrapZLMediaKit_REPO_COMMIT "f5791a7c6dda6fbb79d106550181bc4349576fe8")
+		set(OCTKWrapZLMediaKit_REPO_BRANCH "master")
+		if(NOT EXISTS "${OCTKWrapZLMediaKit_SOURCE_DIR}/.git")
+			octk_reset_dir(${OCTKWrapZLMediaKit_SOURCE_DIR})
+
+			message(STATUS "Start clone ${OCTKWrapZLMediaKit_DIR_NAME} repo...")
+			execute_process(
+				COMMAND "${GIT_EXECUTABLE}" clone --depth 1 --branch ${OCTKWrapZLMediaKit_REPO_BRANCH}
+				${OCTKWrapZLMediaKit_REPO_URL} ${OCTKWrapZLMediaKit_SOURCE_DIR}
+				WORKING_DIRECTORY "${OCTKWrapZLMediaKit_ROOT_DIR}"
+				RESULT_VARIABLE CLONE_RESULT
+				COMMAND_ECHO STDOUT)
+			if(NOT (CLONE_RESULT MATCHES 0))
+				message(FATAL_ERROR "${OCTKWrapZLMediaKit_DIR_NAME} clone failed.")
+			endif()
+		endif()
+		execute_process(
+			COMMAND "${GIT_EXECUTABLE}" submodule update --init --recursive --depth 1
+			WORKING_DIRECTORY "${OCTKWrapZLMediaKit_SOURCE_DIR}"
+			RESULT_VARIABLE SUBMODULE_RESULT
+			COMMAND_ECHO STDOUT)
+		if(NOT (SUBMODULE_RESULT MATCHES 0))
+			message(FATAL_ERROR "${OCTKWrapZLMediaKit_DIR_NAME} submodule update failed.")
+		endif()
+	endif()
+	if(NOT EXISTS ${OCTKWrapZLMediaKit_SOURCE_DIR})
+		message(FATAL_ERROR "${OCTKWrapZLMediaKit_DIR_NAME} FetchContent failed.")
+	endif()
+
+    octk_reset_dir(${OCTKWrapZLMediaKit_BUILD_DIR})
     message(STATUS "Configure ${OCTKWrapZLMediaKit_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}

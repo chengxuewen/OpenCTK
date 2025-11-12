@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapMessagePack_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapMessagePack_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapMessagePack_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapMessagePack_ROOT_DIR} TARGET_NAME build)
+    octk_reset_dir(${OCTKWrapMessagePack_ROOT_DIR})
 
     message(STATUS "Configure ${OCTKWrapMessagePack_DIR_NAME} lib...")
     execute_process(

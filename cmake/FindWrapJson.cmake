@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapJson_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapJson_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapJson_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapJson_ROOT_DIR} TARGET_NAME build)
+    octk_reset_dir(${OCTKWrapJson_ROOT_DIR})
 
     message(STATUS "Configure ${OCTKWrapJson_DIR_NAME} lib...")
     execute_process(

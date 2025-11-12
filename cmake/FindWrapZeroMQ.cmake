@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapZeroMQ_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapZeroMQ_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapZeroMQ_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(PARENT_DIR ${OCTKWrapZeroMQ_ROOT_DIR} TARGET_NAME build)
+    octk_reset_dir(${OCTKWrapZeroMQ_ROOT_DIR})
 
     message(STATUS "Configure ${OCTKWrapZeroMQ_DIR_NAME} lib...")
     execute_process(
