@@ -51,18 +51,14 @@ size_t calcBufferSize(VideoType type, int width, int height)
         }
         case VideoType::kRGB565:
         case VideoType::kYUY2:
-        case VideoType::kUYVY:
-            return width * height * 2;
+        case VideoType::kUYVY: return width * height * 2;
         case VideoType::kRGB24:
-        case VideoType::kBGR24:
-            return width * height * 3;
+        case VideoType::kBGR24: return width * height * 3;
         case VideoType::kBGRA:
         case VideoType::kARGB:
-        case VideoType::kABGR:
-            return width * height * 4;
+        case VideoType::kABGR: return width * height * 4;
         case VideoType::kMJPEG:
-        case VideoType::kUnknown:
-            break;
+        case VideoType::kUnknown: break;
     }
     OCTK_DCHECK_NOTREACHED() << "Unexpected pixel format :" << int(type);
     return 0;
@@ -88,19 +84,28 @@ int ExtractBuffer(const std::shared_ptr<I420BufferInterface> &input_frame,
     int chroma_width = input_frame->chromaWidth();
     int chroma_height = input_frame->chromaHeight();
 
-    libyuv::I420Copy(input_frame->dataY(), input_frame->strideY(),
-                     input_frame->dataU(), input_frame->strideU(),
-                     input_frame->dataV(), input_frame->strideV(), buffer, width,
-                     buffer + width * height, chroma_width,
+    libyuv::I420Copy(input_frame->dataY(),
+                     input_frame->strideY(),
+                     input_frame->dataU(),
+                     input_frame->strideU(),
+                     input_frame->dataV(),
+                     input_frame->strideV(),
+                     buffer,
+                     width,
+                     buffer + width * height,
+                     chroma_width,
                      buffer + width * height + chroma_width * chroma_height,
-                     chroma_width, width, height);
+                     chroma_width,
+                     width,
+                     height);
 
     return static_cast<int>(length);
 }
 
 int ExtractBuffer(const VideoFrame &input_frame, size_t size, uint8_t *buffer)
 {
-    return ExtractBuffer(input_frame.videoFrameBuffer()->toI420(), size,
+    return ExtractBuffer(input_frame.videoFrameBuffer()->toI420(),
+                         size,
                          buffer);
 }
 
@@ -108,33 +113,20 @@ int ConvertVideoType(VideoType video_type)
 {
     switch (video_type)
     {
-        case VideoType::kUnknown:
-            return libyuv::FOURCC_ANY;
-        case VideoType::kI420:
-            return libyuv::FOURCC_I420;
-        case VideoType::kIYUV:  // same as VideoType::kYV12
-        case VideoType::kYV12:
-            return libyuv::FOURCC_YV12;
-        case VideoType::kRGB24:
-            return libyuv::FOURCC_24BG;
-        case VideoType::kBGR24:
-            return libyuv::FOURCC_RAW;
-        case VideoType::kABGR:
-            return libyuv::FOURCC_ABGR;
-        case VideoType::kRGB565:
-            return libyuv::FOURCC_RGBP;
-        case VideoType::kYUY2:
-            return libyuv::FOURCC_YUY2;
-        case VideoType::kUYVY:
-            return libyuv::FOURCC_UYVY;
-        case VideoType::kMJPEG:
-            return libyuv::FOURCC_MJPG;
-        case VideoType::kARGB:
-            return libyuv::FOURCC_ARGB;
-        case VideoType::kBGRA:
-            return libyuv::FOURCC_BGRA;
-        case VideoType::kNV12:
-            return libyuv::FOURCC_NV12;
+        case VideoType::kUnknown: return libyuv::FOURCC_ANY;
+        case VideoType::kI420: return libyuv::FOURCC_I420;
+        case VideoType::kIYUV: // same as VideoType::kYV12
+        case VideoType::kYV12: return libyuv::FOURCC_YV12;
+        case VideoType::kRGB24: return libyuv::FOURCC_24BG;
+        case VideoType::kBGR24: return libyuv::FOURCC_RAW;
+        case VideoType::kABGR: return libyuv::FOURCC_ABGR;
+        case VideoType::kRGB565: return libyuv::FOURCC_RGBP;
+        case VideoType::kYUY2: return libyuv::FOURCC_YUY2;
+        case VideoType::kUYVY: return libyuv::FOURCC_UYVY;
+        case VideoType::kMJPEG: return libyuv::FOURCC_MJPG;
+        case VideoType::kARGB: return libyuv::FOURCC_ARGB;
+        case VideoType::kBGRA: return libyuv::FOURCC_BGRA;
+        case VideoType::kNV12: return libyuv::FOURCC_NV12;
     }
     OCTK_DCHECK_NOTREACHED() << "Unexpected pixel format " << int(video_type);
     return libyuv::FOURCC_ANY;
@@ -148,9 +140,16 @@ int ConvertFromI420(const VideoFrame &src_frame,
     std::shared_ptr<I420BufferInterface> i420_buffer =
         src_frame.videoFrameBuffer()->toI420();
     return libyuv::ConvertFromI420(
-        i420_buffer->dataY(), i420_buffer->strideY(), i420_buffer->dataU(),
-        i420_buffer->strideU(), i420_buffer->dataV(), i420_buffer->strideV(),
-        dst_frame, dst_sample_size, src_frame.width(), src_frame.height(),
+        i420_buffer->dataY(),
+        i420_buffer->strideY(),
+        i420_buffer->dataU(),
+        i420_buffer->strideU(),
+        i420_buffer->dataV(),
+        i420_buffer->strideV(),
+        dst_frame,
+        dst_sample_size,
+        src_frame.width(),
+        src_frame.height(),
         ConvertVideoType(dst_video_type));
 }
 
@@ -164,17 +163,30 @@ std::shared_ptr<I420ABufferInterface> ScaleI420ABuffer(
     yuv_buffer->scaleFrom(buffer);
     std::shared_ptr<I420Buffer> axx_buffer =
         I420Buffer::create(target_width, target_height);
-    libyuv::ScalePlane(buffer.dataA(), buffer.strideA(), buffer.width(),
-                       buffer.height(), axx_buffer->MutableDataY(),
-                       axx_buffer->strideY(), target_width, target_height,
+    libyuv::ScalePlane(buffer.dataA(),
+                       buffer.strideA(),
+                       buffer.width(),
+                       buffer.height(),
+                       axx_buffer->MutableDataY(),
+                       axx_buffer->strideY(),
+                       target_width,
+                       target_height,
                        libyuv::kFilterBox);
     std::shared_ptr<I420ABufferInterface> merged_buffer = utils::wrapI420ABuffer(
-        yuv_buffer->width(), yuv_buffer->height(), yuv_buffer->dataY(),
-        yuv_buffer->strideY(), yuv_buffer->dataU(), yuv_buffer->strideU(),
-        yuv_buffer->dataV(), yuv_buffer->strideV(), axx_buffer->dataY(),
+        yuv_buffer->width(),
+        yuv_buffer->height(),
+        yuv_buffer->dataY(),
+        yuv_buffer->strideY(),
+        yuv_buffer->dataU(),
+        yuv_buffer->strideU(),
+        yuv_buffer->dataV(),
+        yuv_buffer->strideV(),
+        axx_buffer->dataY(),
         axx_buffer->strideY(),
         // To keep references alive.
-        [yuv_buffer, axx_buffer] {});
+        [yuv_buffer, axx_buffer]
+        {
+        });
     return merged_buffer;
 }
 
@@ -197,16 +209,28 @@ double I420SSE(const I420BufferInterface &ref_buffer,
     const uint64_t width = test_buffer.width();
     const uint64_t height = test_buffer.height();
     const uint64_t sse_y = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataY(), ref_buffer.strideY(), test_buffer.dataY(),
-        test_buffer.strideY(), width, height);
+        ref_buffer.dataY(),
+        ref_buffer.strideY(),
+        test_buffer.dataY(),
+        test_buffer.strideY(),
+        width,
+        height);
     const int width_uv = (width + 1) >> 1;
     const int height_uv = (height + 1) >> 1;
     const uint64_t sse_u = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataU(), ref_buffer.strideU(), test_buffer.dataU(),
-        test_buffer.strideU(), width_uv, height_uv);
+        ref_buffer.dataU(),
+        ref_buffer.strideU(),
+        test_buffer.dataU(),
+        test_buffer.strideU(),
+        width_uv,
+        height_uv);
     const uint64_t sse_v = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataV(), ref_buffer.strideV(), test_buffer.dataV(),
-        test_buffer.strideV(), width_uv, height_uv);
+        ref_buffer.dataV(),
+        ref_buffer.strideV(),
+        test_buffer.dataV(),
+        test_buffer.strideV(),
+        width_uv,
+        height_uv);
     const double samples = width * height + 2 * (width_uv * height_uv);
     const double sse = sse_y + sse_u + sse_v;
     return sse / (samples * 255.0 * 255.0);
@@ -228,19 +252,35 @@ double I420APSNR(const I420ABufferInterface &ref_buffer,
     const int width = test_buffer.width();
     const int height = test_buffer.height();
     const uint64_t sse_y = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataY(), ref_buffer.strideY(), test_buffer.dataY(),
-        test_buffer.strideY(), width, height);
+        ref_buffer.dataY(),
+        ref_buffer.strideY(),
+        test_buffer.dataY(),
+        test_buffer.strideY(),
+        width,
+        height);
     const int width_uv = (width + 1) >> 1;
     const int height_uv = (height + 1) >> 1;
     const uint64_t sse_u = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataU(), ref_buffer.strideU(), test_buffer.dataU(),
-        test_buffer.strideU(), width_uv, height_uv);
+        ref_buffer.dataU(),
+        ref_buffer.strideU(),
+        test_buffer.dataU(),
+        test_buffer.strideU(),
+        width_uv,
+        height_uv);
     const uint64_t sse_v = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataV(), ref_buffer.strideV(), test_buffer.dataV(),
-        test_buffer.strideV(), width_uv, height_uv);
+        ref_buffer.dataV(),
+        ref_buffer.strideV(),
+        test_buffer.dataV(),
+        test_buffer.strideV(),
+        width_uv,
+        height_uv);
     const uint64_t sse_a = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataA(), ref_buffer.strideA(), test_buffer.dataA(),
-        test_buffer.strideA(), width, height);
+        ref_buffer.dataA(),
+        ref_buffer.strideA(),
+        test_buffer.dataA(),
+        test_buffer.strideA(),
+        width,
+        height);
     const uint64_t samples = 2 * (uint64_t)width * (uint64_t)height +
                              2 * ((uint64_t)width_uv * (uint64_t)height_uv);
     const uint64_t sse = sse_y + sse_u + sse_v + sse_a;
@@ -256,9 +296,9 @@ double I420APSNR(const VideoFrame *ref_frame, const VideoFrame *test_frame)
         return -1;
     }
     OCTK_DCHECK(ref_frame->videoFrameBuffer()->type() ==
-                VideoFrameBuffer::Type::kI420A);
+        VideoFrameBuffer::Type::kI420A);
     OCTK_DCHECK(test_frame->videoFrameBuffer()->type() ==
-                VideoFrameBuffer::Type::kI420A);
+        VideoFrameBuffer::Type::kI420A);
     return I420APSNR(*ref_frame->videoFrameBuffer()->getI420A(),
                      *test_frame->videoFrameBuffer()->getI420A());
 }
@@ -278,11 +318,20 @@ double I420PSNR(const I420BufferInterface &ref_buffer,
         return I420PSNR(ref_buffer, *scaled_buffer);
     }
     double psnr = libyuv::I420Psnr(
-        ref_buffer.dataY(), ref_buffer.strideY(), ref_buffer.dataU(),
-        ref_buffer.strideU(), ref_buffer.dataV(), ref_buffer.strideV(),
-        test_buffer.dataY(), test_buffer.strideY(), test_buffer.dataU(),
-        test_buffer.strideU(), test_buffer.dataV(), test_buffer.strideV(),
-        test_buffer.width(), test_buffer.height());
+        ref_buffer.dataY(),
+        ref_buffer.strideY(),
+        ref_buffer.dataU(),
+        ref_buffer.strideU(),
+        ref_buffer.dataV(),
+        ref_buffer.strideV(),
+        test_buffer.dataY(),
+        test_buffer.strideY(),
+        test_buffer.dataU(),
+        test_buffer.strideU(),
+        test_buffer.dataV(),
+        test_buffer.strideV(),
+        test_buffer.width(),
+        test_buffer.height());
     // LibYuv sets the max psnr value to 128, we restrict it here.
     // In case of 0 mse in one frame, 128 can skew the results significantly.
     return (psnr > kPerfectPSNR) ? kPerfectPSNR : psnr;
@@ -317,8 +366,12 @@ double I420WeightedPSNR(const I420BufferInterface &ref_buffer,
     int width_y = test_buffer.width();
     int height_y = test_buffer.height();
     uint64_t sse_y = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataY(), ref_buffer.strideY(), test_buffer.dataY(),
-        test_buffer.strideY(), width_y, height_y);
+        ref_buffer.dataY(),
+        ref_buffer.strideY(),
+        test_buffer.dataY(),
+        test_buffer.strideY(),
+        width_y,
+        height_y);
     uint64_t num_samples_y = (uint64_t)width_y * (uint64_t)height_y;
     double psnr_y = libyuv::SumSquareErrorToPsnr(sse_y, num_samples_y);
 
@@ -326,13 +379,21 @@ double I420WeightedPSNR(const I420BufferInterface &ref_buffer,
     int width_uv = (width_y + 1) >> 1;
     int height_uv = (height_y + 1) >> 1;
     uint64_t sse_u = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataU(), ref_buffer.strideU(), test_buffer.dataU(),
-        test_buffer.strideU(), width_uv, height_uv);
+        ref_buffer.dataU(),
+        ref_buffer.strideU(),
+        test_buffer.dataU(),
+        test_buffer.strideU(),
+        width_uv,
+        height_uv);
     uint64_t num_samples_uv = (uint64_t)width_uv * (uint64_t)height_uv;
     double psnr_u = libyuv::SumSquareErrorToPsnr(sse_u, num_samples_uv);
     uint64_t sse_v = libyuv::ComputeSumSquareErrorPlane(
-        ref_buffer.dataV(), ref_buffer.strideV(), test_buffer.dataV(),
-        test_buffer.strideV(), width_uv, height_uv);
+        ref_buffer.dataV(),
+        ref_buffer.strideV(),
+        test_buffer.dataV(),
+        test_buffer.strideV(),
+        width_uv,
+        height_uv);
     double psnr_v = libyuv::SumSquareErrorToPsnr(sse_v, num_samples_uv);
 
     // Weights from Ohm et. al 2012.
@@ -354,14 +415,27 @@ double I420ASSIM(const I420ABufferInterface &ref_buffer,
         return I420ASSIM(ref_buffer, *scaled_buffer);
     }
     const double yuv_ssim = libyuv::I420Ssim(
-        ref_buffer.dataY(), ref_buffer.strideY(), ref_buffer.dataU(),
-        ref_buffer.strideU(), ref_buffer.dataV(), ref_buffer.strideV(),
-        test_buffer.dataY(), test_buffer.strideY(), test_buffer.dataU(),
-        test_buffer.strideU(), test_buffer.dataV(), test_buffer.strideV(),
-        test_buffer.width(), test_buffer.height());
+        ref_buffer.dataY(),
+        ref_buffer.strideY(),
+        ref_buffer.dataU(),
+        ref_buffer.strideU(),
+        ref_buffer.dataV(),
+        ref_buffer.strideV(),
+        test_buffer.dataY(),
+        test_buffer.strideY(),
+        test_buffer.dataU(),
+        test_buffer.strideU(),
+        test_buffer.dataV(),
+        test_buffer.strideV(),
+        test_buffer.width(),
+        test_buffer.height());
     const double a_ssim = libyuv::CalcFrameSsim(
-        ref_buffer.dataA(), ref_buffer.strideA(), test_buffer.dataA(),
-        test_buffer.strideA(), test_buffer.width(), test_buffer.height());
+        ref_buffer.dataA(),
+        ref_buffer.strideA(),
+        test_buffer.dataA(),
+        test_buffer.strideA(),
+        test_buffer.width(),
+        test_buffer.height());
     return (yuv_ssim + (a_ssim * 0.8)) / 1.8;
 }
 
@@ -373,9 +447,9 @@ double I420ASSIM(const VideoFrame *ref_frame, const VideoFrame *test_frame)
         return -1;
     }
     OCTK_DCHECK(ref_frame->videoFrameBuffer()->type() ==
-                VideoFrameBuffer::Type::kI420A);
+        VideoFrameBuffer::Type::kI420A);
     OCTK_DCHECK(test_frame->videoFrameBuffer()->type() ==
-                VideoFrameBuffer::Type::kI420A);
+        VideoFrameBuffer::Type::kI420A);
     return I420ASSIM(*ref_frame->videoFrameBuffer()->getI420A(),
                      *test_frame->videoFrameBuffer()->getI420A());
 }
@@ -395,11 +469,20 @@ double I420SSIM(const I420BufferInterface &ref_buffer,
         return I420SSIM(ref_buffer, *scaled_buffer);
     }
     return libyuv::I420Ssim(
-        ref_buffer.dataY(), ref_buffer.strideY(), ref_buffer.dataU(),
-        ref_buffer.strideU(), ref_buffer.dataV(), ref_buffer.strideV(),
-        test_buffer.dataY(), test_buffer.strideY(), test_buffer.dataU(),
-        test_buffer.strideU(), test_buffer.dataV(), test_buffer.strideV(),
-        test_buffer.width(), test_buffer.height());
+        ref_buffer.dataY(),
+        ref_buffer.strideY(),
+        ref_buffer.dataU(),
+        ref_buffer.strideU(),
+        ref_buffer.dataV(),
+        ref_buffer.strideV(),
+        test_buffer.dataY(),
+        test_buffer.strideY(),
+        test_buffer.dataU(),
+        test_buffer.strideU(),
+        test_buffer.dataV(),
+        test_buffer.strideV(),
+        test_buffer.width(),
+        test_buffer.height());
 }
 
 double I420SSIM(const VideoFrame *ref_frame, const VideoFrame *test_frame)
@@ -432,10 +515,18 @@ void NV12Scale(uint8_t *tmp_buffer,
     if (src_width == dst_width && src_height == dst_height)
     {
         // No scaling.
-        libyuv::CopyPlane(src_y, src_stride_y, dst_y, dst_stride_y, src_width,
+        libyuv::CopyPlane(src_y,
+                          src_stride_y,
+                          dst_y,
+                          dst_stride_y,
+                          src_width,
                           src_height);
-        libyuv::CopyPlane(src_uv, src_stride_uv, dst_uv, dst_stride_uv,
-                          src_chroma_width * 2, src_chroma_height);
+        libyuv::CopyPlane(src_uv,
+                          src_stride_uv,
+                          dst_uv,
+                          dst_stride_uv,
+                          src_chroma_width * 2,
+                          src_chroma_height);
         return;
     }
 
@@ -450,18 +541,44 @@ void NV12Scale(uint8_t *tmp_buffer,
     uint8_t *const dst_v = dst_u + dst_chroma_width * dst_chroma_height;
 
     // Split source UV plane into separate U and V plane using the temporary data.
-    libyuv::SplitUVPlane(src_uv, src_stride_uv, src_u, src_chroma_width, src_v,
-                         src_chroma_width, src_chroma_width, src_chroma_height);
+    libyuv::SplitUVPlane(src_uv,
+                         src_stride_uv,
+                         src_u,
+                         src_chroma_width,
+                         src_v,
+                         src_chroma_width,
+                         src_chroma_width,
+                         src_chroma_height);
 
     // Scale the planes.
     libyuv::I420Scale(
-        src_y, src_stride_y, src_u, src_chroma_width, src_v, src_chroma_width,
-        src_width, src_height, dst_y, dst_stride_y, dst_u, dst_chroma_width,
-        dst_v, dst_chroma_width, dst_width, dst_height, libyuv::kFilterBox);
+        src_y,
+        src_stride_y,
+        src_u,
+        src_chroma_width,
+        src_v,
+        src_chroma_width,
+        src_width,
+        src_height,
+        dst_y,
+        dst_stride_y,
+        dst_u,
+        dst_chroma_width,
+        dst_v,
+        dst_chroma_width,
+        dst_width,
+        dst_height,
+        libyuv::kFilterBox);
 
     // Merge the UV planes into the destination.
-    libyuv::MergeUVPlane(dst_u, dst_chroma_width, dst_v, dst_chroma_width, dst_uv,
-                         dst_stride_uv, dst_chroma_width, dst_chroma_height);
+    libyuv::MergeUVPlane(dst_u,
+                         dst_chroma_width,
+                         dst_v,
+                         dst_chroma_width,
+                         dst_uv,
+                         dst_stride_uv,
+                         dst_chroma_width,
+                         dst_chroma_height);
 }
 
 NV12ToI420Scaler::NV12ToI420Scaler() = default;
@@ -487,9 +604,18 @@ void NV12ToI420Scaler::NV12ToI420Scale(const uint8_t *src_y,
         // No scaling.
         tmp_uv_planes_.clear();
         tmp_uv_planes_.shrink_to_fit();
-        libyuv::NV12ToI420(src_y, src_stride_y, src_uv, src_stride_uv, dst_y,
-                           dst_stride_y, dst_u, dst_stride_u, dst_v, dst_stride_v,
-                           src_width, src_height);
+        libyuv::NV12ToI420(src_y,
+                           src_stride_y,
+                           src_uv,
+                           src_stride_uv,
+                           dst_y,
+                           dst_stride_y,
+                           dst_u,
+                           dst_stride_u,
+                           dst_v,
+                           dst_stride_v,
+                           src_width,
+                           src_height);
         return;
     }
 
@@ -503,14 +629,639 @@ void NV12ToI420Scaler::NV12ToI420Scale(const uint8_t *src_y,
     // Split source UV plane into separate U and V plane using the temporary data.
     uint8_t *const src_u = tmp_uv_planes_.data();
     uint8_t *const src_v = tmp_uv_planes_.data() + src_uv_width * src_uv_height;
-    libyuv::SplitUVPlane(src_uv, src_stride_uv, src_u, src_uv_width, src_v,
-                         src_uv_width, src_uv_width, src_uv_height);
+    libyuv::SplitUVPlane(src_uv,
+                         src_stride_uv,
+                         src_u,
+                         src_uv_width,
+                         src_v,
+                         src_uv_width,
+                         src_uv_width,
+                         src_uv_height);
 
     // Scale the planes into the destination.
-    libyuv::I420Scale(src_y, src_stride_y, src_u, src_uv_width, src_v,
-                      src_uv_width, src_width, src_height, dst_y, dst_stride_y,
-                      dst_u, dst_stride_u, dst_v, dst_stride_v, dst_width,
-                      dst_height, libyuv::kFilterBox);
+    libyuv::I420Scale(src_y,
+                      src_stride_y,
+                      src_u,
+                      src_uv_width,
+                      src_v,
+                      src_uv_width,
+                      src_width,
+                      src_height,
+                      dst_y,
+                      dst_stride_y,
+                      dst_u,
+                      dst_stride_u,
+                      dst_v,
+                      dst_stride_v,
+                      dst_width,
+                      dst_height,
+                      libyuv::kFilterBox);
 }
+
+#define OCTK_I420_Y_PTR(buffer, width, height)        (buffer)
+#define OCTK_I420_U_PTR(buffer, width, height)        (buffer + width * height)
+#define OCTK_I420_V_PTR(buffer, width, height)        (buffer + width * height + (width >> 1) * (height >> 1))
+#define OCTK_I420_Y_STRIDE(width)                     (width)
+#define OCTK_I420_U_STRIDE(width)                     (width >> 1)
+#define OCTK_I420_V_STRIDE(width)                     (width >> 1)
+#define OCTK_I420_Y_OFFSET_PTR(buffer, width, height, xOffset, yOffset) \
+(OCTK_I420_Y_PTR(buffer, width, height) + OCTK_I420_Y_STRIDE(width) * yOffset + xOffset)
+#define OCTK_I420_U_OFFSET_PTR(buffer, width, height, xOffset, yOffset) \
+(OCTK_I420_U_PTR(buffer, width, height) + OCTK_I420_U_STRIDE(width) * (yOffset / 2) + (xOffset / 2))
+#define OCTK_I420_V_OFFSET_PTR(buffer, width, height, xOffset, yOffset) \
+(OCTK_I420_V_PTR(buffer, width, height) + OCTK_I420_V_STRIDE(width) * (yOffset / 2) + (xOffset / 2))
+
+#define OCTK_NV12_Y_PTR(buffer, width, height)          (buffer)
+#define OCTK_NV12_UV_PTR(buffer, width, height)         (buffer + width * height)
+#define OCTK_NV12_Y_STRIDE(width)                       (width)
+#define OCTK_NV12_UV_STRIDE(width)                      (width)
+#define OCTK_NV12_Y_OFFSET_PTR(buffer, width, height, xOffset, yOffset) \
+(OCTK_NV12_Y_PTR(buffer, width, height) + width * yOffset + xOffset)
+#define OCTK_NV12_UV_OFFSET_PTR(buffer, width, height, xOffset, yOffset) \
+(OCTK_NV12_UV_PTR(buffer, width, height) + width * (yOffset / 2) + xOffset)
+
+#define OCTK_NV21_Y_PTR(buffer, width, height)         (buffer)
+#define OCTK_NV21_VU_PTR(buffer, width, height)        (buffer + width * height)
+#define OCTK_NV21_Y_STRIDE(width)                      (width)
+#define OCTK_NV21_VU_STRIDE(width)                     (width)
+
+#define OCTK_ARGB_STRIDE(width)                         (width * 4)
+#define OCTK_ARGB_OFFSET_PTR(buffer, width, xOffset, yOffset) \
+(buffer + OCTK_ARGB_STRIDE(width) * yOffset + OCTK_ARGB_STRIDE(xOffset))
+
+namespace yuv
+{
+void scaleI420(const uint8_t *srcBuffer,
+               int srcWidth,
+               int srcHeight,
+               uint8_t *dstBuffer,
+               int dstWidth,
+               int dstHeight,
+               bool highestQuality)
+{
+    libyuv::I420Scale(OCTK_I420_Y_PTR(srcBuffer, srcWidth, srcHeight),
+                      OCTK_I420_Y_STRIDE(srcWidth),
+                      OCTK_I420_U_PTR(srcBuffer, srcWidth, srcHeight),
+                      OCTK_I420_U_STRIDE(srcWidth),
+                      OCTK_I420_V_PTR(srcBuffer, srcWidth, srcHeight),
+                      OCTK_I420_V_STRIDE(srcWidth),
+                      srcWidth,
+                      srcHeight,
+                      OCTK_I420_Y_PTR(dstBuffer, dstWidth, dstHeight),
+                      OCTK_I420_Y_STRIDE(dstWidth),
+                      OCTK_I420_U_PTR(dstBuffer, dstWidth, dstHeight),
+                      OCTK_I420_U_STRIDE(dstWidth),
+                      OCTK_I420_V_PTR(dstBuffer, dstWidth, dstHeight),
+                      OCTK_I420_V_STRIDE(dstWidth),
+                      dstWidth,
+                      dstHeight,
+                      highestQuality ? libyuv::kFilterBox : libyuv::kFilterBilinear);
+}
+
+void scaleARGB(const uint8_t *srcBuffer,
+               int srcWidth,
+               int srcHeight,
+               uint8_t *dstBuffer,
+               int dstWidth,
+               int dstHeight,
+               bool highestQuality)
+{
+    libyuv::ARGBScale(srcBuffer,
+                      OCTK_ARGB_STRIDE(srcWidth),
+                      srcWidth,
+                      srcHeight,
+                      dstBuffer,
+                      OCTK_ARGB_STRIDE(dstWidth),
+                      dstWidth,
+                      dstHeight,
+                      highestQuality ? libyuv::kFilterBox : libyuv::kFilterBilinear);
+}
+
+void scaleNV12(const uint8_t *srcBuffer,
+               int srcWidth,
+               int srcHeight,
+               uint8_t *dstBuffer,
+               int dstWidth,
+               int dstHeight,
+               bool highestQuality)
+{
+    libyuv::NV12Scale(OCTK_NV12_Y_PTR(srcBuffer, srcWidth, srcHeight),
+                      OCTK_NV12_Y_STRIDE(srcWidth),
+                      OCTK_NV12_UV_PTR(srcBuffer, srcWidth, srcHeight),
+                      OCTK_NV12_UV_STRIDE(srcWidth),
+                      srcWidth,
+                      srcHeight,
+                      OCTK_NV12_Y_PTR(dstBuffer, dstWidth, dstHeight),
+                      OCTK_NV12_Y_STRIDE(dstWidth),
+                      OCTK_NV12_UV_PTR(dstBuffer, dstWidth, dstHeight),
+                      OCTK_NV12_UV_STRIDE(dstWidth),
+                      dstWidth,
+                      dstHeight,
+                      highestQuality ? libyuv::kFilterBox : libyuv::kFilterBilinear);
+}
+
+void copyCenterInI420(const uint8_t *srcBuffer,
+                      int srcWidth,
+                      int srcHeight,
+                      uint8_t *dstBuffer,
+                      int dstWidth,
+                      int dstHeight)
+{
+    libyuv::I420Rect(OCTK_I420_Y_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_Y_STRIDE(dstWidth),
+                     OCTK_I420_U_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_U_STRIDE(dstWidth),
+                     OCTK_I420_V_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_V_STRIDE(dstWidth),
+                     0,
+                     0,
+                     dstWidth,
+                     dstHeight,
+                     0,
+                     128,
+                     128);
+
+    const int fixWidth = std::min(srcWidth, dstWidth);
+    const int fixHeight = std::min(srcHeight, dstHeight);
+    const int xOffset = srcWidth > dstWidth ? (srcWidth - dstWidth) / 2 : 0;
+    const int yOffset = srcHeight > dstHeight ? (srcHeight - dstHeight) / 2 : 0;
+    const int dstXOffset = srcWidth < dstWidth ? (dstWidth - srcWidth) / 2 : 0;
+    const int dstYOffset = srcHeight < dstHeight ? (dstHeight - srcHeight) / 2 : 0;
+    libyuv::I420Copy(OCTK_I420_Y_OFFSET_PTR(srcBuffer, srcWidth, srcHeight, xOffset, yOffset),
+                     OCTK_I420_Y_STRIDE(srcWidth),
+                     OCTK_I420_U_OFFSET_PTR(srcBuffer, srcWidth, srcHeight, xOffset, yOffset),
+                     OCTK_I420_U_STRIDE(srcWidth),
+                     OCTK_I420_V_OFFSET_PTR(srcBuffer, srcWidth, srcHeight, xOffset, yOffset),
+                     OCTK_I420_V_STRIDE(srcWidth),
+                     OCTK_I420_Y_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                     OCTK_I420_Y_STRIDE(dstWidth),
+                     OCTK_I420_U_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                     OCTK_I420_U_STRIDE(dstWidth),
+                     OCTK_I420_V_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                     OCTK_I420_V_STRIDE(dstWidth),
+                     fixWidth,
+                     fixHeight);
+}
+
+void copyCenterInNV12(const uint8_t *srcBuffer,
+                      int srcWidth,
+                      int srcHeight,
+                      uint8_t *dstBuffer,
+                      int dstWidth,
+                      int dstHeight)
+{
+    libyuv::SetPlane(OCTK_NV12_Y_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_NV12_Y_STRIDE(dstWidth),
+                     dstWidth,
+                     dstHeight,
+                     16);
+    libyuv::SetPlane(OCTK_NV12_UV_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_NV12_UV_STRIDE(dstWidth),
+                     dstWidth,
+                     dstHeight / 2,
+                     128);
+
+    const int fixWidth = std::min(srcWidth, dstWidth);
+    const int fixHeight = std::min(srcHeight, dstHeight);
+    const int xOffset = srcWidth > dstWidth ? (srcWidth - dstWidth) / 2 : 0;
+    const int yOffset = srcHeight > dstHeight ? (srcHeight - dstHeight) / 2 : 0;
+    const int dstXOffset = srcWidth < dstWidth ? (dstWidth - srcWidth) / 2 : 0;
+    const int dstYOffset = srcHeight < dstHeight ? (dstHeight - srcHeight) / 2 : 0;
+    libyuv::NV12Copy(OCTK_NV12_Y_OFFSET_PTR(srcBuffer, srcWidth, srcHeight, xOffset, yOffset),
+                     OCTK_NV12_Y_STRIDE(srcWidth),
+                     OCTK_NV12_UV_OFFSET_PTR(srcBuffer, srcWidth, srcHeight, xOffset, yOffset),
+                     OCTK_NV12_UV_STRIDE(srcWidth),
+                     OCTK_NV12_Y_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                     OCTK_NV12_Y_STRIDE(dstWidth),
+                     OCTK_NV12_UV_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                     OCTK_NV12_UV_STRIDE(dstWidth),
+                     fixWidth,
+                     fixHeight);
+}
+
+void copyCenterInARGB(const uint8_t *srcBuffer,
+                      int srcWidth,
+                      int srcHeight,
+                      uint8_t *dstBuffer,
+                      int dstWidth,
+                      int dstHeight)
+{
+    libyuv::ARGBRect(dstBuffer, OCTK_ARGB_STRIDE(dstWidth), 0, 0, dstWidth, dstHeight, 0);
+
+    const int fixWidth = std::min(srcWidth, dstWidth);
+    const int fixHeight = std::min(srcHeight, dstHeight);
+    const int xOffset = srcWidth > dstWidth ? (srcWidth - dstWidth) / 2 : 0;
+    const int yOffset = srcHeight > dstHeight ? (srcHeight - dstHeight) / 2 : 0;
+    const int dstXOffset = srcWidth < dstWidth ? (dstWidth - srcWidth) / 2 : 0;
+    const int dstYOffset = srcHeight < dstHeight ? (dstHeight - srcHeight) / 2 : 0;
+    libyuv::ARGBCopy(OCTK_ARGB_OFFSET_PTR(srcBuffer, srcWidth, xOffset, yOffset),
+                     OCTK_ARGB_STRIDE(srcWidth),
+                     OCTK_ARGB_OFFSET_PTR(dstBuffer, dstWidth, dstXOffset, dstYOffset),
+                     OCTK_ARGB_STRIDE(dstWidth),
+                     fixWidth,
+                     fixHeight);
+}
+
+void convertI420ToARGB(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::I420ToARGB(OCTK_I420_Y_PTR(srcBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(srcBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(srcBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       dstBuffer,
+                       OCTK_ARGB_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertI420ToABGR(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::I420ToABGR(OCTK_I420_Y_PTR(srcBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(srcBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(srcBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       dstBuffer,
+                       OCTK_ARGB_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertI420ToBGRA(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::I420ToBGRA(OCTK_I420_Y_PTR(srcBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(srcBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(srcBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       dstBuffer,
+                       OCTK_ARGB_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertI420ToRGBA(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::I420ToRGBA(OCTK_I420_Y_PTR(srcBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(srcBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(srcBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       dstBuffer,
+                       OCTK_ARGB_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertI420ToRGB24(const uint8_t *srcBuffer,
+                        uint8_t *dstBuffer,
+                        int width,
+                        int height)
+{
+    libyuv::I420ToRGB24(OCTK_I420_Y_PTR(srcBuffer, width, height),
+                        OCTK_I420_Y_STRIDE(width),
+                        OCTK_I420_U_PTR(srcBuffer, width, height),
+                        OCTK_I420_U_STRIDE(width),
+                        OCTK_I420_V_PTR(srcBuffer, width, height),
+                        OCTK_I420_V_STRIDE(width),
+                        dstBuffer,
+                        width * 3,
+                        width,
+                        height);
+}
+
+void convertI420ToNV12(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::I420ToNV12(OCTK_I420_Y_PTR(srcBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(srcBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(srcBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       OCTK_NV12_Y_PTR(dstBuffer, width, height),
+                       OCTK_NV12_Y_STRIDE(width),
+                       OCTK_NV12_UV_PTR(dstBuffer, width, height),
+                       OCTK_NV12_UV_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertBGRAToARGB(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::BGRAToARGB(srcBuffer,
+                       width * 4,
+                       dstBuffer,
+                       width * 4,
+                       width,
+                       height);
+}
+
+void convertABGRToARGB(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::ABGRToARGB(srcBuffer,
+                       width * 4,
+                       dstBuffer,
+                       width * 4,
+                       width,
+                       height);
+}
+
+void convertRGBAToARGB(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::RGBAToARGB(srcBuffer,
+                       width * 4,
+                       dstBuffer,
+                       width * 4,
+                       width,
+                       height);
+}
+
+void convertI420ToNV21(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::I420ToNV21(OCTK_I420_Y_PTR(srcBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(srcBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(srcBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       OCTK_NV21_Y_PTR(dstBuffer, width, height),
+                       OCTK_NV21_Y_STRIDE(width),
+                       OCTK_NV21_VU_PTR(dstBuffer, width, height),
+                       OCTK_NV21_VU_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertARGBToI420(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::ARGBToI420(srcBuffer,
+                       width * 4,
+                       OCTK_I420_Y_PTR(dstBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(dstBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(dstBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertABGRToI420(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::ABGRToI420(srcBuffer,
+                       width * 4,
+                       OCTK_I420_Y_PTR(dstBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(dstBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(dstBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertBGRAToI420(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::BGRAToI420(srcBuffer,
+                       width * 4,
+                       OCTK_I420_Y_PTR(dstBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(dstBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(dstBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertRGBAToI420(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::RGBAToI420(srcBuffer,
+                       width * 4,
+                       OCTK_I420_Y_PTR(dstBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(dstBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(dstBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertNV21ToI420(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::RGB24ToI420(srcBuffer,
+                        width * 3,
+                        OCTK_I420_Y_PTR(dstBuffer, width, height),
+                        OCTK_I420_Y_STRIDE(width),
+                        OCTK_I420_U_PTR(dstBuffer, width, height),
+                        OCTK_I420_U_STRIDE(width),
+                        OCTK_I420_V_PTR(dstBuffer, width, height),
+                        OCTK_I420_V_STRIDE(width),
+                        width,
+                        height);
+}
+
+void convertNV12ToI420(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::NV12ToI420(OCTK_NV12_Y_PTR(srcBuffer, width, height),
+                       OCTK_NV12_Y_STRIDE(width),
+                       OCTK_NV12_UV_PTR(srcBuffer, width, height),
+                       OCTK_NV12_UV_STRIDE(width),
+                       OCTK_I420_Y_PTR(dstBuffer, width, height),
+                       OCTK_I420_Y_STRIDE(width),
+                       OCTK_I420_U_PTR(dstBuffer, width, height),
+                       OCTK_I420_U_STRIDE(width),
+                       OCTK_I420_V_PTR(dstBuffer, width, height),
+                       OCTK_I420_V_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertNV12ToARGB(const uint8_t *srcBuffer,
+                       uint8_t *dstBuffer,
+                       int width,
+                       int height)
+{
+    libyuv::NV12ToARGB(OCTK_NV12_Y_PTR(srcBuffer, width, height),
+                       OCTK_NV12_Y_STRIDE(width),
+                       OCTK_NV12_UV_PTR(srcBuffer, width, height),
+                       OCTK_NV12_UV_STRIDE(width),
+                       dstBuffer,
+                       OCTK_ARGB_STRIDE(width),
+                       width,
+                       height);
+}
+
+void convertCenterInARGBToI420(const uint8_t *srcBuffer,
+                               int srcWidth,
+                               int srcHeight,
+                               uint8_t *dstBuffer,
+                               int dstWidth,
+                               int dstHeight)
+{
+    libyuv::I420Rect(OCTK_I420_Y_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_Y_STRIDE(dstWidth),
+                     OCTK_I420_U_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_U_STRIDE(dstWidth),
+                     OCTK_I420_V_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_V_STRIDE(dstWidth),
+                     0,
+                     0,
+                     dstWidth,
+                     dstHeight,
+                     0,
+                     128,
+                     128);
+
+    const int fixWidth = std::min(srcWidth, dstWidth);
+    const int fixHeight = std::min(srcHeight, dstHeight);
+    const int xOffset = srcWidth > dstWidth ? (srcWidth - dstWidth) / 2 : 0;
+    const int yOffset = srcHeight > dstHeight ? (srcHeight - dstHeight) / 2 : 0;
+    const int dstXOffset = srcWidth < dstWidth ? (dstWidth - srcWidth) / 2 : 0;
+    const int dstYOffset = srcHeight < dstHeight ? (dstHeight - srcHeight) / 2 : 0;
+    libyuv::ARGBToI420(OCTK_ARGB_OFFSET_PTR(srcBuffer, srcWidth, xOffset, yOffset),
+                       OCTK_ARGB_STRIDE(srcWidth),
+                       OCTK_I420_Y_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_Y_STRIDE(dstWidth),
+                       OCTK_I420_U_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_U_STRIDE(dstWidth),
+                       OCTK_I420_V_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_V_STRIDE(dstWidth),
+                       fixWidth,
+                       fixHeight);
+}
+
+void convertCenterInRGBAToI420(const uint8_t *srcBuffer,
+                               int srcWidth,
+                               int srcHeight,
+                               uint8_t *dstBuffer,
+                               int dstWidth,
+                               int dstHeight)
+{
+    libyuv::I420Rect(OCTK_I420_Y_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_Y_STRIDE(dstWidth),
+                     OCTK_I420_U_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_U_STRIDE(dstWidth),
+                     OCTK_I420_V_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_V_STRIDE(dstWidth),
+                     0,
+                     0,
+                     dstWidth,
+                     dstHeight,
+                     0,
+                     128,
+                     128);
+
+    const int fixWidth = std::min(srcWidth, dstWidth);
+    const int fixHeight = std::min(srcHeight, dstHeight);
+    const int xOffset = srcWidth > dstWidth ? (srcWidth - dstWidth) / 2 : 0;
+    const int yOffset = srcHeight > dstHeight ? (srcHeight - dstHeight) / 2 : 0;
+    const int dstXOffset = srcWidth < dstWidth ? (dstWidth - srcWidth) / 2 : 0;
+    const int dstYOffset = srcHeight < dstHeight ? (dstHeight - srcHeight) / 2 : 0;
+    libyuv::RGBAToI420(OCTK_ARGB_OFFSET_PTR(srcBuffer, srcWidth, xOffset, yOffset),
+                       OCTK_ARGB_STRIDE(srcWidth),
+                       OCTK_I420_Y_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_Y_STRIDE(dstWidth),
+                       OCTK_I420_U_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_U_STRIDE(dstWidth),
+                       OCTK_I420_V_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_V_STRIDE(dstWidth),
+                       fixWidth,
+                       fixHeight);
+}
+
+void convertCenterInNV12ToI420(const uint8_t *srcBuffer,
+                               int srcWidth,
+                               int srcHeight,
+                               uint8_t *dstBuffer,
+                               int dstWidth,
+                               int dstHeight)
+{
+    libyuv::I420Rect(OCTK_I420_Y_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_Y_STRIDE(dstWidth),
+                     OCTK_I420_U_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_U_STRIDE(dstWidth),
+                     OCTK_I420_V_PTR(dstBuffer, dstWidth, dstHeight),
+                     OCTK_I420_V_STRIDE(dstWidth),
+                     0,
+                     0,
+                     dstWidth,
+                     dstHeight,
+                     0,
+                     128,
+                     128);
+
+    const int fixWidth = std::min(srcWidth, dstWidth);
+    const int fixHeight = std::min(srcHeight, dstHeight);
+    const int xOffset = srcWidth > dstWidth ? (srcWidth - dstWidth) / 2 : 0;
+    const int yOffset = srcHeight > dstHeight ? (srcHeight - dstHeight) / 2 : 0;
+    const int dstXOffset = srcWidth < dstWidth ? (dstWidth - srcWidth) / 2 : 0;
+    const int dstYOffset = srcHeight < dstHeight ? (dstHeight - srcHeight) / 2 : 0;
+    libyuv::NV12ToI420(OCTK_NV12_Y_OFFSET_PTR(srcBuffer, srcWidth, srcHeight, xOffset, yOffset),
+                       OCTK_NV12_Y_STRIDE(srcWidth),
+                       OCTK_NV12_UV_OFFSET_PTR(srcBuffer, srcWidth, srcHeight, xOffset, yOffset),
+                       OCTK_NV12_UV_STRIDE(srcWidth),
+                       OCTK_I420_Y_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_Y_STRIDE(dstWidth),
+                       OCTK_I420_U_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_U_STRIDE(dstWidth),
+                       OCTK_I420_V_OFFSET_PTR(dstBuffer, dstWidth, dstHeight, dstXOffset, dstYOffset),
+                       OCTK_I420_V_STRIDE(dstWidth),
+                       fixWidth,
+                       fixHeight);
+}
+} // namespace yuv
 } // namespace utils
+
 OCTK_END_NAMESPACE

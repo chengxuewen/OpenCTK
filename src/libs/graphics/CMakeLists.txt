@@ -35,6 +35,8 @@ octk_add_library(graphics
 	source/octk_graphics.cpp
 	source/octk_graphics.hpp
 	source/octk_graphics_global.hpp
+	source/octk_image.cpp
+	source/octk_image.hpp
 	PRECOMPILED_HEADER
 	source/octk_graphics_pch.hpp
 	LIBRARIES

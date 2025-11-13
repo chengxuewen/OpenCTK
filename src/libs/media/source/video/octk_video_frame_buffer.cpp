@@ -36,7 +36,6 @@
 #include <functional>
 
 OCTK_BEGIN_NAMESPACE
-
 std::shared_ptr<VideoFrameBuffer> VideoFrameBuffer::cropAndScale(int offsetX,
                                                                  int offsetY,
                                                                  int cropWidth,
@@ -221,16 +220,15 @@ std::shared_ptr<VideoFrameBuffer> NV12BufferInterface::cropAndScale(int offsetX,
 
 namespace utils
 {
-
 template <typename Base> class WrappedRgbBuffer : public Base
 {
 public:
     WrappedRgbBuffer(int width, int height, const uint8_t *data, int stride, std::function<void()> noLongerUsed)
         : mWidth(width)
-        , mHeight(height)
-        , mData(data)
-        , mStride(stride)
-        , mNoLongerUsedCallback(noLongerUsed)
+          , mHeight(height)
+          , mData(data)
+          , mStride(stride)
+          , mNoLongerUsedCallback(noLongerUsed)
     {
     }
 
@@ -275,7 +273,6 @@ public:
     std::shared_ptr<RGBABufferInterface> toRGBA() final { return RGBABuffer::copy(*this); }
 };
 
-
 // Template to implement a wrapped buffer for a I4??BufferInterface.
 template <typename Base> class WrappedYuvBuffer : public Base
 {
@@ -290,14 +287,14 @@ public:
                      int vStride,
                      std::function<void()> noLongerUsed)
         : mWidth(width)
-        , mHeight(height)
-        , mYPlane(yPlane)
-        , mUPlane(uPlane)
-        , mVPlane(vPlane)
-        , mYStride(yStride)
-        , mUStride(uStride)
-        , mVStride(vStride)
-        , mNoLongerUsedCallback(noLongerUsed)
+          , mHeight(height)
+          , mYPlane(yPlane)
+          , mUPlane(uPlane)
+          , mVPlane(vPlane)
+          , mYStride(yStride)
+          , mUStride(uStride)
+          , mVStride(vStride)
+          , mNoLongerUsedCallback(noLongerUsed)
     {
     }
 
@@ -349,8 +346,8 @@ public:
                       int aStride,
                       std::function<void()> noLongerUsed)
         : WrappedYuvBuffer<BaseWithA>(width, height, yPlane, yStride, uPlane, uStride, vPlane, vStride, noLongerUsed)
-        , mAPlane(aPlane)
-        , mAStride(aStride)
+          , mAPlane(aPlane)
+          , mAStride(aStride)
     {
     }
 
@@ -424,14 +421,14 @@ public:
                         int vStride,
                         std::function<void()> noLongerUsed)
         : mWidth(width)
-        , mHeight(height)
-        , mYPlane(yPlane)
-        , mUPlane(uPlane)
-        , mVPlane(vPlane)
-        , mYStride(yStride)
-        , mUStride(uStride)
-        , mVStride(vStride)
-        , mNoLongerUsedCallback(noLongerUsed)
+          , mHeight(height)
+          , mYPlane(yPlane)
+          , mUPlane(uPlane)
+          , mVPlane(vPlane)
+          , mYStride(yStride)
+          , mUStride(uStride)
+          , mVStride(vStride)
+          , mNoLongerUsedCallback(noLongerUsed)
     {
     }
 
@@ -622,16 +619,16 @@ std::shared_ptr<I420ABufferInterface> wrapI420ABuffer(int width,
                                                       std::function<void()> noLongerUsed)
 {
     return std::shared_ptr<I420ABufferInterface>(new WrappedYuvaBuffer<I420ABufferBase>(width,
-                                                                                        height,
-                                                                                        yPlane,
-                                                                                        yStride,
-                                                                                        uPlane,
-                                                                                        uStride,
-                                                                                        vPlane,
-                                                                                        vStride,
-                                                                                        aPlane,
-                                                                                        aStride,
-                                                                                        noLongerUsed));
+        height,
+        yPlane,
+        yStride,
+        uPlane,
+        uStride,
+        vPlane,
+        vStride,
+        aPlane,
+        aStride,
+        noLongerUsed));
 }
 
 std::shared_ptr<I422BufferInterface> wrapI422Buffer(int width,

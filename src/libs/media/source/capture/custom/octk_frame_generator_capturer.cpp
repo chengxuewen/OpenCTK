@@ -29,18 +29,17 @@
 #include <octk_once_flag.hpp>
 
 OCTK_BEGIN_NAMESPACE
-
 FrameGeneratorCapturer::FrameGeneratorCapturer(Clock *clock,
                                                std::unique_ptr<FrameGeneratorInterface> frameGenerator,
                                                int targetFps,
                                                TaskQueueFactory &taskQueueFactory)
     : mClock(clock)
-    , mSending(true)
-    , mSinkWantsObserver(nullptr)
-    , mFrameGenerator(std::move(frameGenerator))
-    , mSourceFps(targetFps)
-    , mTargetCaptureFps(targetFps)
-    , mTaskQueue(taskQueueFactory.CreateTaskQueue("FrameGenCapQ", TaskQueueFactory::Priority::HIGH))
+      , mSending(true)
+      , mSinkWantsObserver(nullptr)
+      , mFrameGenerator(std::move(frameGenerator))
+      , mSourceFps(targetFps)
+      , mTargetCaptureFps(targetFps)
+      , mTaskQueue(taskQueueFactory.CreateTaskQueue("FrameGenCapQ", TaskQueueFactory::Priority::HIGH))
 {
     OCTK_DCHECK(mFrameGenerator);
     OCTK_DCHECK_GT(targetFps, 0);
@@ -76,8 +75,7 @@ bool FrameGeneratorCapturer::init()
     mFrameTask = RepeatingTaskHandle::DelayedStart(
         mTaskQueue.get(),
         TimeDelta::Seconds(1) / getCurrentConfiguredFramerate(),
-        [this]
-        {
+        [this] {
             insertFrame();
             return TimeDelta::Seconds(1) / getCurrentConfiguredFramerate();
         },
@@ -99,12 +97,12 @@ void FrameGeneratorCapturer::insertFrame()
 
         FrameGeneratorInterface::VideoFrameData frameData = mFrameGenerator->nextFrame();
         VideoFrame frame = VideoFrame::Builder()
-                               .setVideoFrameBuffer(frameData.buffer)
-                               .setRotation(mFakeRotation)
-                               .setTimestampUSecs(mClock->TimeInMicroseconds())
-                               .setUpdateRect(frameData.updateRect)
-                               .setColorSpace(mFakeColorSpace)
-                               .build();
+            .setVideoFrameBuffer(frameData.buffer)
+            .setRotation(mFakeRotation)
+            .setTimestampUSecs(mClock->TimeInMicroseconds())
+            .setUpdateRect(frameData.updateRect)
+            .setColorSpace(mFakeColorSpace)
+            .build();
         CustomVideoCapturer::onFrame(frame);
     }
 }
@@ -116,8 +114,7 @@ Optional<FrameGeneratorCapturer::Resolution> FrameGeneratorCapturer::getResoluti
 }
 
 void FrameGeneratorCapturer::start()
-{
-    {
+{ {
         Mutex::Locker locker(&mMutex);
         mSending = true;
     }
@@ -125,8 +122,7 @@ void FrameGeneratorCapturer::start()
     {
         mFrameTask = RepeatingTaskHandle::Start(
             mTaskQueue.get(),
-            [this]
-            {
+            [this] {
                 insertFrame();
                 return TimeDelta::Seconds(1) / getCurrentConfiguredFramerate();
             },
@@ -182,8 +178,7 @@ void FrameGeneratorCapturer::setSinkWantsObserver(SinkWantsObserver *observer)
 
 void FrameGeneratorCapturer::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
-    CustomVideoCapturer::addOrUpdateSink(sink, wants);
-    {
+    CustomVideoCapturer::addOrUpdateSink(sink, wants); {
         Mutex::Locker locker(&mMutex);
         if (mSinkWantsObserver)
         {
@@ -217,9 +212,12 @@ class FrameGeneratorCapturerVideoTrackSourcePrivate
     OCTK_DEFINE_PPTR(FrameGeneratorCapturerVideoTrackSource)
     OCTK_DECLARE_PUBLIC(FrameGeneratorCapturerVideoTrackSource)
     OCTK_DISABLE_COPY_MOVE(FrameGeneratorCapturerVideoTrackSourcePrivate)
+
 public:
     FrameGeneratorCapturerVideoTrackSourcePrivate(FrameGeneratorCapturerVideoTrackSource *p, bool isScreenCast);
-    virtual ~FrameGeneratorCapturerVideoTrackSourcePrivate() { }
+    virtual ~FrameGeneratorCapturerVideoTrackSourcePrivate()
+    {
+    }
 
     const std::unique_ptr<TaskQueueFactory> mTaskQueueFactory{utils::createDefaultTaskQueueFactory()};
     std::unique_ptr<FrameGeneratorCapturer> mFrameGeneratorCapturer;
@@ -232,7 +230,7 @@ FrameGeneratorCapturerVideoTrackSourcePrivate::FrameGeneratorCapturerVideoTrackS
     FrameGeneratorCapturerVideoTrackSource *p,
     bool isScreenCast)
     : mPPtr(p)
-    , mIsScreenCast(isScreenCast)
+      , mIsScreenCast(isScreenCast)
 {
 }
 
@@ -240,7 +238,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(C
                                                                                Clock *clock,
                                                                                bool isScreenCast)
     : VideoTrackSource(false /* remote */)
-    , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
+      , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
     d->mFrameGeneratorCapturer = utils::make_unique<FrameGeneratorCapturer>(
@@ -256,7 +254,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
     Clock *clock,
     bool isScreenCast)
     : VideoTrackSource(false /* remote */)
-    , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
+      , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
     d->mFrameGeneratorCapturer = utils::make_unique<FrameGeneratorCapturer>(clock,
@@ -269,7 +267,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
     std::unique_ptr<FrameGeneratorCapturer> frameGeneratorCapturer,
     bool isScreenCast)
     : VideoTrackSource(false /* remote */)
-    , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
+      , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
     d->mFrameGeneratorCapturer = std::move(frameGeneratorCapturer);

@@ -33,7 +33,6 @@
 #include <cstring>
 
 OCTK_BEGIN_NAMESPACE
-
 namespace
 {
 static const int kBufferAlignment = 64;
@@ -41,8 +40,8 @@ static const int kBufferAlignment = 64;
 
 RGBABuffer::RGBABuffer(int width, int height)
     : mWidth(width)
-    , mHeight(height)
-    , mData(static_cast<uint8_t *>(utils::alignedMalloc(mWidth * mHeight * 4, kBufferAlignment)))
+      , mHeight(height)
+      , mData(static_cast<uint8_t *>(utils::alignedMalloc(mWidth * mHeight * 4, kBufferAlignment)))
 {
     OCTK_DCHECK_GT(width, 0);
     OCTK_DCHECK_GT(height, 0);
@@ -58,7 +57,7 @@ std::shared_ptr<RGBABuffer> RGBABuffer::create(int width, int height)
 std::shared_ptr<RGBABuffer> RGBABuffer::copy(const I420BufferInterface &i420Buffer)
 {
     std::shared_ptr<RGBABuffer> buffer = RGBABuffer::create(i420Buffer.width(), i420Buffer.height());
-    libyuv::I420ToABGR(i420Buffer.dataY(),
+    libyuv::I420ToRGBA(i420Buffer.dataY(),
                        i420Buffer.strideY(),
                        i420Buffer.dataU(),
                        i420Buffer.strideU(),

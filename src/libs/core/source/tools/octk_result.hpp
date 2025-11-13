@@ -28,7 +28,6 @@
 #include <octk_optional.hpp>
 
 OCTK_BEGIN_NAMESPACE
-
 struct OkResult final
 {
     // clang-format off
@@ -95,6 +94,9 @@ public:
 
     bool ok() const { return !mError.has_value(); }
     bool isOk() const { return !mError.has_value(); }
+    bool success() const { return !mError.has_value(); }
+    bool isSuccess() const { return !mError.has_value(); }
+
     const T &error() const { return mError.value(); }
 
     operator bool() const { return !mError.has_value(); }
