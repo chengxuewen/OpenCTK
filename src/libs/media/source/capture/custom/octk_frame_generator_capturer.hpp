@@ -119,7 +119,7 @@ private:
  * that generates frames with randomly sized and colored squares.
  */
 class FrameGeneratorCapturerVideoTrackSourcePrivate;
-class FrameGeneratorCapturerVideoTrackSource : public VideoTrackSource
+class OCTK_MEDIA_API FrameGeneratorCapturerVideoTrackSource : public VideoTrackSource
 {
 public:
     static const int kDefaultFramesPerSecond = 30;

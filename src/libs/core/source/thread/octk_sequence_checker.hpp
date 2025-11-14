@@ -83,7 +83,7 @@ public:
 
 template <typename ThreadLikeObject>
 typename std::enable_if<std::is_base_of<SequenceCheckerImpl, ThreadLikeObject>::value, std::string>::type
-ExpectationToString([[maybe_unused]] const ThreadLikeObject *checker)
+ExpectationToString(OCTK_MAYBE_UNUSED const ThreadLikeObject *checker)
 {
 #if OCTK_DCHECK_IS_ON
     return checker->ExpectationToString();

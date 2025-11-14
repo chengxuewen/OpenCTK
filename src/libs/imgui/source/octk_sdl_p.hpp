@@ -12,6 +12,7 @@
 #include <SDL3/SDL.h>
 
 #include <thread>
+#include <mutex>
 
 OCTK_BEGIN_NAMESPACE
 

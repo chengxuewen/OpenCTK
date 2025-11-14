@@ -187,6 +187,18 @@ message(STATUS "OpenCTK Install prefix set as '${CMAKE_INSTALL_PREFIX}'.")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Detect 3rdparty packages directories
+#-----------------------------------------------------------------------------------------------------------------------
+if(DEFINED INPUT_OCTK_3RDPARTY_PACKAGES_DIRECTORIES)
+	set(OCTK_3RDPARTY_PACKAGES_DIRECTORIES "${INPUT_OCTK_3RDPARTY_PACKAGES_DIRECTORIES}"
+		CACHE PATH "3rdparty packages directories")
+else()
+	set(OCTK_3RDPARTY_PACKAGES_DIRECTORIES "" CACHE PATH "3rdparty packages directories")
+endif()
+message(STATUS "Project 3rdparty packages directories: ${OCTK_3RDPARTY_PACKAGES_DIRECTORIES}")
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Set Position independent
 #-----------------------------------------------------------------------------------------------------------------------
 ## Position independent code: PIC
@@ -201,13 +213,14 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED ON)
 #-----------------------------------------------------------------------------------------------------------------------
 # Specify the C++ standard and flags
 #-----------------------------------------------------------------------------------------------------------------------
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "Using C++: ${CMAKE_CXX_STANDARD}")
-message(STATUS "Set C++ extensions: ${CMAKE_CXX_EXTENSIONS}")
+if(CMAKE_CXX_STANDARD AND "${CMAKE_CXX_STANDARD}" STRGREATER_EQUAL "11")
+	set(OCTK_CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD})
+else()
+	set(OCTK_CMAKE_CXX_STANDARD 11)
+endif()
 set(OCTK_MSVC_STATIC_RUNTIME OFF)
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Using C++: ${OCTK_CMAKE_CXX_STANDARD}")
 
 
 #-----------------------------------------------------------------------------------------------------------------------

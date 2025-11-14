@@ -25,107 +25,153 @@
 function(octk_vcpkg_install_package NAME)
 	octk_parse_all_arguments(arg
 		"octk_vcpkg_install_package"
-		""
-		"TARGET;PREFIX;INSTALL_DIR"
+		"NOT_IMPORT"
+		"TARGET;PREFIX;INSTALL_DIR;PACK_NAME"
 		"COMPONENTS;IMPORTED_TARGETS" ${ARGN})
 
 	if("X${arg_TARGET}" STREQUAL "X")
 		set(arg_TARGET ${NAME})
 	endif()
 	if("X${arg_PREFIX}" STREQUAL "X")
-		string(REGEX REPLACE "[^a-zA-Z]" "" arg_PREFIX "${arg_TARGET}")
+		string(REGEX REPLACE "[^a-zA-Z0-9]" "" arg_PREFIX "${arg_TARGET}")
 	endif()
 	if("X${arg_OUTPUT_DIR}" STREQUAL "X")
 		set(arg_OUTPUT_DIR "${PROJECT_BINARY_DIR}/3rdparty/vcpkg")
+	endif()
+	if("X${arg_PACK_NAME}" STREQUAL "X")
+		set(arg_PACK_NAME ${NAME})
 	endif()
 	if(TARGET ${arg_TARGET})
 		set(${arg_PREFIX}_FOUND ON)
 		return()
 	endif()
-	set(${arg_PREFIX}_NAME "${NAME}")
-	set(${arg_PREFIX}_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${${arg_PREFIX}_NAME}")
 	if(WIN32)
 		set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-static-md)
 	else()
 		set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
 	endif()
-	set("${arg_PREFIX}_INSTALL_DIR" "${arg_OUTPUT_DIR}/${NAME}/installed/${${arg_PREFIX}_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_NAME "${NAME}" CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${${arg_PREFIX}_NAME}"  CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_PACKAGE_NAME "${arg_PACK_NAME}-${${arg_PREFIX}_VCPKG_TRIPLET}.7z"  CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_PACKAGE_PATH "${OCTK_3RDPARTY_PACKAGES_DIRECTORIES}/${${arg_PREFIX}_PACKAGE_NAME}"  CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_INSTALL_DIR "${arg_OUTPUT_DIR}/${NAME}/installed/${${arg_PREFIX}_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
 	if(NOT EXISTS "${${arg_PREFIX}_INSTALL_DIR}")
-		unset(${arg_PREFIX}_COMPONENTS_CONFIG)
-		if("X${arg_COMPONENTS}" STREQUAL "X")
-			set(${arg_PREFIX}_COMPONENTS_CONFIG "")
-		else()
-			set(${arg_PREFIX}_COMPONENTS_CONFIG "[")
-			foreach(component IN LISTS arg_COMPONENTS)
-				if(NOT "${${arg_PREFIX}_COMPONENTS_CONFIG}" STREQUAL "")
-					set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG},")
+		if(EXISTS "${${arg_PREFIX}_PACKAGE_PATH}")
+			message(STATUS "${${arg_PREFIX}_PACKAGE_NAME} exist, start unpack...")
+			if(NOT EXISTS "${arg_OUTPUT_DIR}")
+				execute_process(
+					COMMAND ${CMAKE_COMMAND} -E make_directory "${arg_OUTPUT_DIR}"
+					WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+					RESULT_VARIABLE MKDIR_RESULT)
+				if(NOT MKDIR_RESULT MATCHES 0)
+					message(FATAL_ERROR "${arg_OUTPUT_DIR} mkdir failed.")
 				endif()
-				set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG}${component}")
-			endforeach()
-			set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG}]")
-		endif()
-		execute_process(
-			COMMAND ${OCTKVcpkgTools_EXECUTABLE} list ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET}
-			WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
-			OUTPUT_VARIABLE FIND_OUTPUT
-			RESULT_VARIABLE FIND_RESULT)
-		if("X${FIND_OUTPUT}" STREQUAL "X")
-			message(STATUS "${${arg_PREFIX}_NAME} not installed, start install...")
-			set(${arg_PREFIX}_VCPKG_CONFIGS ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIGS}:${${arg_PREFIX}_VCPKG_TRIPLET})
-			message(STATUS "${${arg_PREFIX}_NAME} vcpkg install configs: ${${arg_PREFIX}_VCPKG_CONFIGS}")
+			endif()
 			execute_process(
-				COMMAND "${OCTKVcpkgTools_EXECUTABLE}" install ${${arg_PREFIX}_VCPKG_CONFIGS} --recurse
-				WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
-				RESULT_VARIABLE INSTALL_RESULT
+				COMMAND ${CMAKE_COMMAND} -E tar xzvf "${${arg_PREFIX}_PACKAGE_PATH}"
+				WORKING_DIRECTORY "${arg_OUTPUT_DIR}"
+				RESULT_VARIABLE UNPACK_RESULT
 				COMMAND_ECHO STDOUT)
-			if(NOT (INSTALL_RESULT MATCHES 0))
-				message(FATAL_ERROR "${${arg_PREFIX}_NAME} install failed.")
+			if(NOT (UNPACK_RESULT MATCHES 0))
+				message(FATAL_ERROR "${${arg_PREFIX}_NAME} unpack failed.")
+			endif()
+		else()
+			unset(${arg_PREFIX}_COMPONENTS_CONFIG)
+			if("X${arg_COMPONENTS}" STREQUAL "X")
+				set(${arg_PREFIX}_COMPONENTS_CONFIG "")
+			else()
+				set(${arg_PREFIX}_COMPONENTS_CONFIG "[")
+				foreach(component IN LISTS arg_COMPONENTS)
+					if(NOT "${${arg_PREFIX}_COMPONENTS_CONFIG}" STREQUAL "")
+						set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG},")
+					endif()
+					set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG}${component}")
+				endforeach()
+				set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG}]")
+			endif()
+			execute_process(
+				COMMAND ${OCTKVcpkgTools_EXECUTABLE} list ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET}
+				WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+				OUTPUT_VARIABLE FIND_OUTPUT
+				RESULT_VARIABLE FIND_RESULT)
+			if("X${FIND_OUTPUT}" STREQUAL "X")
+				message(STATUS "${${arg_PREFIX}_NAME} not installed, start install...")
+				set(${arg_PREFIX}_VCPKG_CONFIGS ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIGS}:${${arg_PREFIX}_VCPKG_TRIPLET})
+				message(STATUS "${${arg_PREFIX}_NAME} vcpkg install configs: ${${arg_PREFIX}_VCPKG_CONFIGS}")
+				execute_process(
+					COMMAND "${OCTKVcpkgTools_EXECUTABLE}" install ${${arg_PREFIX}_VCPKG_CONFIGS} --recurse
+					WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+					RESULT_VARIABLE INSTALL_RESULT
+					COMMAND_ECHO STDOUT)
+				if(NOT (INSTALL_RESULT MATCHES 0))
+					message(FATAL_ERROR "${${arg_PREFIX}_NAME} install failed.")
+				endif()
+			endif()
+
+			message(STATUS "${${arg_PREFIX}_NAME} not exported, start export...")
+			execute_process(
+				COMMAND "${OCTKVcpkgTools_EXECUTABLE}" export ${NAME}:${${arg_PREFIX}_VCPKG_TRIPLET}
+				--raw --output=${${arg_PREFIX}_NAME} --output-dir=${arg_OUTPUT_DIR}
+				WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+				RESULT_VARIABLE EXPORT_RESULT
+				COMMAND_ECHO STDOUT)
+			if(NOT (EXPORT_RESULT MATCHES 0))
+				message(FATAL_ERROR "${${arg_PREFIX}_NAME} export failed.")
 			endif()
 		endif()
+	endif()
 
-		message(STATUS "${${arg_PREFIX}_NAME} not exported, start export...")
-		execute_process(
-			COMMAND "${OCTKVcpkgTools_EXECUTABLE}" export ${NAME}:${${arg_PREFIX}_VCPKG_TRIPLET}
-			--raw --output=${${arg_PREFIX}_NAME} --output-dir=${arg_OUTPUT_DIR}
-			WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
-			RESULT_VARIABLE EXPORT_RESULT
-			COMMAND_ECHO STDOUT)
-		if(NOT (EXPORT_RESULT MATCHES 0))
-			message(FATAL_ERROR "${${arg_PREFIX}_NAME} export failed.")
+	if(NOT "X${OCTK_3RDPARTY_PACKAGES_DIRECTORIES}" STREQUAL "X")
+		if(NOT EXISTS "${${arg_PREFIX}_PACKAGE_PATH}")
+			message(STATUS "${${arg_PREFIX}_PACKAGE_NAME} not exist, start pack...")
+			execute_process(
+				COMMAND ${CMAKE_COMMAND} -E tar cvf "${${arg_PREFIX}_PACKAGE_PATH}" --format=7zip "${${arg_PREFIX}_NAME}"
+				WORKING_DIRECTORY "${arg_OUTPUT_DIR}"
+				RESULT_VARIABLE PACK_RESULT
+				COMMAND_ECHO STDOUT)
+			if(NOT (PACK_RESULT MATCHES 0))
+				message(FATAL_ERROR "${${arg_PREFIX}_NAME} pack failed.")
+			endif()
 		endif()
 	endif()
 
 	add_library(${arg_TARGET} INTERFACE IMPORTED GLOBAL)
-	if(EXISTS "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}/Find${NAME}.cmake" OR
-		EXISTS "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}/${NAME}Targets.cmake")
-		set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
-		set(CMAKE_MODULE_PATH "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}")
-		set(${NAME}_DIR "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}")
-		find_package(${NAME} REQUIRED)
-		if(TARGET ${NAME}::${NAME})
-			target_link_libraries(${arg_TARGET} INTERFACE ${NAME}::${NAME})
-		endif()
-		target_link_libraries(${arg_TARGET} INTERFACE ${arg_IMPORTED_TARGETS})
-		target_include_directories(${arg_TARGET} INTERFACE "${${arg_PREFIX}_INSTALL_DIR}/include")
-		set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_CACHE})
-	else()
-		if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(${arg_PREFIX}_PKGCONFIG_DIR "${${arg_PREFIX}_INSTALL_DIR}/debug/lib")
+#	message(${arg_PREFIX}_NAME=${${arg_PREFIX}_NAME})
+#	message(arg_NOT_IMPORT=${arg_NOT_IMPORT})
+#	message(arg_PREFIX=${arg_PREFIX})
+	if (NOT arg_NOT_IMPORT)
+		message(STATUS "Start find and import ${${arg_PREFIX}_NAME}...")
+		if(EXISTS "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}/Find${NAME}.cmake" OR
+			EXISTS "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}/${NAME}Targets.cmake")
+			set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
+			set(CMAKE_MODULE_PATH "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}")
+			set(${NAME}_DIR "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}")
+			find_package(${NAME} REQUIRED)
+			if(TARGET ${NAME}::${NAME})
+				target_link_libraries(${arg_TARGET} INTERFACE ${NAME}::${NAME})
+			endif()
+			target_link_libraries(${arg_TARGET} INTERFACE ${arg_IMPORTED_TARGETS})
+			target_include_directories(${arg_TARGET} INTERFACE "${${arg_PREFIX}_INSTALL_DIR}/include")
+			set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_CACHE})
 		else()
-			set(${arg_PREFIX}_PKGCONFIG_DIR "${${arg_PREFIX}_INSTALL_DIR}/lib")
+			if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+				set(${arg_PREFIX}_PKGCONFIG_DIR "${${arg_PREFIX}_INSTALL_DIR}/debug/lib")
+			else()
+				set(${arg_PREFIX}_PKGCONFIG_DIR "${${arg_PREFIX}_INSTALL_DIR}/lib")
+			endif()
+			if("X${arg_COMPONENTS}" STREQUAL "X")
+				octk_pkg_check_modules(${NAME} REQUIRED
+					PATH "${${arg_PREFIX}_PKGCONFIG_DIR}/pkgconfig")
+			else()
+				octk_pkg_check_modules(${NAME} REQUIRED
+					PATH "${${arg_PREFIX}_PKGCONFIG_DIR}/pkgconfig"
+					IMPORTED_TARGET
+					${arg_COMPONENTS})
+			endif()
+			target_link_libraries(${arg_TARGET} INTERFACE PkgConfig::${NAME})
 		endif()
-		if("X${arg_COMPONENTS}" STREQUAL "X")
-			octk_pkg_check_modules(${NAME} REQUIRED
-				PATH "${${arg_PREFIX}_PKGCONFIG_DIR}/pkgconfig")
-		else()
-			octk_pkg_check_modules(${NAME} REQUIRED
-				PATH "${${arg_PREFIX}_PKGCONFIG_DIR}/pkgconfig"
-				IMPORTED_TARGET
-				${arg_COMPONENTS})
-		endif()
-		target_link_libraries(${arg_TARGET} INTERFACE PkgConfig::${NAME})
 	endif()
-	set(${arg_PREFIX}_FOUND ON)
+	set(${arg_PREFIX}_FOUND ON PARENT_SCOPE)
 endfunction()
 
 

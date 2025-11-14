@@ -19,6 +19,12 @@
 
 using namespace octk;
 
+#ifdef OCTK_OS_WIN
+#   undef min
+#   undef max
+#   undef small
+#endif
+
 namespace
 {
 

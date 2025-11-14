@@ -36,7 +36,7 @@ OCTK_BEGIN_NAMESPACE
 // Starts at time 0.
 //
 // TODO(deadbeef): Unify with SimulatedClock.
-class FakeClock : public ClockInterface
+class OCTK_CORE_API FakeClock : public ClockInterface
 {
 public:
     FakeClock() = default;
@@ -59,7 +59,7 @@ private:
     int64_t time_ns_ OCTK_ATTRIBUTE_GUARDED_BY(lock_) = 0;
 };
 
-class ThreadProcessingFakeClock : public ClockInterface
+class OCTK_CORE_API ThreadProcessingFakeClock : public ClockInterface
 {
 public:
     int64_t TimeNanos() const override { return clock_.TimeNanos(); }
@@ -72,7 +72,7 @@ private:
 
 // Helper class that sets itself as the global clock in its constructor and
 // unsets it in its destructor.
-class ScopedBaseFakeClock : public FakeClock
+class OCTK_CORE_API ScopedBaseFakeClock : public FakeClock
 {
 public:
     ScopedBaseFakeClock();
@@ -83,7 +83,7 @@ private:
 };
 
 // TODO(srte): Rename this to reflect that it also does thread processing.
-class ScopedFakeClock : public ThreadProcessingFakeClock
+class OCTK_CORE_API ScopedFakeClock : public ThreadProcessingFakeClock
 {
 public:
     ScopedFakeClock();

@@ -13,6 +13,7 @@
 
 #include <octk_string_view.hpp>
 #include <octk_string_utils.hpp>
+#include <octk_media_global.hpp>
 
 #include <set>
 
@@ -24,7 +25,7 @@ OCTK_BEGIN_NAMESPACE
 // mapping will be preserved over time and no announcements will be made if they
 // are changed. It's up to the library user to ensure that the behavior does not
 // break.
-class OCTK_CORE_API FieldTrialsView
+class OCTK_MEDIA_API FieldTrialsView
 {
 public:
     template <typename T> using Set = std::set<T>;

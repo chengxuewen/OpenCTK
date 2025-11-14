@@ -31,6 +31,7 @@
 #include <octk_mutex.hpp>
 
 #include <map>
+#include <queue>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -49,6 +50,7 @@ ThreadPriority TaskQueuePriorityToThreadPriority(
         case TaskQueueFactory::Priority::NORMAL:
             return ThreadPriority::kNormal;
     }
+    return ThreadPriority::kNormal;
 }
 
 class TaskQueueStdlib final : public TaskQueue

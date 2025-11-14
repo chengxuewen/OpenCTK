@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapLibyuv_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapLibyuv_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapLibyuv_ROOT_DIR})
+    octk_reset_dir(${OCTKWrapLibyuv_BUILD_DIR})
 
     message(STATUS "Configure ${OCTKWrapLibyuv_NAME} lib...")
     execute_process(

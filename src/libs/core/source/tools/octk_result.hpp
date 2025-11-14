@@ -28,6 +28,7 @@
 #include <octk_optional.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
 struct OkResult final
 {
     // clang-format off
@@ -40,13 +41,14 @@ namespace utils
 constexpr OkResult okResult{ OkResult::init{} };
 } // namespace utils
 
-template <typename T = std::string> class Result
+template <typename T = std::string>
+class Result
 {
     template <typename U> friend class Result;
-
 public:
     using ErrorType = T;
 
+    Result() noexcept { }
     Result(OkResult /*unused*/) noexcept { }
 
     template <typename U>

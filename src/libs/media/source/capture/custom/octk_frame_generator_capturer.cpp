@@ -34,12 +34,12 @@ FrameGeneratorCapturer::FrameGeneratorCapturer(Clock *clock,
                                                int targetFps,
                                                TaskQueueFactory &taskQueueFactory)
     : mClock(clock)
-      , mSending(true)
-      , mSinkWantsObserver(nullptr)
-      , mFrameGenerator(std::move(frameGenerator))
-      , mSourceFps(targetFps)
-      , mTargetCaptureFps(targetFps)
-      , mTaskQueue(taskQueueFactory.CreateTaskQueue("FrameGenCapQ", TaskQueueFactory::Priority::HIGH))
+    , mSending(true)
+    , mSinkWantsObserver(nullptr)
+    , mFrameGenerator(std::move(frameGenerator))
+    , mSourceFps(targetFps)
+    , mTargetCaptureFps(targetFps)
+    , mTaskQueue(taskQueueFactory.CreateTaskQueue("FrameGenCapQ", TaskQueueFactory::Priority::HIGH))
 {
     OCTK_DCHECK(mFrameGenerator);
     OCTK_DCHECK_GT(targetFps, 0);
@@ -230,7 +230,7 @@ FrameGeneratorCapturerVideoTrackSourcePrivate::FrameGeneratorCapturerVideoTrackS
     FrameGeneratorCapturerVideoTrackSource *p,
     bool isScreenCast)
     : mPPtr(p)
-      , mIsScreenCast(isScreenCast)
+    , mIsScreenCast(isScreenCast)
 {
 }
 
@@ -238,7 +238,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(C
                                                                                Clock *clock,
                                                                                bool isScreenCast)
     : VideoTrackSource(false /* remote */)
-      , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
+    , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
     d->mFrameGeneratorCapturer = utils::make_unique<FrameGeneratorCapturer>(
@@ -254,7 +254,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
     Clock *clock,
     bool isScreenCast)
     : VideoTrackSource(false /* remote */)
-      , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
+    , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
     d->mFrameGeneratorCapturer = utils::make_unique<FrameGeneratorCapturer>(clock,
@@ -267,7 +267,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
     std::unique_ptr<FrameGeneratorCapturer> frameGeneratorCapturer,
     bool isScreenCast)
     : VideoTrackSource(false /* remote */)
-      , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
+    , mDPtr(new FrameGeneratorCapturerVideoTrackSourcePrivate(this, isScreenCast))
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
     d->mFrameGeneratorCapturer = std::move(frameGeneratorCapturer);

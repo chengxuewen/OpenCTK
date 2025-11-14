@@ -32,6 +32,7 @@
 #include <octk_mutex.hpp>
 
 #include <thread>
+#include <queue>
 #include <map>
 #include <set>
 

@@ -570,10 +570,12 @@ void TaskThread::PostDelayedTaskImpl(Task task,
     int64_t run_time_ms = DateTime::timeAfterMSecs(delay_ms);
     {
         Mutex::Locker lock(&mutex_);
-        delayed_messages_.push({.delay_ms = delay_ms,
-                                   .run_time_ms = run_time_ms,
-                                   .message_number = delayed_next_num_,
-                                   .functor = std::move(task)});
+        DelayedMessage delayedMessage;
+        delayedMessage.delay_ms = delay_ms;
+        delayedMessage.run_time_ms = run_time_ms;
+        delayedMessage.message_number = delayed_next_num_;
+        delayedMessage.functor = std::move(task);
+        delayed_messages_.push(std::move(delayedMessage));
         // If this message queue processes 1 message every millisecond for 50 days,
         // we will wrap this number.  Even then, only messages with identical times
         // will be misordered, and then only briefly.  This is probably ok.
@@ -706,7 +708,7 @@ bool TaskThread::Start()
 
     SpinLock::Locker locker(mStartSpinLock);
 #if defined(OCTK_OS_WIN)
-    thread_ = CreateTaskThread(nullptr, 0, PreRun, this, 0, &thread_id_);
+    thread_ = CreateThread(nullptr, 0, PreRun, this, 0, &thread_id_);
     if (!thread_)
     {
         return false;
@@ -1015,22 +1017,24 @@ bool TaskThread::ProcessMessages(int cmsLoop)
 }
 
 bool TaskThread::WrapCurrentWithTaskThreadManager(TaskThreadManager *thread_manager,
-                                                  [[maybe_unused]] bool need_synchronize_access)
+                                                  OCTK_MAYBE_UNUSED bool need_synchronize_access)
 {
     OCTK_DCHECK(!IsRunning());
 
 // #if 1
 #if defined(OCTK_OS_WIN)
-    if (need_synchronize_access) {
-    // We explicitly ask for no rights other than synchronization.
-    // This gives us the best chance of succeeding.
-    thread_ = OpenTaskThread(SYNCHRONIZE, FALSE, GetCurrentTaskThreadId());
-    if (!thread_) {
-      OCTK_LOG_GLE(LS_ERROR) << "Unable to get handle to thread.";
-      return false;
+    if (need_synchronize_access)
+    {
+        // We explicitly ask for no rights other than synchronization.
+        // This gives us the best chance of succeeding.
+        thread_ = OpenThread(SYNCHRONIZE, FALSE, GetCurrentThreadId());
+        if (!thread_)
+        {
+            OCTK_ERROR() << "Unable to get handle to thread.";
+            return false;
+        }
+        thread_id_ = GetCurrentThreadId();
     }
-    thread_id_ = GetCurrentTaskThreadId();
-  }
 #elif defined(OCTK_OS_UNIX)
     thread_ = pthread_self();
 #endif

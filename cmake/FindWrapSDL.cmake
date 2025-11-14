@@ -43,7 +43,7 @@ if(NOT EXISTS "${OCTKWrapSDL_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapSDL_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapSDL_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapSDL_ROOT_DIR})
+    octk_reset_dir(${OCTKWrapSDL_BUILD_DIR})
 
     message(STATUS "Configure ${OCTKWrapSDL_NAME} lib...")
     execute_process(

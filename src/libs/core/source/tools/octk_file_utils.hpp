@@ -35,6 +35,7 @@ namespace detail
 #ifdef OCTK_OS_MAC
 OCTK_CORE_API void GetNSExecutablePath(std::string *path);
 #else
+void GetNSExecutablePath(std::string *path)
 { OCTK_UNUSED(path); }
 #endif
 } // namespace detail

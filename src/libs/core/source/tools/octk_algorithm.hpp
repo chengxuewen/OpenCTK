@@ -41,7 +41,7 @@ const T &clamp(const T &value, const T &lo, const T &hi, Compare cmp)
 template <typename T>
 const T &clamp(const T &value, const T &lo, const T &hi)
 {
-    return clamp(value, lo, hi, std::less<T>());
+    return utils::clamp(value, lo, hi, std::less<T>());
 }
 }
 OCTK_END_NAMESPACE

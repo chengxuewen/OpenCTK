@@ -319,4 +319,8 @@ function(octk_internal_create_executable target)
     else()
         add_executable("${target}" ${ARGN})
     endif()
+    set_target_properties(${target} PROPERTIES
+        CXX_STANDARD ${OCTK_CMAKE_CXX_STANDARD}
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF)
 endfunction()

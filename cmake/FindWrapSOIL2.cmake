@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapSOIL2_STAMP_FILE_PATH}")
 	if(NOT EXISTS ${OCTKWrapSOIL2_SOURCE_DIR})
 		message(FATAL_ERROR "${OCTKWrapSOIL2_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(${OCTKWrapSOIL2_ROOT_DIR})
+	octk_reset_dir(${OCTKWrapSOIL2_BUILD_DIR})
 
 	message(STATUS "Configure ${OCTKWrapSOIL2_DIR_NAME} lib...")
 	execute_process(

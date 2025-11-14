@@ -84,7 +84,7 @@ public:
     static Clock *GetRealTimeClock();
 };
 
-class SimulatedClock : public Clock
+class OCTK_CORE_API SimulatedClock : public Clock
 {
 public:
     // The constructors assume an epoch of Jan 1, 1970.

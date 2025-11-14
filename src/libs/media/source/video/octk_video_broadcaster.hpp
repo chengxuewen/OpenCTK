@@ -41,7 +41,7 @@ OCTK_BEGIN_NAMESPACE
  *      This is needed because VideoStreamEncoder calls AddOrUpdateSink both on the worker thread and on the
  *      encoder task queue.
  */
-class VideoBroadcaster : public VideoSourceBase, public VideoSinkInterface<VideoFrame>
+class OCTK_MEDIA_API VideoBroadcaster : public VideoSourceBase, public VideoSinkInterface<VideoFrame>
 {
 public:
     VideoBroadcaster();

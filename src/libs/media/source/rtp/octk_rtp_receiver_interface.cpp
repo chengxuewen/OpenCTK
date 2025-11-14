@@ -8,7 +8,7 @@ OCTK_BEGIN_NAMESPACE
 
 std::vector<std::string> RtpReceiverInterface::stream_ids() const { return {}; }
 
-std::vector<SharedRefPtr<MediaStreamInterface>> RtpReceiverInterface::streams() const { return {}; }
+//std::vector<SharedRefPtr<MediaStreamInterface>> RtpReceiverInterface::streams() const { return {}; }
 
 std::vector<RtpSource> RtpReceiverInterface::GetSources() const { return {}; }
 

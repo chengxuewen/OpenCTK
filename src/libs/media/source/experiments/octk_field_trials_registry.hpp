@@ -11,13 +11,14 @@
 #ifndef _OCTK_FIELD_TRIALS_REGISTRY_HPP
 #define _OCTK_FIELD_TRIALS_REGISTRY_HPP
 
+#include <octk_media_global.hpp>
 #include <octk_field_trials_view.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
 // Abstract base class for a field trial registry that verifies that any looked
 // up key has been pre-registered in accordance with `g3doc/field-trials.md`.
-class OCTK_CORE_API FieldTrialsRegistry : public FieldTrialsView
+class OCTK_MEDIA_API FieldTrialsRegistry : public FieldTrialsView
 {
 public:
     FieldTrialsRegistry() = default;

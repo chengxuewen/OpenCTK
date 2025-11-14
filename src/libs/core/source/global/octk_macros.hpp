@@ -579,6 +579,12 @@ template <typename T, size_t N> auto octkArraySizeHelper(const T (&array)[N]) ->
 #    define OCTK_ATTRIBUTE(x) // no-op
 #endif
 
+#if OCTK_CC_HAS_ATTRIBUTE(maybe_unused) && OCTK_CC_CPP17_OR_GREATER
+#   define OCTK_MAYBE_UNUSED  [[maybe_unused]]
+#else
+#   define OCTK_MAYBE_UNUSED
+#endif
+
 /**
  * @brief It is used for declaring functions and arguments which may never be used.
  * It avoids possible compiler warnings.

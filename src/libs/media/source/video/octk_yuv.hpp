@@ -123,7 +123,7 @@ void NV12Scale(uint8_t *tmp_buffer,
 // Helper class for directly converting and scaling NV12 to I420. The Y-plane
 // will be scaled directly to the I420 destination, which makes this faster
 // than separate NV12->I420 + I420->I420 scaling.
-class OCTK_CORE_API NV12ToI420Scaler
+class OCTK_MEDIA_API NV12ToI420Scaler
 {
 public:
     NV12ToI420Scaler();
@@ -152,159 +152,159 @@ int ConvertVideoType(VideoType video_type);
 
 namespace yuv
 {
-OCTK_CORE_API void scaleI420(const uint8_t *srcBuffer,
-                             int srcWidth,
-                             int srcHeight,
-                             uint8_t *dstBuffer,
-                             int dstWidth,
-                             int dstHeight,
-                             bool highestQuality = true);
+OCTK_MEDIA_API void scaleI420(const uint8_t *srcBuffer,
+                              int srcWidth,
+                              int srcHeight,
+                              uint8_t *dstBuffer,
+                              int dstWidth,
+                              int dstHeight,
+                              bool highestQuality = true);
 
-OCTK_CORE_API void scaleARGB(const uint8_t *srcBuffer,
-                             int srcWidth,
-                             int srcHeight,
-                             uint8_t *dstBuffer,
-                             int dstWidth,
-                             int dstHeight,
-                             bool highestQuality = true);
+OCTK_MEDIA_API void scaleARGB(const uint8_t *srcBuffer,
+                              int srcWidth,
+                              int srcHeight,
+                              uint8_t *dstBuffer,
+                              int dstWidth,
+                              int dstHeight,
+                              bool highestQuality = true);
 
-OCTK_CORE_API void scaleNV12(const uint8_t *bufferIn,
-                             int width,
-                             int height,
-                             uint8_t *bufferOut,
-                             int dstWidth,
-                             int dstHeight,
-                             bool highestQuality = true);
+OCTK_MEDIA_API void scaleNV12(const uint8_t *bufferIn,
+                              int width,
+                              int height,
+                              uint8_t *bufferOut,
+                              int dstWidth,
+                              int dstHeight,
+                              bool highestQuality = true);
 
-OCTK_CORE_API void copyCenterInI420(const uint8_t *srcBuffer,
-                                    int srcWidth,
-                                    int srcHeight,
-                                    uint8_t *dstBuffer,
-                                    int dstWidth,
-                                    int dstHeight);
-
-OCTK_CORE_API void copyCenterInNV12(const uint8_t *srcBuffer,
-                                    int srcWidth,
-                                    int srcHeight,
-                                    uint8_t *dstBuffer,
-                                    int dstWidth,
-                                    int dstHeight);
-
-OCTK_CORE_API void copyCenterInARGB(const uint8_t *srcBuffer,
-                                    int srcWidth,
-                                    int srcHeight,
-                                    uint8_t *dstBuffer,
-                                    int dstWidth,
-                                    int dstHeight);
-
-OCTK_CORE_API void convertI420ToARGB(const uint8_t *srcBuffer,
+OCTK_MEDIA_API void copyCenterInI420(const uint8_t *srcBuffer,
+                                     int srcWidth,
+                                     int srcHeight,
                                      uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+                                     int dstWidth,
+                                     int dstHeight);
 
-OCTK_CORE_API void convertI420ToABGR(const uint8_t *srcBuffer,
+OCTK_MEDIA_API void copyCenterInNV12(const uint8_t *srcBuffer,
+                                     int srcWidth,
+                                     int srcHeight,
                                      uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+                                     int dstWidth,
+                                     int dstHeight);
 
-OCTK_CORE_API void convertI420ToBGRA(const uint8_t *srcBuffer,
+OCTK_MEDIA_API void copyCenterInARGB(const uint8_t *srcBuffer,
+                                     int srcWidth,
+                                     int srcHeight,
                                      uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+                                     int dstWidth,
+                                     int dstHeight);
 
-OCTK_CORE_API void convertI420ToRGBA(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
-
-OCTK_CORE_API void convertI420ToRGB24(const uint8_t *srcBuffer,
+OCTK_MEDIA_API void convertI420ToARGB(const uint8_t *srcBuffer,
                                       uint8_t *dstBuffer,
                                       int width,
                                       int height);
 
-OCTK_CORE_API void convertI420ToNV12(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertI420ToABGR(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
+
+OCTK_MEDIA_API void convertI420ToBGRA(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
+
+OCTK_MEDIA_API void convertI420ToRGBA(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
+
+OCTK_MEDIA_API void convertI420ToRGB24(const uint8_t *srcBuffer,
+                                       uint8_t *dstBuffer,
+                                       int width,
+                                       int height);
+
+OCTK_MEDIA_API void convertI420ToNV12(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
 // BGRA little endian (argb in memory) to ARGB.
-OCTK_CORE_API void convertBGRAToARGB(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertBGRAToARGB(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
 // ABGR little endian (rgba in memory) to ARGB.
-OCTK_CORE_API void convertABGRToARGB(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertABGRToARGB(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
 // RGBA little endian (abgr in memory) to ARGB.
-OCTK_CORE_API void convertRGBAToARGB(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertRGBAToARGB(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertI420ToNV21(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertI420ToNV21(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertARGBToI420(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertARGBToI420(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertABGRToI420(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertABGRToI420(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertBGRAToI420(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertBGRAToI420(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertRGBAToI420(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertRGBAToI420(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertNV21ToI420(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertNV21ToI420(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertNV12ToI420(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertNV12ToI420(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertNV12ToARGB(const uint8_t *srcBuffer,
-                                     uint8_t *dstBuffer,
-                                     int width,
-                                     int height);
+OCTK_MEDIA_API void convertNV12ToARGB(const uint8_t *srcBuffer,
+                                      uint8_t *dstBuffer,
+                                      int width,
+                                      int height);
 
-OCTK_CORE_API void convertCenterInARGBToI420(const uint8_t *srcBuffer,
-                                             int srcWidth,
-                                             int srcHeight,
-                                             uint8_t *dstBuffer,
-                                             int dstWidth,
-                                             int dstHeight);
+OCTK_MEDIA_API void convertCenterInARGBToI420(const uint8_t *srcBuffer,
+                                              int srcWidth,
+                                              int srcHeight,
+                                              uint8_t *dstBuffer,
+                                              int dstWidth,
+                                              int dstHeight);
 
-OCTK_CORE_API void convertCenterInRGBAToI420(const uint8_t *srcBuffer,
-                                             int srcWidth,
-                                             int srcHeight,
-                                             uint8_t *dstBuffer,
-                                             int dstWidth,
-                                             int dstHeight);
+OCTK_MEDIA_API void convertCenterInRGBAToI420(const uint8_t *srcBuffer,
+                                              int srcWidth,
+                                              int srcHeight,
+                                              uint8_t *dstBuffer,
+                                              int dstWidth,
+                                              int dstHeight);
 
-OCTK_CORE_API void convertCenterInNV12ToI420(const uint8_t *srcBuffer,
-                                             int srcWidth,
-                                             int srcHeight,
-                                             uint8_t *dstBuffer,
-                                             int dstWidth,
-                                             int dstHeight);
+OCTK_MEDIA_API void convertCenterInNV12ToI420(const uint8_t *srcBuffer,
+                                              int srcWidth,
+                                              int srcHeight,
+                                              uint8_t *dstBuffer,
+                                              int dstWidth,
+                                              int dstHeight);
 } // namespace yuv
 } // namespace utils
 

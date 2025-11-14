@@ -213,6 +213,10 @@ octk_add_library(core
 	OCTK3rdparty::WrapStringViewLite
 	${OCTK_LIB_LINK_LIBRARIES})
 octk_internal_extend_target(octk_core
+	PUBLIC_DEFINES
+	NOMINMAX
+	CONDITION OCTK_SYSTEM_WIN)
+octk_internal_extend_target(octk_core
 	SOURCES
 	source/thread/octk_task_thread.mm
 	source/tools/octk_file_utils.mm

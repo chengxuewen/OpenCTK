@@ -27,6 +27,8 @@
 
 #include <octk_media_global.hpp>
 
+#include <string>
+
 OCTK_BEGIN_NAMESPACE
 
 enum class MediaType

@@ -530,10 +530,11 @@ endfunction()
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_reset_dir DIR)
-	set(WORKING_DIR "${DIR}")
+	get_filename_component(WORKING_DIR ${DIR} DIRECTORY)
 	while(NOT EXISTS "${WORKING_DIR}")
 		get_filename_component(WORKING_DIR ${WORKING_DIR} DIRECTORY)
 	endwhile()
+
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} -E remove_directory "${DIR}"
 		WORKING_DIRECTORY "${WORKING_DIR}"

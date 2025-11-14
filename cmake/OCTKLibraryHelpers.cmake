@@ -261,7 +261,10 @@ function(octk_add_library name)
             _octk_package_version "${PROJECT_VERSION}"
             _octk_package_name "${OCTK_CMAKE_INSTALL_NAMESPACE}_${name}_private"
             _octk_is_private_library TRUE
-            _octk_public_library_target_name "${target}")
+            _octk_public_library_target_name "${target}"
+            CXX_STANDARD ${OCTK_CMAKE_CXX_STANDARD}
+            CXX_STANDARD_REQUIRED ON
+            CXX_EXTENSIONS OFF)
         set(export_properties
             "_octk_config_library_name"
             "_octk_package_version"
@@ -808,7 +811,10 @@ function(octk_internal_add_library target)
     endif()
 
     add_library(${target} ${type_to_create} ${arg_UNPARSED_ARGUMENTS})
-    #    octk_internal_set_iterator_debug_level(${target} 0)
+    set_target_properties(${target} PROPERTIES
+        CXX_STANDARD ${OCTK_CMAKE_CXX_STANDARD}
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF)
 
     if(NOT type_to_create STREQUAL "INTERFACE" AND NOT type_to_create STREQUAL "OBJECT")
         octk_internal_apply_win_prefix_and_suffix("${target}")

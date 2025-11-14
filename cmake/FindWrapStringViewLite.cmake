@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapStringviewLite_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapStringviewLite_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapStringviewLite_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapStringviewLite_ROOT_DIR})
+    octk_reset_dir(${OCTKWrapStringviewLite_BUILD_DIR})
 
     message(STATUS "Configure ${OCTKWrapStringviewLite_NAME} lib...")
     execute_process(

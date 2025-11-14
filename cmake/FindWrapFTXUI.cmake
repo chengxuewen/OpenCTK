@@ -41,7 +41,7 @@ if(NOT EXISTS "${OCTKWrapFTXUI_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OCTKWrapFTXUI_SOURCE_DIR})
         message(FATAL_ERROR "${OCTKWrapFTXUI_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapFTXUI_ROOT_DIR})
+    octk_reset_dir(${OCTKWrapFTXUI_BUILD_DIR})
 
     message(STATUS "Configure ${OCTKWrapFTXUI_DIR_NAME} lib...")
     execute_process(

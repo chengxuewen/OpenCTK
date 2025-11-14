@@ -124,7 +124,7 @@ DateTime::LocalTime DateTime::localTimeFromSystemTimeSecs(int64_t secs)
     const int mil = int(milliseconds.count() % 1000);
     return {mil, localTime->tm_sec, localTime->tm_min, localTime->tm_hour, localTime->tm_mday, localTime->tm_mon,
             localTime->tm_year + 1900,
-            localTime->tm_wday, localTime->tm_yday, localTime->tm_isdst, localTime->tm_gmtoff, localTime->tm_zone};
+            localTime->tm_wday, localTime->tm_yday, localTime->tm_isdst};
 }
 
 DateTime::LocalTime DateTime::localTimeFromSystemTimeMSecs(int64_t msecs)
@@ -137,7 +137,7 @@ DateTime::LocalTime DateTime::localTimeFromSystemTimeMSecs(int64_t msecs)
     const int mil = int(milliseconds.count() % 1000);
     return {mil, localTime->tm_sec, localTime->tm_min, localTime->tm_hour, localTime->tm_mday, localTime->tm_mon,
             localTime->tm_year + 1900,
-            localTime->tm_wday, localTime->tm_yday, localTime->tm_isdst, localTime->tm_gmtoff, localTime->tm_zone};
+            localTime->tm_wday, localTime->tm_yday, localTime->tm_isdst};
 }
 
 std::string DateTime::localTimeStringFromSystemTimeSecs(int64_t secs)

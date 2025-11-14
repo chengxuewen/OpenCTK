@@ -24,6 +24,8 @@
 
 #include <octk_string.hpp>
 
+#include <limits>
+
 OCTK_BEGIN_NAMESPACE
 
 char *String::strndup(const char *str, size_t n)

@@ -58,7 +58,7 @@ class TaskQueueFactory;
 //      RtpTransmissionManager rtp_manager_;
 //    };
 // This class is thread safe.
-class OCTK_CORE_API RtcContext final
+class OCTK_MEDIA_API RtcContext final
 {
 public:
     // Default constructor is deleted in favor of creating this object using

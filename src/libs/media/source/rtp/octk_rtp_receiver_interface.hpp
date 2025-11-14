@@ -77,7 +77,7 @@ public:
     // stream_ids() as soon as downstream projects are no longer dependent on
     // stream objects.
     virtual std::vector<std::string> stream_ids() const;
-    virtual std::vector<SharedRefPtr<MediaStreamInterface>> streams() const;
+//    virtual std::vector<SharedRefPtr<MediaStreamInterface>> streams() const;
 
     // Audio or video receiver?
     virtual MediaType media_type() const = 0;

@@ -121,7 +121,7 @@ private:
 } // namespace field_trial
 
 // Implementation using the field trial API fo the key value lookup.
-class OCTK_CORE_API FieldTrialBasedConfig : public FieldTrialsRegistry
+class OCTK_MEDIA_API FieldTrialBasedConfig : public FieldTrialsRegistry
 {
 private:
     std::string GetValue(StringView key) const override { return field_trial::FindFullName(std::string(key)); }

@@ -15,19 +15,19 @@ void message_handler(const char *name, octk_log_context_t context, const char *m
               << ", context.line=" << context.line << std::endl;
 }
 
-namespace exp
+namespace expns
 {
 std::pair<int, double> myfunction(int a, double b)
 {
     OCTK_WARNING("funcname:%s, extract:%s", OCTK_STRFUNC, OCTK_STRFUNC_NAME);
     return std::make_pair(a, b);
 }
-} // namespace exp
+} // namespace expns
 
 int main()
 {
     std::cout << "octk_logging exp!\n" << std::endl;
-    exp::myfunction(1, 2);
+    expns::myfunction(1, 2);
     return 0;
     std::cout << "\noctk_logging c!" << std::endl;
     const auto loggerId = octk_logger_id("octk");

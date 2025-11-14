@@ -49,7 +49,7 @@ void RepeatingTaskImplDTraceProbeRun();
 // stopping multiple times, but you must stop one task before starting another
 // and it can only be stopped when in the running state. The public interface is
 // not thread safe.
-class RepeatingTaskHandle
+class OCTK_CORE_API RepeatingTaskHandle
 {
 public:
     RepeatingTaskHandle() = default;

@@ -57,8 +57,9 @@ public:
         int days_since_sunday;  /* days since Sunday [0-6] */
         int days_since_january; /* days since January 1 [0-365] */
         int isdst;              /* Daylight Savings Time flag */
-        long gmtoff;            /* offset from UTC in seconds */
-        char *zone;             /* timezone abbreviation */
+    //TODO:del
+//        long gmtoff;            /* offset from UTC in seconds */
+//        char *zone;             /* timezone abbreviation */
     };
 
     OCTK_STATIC_CONSTANT_NUMBER(kNSecsPerUSec, int64_t(1000))

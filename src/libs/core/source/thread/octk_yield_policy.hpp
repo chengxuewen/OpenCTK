@@ -40,7 +40,7 @@ public:
 
 // Sets the current thread-local yield policy while it's in scope and reverts
 // to the previous policy when it leaves the scope.
-class ScopedYieldPolicy final
+class OCTK_CORE_API ScopedYieldPolicy final
 {
 public:
     explicit ScopedYieldPolicy(YieldInterface *policy);

@@ -35,9 +35,9 @@ OCTK_BEGIN_NAMESPACE
 
 namespace utils
 {
+OCTK_CORE_API std::string hex_encode(StringView str);
 
-std::string hex_encode(StringView str);
-std::string hex_encode_with_delimiter(StringView source, char delimiter);
+OCTK_CORE_API std::string hex_encode_with_delimiter(StringView source, char delimiter);
 
 // hex_decode converts ascii hex to binary.
 size_t hex_decode(ArrayView<char> buffer, StringView source);
@@ -51,16 +51,16 @@ size_t hex_decode_with_delimiter(ArrayView<char> buffer, StringView source, char
 // Splits the source string into multiple fields separated by delimiter,
 // with duplicates of delimiter creating empty fields. Empty input produces a
 // single, empty, field.
-std::vector<StringView> split(StringView source, char delimiter);
+OCTK_CORE_API std::vector<StringView> split(StringView source, char delimiter);
 
 // Splits the source string into multiple fields separated by delimiter,
 // with duplicates of delimiter ignored.  Trailing delimiter ignored.
-size_t tokenize(StringView source, char delimiter, std::vector<std::string> *fields);
+OCTK_CORE_API size_t tokenize(StringView source, char delimiter, std::vector<std::string> *fields);
 
 // Extract the first token from source as separated by delimiter, with
 // duplicates of delimiter ignored. Return false if the delimiter could not be
 // found, otherwise return true.
-bool tokenize_first(StringView source, char delimiter, std::string *token, std::string *rest);
+OCTK_CORE_API bool tokenize_first(StringView source, char delimiter, std::string *token, std::string *rest);
 
 template <typename T, typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
 std::string toString(T value)
@@ -114,7 +114,7 @@ static bool FromString(StringView s, T *t)
     return result.has_value();
 }
 
-bool FromString(StringView s, bool *b);
+OCTK_CORE_API bool FromString(StringView s, bool *b);
 
 template <typename T> static inline T FromString(StringView str)
 {

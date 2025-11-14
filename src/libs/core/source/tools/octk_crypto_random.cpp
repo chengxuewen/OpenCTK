@@ -42,11 +42,12 @@ namespace detail
 int stdSecureRandom(uint8_t *buf, size_t len)
 {
     std::random_device rd;
-    std::uniform_int_distribution<uint8_t> dist(0, 255);
-    for (size_t i = 0; i < len; ++i)
-    {
-        buf[i] = dist(rd);
-    }
+    //TODO:del
+//    std::uniform_int_distribution<uint8_t> dist(0, 255);
+//    for (size_t i = 0; i < len; ++i)
+//    {
+//        buf[i] = dist(rd);
+//    }
     return len;
 }
 } // namespace detail

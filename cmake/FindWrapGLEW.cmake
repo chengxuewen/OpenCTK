@@ -42,7 +42,7 @@ if(NOT EXISTS "${OCTKWrapGLEW_STAMP_FILE_PATH}")
 	if(NOT EXISTS ${OCTKWrapGLEW_SOURCE_DIR})
 		message(FATAL_ERROR "${OCTKWrapGLEW_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(${OCTKWrapGLEW_ROOT_DIR})
+	octk_reset_dir(${OCTKWrapGLEW_BUILD_DIR})
 
 	message(STATUS "Configure ${OCTKWrapGLEW_DIR_NAME} lib...")
 	execute_process(

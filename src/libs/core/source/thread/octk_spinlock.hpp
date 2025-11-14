@@ -61,16 +61,16 @@ public:
         int spinCount = 100;
         while (--spinCount > 0)
         {
-            if (!mFlag.test(std::memory_order_relaxed)) // check
+            if (!mFlag.load(std::memory_order_relaxed)) // check
             {
-                if (!mFlag.test_and_set(std::memory_order_acquire)) // try lock
+                if (!mFlag.exchange(true, std::memory_order_acquire)) // try lock
                 {
                     return;
                 }
             }
         }
 
-        while (mFlag.test_and_set(std::memory_order_acquire)) // spin lock
+        while (mFlag.exchange(true, std::memory_order_acquire)) // spin lock
         {
 #if OCTK_CC_CPP20_OR_GREATER
             mFlag.wait(true, std::memory_order_acquire);
@@ -81,15 +81,15 @@ public:
     }
     void unlock()
     {
-        mFlag.clear(std::memory_order_release);
+        mFlag.store(false, std::memory_order_release);
 #if OCTK_CC_CPP20_OR_GREATER
         mFlag.notify_one();
 #endif
     }
-    bool isLocked() const { return mFlag.test(std::memory_order_relaxed); }
+    bool isLocked() const { return mFlag.load(std::memory_order_relaxed); }
 
 private:
-    std::atomic_flag mFlag = ATOMIC_FLAG_INIT;
+    std::atomic<bool> mFlag{false};
     OCTK_DISABLE_COPY_MOVE(SpinLock)
 };
 

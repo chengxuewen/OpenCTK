@@ -27,6 +27,8 @@
 
 #include <octk_global.hpp>
 
+#include <string>
+
 OCTK_BEGIN_NAMESPACE
 
 struct SourceLocation

@@ -43,7 +43,7 @@ if(NOT EXISTS "${OCTKWrapFreeType_STAMP_FILE_PATH}")
 	if(NOT EXISTS ${OCTKWrapFreeType_SOURCE_DIR})
 		message(FATAL_ERROR "${OCTKWrapFreeType_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(${OCTKWrapFreeType_ROOT_DIR})
+	octk_reset_dir(${OCTKWrapFreeType_BUILD_DIR})
 
 	message(STATUS "Configure ${OCTKWrapFreeType_DIR_NAME} lib...")
 	execute_process(

@@ -82,6 +82,7 @@ TEST(DataRateTest, IdentityChecks)
 
 TEST(DataRateTest, ComparisonOperators)
 {
+#undef small
     const int64_t kSmall = 450;
     const int64_t kLarge = 451;
     const DataRate small = DataRate::BitsPerSec(kSmall);

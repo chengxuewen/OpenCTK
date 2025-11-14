@@ -30,7 +30,7 @@
 OCTK_BEGIN_NAMESPACE
 
 // See: https://www.w3.org/TR/webrtc/#idl-def-rtcofferansweroptions
-struct OCTK_MEDIA_API RtcOfferAnswerOptions
+struct RtcOfferAnswerOptions
 {
     OCTK_STATIC_CONSTANT_NUMBER(kUndefined, -1)
     OCTK_STATIC_CONSTANT_NUMBER(kUnkMaxOfferToReceiveMediadefined, 1)

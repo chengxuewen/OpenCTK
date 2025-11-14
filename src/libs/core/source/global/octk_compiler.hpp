@@ -144,6 +144,7 @@
 #define OCTK_CC_CPP20_OR_GREATER (OCTK_CC_CPLUSPLUS_VERSION >= 202002L)
 #define OCTK_CC_CPP23_OR_GREATER (OCTK_CC_CPLUSPLUS_VERSION >= 202300L)
 
+
 /***********************************************************************************************************************
     OpenCTK compiler cxx feature macro define
 ***********************************************************************************************************************/

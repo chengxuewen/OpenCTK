@@ -27,6 +27,8 @@
 
 #include <octk_global.hpp>
 
+#include <atomic>
+
 OCTK_BEGIN_NAMESPACE
 // Refcounted objects should implement the following informal interface:
 //

@@ -29,7 +29,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class Random
+class OCTK_CORE_API Random
 {
 public:
     // TODO(tommi): Change this so that the seed can be initialized internally,
