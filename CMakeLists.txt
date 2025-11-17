@@ -276,7 +276,7 @@ include(OCTKTestHelpers)
 octk_option(OCTK_BUILD_ALL "Enable this to build all artifacts" OFF)
 octk_option(OCTK_BUILD_SHARED_LIBS "Enable this to build as dynamically" ON
 	SET BUILD_SHARED_LIBS)
-octk_option(OCTK_BUILD_USE_PCH "Enable this to build use precompiled header files for compilation" ON
+octk_option(OCTK_BUILD_USE_PCH "Enable this to build use precompiled header files for compilation" ${BUILD_SHARED_LIBS}
 	DEPENDS BUILD_SHARED_LIBS)
 octk_option(OCTK_BUILD_COMPILER_WARNING "Enable this to build target with compiler warnings" OFF)
 octk_option(OCTK_BUILD_WARNINGS_ARE_ERRORS "Enable this to build with warnings as errors"

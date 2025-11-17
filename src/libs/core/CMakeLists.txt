@@ -50,6 +50,7 @@ octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
 octk_find_package(WrapSpdlog PROVIDED_TARGETS OCTK3rdparty::WrapSpdlog)
 octk_find_package(WrapVariant PROVIDED_TARGETS OCTK3rdparty::WrapVariant)
 octk_find_package(WrapExpected PROVIDED_TARGETS OCTK3rdparty::WrapExpected)
+octk_find_package(WrapOptional PROVIDED_TARGETS OCTK3rdparty::WrapOptional)
 octk_find_package(WrapFilesystem PROVIDED_TARGETS OCTK3rdparty::WrapFilesystem)
 octk_find_package(WrapStringViewLite PROVIDED_TARGETS OCTK3rdparty::WrapStringViewLite)
 
@@ -196,6 +197,7 @@ octk_add_library(core
 	${OCTKWrapJson_INSTALL_DIR}/include
 	${OCTKWrapAbseil_INSTALL_DIR}/include
 	${OCTKWrapVariant_INSTALL_DIR}/include
+	${OCTKWrapOptional_INSTALL_DIR}/include
 	${OCTKWrapExpected_INSTALL_DIR}/include
 	${OCTKWrapFilesystem_INSTALL_DIR}/include
 	${OCTKWrapStringviewLite_INSTALL_DIR}/include
@@ -209,6 +211,7 @@ octk_add_library(core
 	OCTK3rdparty::WrapAbseil
 	OCTK3rdparty::WrapVariant
 	OCTK3rdparty::WrapExpected
+	OCTK3rdparty::WrapOptional
 	OCTK3rdparty::WrapFilesystem
 	OCTK3rdparty::WrapStringViewLite
 	${OCTK_LIB_LINK_LIBRARIES})
@@ -221,19 +224,6 @@ octk_internal_extend_target(octk_core
 	source/thread/octk_task_thread.mm
 	source/tools/octk_file_utils.mm
 	CONDITION OCTK_SYSTEM_MAC)
-if(OCTK_FEATURE_USE_OPTIONAL_LITE)
-	octk_find_package(WrapOptionalLite PROVIDED_TARGETS OCTK3rdparty::WrapOptionalLite)
-	octk_internal_extend_target(octk_core
-		EXTERNAL_HEADERS_DIRS
-		${OCTKWrapOptionalLite_INSTALL_DIR}/include
-		PUBLIC_LIBRARIES OCTK3rdparty::WrapOptionalLite)
-else()
-	octk_find_package(WrapOptional PROVIDED_TARGETS OCTK3rdparty::WrapOptional)
-	octk_internal_extend_target(octk_core
-		EXTERNAL_HEADERS_DIRS
-		${OCTKWrapOptional_INSTALL_DIR}/include
-		PUBLIC_LIBRARIES OCTK3rdparty::WrapOptional)
-endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
