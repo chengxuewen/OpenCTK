@@ -352,15 +352,15 @@ endfunction()
 
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
-function(octk_internal_set_up_static_runtime_library target)
-    if(OCTK_MSVC_STATIC_RUNTIME)
-        if(MSVC)
-            set_property(TARGET ${target} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-        elseif(MINGW)
-            target_link_options(${target} INTERFACE "LINKER:-Bstatic")
-        endif()
-    endif()
-endfunction()
+#function(octk_internal_set_up_static_runtime_library target)
+#    if(OCTK_MSVC_STATIC_RUNTIME)
+#        if(MSVC)
+#            set_property(TARGET ${target} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+#        elseif(MINGW)
+#            target_link_options(${target} INTERFACE "LINKER:-Bstatic")
+#        endif()
+#    endif()
+#endfunction()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

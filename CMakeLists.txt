@@ -189,13 +189,13 @@ message(STATUS "OpenCTK Install prefix set as '${CMAKE_INSTALL_PREFIX}'.")
 #-----------------------------------------------------------------------------------------------------------------------
 # Detect 3rdparty packages directories
 #-----------------------------------------------------------------------------------------------------------------------
-if(DEFINED INPUT_OCTK_3RDPARTY_PACKAGES_DIRECTORIES)
-	set(OCTK_3RDPARTY_PACKAGES_DIRECTORIES "${INPUT_OCTK_3RDPARTY_PACKAGES_DIRECTORIES}"
+if(DEFINED INPUT_OCTK_3RDPARTY_PACKAGES_DIR)
+	set(OCTK_3RDPARTY_PACKAGES_DIR "${INPUT_OCTK_3RDPARTY_PACKAGES_DIR}"
 		CACHE PATH "3rdparty packages directories")
 else()
-	set(OCTK_3RDPARTY_PACKAGES_DIRECTORIES "" CACHE PATH "3rdparty packages directories")
+	set(OCTK_3RDPARTY_PACKAGES_DIR "" CACHE PATH "3rdparty packages directories")
 endif()
-message(STATUS "Project 3rdparty packages directories: ${OCTK_3RDPARTY_PACKAGES_DIRECTORIES}")
+message(STATUS "Project 3rdparty packages directories: ${OCTK_3RDPARTY_PACKAGES_DIR}")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -218,7 +218,8 @@ if(CMAKE_CXX_STANDARD AND "${CMAKE_CXX_STANDARD}" STRGREATER_EQUAL "11")
 else()
 	set(OCTK_CMAKE_CXX_STANDARD 11)
 endif()
-set(OCTK_MSVC_STATIC_RUNTIME OFF)
+#set(OCTK_MSVC_STATIC_RUNTIME OFF)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Using C++: ${OCTK_CMAKE_CXX_STANDARD}")
 

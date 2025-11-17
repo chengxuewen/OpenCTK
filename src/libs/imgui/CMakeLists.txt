@@ -86,17 +86,25 @@ octk_internal_extend_target(octk_imgui
 	"-framework CoreVideo"
 	"-framework QuartzCore"
 	CONDITION OCTK_SYSTEM_MAC)
-set(OpenGL_GL_PREFERENCE "GLVND")
-find_package(OpenGL 3 QUIET)
-octk_internal_extend_target(octk_imgui
-	SOURCES
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
-	source/octk_imgui_application_sdlopengl3.cpp
-	source/octk_imgui_application_sdlopengl3.hpp
-	LIBRARIES
-	OpenGL::GL
-	CONDITION OpenGL_FOUND)
+if(NOT WIN32)
+	set(OpenGL_GL_PREFERENCE "GLVND")
+	find_package(OpenGL 3 QUIET)
+	if(TARGET OpenGL::GL)
+		set(OpenGL_TARGET OpenGL::GL)
+	elseif(TARGET OpenGL::OpenGL)
+		set(OpenGL_TARGET OpenGL::OpenGL)
+	endif()
+	octk_internal_extend_target(octk_imgui
+		SOURCES
+		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+		source/octk_imgui_application_sdlopengl3.cpp
+		source/octk_imgui_application_sdlopengl3.hpp
+		LIBRARIES
+		${OpenGL_TARGET}
+		${OPENGL_LIBRARIES}
+		CONDITION OpenGL_FOUND)
+endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

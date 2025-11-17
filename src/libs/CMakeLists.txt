@@ -22,7 +22,7 @@
 ########################################################################################################################
 
 add_subdirectory(core)
-octk_add_subdirectory(imgui OCTK_ENABLE_LIB_IMGUI)
+# octk_add_subdirectory(imgui OCTK_ENABLE_LIB_IMGUI)
 octk_add_subdirectory(network OCTK_ENABLE_LIB_NETWORK)
 octk_add_subdirectory(platform OCTK_ENABLE_LIB_PLATFORM)
 octk_add_subdirectory(graphics OCTK_ENABLE_LIB_GRAPHICS)

@@ -127,7 +127,7 @@ else()
 	add_library(OCTK3rdparty::WrapFFmpeg INTERFACE IMPORTED)
 endif()
 
-if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake")
+if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND OFF)
     set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
     set(CMAKE_MODULE_PATH "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
     set(FFMPEG_LIBRARY_DIRS_CACHE "${FFMPEG_LIBRARY_DIRS}")
@@ -158,5 +158,9 @@ else()
         libavutil
         libswscale)
     target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
+endif()
+if(WIN32)
+	target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE
+		bcrypt.lib)
 endif()
 set(OCTKWrapFFmpeg_FOUND ON)

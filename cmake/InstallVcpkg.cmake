@@ -25,7 +25,7 @@
 function(octk_vcpkg_install_package NAME)
 	octk_parse_all_arguments(arg
 		"octk_vcpkg_install_package"
-		"NOT_IMPORT"
+		"NOT_IMPORT;TOOLS"
 		"TARGET;PREFIX;INSTALL_DIR;PACK_NAME"
 		"COMPONENTS;IMPORTED_TARGETS" ${ARGN})
 
@@ -45,23 +45,30 @@ function(octk_vcpkg_install_package NAME)
 		set(${arg_PREFIX}_FOUND ON)
 		return()
 	endif()
+	if(${arg_TOOLS})
+		set(Vcpkg_EXECUTABLE ${OCTKVcpkgTools_EXECUTABLE})
+		set(Vcpkg_ROOT_DIR ${OCTKVcpkgTools_ROOT_DIR})
+	else()
+		set(Vcpkg_EXECUTABLE ${OCTKVcpkg_EXECUTABLE})
+		set(Vcpkg_ROOT_DIR ${OCTKVcpkg_ROOT_DIR})
+	endif()
 	if(WIN32)
 		set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-static-md)
 	else()
 		set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
 	endif()
-	set(${arg_PREFIX}_NAME "${NAME}" CACHE INTERNAL "" FORCE)
-	set(${arg_PREFIX}_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${${arg_PREFIX}_NAME}"  CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_NAME "${arg_PACK_NAME}" CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_ROOT_DIR "${arg_OUTPUT_DIR}/${arg_PACK_NAME}"  CACHE INTERNAL "" FORCE)
 	set(${arg_PREFIX}_PACKAGE_NAME "${arg_PACK_NAME}-${${arg_PREFIX}_VCPKG_TRIPLET}.7z"  CACHE INTERNAL "" FORCE)
-	set(${arg_PREFIX}_PACKAGE_PATH "${OCTK_3RDPARTY_PACKAGES_DIRECTORIES}/${${arg_PREFIX}_PACKAGE_NAME}"  CACHE INTERNAL "" FORCE)
-	set(${arg_PREFIX}_INSTALL_DIR "${arg_OUTPUT_DIR}/${NAME}/installed/${${arg_PREFIX}_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_PACKAGE_PATH "${OCTK_3RDPARTY_PACKAGES_DIR}/${${arg_PREFIX}_PACKAGE_NAME}"  CACHE INTERNAL "" FORCE)
+	set(${arg_PREFIX}_INSTALL_DIR "${${arg_PREFIX}_ROOT_DIR}/installed/${${arg_PREFIX}_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
 	if(NOT EXISTS "${${arg_PREFIX}_INSTALL_DIR}")
 		if(EXISTS "${${arg_PREFIX}_PACKAGE_PATH}")
 			message(STATUS "${${arg_PREFIX}_PACKAGE_NAME} exist, start unpack...")
 			if(NOT EXISTS "${arg_OUTPUT_DIR}")
 				execute_process(
 					COMMAND ${CMAKE_COMMAND} -E make_directory "${arg_OUTPUT_DIR}"
-					WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+					WORKING_DIRECTORY "${Vcpkg_ROOT_DIR}"
 					RESULT_VARIABLE MKDIR_RESULT)
 				if(NOT MKDIR_RESULT MATCHES 0)
 					message(FATAL_ERROR "${arg_OUTPUT_DIR} mkdir failed.")
@@ -82,7 +89,7 @@ function(octk_vcpkg_install_package NAME)
 			else()
 				set(${arg_PREFIX}_COMPONENTS_CONFIG "[")
 				foreach(component IN LISTS arg_COMPONENTS)
-					if(NOT "${${arg_PREFIX}_COMPONENTS_CONFIG}" STREQUAL "")
+					if(NOT "${${arg_PREFIX}_COMPONENTS_CONFIG}" STREQUAL "[")
 						set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG},")
 					endif()
 					set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG}${component}")
@@ -90,17 +97,17 @@ function(octk_vcpkg_install_package NAME)
 				set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG}]")
 			endif()
 			execute_process(
-				COMMAND ${OCTKVcpkgTools_EXECUTABLE} list ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET}
-				WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+				COMMAND ${Vcpkg_EXECUTABLE} list ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET}
+				WORKING_DIRECTORY "${Vcpkg_ROOT_DIR}"
 				OUTPUT_VARIABLE FIND_OUTPUT
 				RESULT_VARIABLE FIND_RESULT)
 			if("X${FIND_OUTPUT}" STREQUAL "X")
 				message(STATUS "${${arg_PREFIX}_NAME} not installed, start install...")
-				set(${arg_PREFIX}_VCPKG_CONFIGS ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIGS}:${${arg_PREFIX}_VCPKG_TRIPLET})
+				set(${arg_PREFIX}_VCPKG_CONFIGS ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET})
 				message(STATUS "${${arg_PREFIX}_NAME} vcpkg install configs: ${${arg_PREFIX}_VCPKG_CONFIGS}")
 				execute_process(
-					COMMAND "${OCTKVcpkgTools_EXECUTABLE}" install ${${arg_PREFIX}_VCPKG_CONFIGS} --recurse
-					WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+					COMMAND "${Vcpkg_EXECUTABLE}" install ${${arg_PREFIX}_VCPKG_CONFIGS} --recurse
+					WORKING_DIRECTORY "${Vcpkg_ROOT_DIR}"
 					RESULT_VARIABLE INSTALL_RESULT
 					COMMAND_ECHO STDOUT)
 				if(NOT (INSTALL_RESULT MATCHES 0))
@@ -110,9 +117,9 @@ function(octk_vcpkg_install_package NAME)
 
 			message(STATUS "${${arg_PREFIX}_NAME} not exported, start export...")
 			execute_process(
-				COMMAND "${OCTKVcpkgTools_EXECUTABLE}" export ${NAME}:${${arg_PREFIX}_VCPKG_TRIPLET}
+				COMMAND "${Vcpkg_EXECUTABLE}" export ${NAME}:${${arg_PREFIX}_VCPKG_TRIPLET}
 				--raw --output=${${arg_PREFIX}_NAME} --output-dir=${arg_OUTPUT_DIR}
-				WORKING_DIRECTORY "${OCTKVcpkgTools_ROOT_DIR}"
+				WORKING_DIRECTORY "${Vcpkg_ROOT_DIR}"
 				RESULT_VARIABLE EXPORT_RESULT
 				COMMAND_ECHO STDOUT)
 			if(NOT (EXPORT_RESULT MATCHES 0))
@@ -121,7 +128,7 @@ function(octk_vcpkg_install_package NAME)
 		endif()
 	endif()
 
-	if(NOT "X${OCTK_3RDPARTY_PACKAGES_DIRECTORIES}" STREQUAL "X")
+	if(NOT "X${OCTK_3RDPARTY_PACKAGES_DIR}" STREQUAL "X")
 		if(NOT EXISTS "${${arg_PREFIX}_PACKAGE_PATH}")
 			message(STATUS "${${arg_PREFIX}_PACKAGE_NAME} not exist, start pack...")
 			execute_process(
@@ -147,7 +154,7 @@ function(octk_vcpkg_install_package NAME)
 			set(CMAKE_MODULE_PATH "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}")
 			set(${NAME}_DIR "${${arg_PREFIX}_INSTALL_DIR}/share/${NAME}")
 			find_package(${NAME} REQUIRED)
-			if(TARGET ${NAME}::${NAME})
+			if(TARGET "${NAME}::${NAME}")
 				target_link_libraries(${arg_TARGET} INTERFACE ${NAME}::${NAME})
 			endif()
 			target_link_libraries(${arg_TARGET} INTERFACE ${arg_IMPORTED_TARGETS})
@@ -189,22 +196,32 @@ set(OCTKVcpkgTools_ROOT_DIR "${PROJECT_SOURCE_DIR}/vcpkg-tools" CACHE INTERNAL "
 set(OCTKVcpkgTools_INSTALL_DIR "${OCTKVcpkgTools_ROOT_DIR}/installed" CACHE INTERNAL "" FORCE)
 find_package(Git REQUIRED)
 if(GIT_EXECUTABLE)
-	if(NOT EXISTS "${OCTKVcpkg_ROOT_DIR}/.git")
-		execute_process(
-			COMMAND "${GIT_EXECUTABLE}" clone https://github.com/microsoft/vcpkg.git
-			WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
-			RESULT_VARIABLE CLONE_RESULT
-			COMMAND_ECHO STDOUT)
-		if(NOT (CLONE_RESULT MATCHES 0))
-			message(FATAL_ERROR "${OCTKVcpkg_NAME} clone failed.")
-		endif()
-	endif()
 	if(WIN32)
 		set(OCTKVcpkg_EXECUTABLE_NAME "vcpkg.exe")
 		set(OCTKVcpkg_BOOTSTRAP_NAME "bootstrap-vcpkg.bat")
 	else()
 		set(OCTKVcpkg_EXECUTABLE_NAME "vcpkg")
 		set(OCTKVcpkg_BOOTSTRAP_NAME "./bootstrap-vcpkg.sh")
+	endif()
+	if(NOT EXISTS "${OCTKVcpkg_ROOT_DIR}/${OCTKVcpkg_BOOTSTRAP_NAME}")
+		if(EXISTS "${OCTKVcpkg_ROOT_DIR}")
+			execute_process(
+				COMMAND ${CMAKE_COMMAND} -E remove_directory "${OCTKVcpkg_ROOT_DIR}"
+				COMMAND ${CMAKE_COMMAND} -E echo "rmdir ${OCTKVcpkg_ROOT_DIR}"
+				WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+				RESULT_VARIABLE RMDIR_RESULT)
+			if(NOT (RMDIR_RESULT MATCHES 0))
+				message(FATAL_ERROR "${OCTKVcpkg_ROOT_DIR} dir remove failed.")
+			endif()
+		endif()
+		execute_process(
+			COMMAND "${GIT_EXECUTABLE}" clone https://github.com/microsoft/vcpkg.git --depth 1
+			WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+			RESULT_VARIABLE CLONE_RESULT
+			COMMAND_ECHO STDOUT)
+		if(NOT (CLONE_RESULT MATCHES 0))
+			message(FATAL_ERROR "${OCTKVcpkg_NAME} clone failed.")
+		endif()
 	endif()
 	if(NOT EXISTS "${OCTKVcpkg_ROOT_DIR}/${OCTKVcpkg_EXECUTABLE_NAME}")
 		execute_process(

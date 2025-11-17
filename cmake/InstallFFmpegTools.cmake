@@ -31,7 +31,7 @@ endif()
 include(InstallVcpkg)
 if(ON)
 	octk_vcpkg_install_package(ffmpeg
-		NOT_IMPORT
+		TOOLS NOT_IMPORT
 		PACK_NAME
 		ffmpeg-tools
 		TARGET
