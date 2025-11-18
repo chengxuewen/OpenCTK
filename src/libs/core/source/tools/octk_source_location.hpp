@@ -50,8 +50,8 @@ public:
 
     std::string fileLine() const noexcept { return std::string(this->fileName()) + ":" + std::to_string(mLineNumber); }
     std::string toString() const { return std::string(mFunctionName) + "@" + this->fileLine(); }
-    constexpr const char *fileName() const noexcept { return OCTK_PATH_NAME(mFilePath); }
     constexpr const char *functionName() const noexcept { return mFunctionName; }
+    const char *fileName() const noexcept { return OCTK_PATH_NAME(mFilePath); }
     constexpr const char *filePath() const noexcept { return mFilePath; }
     constexpr int lineNumber() const noexcept { return mLineNumber; }
 
