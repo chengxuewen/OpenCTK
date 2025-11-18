@@ -143,7 +143,7 @@ public:
                                   int bucket_count)
     {
         Mutex::Locker locker(&mutex_);
-        const auto &it = map_.find(name.to_string());
+        const auto &it = map_.find(name.data());
         if (it != map_.end())
         {
             return reinterpret_cast<Histogram *>(it->second.get());
@@ -157,7 +157,7 @@ public:
     Histogram *GetEnumerationHistogram(StringView name, int boundary)
     {
         Mutex::Locker locker(&mutex_);
-        const auto &it = map_.find(name.to_string());
+        const auto &it = map_.find(name.data());
         if (it != map_.end())
         {
             return reinterpret_cast<Histogram *>(it->second.get());
@@ -194,28 +194,28 @@ public:
     int NumEvents(StringView name, int sample) const
     {
         Mutex::Locker locker(&mutex_);
-        const auto &it = map_.find(name.to_string());
+        const auto &it = map_.find(name.data());
         return (it == map_.end()) ? 0 : it->second->NumEvents(sample);
     }
 
     int NumSamples(StringView name) const
     {
         Mutex::Locker locker(&mutex_);
-        const auto &it = map_.find(name.to_string());
+        const auto &it = map_.find(name.data());
         return (it == map_.end()) ? 0 : it->second->NumSamples();
     }
 
     int MinSample(StringView name) const
     {
         Mutex::Locker locker(&mutex_);
-        const auto &it = map_.find(name.to_string());
+        const auto &it = map_.find(name.data());
         return (it == map_.end()) ? -1 : it->second->MinSample();
     }
 
     std::map<int, int> Samples(StringView name) const
     {
         Mutex::Locker locker(&mutex_);
-        const auto &it = map_.find(name.to_string());
+        const auto &it = map_.find(name.data());
         return (it == map_.end()) ? std::map<int, int>() : it->second->Samples();
     }
 

@@ -14,6 +14,8 @@
 #include <octk_rtc_event.hpp>
 #include <octk_rtc_event_log_output.hpp>
 
+#include <functional>
+
 OCTK_BEGIN_NAMESPACE
 
 

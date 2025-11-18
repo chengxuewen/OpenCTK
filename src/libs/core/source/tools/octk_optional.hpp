@@ -28,31 +28,14 @@
 #include <octk_global.hpp>
 #include <octk_core_config.hpp>
 
-#if OCTK_CC_CPP17_OR_GREATER
-#    include <optional>
-#endif
-
-#if OCTK_FEATURE_USE_OPTIONAL_LITE
-#    include <nonstd/optional.hpp>
+#if OCTK_BUILD_CXX_STANDARD_17
+#   define optional_CONFIG_SELECT_OPTIONAL 0
 #else
-#    include <tl/optional.hpp>
+#   define optional_CONFIG_SELECT_OPTIONAL 1
 #endif
+#include <tl/optional.hpp>
 
 OCTK_BEGIN_NAMESPACE
-#if OCTK_FEATURE_USE_OPTIONAL_LITE
-
-template <typename T> using Optional = nonstd::optional<T>;
-using in_place_t = nonstd::in_place_t;
-using nullopt_t = nonstd::nullopt_t;
-
-namespace utils
-{
-using nonstd::nullopt;
-using nonstd::in_place;
-using nonstd::make_optional;
-} // namespace utils
-
-#else
 
 template <typename T> using Optional = tl::optional<T>;
 using in_place_t = tl::in_place_t;
@@ -64,8 +47,6 @@ using tl::in_place;
 using tl::nullopt;
 using tl::make_optional;
 } // namespace utils
-
-#endif
 
 OCTK_END_NAMESPACE
 

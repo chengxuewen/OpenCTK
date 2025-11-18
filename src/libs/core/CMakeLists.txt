@@ -201,9 +201,6 @@ octk_add_library(core
 	${OCTKWrapExpected_INSTALL_DIR}/include
 	${OCTKWrapFilesystem_INSTALL_DIR}/include
 	${OCTKWrapStringviewLite_INSTALL_DIR}/include
-	PUBLIC_DEFINES
-	optional_CONFIG_SELECT_OPTIONAL=1
-	nssv_CONFIG_SELECT_STRING_VIEW=1
 	LIBRARIES
 	OCTK3rdparty::WrapSpdlog
 	PUBLIC_LIBRARIES

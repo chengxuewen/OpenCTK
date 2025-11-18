@@ -26,7 +26,13 @@
 #define _OCTK_STRING_VIEW_HPP
 
 #include <octk_global.hpp>
+#include <octk_core_config.hpp>
 
+#if OCTK_BUILD_CXX_STANDARD_17
+#   define nssv_CONFIG_SELECT_STRING_VIEW 0
+#else
+#   define nssv_CONFIG_SELECT_STRING_VIEW 1
+#endif
 #include <nonstd/string_view.hpp>
 
 OCTK_BEGIN_NAMESPACE
