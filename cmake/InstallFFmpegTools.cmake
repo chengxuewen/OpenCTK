@@ -28,6 +28,7 @@ if(TARGET OCTK3rdparty::FFmpeg)
 	return()
 endif()
 
+include(InstallVcpkg)
 octk_vcpkg_install_package(ffmpeg
 	TOOLS NOT_IMPORT
 	PACK_NAME

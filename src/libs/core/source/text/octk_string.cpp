@@ -25,6 +25,7 @@
 #include <octk_string.hpp>
 
 #include <limits>
+#include <cstdlib>
 
 OCTK_BEGIN_NAMESPACE
 

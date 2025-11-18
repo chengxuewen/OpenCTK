@@ -24,7 +24,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapOpenSSL PROVIDED_TARGETS OCTK3rdparty::WrapOpenSSL)
+#octk_find_package(WrapOpenSSL PROVIDED_TARGETS OCTK3rdparty::WrapOpenSSL)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ octk_add_library(network
 	PRECOMPILED_HEADER
 	source/octk_network_pch.hpp
 	LIBRARIES
-	OCTK3rdparty::WrapOpenSSL
+#	OCTK3rdparty::WrapOpenSSL
 	octk::core_private
 	PUBLIC_LIBRARIES
 	octk::core)

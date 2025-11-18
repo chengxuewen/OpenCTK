@@ -25,6 +25,8 @@
 #include <octk_random.hpp>
 #include <octk_safe_conversions.hpp>
 
+#include <cmath>
+
 OCTK_BEGIN_NAMESPACE
 
 Random::Random(uint64_t seed)

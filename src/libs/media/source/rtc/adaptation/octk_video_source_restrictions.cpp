@@ -5,6 +5,8 @@
 #include "octk_video_source_restrictions.hpp"
 #include <octk_checks.hpp>
 
+#include <limits>
+
 OCTK_BEGIN_NAMESPACE
 
 VideoSourceRestrictions::VideoSourceRestrictions()

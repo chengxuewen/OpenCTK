@@ -36,6 +36,7 @@
 #endif
 #include <vector>
 #include <memory>
+#include <cstdint>
 #include <stdint.h>
 
 OCTK_BEGIN_NAMESPACE
@@ -49,6 +50,9 @@ using std::uint8_t;
 using std::uint16_t;
 using std::uint32_t;
 using std::uint64_t;
+
+using float_t = float;
+using double_t = double;
 
 using std::size_t;
 using std::ptrdiff_t;

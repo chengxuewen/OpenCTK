@@ -27,6 +27,8 @@
 
 #include <octk_checks.hpp>
 
+#include <limits>
+
 OCTK_BEGIN_NAMESPACE
 
 class OCTK_CORE_API Random

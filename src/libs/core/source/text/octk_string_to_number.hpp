@@ -28,6 +28,8 @@
 #include <octk_optional.hpp>
 #include <octk_string_view.hpp>
 
+#include <limits>
+
 OCTK_BEGIN_NAMESPACE
 
 

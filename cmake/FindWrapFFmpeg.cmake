@@ -96,4 +96,6 @@ if(WIN32)
 	target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE
 		bcrypt.lib)
 endif()
+find_package(Threads REQUIRED)
+target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE Threads::Threads)
 set(OCTKWrapFFmpeg_FOUND ON)

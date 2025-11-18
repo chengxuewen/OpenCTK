@@ -27,6 +27,14 @@
 
 #include <thread>
 
+#if !defined(OCTK_OS_WIN)
+#   include <sched.h>
+#   include <unistd.h>
+#   include <sys/types.h>
+#   include <sys/syscall.h>
+#   include <sys/prctl.h> // PR_SET_NAME
+#endif
+
 OCTK_BEGIN_NAMESPACE
 
 namespace

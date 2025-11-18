@@ -25,7 +25,7 @@
 function(octk_vcpkg_install_package NAME)
 	octk_parse_all_arguments(arg
 		"octk_vcpkg_install_package"
-		"NOT_IMPORT;TOOLS"
+        "NOT_IMPORT;TOOLS;DYNAMIC"
 		"TARGET;PREFIX;INSTALL_DIR;PACK_NAME"
 		"COMPONENTS;IMPORTED_TARGETS" ${ARGN})
 
@@ -53,9 +53,17 @@ function(octk_vcpkg_install_package NAME)
 		set(Vcpkg_ROOT_DIR ${OCTKVcpkg_ROOT_DIR})
 	endif()
 	if(WIN32)
-		set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-static-md)
+        if(${arg_DYNAMIC})
+            set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-release)
+        else()
+            set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-static-md)
+        endif()
 	else()
-		set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
+        if(${arg_DYNAMIC})
+            set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-dynamic)
+        else()
+            set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
+        endif()
 	endif()
 	set(${arg_PREFIX}_NAME "${arg_PACK_NAME}" CACHE INTERNAL "" FORCE)
 	set(${arg_PREFIX}_ROOT_DIR "${arg_OUTPUT_DIR}/${arg_PACK_NAME}"  CACHE INTERNAL "" FORCE)

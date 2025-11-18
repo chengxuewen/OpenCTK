@@ -30,6 +30,8 @@
 #include <octk_divide_round.hpp>
 #include <octk_safe_conversions.hpp>
 
+#include <cmath>
+
 OCTK_BEGIN_NAMESPACE
 
 /**

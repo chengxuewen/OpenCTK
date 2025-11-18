@@ -29,6 +29,7 @@
 #include <octk_assert.hpp>
 
 #include <mutex>
+#include <atomic>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -55,6 +56,7 @@ public:
     using Base::Base;
     Mutex() = default;
 };
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_MUTEX_HPP

@@ -6,6 +6,8 @@
 #include <octk_string_encode.hpp>
 #include <octk_checks.hpp>
 
+#include <atomic>
+
 OCTK_BEGIN_NAMESPACE
 
 namespace
