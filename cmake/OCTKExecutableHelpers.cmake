@@ -157,6 +157,7 @@ function(octk_add_executable name)
         WIN32_EXECUTABLE "${arg_GUI}"
         MACOSX_BUNDLE "${arg_GUI}")
 
+    octk_internal_setup_runtime_library("${name}")
     octk_internal_set_exceptions_flags("${name}" ${arg_EXCEPTIONS})
 
     # Check if target needs to be excluded from all target. Also affects octk_install.

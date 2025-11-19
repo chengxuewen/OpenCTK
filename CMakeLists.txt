@@ -233,8 +233,6 @@ endforeach()
 if(NOT OCTK_CMAKE_CXX_STANDARD_VALID)
 	message(FATAL_ERROR " Unsupport C++ standard: ${OCTK_CMAKE_CXX_STANDARD}.")
 endif()
-#set(OCTK_MSVC_STATIC_RUNTIME OFF)
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Using C++: ${OCTK_CMAKE_CXX_STANDARD}")
 

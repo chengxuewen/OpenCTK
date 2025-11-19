@@ -59,7 +59,7 @@ octk_vcpkg_install_package(ffmpeg
 	${OCTKWrapFFmpeg_COMPONENTS})
 
 
-if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake")
+if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND OFF)
 	set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
 	set(CMAKE_MODULE_PATH "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
 	set(FFMPEG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}")
@@ -90,8 +90,7 @@ else()
 	target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
 endif()
 if(WIN32)
-	target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE
-		bcrypt.lib)
+	target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE bcrypt.lib)
 endif()
 find_package(Threads REQUIRED)
 target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE Threads::Threads)

@@ -191,7 +191,6 @@ octk_add_library(core
 	source/units/octk_unit_base.hpp
 	source/octk_core.cpp
 	source/octk_core.hpp
-	source/octk_core.h
 	PRECOMPILED_HEADER
 	source/octk_pch.hpp
 	EXTERNAL_HEADERS_DIRS

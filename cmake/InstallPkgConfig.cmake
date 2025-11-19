@@ -24,8 +24,8 @@
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
 macro(octk_pkg_add_path PATH)
+	set(ENV{PKG_CONFIG_PATH} "${PATH}")
 	set(PKG_CONFIG_ARGN "--with-path=${PATH}")
-	set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${PATH}")
 	message(STATUS "Add PkgConfig check modules search path in ${PATH}")
 endmacro()
 

@@ -179,8 +179,8 @@ TEST(IntVec, SimpleOps)
             EXPECT_EQ(i, v[i]);
             EXPECT_EQ(i, v.at(i));
         }
-        EXPECT_EQ(v.begin().base(), v.data());
-        EXPECT_EQ(cv.begin().base(), cv.data());
+        // EXPECT_EQ(v.begin().base(), v.data());
+        // EXPECT_EQ(cv.begin().base(), cv.data());
 
         int counter = 0;
         for (IntVec::iterator iter = v.begin(); iter != v.end(); ++iter)

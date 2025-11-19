@@ -73,22 +73,22 @@ TEST(FrequencyTest, ComparisonOperators)
 {
     const int64_t kSmall = 42;
     const int64_t kLarge = 45;
-    const Frequency small = Frequency::Hertz(kSmall);
-    const Frequency large = Frequency::Hertz(kLarge);
+    const Frequency smallFrequency = Frequency::Hertz(kSmall);
+    const Frequency largeFrequency = Frequency::Hertz(kLarge);
 
     EXPECT_EQ(Frequency::Zero(), Frequency::Hertz(0));
     EXPECT_EQ(Frequency::PlusInfinity(), Frequency::PlusInfinity());
-    EXPECT_EQ(small, Frequency::Hertz(kSmall));
-    EXPECT_LE(small, Frequency::Hertz(kSmall));
-    EXPECT_GE(small, Frequency::Hertz(kSmall));
-    EXPECT_NE(small, Frequency::Hertz(kLarge));
-    EXPECT_LE(small, Frequency::Hertz(kLarge));
-    EXPECT_LT(small, Frequency::Hertz(kLarge));
-    EXPECT_GE(large, Frequency::Hertz(kSmall));
-    EXPECT_GT(large, Frequency::Hertz(kSmall));
-    EXPECT_LT(Frequency::Zero(), small);
+    EXPECT_EQ(smallFrequency, Frequency::Hertz(kSmall));
+    EXPECT_LE(smallFrequency, Frequency::Hertz(kSmall));
+    EXPECT_GE(smallFrequency, Frequency::Hertz(kSmall));
+    EXPECT_NE(smallFrequency, Frequency::Hertz(kLarge));
+    EXPECT_LE(smallFrequency, Frequency::Hertz(kLarge));
+    EXPECT_LT(smallFrequency, Frequency::Hertz(kLarge));
+    EXPECT_GE(largeFrequency, Frequency::Hertz(kSmall));
+    EXPECT_GT(largeFrequency, Frequency::Hertz(kSmall));
+    EXPECT_LT(Frequency::Zero(), smallFrequency);
 
-    EXPECT_GT(Frequency::PlusInfinity(), large);
+    EXPECT_GT(Frequency::PlusInfinity(), largeFrequency);
     EXPECT_LT(Frequency::MinusInfinity(), Frequency::Zero());
 }
 

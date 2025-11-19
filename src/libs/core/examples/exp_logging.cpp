@@ -1,19 +1,11 @@
 #include <iostream>
 #include <utility>
 
-#include <octk_core.h>
 #include <octk_logging.hpp>
 #include <octk_variant.hpp>
 #include <octk_string_utils.hpp>
 
 OCTK_DEFINE_LOGGER("my_log", MY_LOGGER)
-
-void message_handler(const char *name, octk_log_context_t context, const char *message)
-{
-    std::cout << "logger=" << name << ", context.level=" << context.level << ", context.filePath=" << context.filePath
-              << ", context.fileName=" << context.fileName << ", context.funcName=" << context.funcName
-              << ", context.line=" << context.line << std::endl;
-}
 
 namespace expns
 {
@@ -30,15 +22,6 @@ int main()
     expns::myfunction(1, 2);
     return 0;
     std::cout << "\noctk_logging c!" << std::endl;
-    const auto loggerId = octk_logger_id("octk");
-    octk_init_logger(loggerId, OCTK_LOG_LEVEL_TRACE, message_handler, true);
-    OCTK_TRACE("OCTK_TRACE");
-    OCTK_DEBUG("OCTK_DEBUG");
-    OCTK_INFO("OCTK_INFO");
-    OCTK_WARNING("OCTK_WARN");
-    OCTK_ERROR("OCTK_ERROR");
-    OCTK_CRITICAL("OCTK_CRITICAL");
-    octk_init_logger(loggerId, OCTK_LOG_LEVEL_TRACE, nullptr, false);
 
     std::cout << "\noctk_logging cxx!" << std::endl;
     OCTK_LOGGING_WARNING(MY_LOGGER(), "OCTK_LOGGING_WARN");

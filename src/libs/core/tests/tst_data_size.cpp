@@ -63,21 +63,21 @@ TEST(DataSizeTest, ComparisonOperators)
 {
     const int64_t kSmall = 450;
     const int64_t kLarge = 451;
-    const DataSize small = DataSize::Bytes(kSmall);
-    const DataSize large = DataSize::Bytes(kLarge);
+    const DataSize smallDataSize = DataSize::Bytes(kSmall);
+    const DataSize largeDataSize = DataSize::Bytes(kLarge);
 
     EXPECT_EQ(DataSize::Zero(), DataSize::Bytes(0));
     EXPECT_EQ(DataSize::Infinity(), DataSize::Infinity());
-    EXPECT_EQ(small, small);
-    EXPECT_LE(small, small);
-    EXPECT_GE(small, small);
-    EXPECT_NE(small, large);
-    EXPECT_LE(small, large);
-    EXPECT_LT(small, large);
-    EXPECT_GE(large, small);
-    EXPECT_GT(large, small);
-    EXPECT_LT(DataSize::Zero(), small);
-    EXPECT_GT(DataSize::Infinity(), large);
+    EXPECT_EQ(smallDataSize, smallDataSize);
+    EXPECT_LE(smallDataSize, smallDataSize);
+    EXPECT_GE(smallDataSize, smallDataSize);
+    EXPECT_NE(smallDataSize, largeDataSize);
+    EXPECT_LE(smallDataSize, largeDataSize);
+    EXPECT_LT(smallDataSize, largeDataSize);
+    EXPECT_GE(largeDataSize, smallDataSize);
+    EXPECT_GT(largeDataSize, smallDataSize);
+    EXPECT_LT(DataSize::Zero(), smallDataSize);
+    EXPECT_GT(DataSize::Infinity(), largeDataSize);
 }
 
 TEST(DataSizeTest, ConvertsToAndFromDouble)

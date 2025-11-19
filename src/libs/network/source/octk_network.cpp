@@ -46,15 +46,3 @@ const char *Network::version()
 }
 
 OCTK_END_NAMESPACE
-
-#include <octk_network.h>
-
-const char *octk_network_version()
-{
-    return octk::Network::version();
-}
-
-void octk_network_init()
-{
-    octk::Network::init();
-}

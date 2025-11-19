@@ -512,6 +512,8 @@ function(octk_add_library name)
     # The public library define is not meant to be used when building the library itself, it's only meant to be used for
     # consumers of the library, thus we can't use octk_internal_extend_target()'s PUBLIC_DEFINES option.
     target_compile_definitions(${target} INTERFACE OCTK_${library_define_infix}_LIB)
+    
+    octk_internal_setup_runtime_library("${target}")
 
     if(NOT arg_EXCEPTIONS AND NOT ${arg_HEADER_LIBRARY})
         octk_internal_set_exceptions_flags("${target}" FALSE)
