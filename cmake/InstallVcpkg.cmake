@@ -26,7 +26,7 @@ function(octk_vcpkg_install_package NAME)
 	octk_parse_all_arguments(arg
 		"octk_vcpkg_install_package"
         "NOT_IMPORT;TOOLS;DYNAMIC"
-		"TARGET;PREFIX;INSTALL_DIR;PACK_NAME"
+		"TARGET;PREFIX;OUTPUT_DIR;PACK_NAME"
 		"COMPONENTS;IMPORTED_TARGETS" ${ARGN})
 
 	if("X${arg_TARGET}" STREQUAL "X")
@@ -177,10 +177,10 @@ function(octk_vcpkg_install_package NAME)
 				set(${arg_PREFIX}_PKGCONFIG_DIR "${${arg_PREFIX}_INSTALL_DIR}/lib")
 			endif()
 			if("X${arg_COMPONENTS}" STREQUAL "X")
-				octk_pkg_check_modules(${NAME} REQUIRED
+				octk_pkgconf_check_modules(${NAME} REQUIRED
 					PATH "${${arg_PREFIX}_PKGCONFIG_DIR}/pkgconfig")
 			else()
-				octk_pkg_check_modules(${NAME} REQUIRED
+				octk_pkgconf_check_modules(${NAME} REQUIRED
 					PATH "${${arg_PREFIX}_PKGCONFIG_DIR}/pkgconfig"
 					IMPORTED_TARGET
 					${arg_COMPONENTS})

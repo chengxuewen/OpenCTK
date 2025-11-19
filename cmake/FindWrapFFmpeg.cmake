@@ -59,7 +59,7 @@ octk_vcpkg_install_package(ffmpeg
 	${OCTKWrapFFmpeg_COMPONENTS})
 
 
-if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND OFF)
+if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND UNIX)
 	set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
 	set(CMAKE_MODULE_PATH "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
 	set(FFMPEG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}")
@@ -77,7 +77,7 @@ else()
 	else()
 		set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/lib")
 	endif()
-	octk_pkg_check_modules(FFmpeg REQUIRED
+	octk_pkgconf_check_modules(FFmpeg REQUIRED
 		PATH "${OCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
 		IMPORTED_TARGET
 		libswresample
@@ -95,3 +95,4 @@ endif()
 find_package(Threads REQUIRED)
 target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE Threads::Threads)
 set(OCTKWrapFFmpeg_FOUND ON)
+

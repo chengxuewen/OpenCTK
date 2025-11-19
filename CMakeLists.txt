@@ -643,7 +643,7 @@ set(OCTK_INTERNAL_ADD_EXECUTABLE_MULTI_ARGS
 # add 3rdparty subdirectory
 #-----------------------------------------------------------------------------------------------------------------------
 include(InstallPython)
-include(InstallPkgConfig)
+include(InstallPkgconf)
 include(InstallRequiredSystemLibraries)
 
 if(OCTK_BUILD_DOCS)

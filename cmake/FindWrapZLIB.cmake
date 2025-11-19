@@ -83,7 +83,7 @@ if(NOT EXISTS "${OCTKWrapZLIB_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OCTK3rdparty::WrapZLIB INTERFACE IMPORTED)
-octk_pkg_check_modules(ZLIB REQUIRED
+octk_pkgconf_check_modules(ZLIB REQUIRED
 	PATH "${OCTKWrapZLIB_INSTALL_DIR}/share/pkgconfig"
 	IMPORTED_TARGET zlib)
 target_link_libraries(OCTK3rdparty::WrapZLIB INTERFACE PkgConfig::ZLIB)
