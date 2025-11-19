@@ -531,7 +531,7 @@ endif()
 # Save the value of the current first project source dir.
 # This will be /path/to/OCTKCore for OCTKCore both in a super-build and a non super-build.
 # This will be /path/to/OCTKCore/tests when building standalone tests.
-set(OCTK_TOP_LEVEL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(OCTK_TOP_LEVEL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "OpenCTK top level source dir" FORCE)
 set(OCTK_INSTALL_COMPONENT_NAME "${OCTK_CMAKE_INSTALL_NAMESPACE}sdk")
 
 

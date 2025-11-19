@@ -33,7 +33,7 @@
 // OCTK_DCHECK_IS_ON. (Test its value, not if it's defined; it'll always be
 // defined, to either a true or a false value.)
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-#   define OCTK_DCHECK_IS_ON 1
+#   define OCTK_DCHECK_IS_ON 0
 #else
 #   define OCTK_DCHECK_IS_ON 0
 #endif

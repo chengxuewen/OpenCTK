@@ -911,7 +911,7 @@ void TaskThread::ClearCurrentTaskQueue()
 
 void TaskThread::AllowInvokesToTaskThread(TaskThread *thread)
 {
-#if (!defined(NDEBUG) || OCTK_DCHECK_IS_ON)
+#if OCTK_DCHECK_IS_ON
     if (!IsCurrent())
     {
         PostTask([thread, this]() { AllowInvokesToTaskThread(thread); });
@@ -925,7 +925,7 @@ void TaskThread::AllowInvokesToTaskThread(TaskThread *thread)
 
 void TaskThread::DisallowAllInvokes()
 {
-#if (!defined(NDEBUG) || OCTK_DCHECK_IS_ON)
+#if OCTK_DCHECK_IS_ON
     if (!IsCurrent())
     {
         PostTask([this]() { DisallowAllInvokes(); });
@@ -954,7 +954,7 @@ uint32_t TaskThread::GetCouldBeBlockingCallCount() const
 // that permits invocation to `target` thread.
 bool TaskThread::IsInvokeToTaskThreadAllowed(TaskThread *target)
 {
-#if (!defined(NDEBUG) || OCTK_DCHECK_IS_ON)
+#if OCTK_DCHECK_IS_ON
     OCTK_DCHECK_RUN_ON(this);
     if (!invoke_policy_enabled_)
     {
