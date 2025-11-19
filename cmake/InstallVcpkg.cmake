@@ -104,12 +104,14 @@ function(octk_vcpkg_install_package NAME)
 				endforeach()
 				set(${arg_PREFIX}_COMPONENTS_CONFIG "${${arg_PREFIX}_COMPONENTS_CONFIG}]")
 			endif()
+			set(${arg_PREFIX}_VCPKG_NAME ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET})
 			execute_process(
-				COMMAND ${Vcpkg_EXECUTABLE} list ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET}
+				COMMAND ${Vcpkg_EXECUTABLE} list ${${arg_PREFIX}_VCPKG_NAME}
 				WORKING_DIRECTORY "${Vcpkg_ROOT_DIR}"
 				OUTPUT_VARIABLE FIND_OUTPUT
 				RESULT_VARIABLE FIND_RESULT)
-			if("X${FIND_OUTPUT}" STREQUAL "X")
+			string(FIND "${FIND_OUTPUT}" "${${arg_PREFIX}_VCPKG_NAME} " FOUND_POSITION)
+			if(FOUND_POSITION EQUAL -1)
 				message(STATUS "${${arg_PREFIX}_NAME} not installed, start install...")
 				set(${arg_PREFIX}_VCPKG_CONFIGS ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET})
 				message(STATUS "${${arg_PREFIX}_NAME} vcpkg install configs: ${${arg_PREFIX}_VCPKG_CONFIGS}")

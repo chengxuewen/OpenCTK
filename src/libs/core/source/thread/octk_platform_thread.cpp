@@ -32,7 +32,9 @@
 #   include <unistd.h>
 #   include <sys/types.h>
 #   include <sys/syscall.h>
-#   include <sys/prctl.h> // PR_SET_NAME
+#   if defined(OCTK_OS_LINUX)
+#       include <sys/prctl.h> // PR_SET_NAME
+#   endif
 #endif
 
 OCTK_BEGIN_NAMESPACE

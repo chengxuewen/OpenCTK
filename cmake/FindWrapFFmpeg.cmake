@@ -59,11 +59,10 @@ octk_vcpkg_install_package(ffmpeg
 	${OCTKWrapFFmpeg_COMPONENTS})
 
 
-if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND OFF)
+if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake")
 	set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
 	set(CMAKE_MODULE_PATH "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
-	set(FFMPEG_LIBRARY_DIRS_CACHE "${FFMPEG_LIBRARY_DIRS}")
-	set(FFMPEG_LIBRARY_DIRS "${OCTKWrapFFmpeg_INSTALL_DIR}/${OCTKWrapFFmpeg_VCPKG_TRIPLET}")
+	set(FFMPEG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}")
 	find_package(FFMPEG REQUIRED)
 	foreach(library IN LISTS FFMPEG_LIBRARIES)
 		if(EXISTS "${library}")
@@ -71,7 +70,6 @@ if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND OFF)
 		endif()
 	endforeach()
 	target_include_directories(OCTK3rdparty::WrapFFmpeg INTERFACE ${FFMPEG_INCLUDE_DIRS})
-	set(FFMPEG_LIBRARY_DIRS ${FFMPEG_LIBRARY_DIRS_CACHE})
 	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_CACHE})
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -79,7 +77,6 @@ else()
 	else()
 		set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/lib")
 	endif()
-	message( "OCTKWrapFFmpeg_PKGCONFIG_DIR: ${OCTKWrapFFmpeg_PKGCONFIG_DIR}")
 	octk_pkg_check_modules(FFmpeg REQUIRED
 		PATH "${OCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
 		IMPORTED_TARGET

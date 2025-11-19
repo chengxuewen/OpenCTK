@@ -241,9 +241,6 @@ if(OCTK_FEATURE_USE_FFMPEG)
 endif()
 if(OCTK_FEATURE_USE_ZLMEDIAKIT)
 	octk_find_package(WrapZLMediaKit PROVIDED_TARGETS OCTK3rdparty::WrapZLMediaKit)
-#	octk_internal_extend_target(octk_media
-#		LIBRARIES
-#		OCTK3rdparty::WrapZLMediaKit)
 endif()
 if(OCTK_FEATURE_USE_LIBSRTP)
 	octk_find_package(WrapZLMediaKit PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)

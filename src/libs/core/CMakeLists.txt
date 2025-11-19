@@ -37,10 +37,11 @@ elseif(UNIX)
 	list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_DL_LIBS})
 endif()
 if(APPLE)
-	find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation REQUIRED)
-	list(APPEND OCTK_LIB_LINK_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK}
-		"-framework Foundation"
-		"-framework CoreFoundation")
+	find_library(OCTK_FWCoreFoundation CoreFoundation REQUIRED)
+	find_library(OCTK_FWFoundation Foundation REQUIRED)
+	list(APPEND OCTK_LIB_LINK_LIBRARIES
+		${OCTK_FWCoreFoundation}
+		${OCTK_FWFoundation})
 endif()
 find_package(Threads REQUIRED)
 list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
