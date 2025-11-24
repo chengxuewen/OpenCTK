@@ -760,6 +760,37 @@ void scaleNV12(const uint8_t *srcBuffer,
                       highestQuality ? libyuv::kFilterBox : libyuv::kFilterBilinear);
 }
 
+void copyI420(const uint8_t* srcDataY,
+                             int srcStrideY,
+                             const uint8_t* srcDataU,
+                             int srcStrideU,
+                             const uint8_t* srcDataV,
+                             int srcStrideV,
+                             uint8_t* dstDataY,
+                             int dstStrideY,
+                             uint8_t* dstDataU,
+                             int dstStrideU,
+                             uint8_t* dstDataV,
+                             int dstStrideV,
+                             int width,
+                             int height)
+{
+    libyuv::I420Copy(srcDataY,
+                     srcStrideY,
+                     srcDataU,
+                     srcStrideU,
+                     srcDataV,
+                     srcStrideV,
+                     dstDataY,
+                     dstStrideY,
+                     dstDataU,
+                     dstStrideU,
+                     dstDataV,
+                     dstStrideV,
+                     width,
+                     height);
+}
+
 void copyCenterInI420(const uint8_t *srcBuffer,
                       int srcWidth,
                       int srcHeight,

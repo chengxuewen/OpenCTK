@@ -176,6 +176,21 @@ OCTK_MEDIA_API void scaleNV12(const uint8_t *bufferIn,
                               int dstHeight,
                               bool highestQuality = true);
 
+OCTK_MEDIA_API void copyI420(const uint8_t* srcDataY,
+                             int srcStrideY,
+                             const uint8_t* srcDataU,
+                             int srcStrideU,
+                             const uint8_t* srcDataV,
+                             int srcStrideV,
+                             uint8_t* dstDataY,
+                             int dstStrideY,
+                             uint8_t* dstDataU,
+                             int dstStrideU,
+                             uint8_t* dstDataV,
+                             int dstStrideV,
+                             int width,
+                             int height);
+
 OCTK_MEDIA_API void copyCenterInI420(const uint8_t *srcBuffer,
                                      int srcWidth,
                                      int srcHeight,

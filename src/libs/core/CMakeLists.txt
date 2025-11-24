@@ -55,6 +55,7 @@ octk_find_package(WrapOptional PROVIDED_TARGETS OCTK3rdparty::WrapOptional)
 octk_find_package(WrapFilesystem PROVIDED_TARGETS OCTK3rdparty::WrapFilesystem)
 octk_find_package(WrapStringViewLite PROVIDED_TARGETS OCTK3rdparty::WrapStringViewLite)
 
+octk_find_package(WrapFunction2 PROVIDED_TARGETS OCTK3rdparty::WrapFunction2)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
@@ -195,17 +196,18 @@ octk_add_library(core
 	source/octk_pch.hpp
 	EXTERNAL_HEADERS_DIRS
 	${OCTKWrapJson_INSTALL_DIR}/include
-	${OCTKWrapAbseil_INSTALL_DIR}/include
+#	${OCTKWrapAbseil_INSTALL_DIR}/include
 	${OCTKWrapVariant_INSTALL_DIR}/include
 	${OCTKWrapOptional_INSTALL_DIR}/include
 	${OCTKWrapExpected_INSTALL_DIR}/include
 	${OCTKWrapFilesystem_INSTALL_DIR}/include
 	${OCTKWrapStringviewLite_INSTALL_DIR}/include
 	LIBRARIES
-	OCTK3rdparty::WrapSpdlog
+    OCTK3rdparty::WrapSpdlog
 	PUBLIC_LIBRARIES
-	OCTK3rdparty::WrapJson
-	OCTK3rdparty::WrapAbseil
+    OCTK3rdparty::WrapJson
+#    OCTK3rdparty::WrapAbseil
+OCTK3rdparty::WrapFunction2
 	OCTK3rdparty::WrapVariant
 	OCTK3rdparty::WrapExpected
 	OCTK3rdparty::WrapOptional

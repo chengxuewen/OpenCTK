@@ -120,7 +120,7 @@ public:
     // https://w3c.github.io/webrtc-pc/#dom-rtcrtptransceiver-direction
     // TODO(hta): Deprecate SetDirection without error and rename
     // SetDirectionWithError to SetDirection, remove default implementations.
-    ABSL_DEPRECATED("Use SetDirectionWithError instead")
+//    ABSL_DEPRECATED("Use SetDirectionWithError instead")
     virtual void SetDirection(RtpTransceiverDirection new_direction);
     virtual RTCError SetDirectionWithError(RtpTransceiverDirection new_direction);
 
@@ -149,7 +149,8 @@ public:
     // This is an internal function, and is exposed for historical reasons.
     // https://w3c.github.io/webrtc-pc/#dfn-stop-the-rtcrtptransceiver
     virtual void StopInternal();
-    ABSL_DEPRECATED("Use StopStandard instead") virtual void Stop();
+//    ABSL_DEPRECATED("Use StopStandard instead")
+    virtual void Stop();
 
     // The SetCodecPreferences method overrides the default codec preferences used
     // by WebRTC for this transceiver.
