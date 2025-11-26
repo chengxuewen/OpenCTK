@@ -691,6 +691,37 @@ void NV12ToI420Scaler::NV12ToI420Scale(const uint8_t *src_y,
 
 namespace yuv
 {
+namespace detail
+{
+libyuv::FourCC imageFormatToFourCC(ImageFormat imageFormat)
+{
+    switch (imageFormat)
+    {
+        case ImageFormat::kI420: return libyuv::FOURCC_I420;
+        case ImageFormat::kI422: return libyuv::FOURCC_I422;
+        case ImageFormat::kI444: return libyuv::FOURCC_I444;
+        case ImageFormat::kI400: return libyuv::FOURCC_I400;
+        case ImageFormat::kNV21: return libyuv::FOURCC_NV21;
+        case ImageFormat::kNV12: return libyuv::FOURCC_NV12;
+        case ImageFormat::kYUY2: return libyuv::FOURCC_YUY2;
+        case ImageFormat::kUYVY: return libyuv::FOURCC_UYVY;
+        case ImageFormat::kI010: return libyuv::FOURCC_I010;
+        case ImageFormat::kI210: return libyuv::FOURCC_I210;
+
+        case ImageFormat::kARGB: return libyuv::FOURCC_ARGB;
+        case ImageFormat::kBGRA: return libyuv::FOURCC_BGRA;
+        case ImageFormat::kABGR: return libyuv::FOURCC_ABGR;
+        case ImageFormat::kRGBA: return libyuv::FOURCC_RGBA;
+
+        case ImageFormat::kRAW: return libyuv::FOURCC_RAW;
+        case ImageFormat::kMJPG: return libyuv::FOURCC_MJPG;
+        default: break;
+    }
+    OCTK_CHECK_NOTREACHED();
+    return libyuv::FOURCC_ANY;
+}
+}
+
 void scaleI420(const uint8_t *srcBuffer,
                int srcWidth,
                int srcHeight,
@@ -760,20 +791,20 @@ void scaleNV12(const uint8_t *srcBuffer,
                       highestQuality ? libyuv::kFilterBox : libyuv::kFilterBilinear);
 }
 
-void copyI420(const uint8_t* srcDataY,
-                             int srcStrideY,
-                             const uint8_t* srcDataU,
-                             int srcStrideU,
-                             const uint8_t* srcDataV,
-                             int srcStrideV,
-                             uint8_t* dstDataY,
-                             int dstStrideY,
-                             uint8_t* dstDataU,
-                             int dstStrideU,
-                             uint8_t* dstDataV,
-                             int dstStrideV,
-                             int width,
-                             int height)
+void copyI420(const uint8_t *srcDataY,
+              int srcStrideY,
+              const uint8_t *srcDataU,
+              int srcStrideU,
+              const uint8_t *srcDataV,
+              int srcStrideV,
+              uint8_t *dstDataY,
+              int dstStrideY,
+              uint8_t *dstDataU,
+              int dstStrideU,
+              uint8_t *dstDataV,
+              int dstStrideV,
+              int width,
+              int height)
 {
     libyuv::I420Copy(srcDataY,
                      srcStrideY,
@@ -891,6 +922,41 @@ void copyCenterInARGB(const uint8_t *srcBuffer,
                      OCTK_ARGB_STRIDE(dstWidth),
                      fixWidth,
                      fixHeight);
+}
+
+bool convertToI420(const uint8_t *sample,
+                   size_t sampleSize,
+                   uint8_t *dstY,
+                   int dstStrideY,
+                   uint8_t *dstU,
+                   int dstStrideU,
+                   uint8_t *dstV,
+                   int dstStrideV,
+                   int cropX,
+                   int cropY,
+                   int srcWidth,
+                   int srcHeight,
+                   int cropWidth,
+                   int cropHeight,
+                   RotationMode rotation,
+                   ImageFormat stcFormat)
+{
+    return 0 == libyuv::ConvertToI420(sample,
+                                      sampleSize,
+                                      dstY,
+                                      dstStrideY,
+                                      dstU,
+                                      dstStrideU,
+                                      dstV,
+                                      dstStrideV,
+                                      cropX,
+                                      cropY,
+                                      srcWidth,
+                                      srcHeight,
+                                      cropWidth,
+                                      cropHeight,
+                                      static_cast<libyuv::RotationMode>(rotation),
+                                      detail::imageFormatToFourCC(stcFormat));
 }
 
 void convertI420ToARGB(const uint8_t *srcBuffer,

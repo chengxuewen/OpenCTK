@@ -152,6 +152,36 @@ int ConvertVideoType(VideoType video_type);
 
 namespace yuv
 {
+enum class RotationMode
+{
+    kRotate0 = 0,     // No rotation.
+    kRotate90 = 90,   // Rotate 90 degrees clockwise.
+    kRotate180 = 180, // Rotate 180 degrees.
+    kRotate270 = 270, // Rotate 270 degrees clockwise.
+};
+
+enum class ImageFormat
+{
+    kI420 = 0,
+    kI422 = 1,
+    kI444 = 2,
+    kI400 = 3,
+    kNV21 = 4,
+    kNV12 = 5,
+    kYUY2 = 6,
+    kUYVY = 7,
+    kI010 = 8,
+    kI210 = 9,
+
+    kARGB = 10,
+    kBGRA = 11,
+    kABGR = 12,
+    kRGBA = 13,
+
+    kRAW = 14,
+    kMJPG = 15,
+};
+
 OCTK_MEDIA_API void scaleI420(const uint8_t *srcBuffer,
                               int srcWidth,
                               int srcHeight,
@@ -176,17 +206,17 @@ OCTK_MEDIA_API void scaleNV12(const uint8_t *bufferIn,
                               int dstHeight,
                               bool highestQuality = true);
 
-OCTK_MEDIA_API void copyI420(const uint8_t* srcDataY,
+OCTK_MEDIA_API void copyI420(const uint8_t *srcDataY,
                              int srcStrideY,
-                             const uint8_t* srcDataU,
+                             const uint8_t *srcDataU,
                              int srcStrideU,
-                             const uint8_t* srcDataV,
+                             const uint8_t *srcDataV,
                              int srcStrideV,
-                             uint8_t* dstDataY,
+                             uint8_t *dstDataY,
                              int dstStrideY,
-                             uint8_t* dstDataU,
+                             uint8_t *dstDataU,
                              int dstStrideU,
-                             uint8_t* dstDataV,
+                             uint8_t *dstDataV,
                              int dstStrideV,
                              int width,
                              int height);
@@ -211,6 +241,23 @@ OCTK_MEDIA_API void copyCenterInARGB(const uint8_t *srcBuffer,
                                      uint8_t *dstBuffer,
                                      int dstWidth,
                                      int dstHeight);
+
+OCTK_MEDIA_API bool convertToI420(const uint8_t *sample,
+                                  size_t sampleSize,
+                                  uint8_t *dstY,
+                                  int dstStrideY,
+                                  uint8_t *dstU,
+                                  int dstStrideU,
+                                  uint8_t *dstV,
+                                  int dstStrideV,
+                                  int cropX,
+                                  int cropY,
+                                  int srcWidth,
+                                  int srcHeight,
+                                  int cropWidth,
+                                  int cropHeight,
+                                  RotationMode rotation,
+                                  ImageFormat stcFormat);
 
 OCTK_MEDIA_API void convertI420ToARGB(const uint8_t *srcBuffer,
                                       uint8_t *dstBuffer,
