@@ -28,10 +28,10 @@
 
 #include <octk_memory.hpp>
 
+#include <atomic>
 #include <mutex>
 
 OCTK_BEGIN_NAMESPACE
-
 template <typename T> struct SingletonScopedPointerDeleter
 {
     constexpr SingletonScopedPointerDeleter() noexcept = default;
@@ -53,12 +53,14 @@ public:
 
     static T *instance()
     {
+        OCTK_ASSERT(mAvailabled.load());
         std::call_once(mOnceFlag, create);
         return mInstance;
     }
 
     template <InitFunc func = nullptr> static T *instance()
     {
+        OCTK_ASSERT(mAvailabled.load());
         std::call_once(mOnceFlag,
                        []()
                        {
@@ -86,6 +88,7 @@ protected:
 
     T *detachScoped()
     {
+        mAvailabled.store(false);
         mScoped.release();
         return mInstance;
     }
@@ -100,12 +103,14 @@ private:
 
     static T *mInstance;
     static std::once_flag mOnceFlag;
+    static std::atomic<bool> mAvailabled;
     static std::unique_ptr<T, Deleter> mScoped;
     OCTK_DISABLE_COPY_MOVE(Singleton)
 };
 
 template <typename T> T *Singleton<T>::mInstance = nullptr;
 template <typename T> std::once_flag Singleton<T>::mOnceFlag;
+template <typename T> std::atomic<bool> Singleton<T>::mAvailabled = true;
 template <typename T> std::unique_ptr<T, SingletonScopedPointerDeleter<T>> Singleton<T>::mScoped(nullptr);
 
 OCTK_END_NAMESPACE
