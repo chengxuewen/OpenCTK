@@ -35,6 +35,8 @@ template <typename E> using Unexpected = tl::unexpected<E>;
 
 template <typename T, typename E> using Expected = tl::expected<T, E>;
 
+template <typename T> using ExpectedS = tl::expected<T, std::string>;
+
 namespace utils
 {
 using tl::make_unexpected;

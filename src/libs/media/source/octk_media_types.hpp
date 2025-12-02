@@ -33,10 +33,10 @@ OCTK_BEGIN_NAMESPACE
 
 enum class MediaType
 {
-    Any,
-    Data,
     Audio,
-    Video
+    Video,
+    Data,
+    Nil,
 };
 
 namespace utils

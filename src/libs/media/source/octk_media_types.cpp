@@ -28,20 +28,17 @@
 OCTK_BEGIN_NAMESPACE
 namespace utils
 {
-const char kMediaTypeVideo[] = "video";
 const char kMediaTypeAudio[] = "audio";
+const char kMediaTypeVideo[] = "video";
 const char kMediaTypeData[] = "data";
 
 std::string mediaTypeToString(MediaType type)
 {
     switch (type)
     {
-        case MediaType::Audio:
-            return kMediaTypeAudio;
-        case MediaType::Video:
-            return kMediaTypeVideo;
-        case MediaType::Data:
-            return kMediaTypeData;
+        case MediaType::Audio: return kMediaTypeAudio;
+        case MediaType::Video: return kMediaTypeVideo;
+        case MediaType::Data: return kMediaTypeData;
         default:
             // Unsupported media stores the m=<mediatype> differently.
             OCTK_DCHECK_NOTREACHED();
