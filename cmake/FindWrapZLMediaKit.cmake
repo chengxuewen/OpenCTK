@@ -68,8 +68,11 @@ if(NOT EXISTS "${OCTKWrapZLMediaKit_STAMP_FILE_PATH}")
 	endif()
 	if(NOT EXISTS ${OCTKWrapZLMediaKit_SOURCE_DIR})
 		message(FATAL_ERROR "${OCTKWrapZLMediaKit_DIR_NAME} FetchContent failed.")
-	endif()
-
+    endif()
+    if(UNIX)
+        set(OCTKWrapZLMediaKit_CMAKE_DL_LIBS ${CMAKE_DL_LIBS})
+    endif()
+    message(OCTKWrapZLMediaKit_CMAKE_DL_LIBS=${OCTKWrapZLMediaKit_CMAKE_DL_LIBS})
     octk_reset_dir(${OCTKWrapZLMediaKit_BUILD_DIR})
     message(STATUS "Configure ${OCTKWrapZLMediaKit_DIR_NAME} lib...")
     execute_process(
