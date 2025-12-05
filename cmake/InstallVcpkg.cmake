@@ -23,12 +23,10 @@
 
 
 function(octk_vcpkg_install)
-    # We can't create the same interface imported target multiple times, CMake will complain if we do
-    # that. This can happen if the find_package call is done in multiple different subdirectories.
-    if(TARGET OCTK3rdparty::Vcpkg)
-        set(OCTKVcpkg_FOUND ON)
-        return()
-    endif()
+	if(EXISTS "${OCTKVcpkg_EXECUTABLE}" AND EXISTS "${OCTKVcpkgTools_EXECUTABLE}")
+		set(OCTKVcpkg_FOUND ON)
+		return()
+	endif()
 
     set(OCTKVcpkg_NAME "vcpkg")
     set(OCTKVcpkg_ROOT_DIR "${OCTK_TOP_LEVEL_SOURCE_DIR}/vcpkg" CACHE INTERNAL "" FORCE)
@@ -140,7 +138,8 @@ function(octk_vcpkg_install_package NAME)
     set(${arg_PREFIX}_PACKAGE_NAME "${arg_PACK_NAME}-${${arg_PREFIX}_VCPKG_TRIPLET}.7z"  CACHE INTERNAL "" FORCE)
     set(${arg_PREFIX}_PACKAGE_PATH "${OCTK_3RDPARTY_PACKAGES_DIR}/${${arg_PREFIX}_PACKAGE_NAME}"  CACHE INTERNAL "" FORCE)
     set(${arg_PREFIX}_INSTALL_DIR "${${arg_PREFIX}_ROOT_DIR}/installed/${${arg_PREFIX}_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
-    if(NOT EXISTS "${${arg_PREFIX}_INSTALL_DIR}")
+	set(${arg_PREFIX}_VCPKG_TOOLCHAIN_FILE "${${arg_PREFIX}_ROOT_DIR}/scripts/buildsystems/vcpkg.cmake" CACHE INTERNAL "" FORCE)
+    if(NOT EXISTS "${${arg_PREFIX}_INSTALL_DIR}/include")
         if(EXISTS "${${arg_PREFIX}_PACKAGE_PATH}")
             message(STATUS "${${arg_PREFIX}_PACKAGE_NAME} exist, start unpack...")
             if(NOT EXISTS "${arg_OUTPUT_DIR}")
