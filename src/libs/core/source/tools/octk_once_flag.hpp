@@ -63,6 +63,8 @@ public:
     void leave() { mState.exchange(State::Done); }
 
     bool isDone() const { return State::Done == mState.load(); }
+    bool isInprocess() const { return State::Inprocess == mState.load(); }
+    bool isNeverCalled() const { return State::NeverCalled == mState.load(); }
 
     static OnceFlag *localOnceFlag();
 

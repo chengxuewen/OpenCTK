@@ -109,7 +109,7 @@ octk_add_test(octk_media_tst_frame_generator_capturer
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-Disable unit testing for octk_media_tst_rtc_comtext.#octk_add_test(octk_media_tst_rtc_context
+#octk_add_test(octk_media_tst_rtc_context
 #	SOURCES
 #	tst_rtc_context.cpp
 #	INCLUDE_DIRECTORIES
