@@ -58,7 +58,7 @@ public:
     std::shared_ptr<spdlog::logger> mLogger;
     std::atomic_bool mLevelEnabled[LogLevelNum];
     std::atomic_bool mMessageHandleUniqueOwnership;
-    std::atomic<MessageHandlerWraper *> mMessageHandlerWraper;
+    std::atomic<MessageHandlerWraper *> mMessageHandlerWraper{nullptr};
 
 protected:
     OCTK_DEFINE_PPTR(Logger)
