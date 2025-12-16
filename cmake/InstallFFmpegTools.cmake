@@ -24,7 +24,7 @@
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
 if(TARGET OCTK3rdparty::FFmpeg)
-	set(OCTKFFmpegTools_FOUND ON)
+    set(OCTKWrapFFmpegTools_FOUND ON)
 	return()
 endif()
 
@@ -42,17 +42,18 @@ octk_vcpkg_install_package(ffmpeg
 
 if(NOT EXISTS "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ffmpeg")
 	execute_process(
-		COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKFFmpegTools_INSTALL_DIR}/tools/ffmpeg"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg"
 		"${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ffmpeg"
-		WORKING_DIRECTORY "${OCTKFFmpegTools_ROOT_DIR}"
+        WORKING_DIRECTORY "${OCTKWrapFFmpegTools_ROOT_DIR}"
 		ERROR_QUIET)
 endif()
-set(OCTKFFprobe_EXECUTABLE "${OCTKFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffprobe${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
-set(OCTKFFmpeg_EXECUTABLE "${OCTKFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffmpeg${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
-set(OCTKFFplay_EXECUTABLE "${OCTKFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffplay${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
+
+set(OCTKFFprobe_EXECUTABLE "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffprobe${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
+set(OCTKFFmpeg_EXECUTABLE "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffmpeg${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
+set(OCTKFFplay_EXECUTABLE "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffplay${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
 octk_install(
-	DIRECTORY "${OCTKFFmpegTools_INSTALL_DIR}/tools/ffmpeg/"
+    DIRECTORY "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/"
 	DESTINATION "${OCTK_DEFAULT_LIBEXEC}/ffmpeg"
 	PATTERN "ff*${MSRTC_EXECUTABLE_SUFFIX}"
 	PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-set(OCTKFFmpegTools_FOUND ON)
+set(OCTKWrapFFmpegTools_FOUND ON)

@@ -57,10 +57,10 @@ if(OCTK_FEATURE_USE_BOOST_BACKEND)
 		OCTK3rdparty::WrapBoostBeast)
 else()
 	octk_find_package(WrapLibcurl PROVIDED_TARGETS OCTK3rdparty::WrapLibcurl)
-	octk_internal_extend_target(octk_network
-		SOURCES
-		LIBRARIES
-		OCTK3rdparty::WrapLibcurl)
+#	octk_internal_extend_target(octk_network
+#		SOURCES
+#		LIBRARIES
+#		OCTK3rdparty::WrapLibcurl)
 endif()
 if(OCTK_FEATURE_USE_LIBCPR)
 	octk_find_package(WrapLibcpr PROVIDED_TARGETS OCTK3rdparty::WrapLibcpr)

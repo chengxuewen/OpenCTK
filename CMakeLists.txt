@@ -374,69 +374,24 @@ octk_configure_process_path(OCTK_INSTALL_SYSCONFDIR
 octk_configure_process_path(OCTK_INSTALL_DESCRIPTIONSDIR
 	"${OCTK_INSTALL_DATADIR}/modules" "Module description files directory")
 
-if(NOT "${CMAKE_STAGING_PREFIX}" STREQUAL "")
-	set(OCTK_STAGING_PREFIX "${CMAKE_STAGING_PREFIX}")
-else()
-	set(OCTK_STAGING_PREFIX "${CMAKE_INSTALL_PREFIX}")
+# set INSTALL_DIR and BUILD_DIR
+if(NOT "${OCTK_INSTALL_PREFIX}" STREQUAL "")
+    if(NOT "${CMAKE_STAGING_PREFIX}" STREQUAL "")
+        set(OCTK_INSTALL_PREFIX "${CMAKE_STAGING_PREFIX}")
+    else()
+        set(OCTK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    endif()
 endif()
+set(OCTK_INSTALL_DIR "${OCTK_INSTALL_PREFIX}")
+set(OCTK_BUILD_DIR "${CMAKE_BINARY_DIR}")
 
-function(octk_internal_set_up_global_paths)
-	# Compute the values of OCTK_BUILD_DIR, OCTK_INSTALL_DIR, OCTK_CONFIG_BUILD_DIR, OCTK_CONFIG_INSTALL_DIR
-	# taking into account whether the current build is a prefix build or a non-prefix build,
-	# and whether it is a superbuild or non-superbuild.
-	# A third case is when another module or standalone tests are built against a super-built OpenCTK.
-	# The layout for the third case is the same as for non-superbuilds.
-	#
-	# These values should be prepended to file paths in commands or properties,
-	# in order to correctly place generated Config files, generated Targets files,
-	# executables / libraries, when copying / installing files, etc.
-	#
-	# The build dir variables will always be absolute paths.
-	# The OCTK_INSTALL_DIR variable will have a relative path in a prefix build,
-	# which means that it can be empty, so use octk_join_path to prevent accidental absolute paths.
-	if(OCTK_SUPERBUILD)
-		# In this case, we always copy all the build products in OCTK_BUILD_DIR/{bin,lib,...}
-		if(OCTK_BUILD_INSTALL)
-			set(OCTK_BUILD_DIR "${OCTK_BINARY_DIR}")
-			set(OCTK_INSTALL_DIR "")
-		else()
-			if("${CMAKE_STAGING_PREFIX}" STREQUAL "")
-				set(OCTK_BUILD_DIR "${OCTK_BINARY_DIR}")
-				set(OCTK_INSTALL_DIR "${OCTK_BINARY_DIR}")
-			else()
-				set(OCTK_BUILD_DIR "${CMAKE_STAGING_PREFIX}")
-				set(OCTK_INSTALL_DIR "${CMAKE_STAGING_PREFIX}")
-			endif()
-		endif()
-	else()
-		if(OCTK_BUILD_INSTALL)
-			# In the usual prefix build case, the build dir is the current module build dir,
-			# and the install dir is the prefix, so we don't set it.
-			set(OCTK_BUILD_DIR "${CMAKE_BINARY_DIR}")
-			set(OCTK_INSTALL_DIR "")
-		else()
-			# When doing a non-prefix build, both the build dir and install dir are the same, pointing to the
-			# OpenCTK build dir.
-			set(OCTK_BUILD_DIR "${OCTK_STAGING_PREFIX}")
-			set(OCTK_INSTALL_DIR "${OCTK_BUILD_DIR}")
-		endif()
-	endif()
-
-	set(__config_path_part "${OCTK_INSTALL_LIBDIR}/cmake")
-	set(OCTK_CONFIG_BUILD_DIR "${OCTK_BUILD_DIR}/${__config_path_part}")
-	set(OCTK_CONFIG_INSTALL_DIR "${OCTK_INSTALL_DIR}")
-	if(OCTK_CONFIG_INSTALL_DIR)
-		string(APPEND OCTK_CONFIG_INSTALL_DIR "/")
-	endif()
-	string(APPEND OCTK_CONFIG_INSTALL_DIR ${__config_path_part})
-
-	set(OCTK_BUILD_DIR "${OCTK_BUILD_DIR}" PARENT_SCOPE)
-	set(OCTK_INSTALL_DIR "${OCTK_INSTALL_DIR}" PARENT_SCOPE)
-	set(OCTK_CONFIG_BUILD_DIR "${OCTK_CONFIG_BUILD_DIR}" PARENT_SCOPE)
-	set(OCTK_CONFIG_INSTALL_DIR "${OCTK_CONFIG_INSTALL_DIR}" PARENT_SCOPE)
-	message(STATUS "OCTK_BUILD_DIR was set to: '${OCTK_BUILD_DIR}'")
-endfunction()
-octk_internal_set_up_global_paths()
+# set CONFIG_INSTALL_DIR and CONFIG_BUILD_DIR
+set(OCTK_CONFIG_BUILD_DIR "${OCTK_BUILD_DIR}/${OCTK_INSTALL_LIBDIR}/cmake")
+set(OCTK_CONFIG_INSTALL_DIR "${OCTK_INSTALL_DIR}")
+if(OCTK_CONFIG_INSTALL_DIR)
+    string(APPEND OCTK_CONFIG_INSTALL_DIR "/")
+endif()
+string(APPEND OCTK_CONFIG_INSTALL_DIR "${OCTK_INSTALL_LIBDIR}/cmake")
 
 # the default RPATH to be used when installing, but only if it's not a system directory
 list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${OCTK_INSTALL_LIBDIR}" isSystemDir)
