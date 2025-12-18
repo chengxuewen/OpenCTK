@@ -1,1 +1,1 @@
-#include "../source/tools/octk_function_view.hpp"
+#include "../source/functional/octk_function_view.hpp"

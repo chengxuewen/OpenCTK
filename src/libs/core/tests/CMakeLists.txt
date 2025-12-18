@@ -165,6 +165,14 @@ octk_add_test(octk_core_tst_frequency
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_function_view
+	SOURCES
+	tst_function_view.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_inlined_vector
 	SOURCES
 	${OCTKWrapAbseil_SOURCE_DIR}/absl/container/internal/test_instance_tracker.cc
@@ -370,6 +378,14 @@ octk_add_test(octk_core_tst_time_delta
 octk_add_test(octk_core_tst_timestamp
 	SOURCES
 	tst_timestamp.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_unique_function
+	SOURCES
+	tst_unique_function.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
 	${OCTK_TEST_LINK_LIBRARIES}

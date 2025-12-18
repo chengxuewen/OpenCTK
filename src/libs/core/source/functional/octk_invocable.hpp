@@ -25,20 +25,12 @@
 #ifndef _OCTK_INVOCABLE_HPP
 #define _OCTK_INVOCABLE_HPP
 
-#include <octk_global.hpp>
-
-//#include <absl/functional/any_invocable.h>
-#include <function2/function2.hpp>
+#include <octk_unique_function.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-#if 0
 template <typename T>
-using Invocable = absl::AnyInvocable<T>;
-#else
-template <typename T>
-using Invocable = fu2::unique_function<T>;
-#endif
+using Invocable = UniqueFunction<T>;
 
 OCTK_END_NAMESPACE
 

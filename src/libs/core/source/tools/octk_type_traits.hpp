@@ -10,51 +10,75 @@
 
 OCTK_BEGIN_NAMESPACE
 
+namespace type_traits
+{
+/***********************************************************************************************************************
+ * like cxx17 std::void_t
+ *
+ * Ignores the type of any its arguments and returns `void`.
+ * In general, this metafunction allows you to create a general case that maps to `void` while allowing
+ * specializations that map to specific types.
+ *
+ * NOTE: `octk::type_traits::void_t` does not use the standard-specified implementation so that it can remain
+ * compatible with gcc < 5.1.
+ * This can introduce slightly different behavior, such as when ordering partial specializations.
+***********************************************************************************************************************/
+namespace detail
+{
+template <typename... Ts> struct Void
+{
+    using type = void;
+};
+} // namespace detail
+template <typename... Ts> using void_t = typename detail::Void<Ts...>::type;
+
+
+} // namespace type_traits
+template <typename... Ts> using VoidType = type_traits::void_t<Ts...>; //TODO::DEL
+
 /***********************************************************************************************************************
   * like cxx17 std::conjunction
 ***********************************************************************************************************************/
-template <typename...>
-struct Conjunction : std::true_type {};
-template <typename Arg>
-struct Conjunction<Arg> : Arg {};
+template <typename...> struct Conjunction : std::true_type
+{
+};
+template <typename Arg> struct Conjunction<Arg> : Arg
+{
+};
 template <typename Arg, typename... Args>
-struct Conjunction<Arg, Args...> : std::conditional<!bool(Arg::value), Arg, Conjunction<Args...>>::type {};
+struct Conjunction<Arg, Args...> : std::conditional<!bool(Arg::value), Arg, Conjunction<Args...>>::type
+{
+};
 
 
 /***********************************************************************************************************************
   * like cxx17 std::invoke_result
 ***********************************************************************************************************************/
 #if OCTK_CC_CPP17_OR_GREATER
-template <typename F, typename... Args>
-using InvokeResult = std::invoke_result<F, Args...>;
+template <typename F, typename... Args> using InvokeResult = std::invoke_result<F, Args...>;
 #else
 namespace detail
 {
-template <typename F, typename... Args>
-struct InvokeResultImpl { using type = typename std::result_of<F(Args...)>::type; };
-template <typename F, typename... Args>
-using InvokeResultType = typename InvokeResultImpl<F, Args...>::type;
+template <typename F, typename... Args> struct InvokeResultImpl
+{
+    using type = typename std::result_of<F(Args...)>::type;
+};
+template <typename F, typename... Args> using InvokeResultType = typename InvokeResultImpl<F, Args...>::type;
 } // namespace detail
-template <typename F, typename... Args>
-struct InvokeResult { using type = detail::InvokeResultType<F, Args...>; };
+template <typename F, typename... Args> struct InvokeResult
+{
+    using type = detail::InvokeResultType<F, Args...>;
+};
 #endif
 
 /***********************************************************************************************************************
   * like cxx17 std::conjunction
 ***********************************************************************************************************************/
 template <typename F>
-struct ReturnsVoid : std::conditional<std::is_same<typename InvokeResult<F>::type, void>::value, std::true_type,
-                                      std::false_type>::type
+struct ReturnsVoid
+    : std::conditional<std::is_same<typename InvokeResult<F>::type, void>::value, std::true_type, std::false_type>::type
 {
 };
-
-/***********************************************************************************************************************
-  * like cxx17 std::void_t
-***********************************************************************************************************************/
-template <typename... Ts>
-struct Void { using type = void; };
-template <typename... Ts>
-using VoidType = typename Void<Ts...>::type;
 
 /***********************************************************************************************************************
   * Determines if the given class has zero-argument .data() and .size() methods
@@ -64,9 +88,9 @@ template <typename DS, typename T> class HasDataAndSize
 {
 private:
     template <typename C,
-        typename std::enable_if<std::is_convertible<decltype(std::declval<C>().data()), T *>::value &&
-                                std::is_convertible<decltype(std::declval<C>().size()), std::size_t>::value>::type
-        * = nullptr>
+              typename std::enable_if<std::is_convertible<decltype(std::declval<C>().data()), T *>::value &&
+                                      std::is_convertible<decltype(std::declval<C>().size()), std::size_t>::value>::type
+                  * = nullptr>
     static int Test(int);
 
     template <typename> static char Test(...);
@@ -123,8 +147,8 @@ private:
     // This overload is used if the type is an enum, and unary plus
     // compiles and turns it into an integral type.
     template <typename X,
-        typename std::enable_if<std::is_enum<X>::value &&
-                                std::is_integral<decltype(+std::declval<X>())>::value>::type * = nullptr>
+              typename std::enable_if<std::is_enum<X>::value &&
+                                      std::is_integral<decltype(+std::declval<X>())>::value>::type * = nullptr>
     static int Test(int);
 
     // Otherwise, this overload is used.

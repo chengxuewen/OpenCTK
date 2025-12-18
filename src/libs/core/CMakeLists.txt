@@ -63,6 +63,9 @@ octk_find_package(WrapFunction2 PROVIDED_TARGETS OCTK3rdparty::WrapFunction2)
 octk_add_library(core
 	EXCEPTIONS
 	SOURCES
+	source/functional/octk_function_view.hpp
+	source/functional/octk_invocable.hpp
+	source/functional/octk_unique_function.hpp
 	source/global/octk_compiler.hpp
 	source/global/octk_global.hpp
 	source/global/octk_macros.hpp
@@ -150,11 +153,9 @@ octk_add_library(core
 	source/tools/octk_fake_clock.hpp
 	source/tools/octk_file_utils.cpp
 	source/tools/octk_file_utils.hpp
-	source/tools/octk_function_view.hpp
 	source/tools/octk_id_registry.cpp
 	source/tools/octk_id_registry.hpp
 	source/tools/octk_inlined_vector.hpp
-	source/tools/octk_invocable.hpp
 	source/tools/octk_iterator.hpp
 	source/tools/octk_limits.hpp
 	source/tools/octk_logging.cpp
@@ -207,7 +208,7 @@ octk_add_library(core
 	PUBLIC_LIBRARIES
     OCTK3rdparty::WrapJson
 #    OCTK3rdparty::WrapAbseil
-OCTK3rdparty::WrapFunction2
+	OCTK3rdparty::WrapFunction2
 	OCTK3rdparty::WrapVariant
 	OCTK3rdparty::WrapExpected
 	OCTK3rdparty::WrapOptional

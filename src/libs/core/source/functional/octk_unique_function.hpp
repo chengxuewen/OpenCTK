@@ -22,28 +22,38 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_ALGORITHM_HPP
-#define _OCTK_ALGORITHM_HPP
+#ifndef _OCTK_UNIQUE_FUNCTION_HPP
+#define _OCTK_UNIQUE_FUNCTION_HPP
 
-#include <octk_global.hpp>
+#include <octk_checks.hpp>
 
-#include <algorithm>
+#include <function2/function2.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-namespace utils
-{
-template <typename T, typename Compare> const T &clamp(const T &value, const T &lo, const T &hi, Compare cmp)
-{
-    return cmp(value, lo) ? lo : cmp(hi, value) ? hi : value;
-}
+/**
+ * @addtogroup core
+ * @{
+ * @addtogroup UniqueFunction
+ * @brief
+ * @{
+ * @details
+ */
 
-template <typename T> const T &clamp(const T &value, const T &lo, const T &hi)
+namespace unique_function
 {
-    return utils::clamp(value, lo, hi, std::less<T>());
-}
-} // namespace utils
+namespace detail
+{
+} // namespace detail
+} // namespace unique_function
+
+template <typename T> using UniqueFunction = fu2::unique_function<T>;
+
+/**
+ * @}
+ * @}
+ */
 
 OCTK_END_NAMESPACE
 
-#endif // _OCTK_ALGORITHM_HPP
+#endif // _OCTK_UNIQUE_FUNCTION_HPP
