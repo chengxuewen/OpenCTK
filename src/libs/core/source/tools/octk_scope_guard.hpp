@@ -36,8 +36,7 @@ OCTK_BEGIN_NAMESPACE
 namespace detail
 {
 
-template <typename Callback>
-class ScopeGuardStorage
+template <typename Callback> class ScopeGuardStorage
 {
 public:
     ScopeGuardStorage() = delete;
@@ -46,13 +45,13 @@ public:
         // Placement-new into a character buffer is used for eager destruction when
         // the cleanup is invoked or cancelled. To ensure this optimizes well, the
         // behavior is implemented locally instead of using an absl::optional.
-        ::new(this->getCallbackBuffer()) Callback(std::move(callback));
+        ::new (this->getCallbackBuffer()) Callback(std::move(callback));
         mCallbackEngaged = true;
     }
     ScopeGuardStorage(ScopeGuardStorage &&other)
     {
         OCTK_HARDENING_ASSERT(other.isCallbackEngaged());
-        ::new(this->getCallbackBuffer()) Callback(std::move(other.getCallback()));
+        ::new (this->getCallbackBuffer()) Callback(std::move(other.getCallback()));
         mCallbackEngaged = true;
         other.destroyCallback();
     }
@@ -75,14 +74,17 @@ private:
     bool mCallbackEngaged;
     alignas(Callback) char mCallbackBuffer[sizeof(Callback)];
 };
-}
+} // namespace detail
 
-template <typename F>
-class [[nodiscard]] ScopeGuard
+template <typename F> class [[nodiscard]] ScopeGuard
 {
     static_assert(ReturnsVoid<F>::value, "Callbacks that return values are not supported.");
+
 public:
-    ScopeGuard(F f) noexcept: mStorage(std::move(f)) {}
+    ScopeGuard(F f) noexcept
+        : mStorage(std::move(f))
+    {
+    }
     ScopeGuard(ScopeGuard &&other) = default;
 
     ~ScopeGuard() noexcept
@@ -112,13 +114,12 @@ private:
 };
 
 #if OCTK_CC_FEATURE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
-template <typename F> ScopeGuard(F(&)()) -> ScopeGuard<F(*)()>;
+template <typename F> ScopeGuard(F (&)()) -> ScopeGuard<F (*)()>;
 #endif
 
 namespace utils
 {
-template <typename F>
-[[nodiscard]] ScopeGuard<F> makeScopeGuard(F f) { return {std::move(f)}; }
+template <typename F> [[nodiscard]] ScopeGuard<F> makeScopeGuard(F f) { return {std::move(f)}; }
 } // namespace utils
 
 OCTK_END_NAMESPACE

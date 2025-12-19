@@ -128,29 +128,29 @@ class OCTK_ATTRIBUTE_LOCKABLE OCTK_CORE_API TaskThread : public TaskQueue
 public:
     static const int kForever = -1;
 
-// Create a new TaskThread and optionally assign it to the passed
-// SocketServer. Subclasses that override Clear should pass false for
-// init_queue and call DoInit() from their constructor to prevent races
-// with the TaskThreadManager using the object while the vtable is still
-// being created.
+    // Create a new TaskThread and optionally assign it to the passed
+    // SocketServer. Subclasses that override Clear should pass false for
+    // init_queue and call DoInit() from their constructor to prevent races
+    // with the TaskThreadManager using the object while the vtable is still
+    // being created.
     explicit TaskThread(SocketServer *ss);
     explicit TaskThread(std::unique_ptr<SocketServer> ss);
 
-// Constructors meant for subclasses; they should call DoInit themselves and
-// pass false for `do_init`, so that DoInit is called only on the fully
-// instantiated class, which avoids a vptr data race.
+    // Constructors meant for subclasses; they should call DoInit themselves and
+    // pass false for `do_init`, so that DoInit is called only on the fully
+    // instantiated class, which avoids a vptr data race.
     TaskThread(SocketServer *ss, bool do_init);
     TaskThread(std::unique_ptr<SocketServer> ss, bool do_init);
 
-// NOTE: ALL SUBCLASSES OF TaskThread MUST CALL Stop() IN THEIR DESTRUCTORS (or
-// guarantee Stop() is explicitly called before the subclass is destroyed).
-// This is required to avoid a data race between the destructor modifying the
-// vtable, and the TaskThread::PreRun calling the virtual method Run().
+    // NOTE: ALL SUBCLASSES OF TaskThread MUST CALL Stop() IN THEIR DESTRUCTORS (or
+    // guarantee Stop() is explicitly called before the subclass is destroyed).
+    // This is required to avoid a data race between the destructor modifying the
+    // vtable, and the TaskThread::PreRun calling the virtual method Run().
 
-// NOTE: SUBCLASSES OF TaskThread THAT OVERRIDE Clear MUST CALL
-// DoDestroy() IN THEIR DESTRUCTORS! This is required to avoid a data race
-// between the destructor modifying the vtable, and the TaskThreadManager
-// calling Clear on the object from a different thread.
+    // NOTE: SUBCLASSES OF TaskThread THAT OVERRIDE Clear MUST CALL
+    // DoDestroy() IN THEIR DESTRUCTORS! This is required to avoid a data race
+    // between the destructor modifying the vtable, and the TaskThreadManager
+    // calling Clear on the object from a different thread.
     ~TaskThread() override;
 
     TaskThread(const TaskThread &) = delete;
@@ -160,10 +160,10 @@ public:
     static std::unique_ptr<TaskThread> Create();
     static TaskThread *Current();
 
-// Used to catch performance regressions. Use this to disallow BlockingCall
-// for a given scope.  If a synchronous call is made while this is in
-// effect, an assert will be triggered.
-// Note that this is a single threaded class.
+    // Used to catch performance regressions. Use this to disallow BlockingCall
+    // for a given scope.  If a synchronous call is made while this is in
+    // effect, an assert will be triggered.
+    // Note that this is a single threaded class.
     class ScopedDisallowBlockingCalls
     {
     public:
@@ -191,10 +191,7 @@ public:
         uint32_t GetCouldBeBlockingCallCount() const;
         uint32_t GetTotalBlockedCallCount() const;
 
-        void set_minimum_call_count_for_callback(uint32_t minimum)
-        {
-            min_blocking_calls_for_callback_ = minimum;
-        }
+        void set_minimum_call_count_for_callback(uint32_t minimum) { min_blocking_calls_for_callback_ = minimum; }
 
     private:
         TaskThread *const thread_;
@@ -214,21 +211,21 @@ public:
 
     SocketServer *socketserver();
 
-// Note: The behavior of TaskThread has changed.  When a thread is stopped,
-// futher Posts and Sends will fail.  However, any pending Sends and *ready*
-// Posts (as opposed to unexpired delayed Posts) will be delivered before
-// Get (or Peek) returns false.  By guaranteeing delivery of those messages,
-// we eliminate the race condition when an MessageHandler and TaskThread
-// may be destroyed independently of each other.
+    // Note: The behavior of TaskThread has changed.  When a thread is stopped,
+    // futher Posts and Sends will fail.  However, any pending Sends and *ready*
+    // Posts (as opposed to unexpired delayed Posts) will be delivered before
+    // Get (or Peek) returns false.  By guaranteeing delivery of those messages,
+    // we eliminate the race condition when an MessageHandler and TaskThread
+    // may be destroyed independently of each other.
     virtual void Quit();
     virtual bool IsQuitting();
     virtual void Restart();
-// Not all message queues actually process messages (such as SignalThread).
-// In those cases, it's important to know, before posting, that it won't be
-// Processed.  Normally, this would be true until IsQuitting() is true.
+    // Not all message queues actually process messages (such as SignalThread).
+    // In those cases, it's important to know, before posting, that it won't be
+    // Processed.  Normally, this would be true until IsQuitting() is true.
     virtual bool IsProcessingMessagesForTesting();
 
-// Amount of time until the next message can be retrieved
+    // Amount of time until the next message can be retrieved
     virtual int GetDelay();
 
     bool empty() const { return size() == 0u; }
@@ -240,72 +237,70 @@ public:
 
     bool IsCurrent() const;
 
-// Sleeps the calling thread for the specified number of milliseconds, during
-// which time no processing is performed. Returns false if sleeping was
-// interrupted by a signal (POSIX only).
+    // Sleeps the calling thread for the specified number of milliseconds, during
+    // which time no processing is performed. Returns false if sleeping was
+    // interrupted by a signal (POSIX only).
     static bool SleepMs(int millis);
 
-// Sets the thread's name, for debugging. Must be called before Start().
-// If `obj` is non-null, its value is appended to `name`.
+    // Sets the thread's name, for debugging. Must be called before Start().
+    // If `obj` is non-null, its value is appended to `name`.
     const std::string &name() const { return name_; }
     bool SetName(StringView name, const void *obj);
 
-// Sets the expected processing time in ms. The thread will write
-// log messages when Dispatch() takes more time than this.
-// Default is 50 ms.
+    // Sets the expected processing time in ms. The thread will write
+    // log messages when Dispatch() takes more time than this.
+    // Default is 50 ms.
     void SetDispatchWarningMs(int deadline);
 
-// Starts the execution of the thread.
+    // Starts the execution of the thread.
     bool Start();
 
-// Tells the thread to stop and waits until it is joined.
-// Never call Stop on the current thread.  Instead use the inherited Quit
-// function which will exit the base TaskThread without terminating the
-// underlying OS thread.
+    // Tells the thread to stop and waits until it is joined.
+    // Never call Stop on the current thread.  Instead use the inherited Quit
+    // function which will exit the base TaskThread without terminating the
+    // underlying OS thread.
     virtual void Stop();
 
-// By default, TaskThread::Run() calls ProcessMessages(kForever).  To do other
-// work, override Run().  To receive and dispatch messages, call
-// ProcessMessages occasionally.
+    // By default, TaskThread::Run() calls ProcessMessages(kForever).  To do other
+    // work, override Run().  To receive and dispatch messages, call
+    // ProcessMessages occasionally.
     virtual void Run();
 
-// Convenience method to invoke a functor on another thread.
-// Blocks the current thread until execution is complete.
-// Ex: thread.BlockingCall([&] { result = MyFunctionReturningBool(); });
-// NOTE: This function can only be called when synchronous calls are allowed.
-// See ScopedDisallowBlockingCalls for details.
-// NOTE: Blocking calls are DISCOURAGED, consider if what you're doing can
-// be achieved with PostTask() and callbacks instead.
-    void BlockingCall(FunctionView<void()> functor,
-                      const SourceLocation &location = SourceLocation::current())
+    // Convenience method to invoke a functor on another thread.
+    // Blocks the current thread until execution is complete.
+    // Ex: thread.BlockingCall([&] { result = MyFunctionReturningBool(); });
+    // NOTE: This function can only be called when synchronous calls are allowed.
+    // See ScopedDisallowBlockingCalls for details.
+    // NOTE: Blocking calls are DISCOURAGED, consider if what you're doing can
+    // be achieved with PostTask() and callbacks instead.
+    void BlockingCall(FunctionView<void()> functor, const SourceLocation &location = SourceLocation::current())
     {
         BlockingCallImpl(std::move(functor), location);
     }
 
     template <typename Functor,
-              typename ReturnT = typename InvokeResult<Functor>::type,
+              typename ReturnT = type_traits::invoke_result_t<Functor>,
               typename = typename std::enable_if<!std::is_void<ReturnT>::value>::type>
-    ReturnT BlockingCall(Functor &&functor,
-                         const SourceLocation &location = SourceLocation::current())
+    ReturnT BlockingCall(Functor &&functor, const SourceLocation &location = SourceLocation::current())
     {
         ReturnT result;
         BlockingCall([&] { result = std::forward<Functor>(functor)(); }, location);
         return result;
     }
 
-// Allows BlockingCall to specified `thread`. TaskThread never will be
-// dereferenced and will be used only for reference-based comparison, so
-// instance can be safely deleted. If NDEBUG is defined and OCTK_DCHECK_IS_ON
-// is undefined do nothing.
+    // Allows BlockingCall to specified `thread`. TaskThread never will be
+    // dereferenced and will be used only for reference-based comparison, so
+    // instance can be safely deleted. If NDEBUG is defined and OCTK_DCHECK_IS_ON
+    // is undefined do nothing.
     void AllowInvokesToTaskThread(TaskThread *thread);
 
-// If NDEBUG is defined and OCTK_DCHECK_IS_ON is undefined do nothing.
+    // If NDEBUG is defined and OCTK_DCHECK_IS_ON is undefined do nothing.
     void DisallowAllInvokes();
-// Returns true if `target` was allowed by AllowInvokesToTaskThread() or if no
-// calls were made to AllowInvokesToTaskThread and DisallowAllInvokes. Otherwise
-// returns false.
-// If NDEBUG is defined and OCTK_DCHECK_IS_ON is undefined always returns
-// true.
+    // Returns true if `target` was allowed by AllowInvokesToTaskThread() or if no
+    // calls were made to AllowInvokesToTaskThread and DisallowAllInvokes. Otherwise
+    // returns false.
+    // If NDEBUG is defined and OCTK_DCHECK_IS_ON is undefined always returns
+    // true.
     bool IsInvokeToTaskThreadAllowed(TaskThread *target);
 
     // From TaskQueue
@@ -316,33 +311,33 @@ public:
     //  2) Stop() is called (returns false)
     bool ProcessMessages(int cms);
 
-// Returns true if this is a thread that we created using the standard
-// constructor, false if it was created by a call to
-// TaskThreadManager::WrapCurrentTaskThread().  The main thread of an application
-// is generally not owned, since the OS representation of the thread
-// obviously exists before we can get to it.
-// You cannot call Start on non-owned threads.
+    // Returns true if this is a thread that we created using the standard
+    // constructor, false if it was created by a call to
+    // TaskThreadManager::WrapCurrentTaskThread().  The main thread of an application
+    // is generally not owned, since the OS representation of the thread
+    // obviously exists before we can get to it.
+    // You cannot call Start on non-owned threads.
     bool IsOwned();
 
-// Expose private method IsRunning() for tests.
-//
-// DANGER: this is a terrible public API.  Most callers that might want to
-// call this likely do not have enough control/knowledge of the TaskThread in
-// question to guarantee that the returned value remains true for the duration
-// of whatever code is conditionally executing because of the return value!
+    // Expose private method IsRunning() for tests.
+    //
+    // DANGER: this is a terrible public API.  Most callers that might want to
+    // call this likely do not have enough control/knowledge of the TaskThread in
+    // question to guarantee that the returned value remains true for the duration
+    // of whatever code is conditionally executing because of the return value!
     bool RunningForTest() { return IsRunning(); }
 
-// These functions are public to avoid injecting test hooks. Don't call them
-// outside of tests.
-// This method should be called when thread is created using non standard
-// method, like derived implementation of TaskThread and it can not be
-// started by calling Start(). This will set started flag to true and
-// owned to false. This must be called from the current thread.
+    // These functions are public to avoid injecting test hooks. Don't call them
+    // outside of tests.
+    // This method should be called when thread is created using non standard
+    // method, like derived implementation of TaskThread and it can not be
+    // started by calling Start(). This will set started flag to true and
+    // owned to false. This must be called from the current thread.
     bool WrapCurrent();
     void UnwrapCurrent();
 
-// Sets the per-thread allow-blocking-calls flag to false; this is
-// irrevocable. Must be called on this thread.
+    // Sets the per-thread allow-blocking-calls flag to false; this is
+    // irrevocable. Must be called on this thread.
     void DisallowBlockingCalls() { SetAllowBlockingCalls(false); }
 
 protected:
@@ -350,8 +345,9 @@ protected:
     {
     public:
         explicit CurrentTaskThreadSetter(TaskThread *thread)
-            : CurrentTaskQueueSetter(thread), manager_(TaskThreadManager::Instance()), previous_(
-            manager_->CurrentTaskThread())
+            : CurrentTaskQueueSetter(thread)
+            , manager_(TaskThreadManager::Instance())
+            , previous_(manager_->CurrentTaskThread())
         {
             manager_->ChangeCurrentTaskThreadForTest(thread);
         }
@@ -362,18 +358,17 @@ protected:
         TaskThread *const previous_;
     };
 
-// DelayedMessage goes into a priority queue, sorted by trigger time. Messages
-// with the same trigger time are processed in num_ (FIFO) order.
+    // DelayedMessage goes into a priority queue, sorted by trigger time. Messages
+    // with the same trigger time are processed in num_ (FIFO) order.
     struct DelayedMessage
     {
         bool operator<(const DelayedMessage &dmsg) const
         {
             return (dmsg.run_time_ms < run_time_ms) ||
-                   ((dmsg.run_time_ms == run_time_ms) &&
-                    (dmsg.message_number < message_number));
+                   ((dmsg.run_time_ms == run_time_ms) && (dmsg.message_number < message_number));
         }
 
-        int64_t delay_ms;  // for debugging
+        int64_t delay_ms; // for debugging
         int64_t run_time_ms;
         // Monotonicaly incrementing number used for ordering of messages
         // targeted to execute at the same time.
@@ -385,33 +380,30 @@ protected:
     };
 
     // TaskQueue implementation.
-    void PostTaskImpl(Task task,
-                      const PostTaskTraits &traits,
-                      const SourceLocation &location) override;
+    void PostTaskImpl(Task task, const PostTaskTraits &traits, const SourceLocation &location) override;
     void PostDelayedTaskImpl(Task task,
                              TimeDelta delay,
                              const PostDelayedTaskTraits &traits,
                              const SourceLocation &location) override;
 
-    virtual void BlockingCallImpl(FunctionView<void()> functor,
-                                  const SourceLocation &location);
+    virtual void BlockingCallImpl(FunctionView<void()> functor, const SourceLocation &location);
 
-// Perform initialization, subclasses must call this from their constructor
-// if false was passed as init_queue to the TaskThread constructor.
+    // Perform initialization, subclasses must call this from their constructor
+    // if false was passed as init_queue to the TaskThread constructor.
     void DoInit();
 
-// Perform cleanup; subclasses must call this from the destructor,
-// and are not expected to actually hold the lock.
+    // Perform cleanup; subclasses must call this from the destructor,
+    // and are not expected to actually hold the lock.
     void DoDestroy() OCTK_ATTRIBUTE_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
     void WakeUpSocketServer();
 
-// Same as WrapCurrent except that it never fails as it does not try to
-// acquire the synchronization access of the thread. The caller should never
-// call Stop() or Join() on this thread.
+    // Same as WrapCurrent except that it never fails as it does not try to
+    // acquire the synchronization access of the thread. The caller should never
+    // call Stop() or Join() on this thread.
     void SafeWrapCurrent();
 
-// Blocks the calling thread until this thread has terminated.
+    // Blocks the calling thread until this thread has terminated.
     void Join();
 
     static void AssertBlockingIsAllowedOnCurrentTaskThread();
@@ -419,17 +411,17 @@ protected:
     friend class ScopedDisallowBlockingCalls;
 
 private:
-    static const int kSlowDispatchLoggingThreshold = 50;  // 50 ms
+    static const int kSlowDispatchLoggingThreshold = 50; // 50 ms
 
-// Get() will process I/O until:
-//  1) A task is available (returns it)
-//  2) cmsWait seconds have elapsed (returns empty task)
-//  3) Stop() is called (returns empty task)
+    // Get() will process I/O until:
+    //  1) A task is available (returns it)
+    //  2) cmsWait seconds have elapsed (returns empty task)
+    //  3) Stop() is called (returns empty task)
     Task Get(int cmsWait);
     void Dispatch(Task task);
 
-// Sets the per-thread allow-blocking-calls flag and returns the previous
-// value. Must be called on this thread.
+    // Sets the per-thread allow-blocking-calls flag and returns the previous
+    // value. Must be called on this thread.
     bool SetAllowBlockingCalls(bool allow);
 
 #if defined(OCTK_OS_WIN)
@@ -438,13 +430,12 @@ private:
     static void *PreRun(void *pv);
 #endif
 
-// TaskThreadManager calls this instead WrapCurrent() because
-// TaskThreadManager::Instance() cannot be used while TaskThreadManager is
-// being created.
-// The method tries to get synchronization rights of the thread on Windows if
-// `need_synchronize_access` is true.
-    bool WrapCurrentWithTaskThreadManager(TaskThreadManager *thread_manager,
-                                          bool need_synchronize_access);
+    // TaskThreadManager calls this instead WrapCurrent() because
+    // TaskThreadManager::Instance() cannot be used while TaskThreadManager is
+    // being created.
+    // The method tries to get synchronization rights of the thread on Windows if
+    // `need_synchronize_access` is true.
+    bool WrapCurrentWithTaskThreadManager(TaskThreadManager *thread_manager, bool need_synchronize_access);
 
     // Return true if the thread is currently running.
     bool IsRunning();
@@ -470,16 +461,16 @@ private:
 
     std::atomic<int> stop_;
 
-// The SocketServer might not be owned by TaskThread.
+    // The SocketServer might not be owned by TaskThread.
     SocketServer *const ss_;
-// Used if SocketServer ownership lies with `this`.
+    // Used if SocketServer ownership lies with `this`.
     std::unique_ptr<SocketServer> own_ss_;
 
     std::string name_;
     std::string mIdString;
 
-// TODO(tommi): Add thread checks for proper use of control methods.
-// Ideally we should be able to just use PlatformThread.
+    // TODO(tommi): Add thread checks for proper use of control methods.
+    // Ideally we should be able to just use PlatformThread.
 
 #if defined(OCTK_OS_UNIX)
     pthread_t thread_ = 0;
@@ -492,12 +483,12 @@ private:
     DWORD thread_id_ = 0;
 #endif
 
-// Indicates whether or not ownership of the worker thread lies with
-// this instance or not. (i.e. owned_ == !wrapped).
-// Must only be modified when the worker thread is not running.
+    // Indicates whether or not ownership of the worker thread lies with
+    // this instance or not. (i.e. owned_ == !wrapped).
+    // Must only be modified when the worker thread is not running.
     bool owned_ = true;
 
-// Only touched from the worker thread itself.
+    // Only touched from the worker thread itself.
     bool blocking_calls_allowed_ = true;
 
     std::unique_ptr<TaskQueue::CurrentTaskQueueSetter> task_queue_registration_;

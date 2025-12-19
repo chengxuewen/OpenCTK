@@ -30,9 +30,9 @@
 #include <octk_core_config.hpp>
 
 #if defined(OCTK_OS_WIN)
-#   include <windows.h>
+#    include <windows.h>
 #else
-#   include <sys/types.h>
+#    include <sys/types.h>
 #endif
 #include <vector>
 #include <memory>
@@ -59,13 +59,13 @@ using std::ptrdiff_t;
 using uintptr_t = size_t;
 using intptr_t = ptrdiff_t;
 #if !OCTK_HAS_SSIZE_T && defined(OCTK_OS_WIN)
-#include <BaseTsd.h>
+#    include <BaseTsd.h>
 using ssize_t = SSIZE_T;
 #else
 using ssize_t = ssize_t;
 #endif
 #ifndef OCTK_SIZEOF_SSIZE_T
-#   define OCTK_SIZEOF_SSIZE_T OCTK_SIZEOF_SIZE_T
+#    define OCTK_SIZEOF_SSIZE_T OCTK_SIZEOF_SIZE_T
 #endif
 
 using byte_t = uint8_t;
@@ -87,6 +87,29 @@ template <typename T> Binary makeBinary(const std::vector<T> &data)
 {
     return {reinterpret_cast<const byte_t *>(data.data()), reinterpret_cast<const byte_t *>(data.data()) + data.size()};
 }
+
+struct None
+{
+};
+
+template <typename HeadArg, typename... TailArgs> struct Types
+{
+    using Head = HeadArg;
+    using Tail = Types<TailArgs...>;
+};
+
+template <typename HeadArg> struct Types<HeadArg>
+{
+    using Head = HeadArg;
+    using Tail = None;
+};
+
+template <typename... Args> struct TypeList
+{
+    using type = Types<Args...>;
+    using Type = type;
+};
+template <typename... Args> using type_list = TypeList<Args...>;
 
 /***********************************************************************************************************************
  * type format define

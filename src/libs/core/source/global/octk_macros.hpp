@@ -421,6 +421,16 @@ template <typename T, size_t N> auto octkArraySizeHelper(const T (&array)[N]) ->
 
 
 /***********************************************************************************************************************
+ * rtti macro
+***********************************************************************************************************************/
+#if defined(__GXX_RTTI) || defined(__cpp_rtti) || defined(_CPPRTTI)
+#    define OCTK_RTTI_ENABLED 1
+#else
+#    define OCTK_RTTI_ENABLED 0
+#endif
+
+
+/***********************************************************************************************************************
  * has feature macro define
 ***********************************************************************************************************************/
 /*
@@ -580,9 +590,9 @@ template <typename T, size_t N> auto octkArraySizeHelper(const T (&array)[N]) ->
 #endif
 
 #if OCTK_CC_HAS_ATTRIBUTE(maybe_unused) && OCTK_CC_CPP17_OR_GREATER
-#   define OCTK_MAYBE_UNUSED  [[maybe_unused]]
+#    define OCTK_MAYBE_UNUSED [[maybe_unused]]
 #else
-#   define OCTK_MAYBE_UNUSED
+#    define OCTK_MAYBE_UNUSED
 #endif
 
 /**

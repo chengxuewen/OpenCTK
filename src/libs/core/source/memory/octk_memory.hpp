@@ -88,7 +88,9 @@ inline typename detail::make_unique_helper<T>::unique_ptr make_unique(Args &&...
 }
 
 template <typename T> std::shared_ptr<T> toSharedPtr(const std::weak_ptr<T> &ptr) { return ptr.lock(); }
-template <typename T> std::weak_ptr<T> makeWeakPtr(const std::shared_ptr<T> &ptr) { return ptr; }
+template <typename T> std::shared_ptr<T> toSharedPtr(const std::shared_ptr<T> &ptr) { return ptr; }
+template <typename T> std::weak_ptr<T> toWeakPtr(const std::shared_ptr<T> &ptr) { return ptr; }
+template <typename T> std::weak_ptr<T> toWeakPtr(const std::weak_ptr<T> &ptr) { return ptr; }
 
 } // namespace utils
 

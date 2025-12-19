@@ -73,6 +73,8 @@ octk_add_library(core
 	source/global/octk_processor.hpp
 	source/global/octk_system.hpp
 	source/global/octk_types.hpp
+	source/kernel/octk_signals.cpp
+	source/kernel/octk_signals.hpp
 	source/memory/octk_aligned_malloc.cpp
 	source/memory/octk_aligned_malloc.hpp
 	source/memory/octk_memory.hpp
@@ -80,6 +82,7 @@ octk_add_library(core
 	source/memory/octk_ref_count.hpp
 	source/memory/octk_ref_counted_object.hpp
 	source/memory/octk_ref_ptr.hpp
+	source/memory/octk_shared_data.hpp
 	source/memory/octk_shared_memory.cpp
 	source/memory/octk_shared_memory.hpp
 	source/memory/octk_shared_ref_ptr.hpp

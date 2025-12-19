@@ -303,6 +303,22 @@ octk_add_test(octk_core_tst_shared_buffer
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_shared_data
+	SOURCES
+	tst_shared_data.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_signals
+	SOURCES
+	tst_signals.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_source_location
 	SOURCES
 	tst_source_location.cpp
@@ -378,6 +394,14 @@ octk_add_test(octk_core_tst_time_delta
 octk_add_test(octk_core_tst_timestamp
 	SOURCES
 	tst_timestamp.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_type_traits
+	SOURCES
+	tst_type_traits.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
 	${OCTK_TEST_LINK_LIBRARIES}
