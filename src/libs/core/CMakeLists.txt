@@ -39,9 +39,11 @@ endif()
 if(APPLE)
 	find_library(OCTK_FWCoreFoundation CoreFoundation REQUIRED)
 	find_library(OCTK_FWFoundation Foundation REQUIRED)
+	find_library(OCTK_FWCocoa Cocoa REQUIRED)
 	list(APPEND OCTK_LIB_LINK_LIBRARIES
 		${OCTK_FWCoreFoundation}
-		${OCTK_FWFoundation})
+		${OCTK_FWFoundation}
+		${OCTK_FWCocoa})
 endif()
 find_package(Threads REQUIRED)
 list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
@@ -52,10 +54,10 @@ octk_find_package(WrapSpdlog PROVIDED_TARGETS OCTK3rdparty::WrapSpdlog)
 octk_find_package(WrapVariant PROVIDED_TARGETS OCTK3rdparty::WrapVariant)
 octk_find_package(WrapExpected PROVIDED_TARGETS OCTK3rdparty::WrapExpected)
 octk_find_package(WrapOptional PROVIDED_TARGETS OCTK3rdparty::WrapOptional)
+octk_find_package(WrapFunction2 PROVIDED_TARGETS OCTK3rdparty::WrapFunction2)
 octk_find_package(WrapFilesystem PROVIDED_TARGETS OCTK3rdparty::WrapFilesystem)
 octk_find_package(WrapStringViewLite PROVIDED_TARGETS OCTK3rdparty::WrapStringViewLite)
 
-octk_find_package(WrapFunction2 PROVIDED_TARGETS OCTK3rdparty::WrapFunction2)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
@@ -110,6 +112,8 @@ octk_add_library(core
 	source/thread/octk_pending_task_safety_flag.hpp
 	source/thread/octk_platform_thread.cpp
 	source/thread/octk_platform_thread.hpp
+	source/thread/octk_platform_thread_p.hpp
+	source/thread/octk_reference_counter.hpp
 	source/thread/octk_repeating_task.cpp
 	source/thread/octk_repeating_task.hpp
 	source/thread/octk_sequence_checker.cpp
@@ -124,7 +128,7 @@ octk_add_library(core
 	source/thread/octk_task_queue.hpp
 	source/thread/octk_task_queue_factory.cpp
 	source/thread/octk_task_queue_factory.hpp
-	source/thread/octk_task_queue_stdlib.cpp
+#	source/thread/octk_task_queue_stdlib.cpp
 	source/thread/octk_task_thread.cpp
 	source/thread/octk_task_thread.hpp
 	source/thread/octk_task_thread_p.hpp
@@ -138,6 +142,8 @@ octk_add_library(core
 	source/thread/octk_time_controller.hpp
 	source/thread/octk_yield_policy.cpp
 	source/thread/octk_yield_policy.hpp
+	source/time/octk_elapsed_timer.cpp
+	source/time/octk_elapsed_timer.hpp
 	source/tools/octk_algorithm.hpp
 	source/tools/octk_array_view.hpp
 	source/tools/octk_assert.cpp
@@ -150,6 +156,8 @@ octk_add_library(core
 	source/tools/octk_crypto_random.hpp
 	source/tools/octk_date_time.cpp
 	source/tools/octk_date_time.hpp
+	source/tools/octk_error.cpp
+	source/tools/octk_error.hpp
 	source/tools/octk_exception.hpp
 	source/tools/octk_expected.hpp
 	source/tools/octk_fake_clock.cpp
@@ -219,9 +227,15 @@ octk_add_library(core
 	OCTK3rdparty::WrapStringViewLite
 	${OCTK_LIB_LINK_LIBRARIES})
 octk_internal_extend_target(octk_core
+	SOURCES
+	source/thread/octk_platform_thread_win.cpp
 	PUBLIC_DEFINES
 	NOMINMAX
 	CONDITION OCTK_SYSTEM_WIN)
+octk_internal_extend_target(octk_core
+	SOURCES
+	source/thread/octk_platform_thread_posix.cpp
+	CONDITION NOT OCTK_SYSTEM_WIN)
 octk_internal_extend_target(octk_core
 	SOURCES
 	source/thread/octk_task_thread.mm

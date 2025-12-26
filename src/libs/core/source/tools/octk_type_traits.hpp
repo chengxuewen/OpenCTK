@@ -35,6 +35,15 @@ template <typename T> constexpr bool is_pointer_v = std::is_pointer<T>::value;
 #endif
 
 /***********************************************************************************************************************
+ * like cxx17 std::is_base_of_v
+***********************************************************************************************************************/
+#if OCTK_CC_CPP17_OR_GREATER
+using std::is_base_of_v;
+#else
+template <typename B, typename D> constexpr bool is_base_of_v = std::is_base_of<B, D>::value;
+#endif
+
+/***********************************************************************************************************************
  * like cxx17 std::is_member_function_pointer_v
 ***********************************************************************************************************************/
 #if OCTK_CC_CPP17_OR_GREATER

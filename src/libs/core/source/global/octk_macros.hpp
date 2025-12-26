@@ -74,7 +74,7 @@
 
 namespace OCTK_NAMESPACE
 {
-}
+} // namespace OCTK_NAMESPACE
 
 
 /***********************************************************************************************************************
@@ -305,6 +305,7 @@ OCTK_END_NAMESPACE
 #    define OCTK_HAS_EXCEPTIONS 0
 #endif
 
+
 /***********************************************************************************************************************
  * provide source location macro
 ***********************************************************************************************************************/
@@ -522,6 +523,107 @@ template <typename T, size_t N> auto octkArraySizeHelper(const T (&array)[N]) ->
 #    define OCTK_CONST_INIT [[clang::require_constant_initialization]]
 #else
 #    define OCTK_CONST_INIT
+#endif
+
+
+/***********************************************************************************************************************
+ * CONSTRUCTORS DESTRUCTOR macro
+***********************************************************************************************************************/
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7)
+#    define OCTK_CONSTRUCTOR_FUNCTION(_func) static void __attribute__((constructor)) _func(void);
+#    define OCTK_DESTRUCTOR_FUNCTION(_func)  static void __attribute__((destructor)) _func(void);
+#elif defined(_MSC_VER) && (_MSC_VER >= 1500)
+#    include <stdlib.h>
+//  Visual studio 2008 and later has _Pragma
+//  We do some weird things to avoid the constructors being optimized away on VS2015 if WholeProgramOptimization is enabled.
+//  First we make a reference to the array from the wrapper to make sure its references. Then we use a pragma to make sure
+//  the wrapper function symbol is always included at the link side. Also, the symbols need to be extern (but not dllexport),
+//  even though they are not really used from another object file.
+//  We need to account for differences between the mangling of symbols for x86 and x64/ARM/ARM64 programs, as symbols on x86
+//  are prefixed with an underscore but symbols on x64/ARM/ARM64 are not.
+#    ifdef _M_IX86
+#        define OCTK__MSVC_SYMBOL_PREFIX "_"
+#    else
+#        define OCTK__MSVC_SYMBOL_PREFIX ""
+#    endif
+#    define OCTK__MSVC_CTOR(_func, _sym_prefix)                                                                        \
+        static void _func(void);                                                                                       \
+        int _func##_wrapper(void);                                                                                     \
+        int _func##_wrapper(void)                                                                                      \
+        {                                                                                                              \
+            _func();                                                                                                   \
+            return 0;                                                                                                  \
+        }                                                                                                              \
+        OCTK_PRAGMA(comment(linker, "/include:" _sym_prefix #_func "_wrapper"))                                        \
+        OCTK_PRAGMA(section(".CRT$XCU", read))                                                                         \
+        __declspec(allocate(".CRT$XCU")) int (*_func##_wrapper_ptr)(void) = _func##_wrapper;
+#    define OCTK_CONSTRUCTOR_FUNCTION(_func) OCTK__MSVC_CTOR(_func, OCTK__MSVC_SYMBOL_PREFIX)
+#    define OCTK__MSVC_DTOR(_func, _sym_prefix)                                                                        \
+        static void _func(void);                                                                                       \
+        int _func##_constructor(void);                                                                                 \
+        int _func##_constructor(void)                                                                                  \
+        {                                                                                                              \
+            atexit(_func);                                                                                             \
+            return 0;                                                                                                  \
+        }                                                                                                              \
+        OCTK_PRAGMA(comment(linker, "/include:" _sym_prefix #_func "_constructor"))                                    \
+        OCTK_PRAGMA(section(".CRT$XCU", read))                                                                         \
+        __declspec(allocate(".CRT$XCU")) int (*_func##_constructor_ptr)(void) = _func##_constructor;
+#    define OCTK_DESTRUCTOR_FUNCTION(_func) OCTK__MSVC_DTOR(_func, OCTK__MSVC_SYMBOL_PREFIX)
+#elif defined(_MSC_VER)
+//  Pre Visual studio 2008 must use #pragma section
+#    define OCTK__CONSTRUCTOR_FUNCTION_PRAGMA_ARGS(_func) section(".CRT$XCU", read)
+#    define OCTK_CONSTRUCTOR_FUNCTION(_func)                                                                           \
+        OCTK_PRAGMA(OCTK__CONSTRUCTOR_FUNCTION_PRAGMA_ARGS(_func))                                                     \
+        static void _func(void);                                                                                       \
+        static int _func##_wrapper(void)                                                                               \
+        {                                                                                                              \
+            _func();                                                                                                   \
+            return 0;                                                                                                  \
+        }                                                                                                              \
+        __declspec(allocate(".CRT$XCU")) static int (*p)(void) = _func##_wrapper;
+#    define OCTK__DESTRUCTOR_FUNCTION_PRAGMA_ARGS(_func) section(".CRT$XCU", read)
+#    define OCTK_DESTRUCTOR_FUNCTION(_func)                                                                            \
+        OCTK_PRAGMA(OCTK__DESTRUCTOR_FUNCTION_PRAGMA_ARGS(_func))                                                      \
+        static void _func(void);                                                                                       \
+        static int _func##_constructor(void)                                                                           \
+        {                                                                                                              \
+            atexit(_func);                                                                                             \
+            return 0;                                                                                                  \
+        }                                                                                                              \
+        __declspec(allocate(".CRT$XCU")) static int (*_array##_func)(void) = _func##_constructor;
+#elif defined(__SUNPRO_C)
+//  This is not tested, but i believe it should work, based on:
+//  http://opensource.apple.com/source/OpenSSL098/OpenSSL098-35/src/fips/fips_premain.c
+#    define OCTK_DEFINE_CTOR_DTOR_NEEDS_PRAGMA
+#    define OCTK__CONSTRUCTOR_FUNCTION_PRAGMA_ARGS(_func) init(_func)
+#    define OCTK_CONSTRUCTOR_FUNCTION(_func)                                                                           \
+        OCTK_PRAGMA(OCTK__CONSTRUCTOR_FUNCTION_PRAGMA_ARGS(_func))                                                     \
+        static void _func(void);
+#    define OCTK__DESTRUCTOR_FUNCTION_PRAGMA_ARGS(_func) fini(_func)
+#    define OCTK_DESTRUCTOR_FUNCTION(_func)                                                                            \
+        OCTK_PRAGMA(OCTK__DESTRUCTOR_FUNCTION_PRAGMA_ARGS(_func))                                                      \
+        static void _func(void);
+#else
+#    define OCTK__CONSTRUCTOR_FUNCTION_WITH_ARGS(AFUNC)                                                                \
+        namespace                                                                                                      \
+        {                                                                                                              \
+        static const struct AFUNC##_ctor_class_                                                                        \
+        {                                                                                                              \
+            inline AFUNC##_ctor_class_() { AFUNC(); }                                                                  \
+        } AFUNC##_ctor_instance_;                                                                                      \
+        }
+#    define OCTK_CONSTRUCTOR_FUNCTION(AFUNC) OCTK__CONSTRUCTOR_FUNCTION_WITH_ARGS(AFUNC)
+#    define OCTK__DESTRUCTOR_FUNCTION_WITH_ARGS(AFUNC)                                                                 \
+        namespace                                                                                                      \
+        {                                                                                                              \
+        static const struct AFUNC##_dtor_class_                                                                        \
+        {                                                                                                              \
+            inline AFUNC##_dtor_class_() { }                                                                           \
+            inline ~AFUNC##_dtor_class_() { AFUNC(); }                                                                 \
+        } AFUNC##_dtor_instance_;                                                                                      \
+        }
+#    define OCTK_DESTRUCTOR_FUNCTION(AFUNC) OCTK__DESTRUCTOR_FUNCTION_WITH_ARGS(AFUNC)
 #endif
 
 

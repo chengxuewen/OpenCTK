@@ -19,14 +19,14 @@ using namespace octk;
 TEST(PlatformThreadTest, DefaultConstructedIsEmpty)
 {
     PlatformThread thread;
-    EXPECT_EQ(thread.GetHandle(), utils::nullopt);
+    EXPECT_EQ(thread.handle(), utils::nullopt);
     EXPECT_TRUE(thread.empty());
 }
 
 TEST(PlatformThreadTest, StartFinalize)
 {
     PlatformThread thread = PlatformThread::SpawnJoinable([] {}, "1");
-    EXPECT_NE(thread.GetHandle(), utils::nullopt);
+    EXPECT_NE(thread.handle(), utils::nullopt);
     EXPECT_FALSE(thread.empty());
     thread.Finalize();
     EXPECT_TRUE(thread.empty());
@@ -64,14 +64,14 @@ TEST(PlatformThreadTest, TwoThreadHandlesAreDifferentWhenStartedAndEqualWhenJoin
 {
     PlatformThread thread1 = PlatformThread();
     PlatformThread thread2 = PlatformThread();
-    EXPECT_EQ(thread1.GetHandle(), thread2.GetHandle());
+    EXPECT_EQ(thread1.handle(), thread2.handle());
     thread1 = PlatformThread::SpawnJoinable([] {}, "1");
     thread2 = PlatformThread::SpawnJoinable([] {}, "2");
-    EXPECT_NE(thread1.GetHandle(), thread2.GetHandle());
+    EXPECT_NE(thread1.handle(), thread2.handle());
     thread1.Finalize();
-    EXPECT_NE(thread1.GetHandle(), thread2.GetHandle());
+    EXPECT_NE(thread1.handle(), thread2.handle());
     thread2.Finalize();
-    EXPECT_EQ(thread1.GetHandle(), thread2.GetHandle());
+    EXPECT_EQ(thread1.handle(), thread2.handle());
 }
 
 TEST(PlatformThreadTest, RunFunctionIsCalled)

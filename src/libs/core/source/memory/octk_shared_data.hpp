@@ -26,6 +26,7 @@
 #define _OCTK_SHARED_DATA_HPP
 
 #include <octk_type_traits.hpp>
+#include <octk_reference_counter.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -38,14 +39,15 @@ template <typename T, bool Explicitly = false, typename = void> struct SharedDat
 
 class SharedData
 {
-    mutable std::atomic<int> mRefCount{0};
+    mutable ReferenceCounter::Value mRefCount{0};
     friend class detail::SharedDataRefCounter;
 
 public:
     inline SharedData() noexcept { }
+    // used in SharedDataPointer::clone() must implement
     inline SharedData(const SharedData &) noexcept { }
 
-    inline int refCount() const { return mRefCount.load(std::memory_order_relaxed); }
+    inline int refCount() const { return ReferenceCounter::loadAcquire(mRefCount); }
 
     // using the assignment operator would lead to corruption in the ref-counting
     SharedData &operator=(const SharedData &) = delete;
@@ -60,12 +62,13 @@ struct SharedDataRefCounter final
     SharedDataRefCounter(T *data) noexcept
         : mRefCount(dynamic_cast<SharedData *>(const_cast<std::remove_const_t<T> *>(data))->mRefCount)
     {
-        static_assert(std::is_base_of_v<SharedData, T>, "T must be derived from SharedData");
+        static_assert(type_traits::is_base_of_v<SharedData, T>, "T must be derived from SharedData");
     }
-    std::atomic<int> &mRefCount;
-    inline bool ref() noexcept { return ++mRefCount != 0; }
-    inline bool deref() noexcept { return --mRefCount != 0; }
-    inline int loadRelaxed() const noexcept { return mRefCount.load(std::memory_order_relaxed); }
+    ReferenceCounter::Value &mRefCount;
+    inline bool ref() noexcept { return ReferenceCounter::ref(mRefCount); }
+    inline bool deref() noexcept { return ReferenceCounter::deref(mRefCount); }
+    inline int loadRelaxed() const noexcept { return ReferenceCounter::loadRelaxed(mRefCount); }
+    inline int loadAcquire() const noexcept { return ReferenceCounter::loadAcquire(mRefCount); }
 };
 } // namespace detail
 
@@ -116,7 +119,7 @@ public:
     inline bool operator==(const Self &other) const { return mData == other.mData; }
     inline bool operator!=(const Self &other) const { return mData != other.mData; }
 
-    inline SharedDataPointer() { mData = nullptr; }
+    inline SharedDataPointer() noexcept { }
     inline ~SharedDataPointer()
     {
         if (mData && !RefCounter{mData}.deref())
@@ -206,7 +209,7 @@ private:
         mData = data;
     }
 
-    T *mData;
+    T *mData{nullptr};
 };
 template <typename T> using ImplicitlySharedDataPointer = SharedDataPointer<T, false>;
 
@@ -270,7 +273,7 @@ public:
     inline bool operator==(const T *data) const { return mData == data; }
     inline bool operator!=(const T *data) const { return mData != data; }
 
-    inline SharedDataPointer() { mData = nullptr; }
+    inline SharedDataPointer() noexcept { }
     inline ~SharedDataPointer()
     {
         if (mData && !RefCounter{mData}.deref())
@@ -371,7 +374,7 @@ private:
         mData = data;
     }
 
-    T *mData;
+    T *mData{nullptr};
 };
 template <typename T> using ExplicitlySharedDataPointer = SharedDataPointer<T, true>;
 

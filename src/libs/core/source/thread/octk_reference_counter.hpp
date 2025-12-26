@@ -22,70 +22,36 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_MUTEX_HPP
-#define _OCTK_MUTEX_HPP
+#pragma once
 
 #include <octk_global.hpp>
-#include <octk_assert.hpp>
 
-#include <mutex>
 #include <atomic>
-#include <shared_mutex>
 
 OCTK_BEGIN_NAMESPACE
 
-class Mutex : public std::mutex
+class ReferenceCounter
 {
 public:
-    using Base = std::mutex;
-    using SharedLocker = std::shared_lock<Base>;
-    using UniqueLocker = std::unique_lock<Base>;
+    using Value = std::atomic<int>;
 
-    class Locker
-    {
-    public:
-        Locker(Base *mutex)
-            : Locker(*mutex)
-        {
-        }
-        Locker(Base &mutex)
-            : mMutex(mutex)
-        {
-            mMutex.lock();
-        }
-        virtual ~Locker()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
-        virtual void relock()
-        {
-            if (!mLocked.exchange(true))
-            {
-                mMutex.lock();
-            }
-        }
-        virtual void unlock()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
+    ReferenceCounter(int value) noexcept { mValue = value; }
+    ReferenceCounter() noexcept = default;
+    ~ReferenceCounter() = default;
 
-    private:
-        Base &mMutex;
-        std::atomic_bool mLocked{true};
-        OCTK_DISABLE_COPY_MOVE(Locker)
-    };
+    bool ref() noexcept { return this->ref(mValue); }
+    bool deref() noexcept { return this->deref(mValue); }
+    int loadRelaxed() const noexcept { return this->loadRelaxed(mValue); }
+    int loadAcquire() const noexcept { return this->loadAcquire(mValue); }
 
-    using Base::Base;
-    Mutex() = default;
-    ~Mutex() = default;
+    static bool ref(Value &value) noexcept { return ++value != 0; }
+    static bool deref(Value &value) noexcept { return --value != 0; }
+    static int loadRelaxed(Value &value) noexcept { return value.load(std::memory_order_relaxed); }
+    static int loadAcquire(Value &value) noexcept { return value.load(std::memory_order_acquire); }
+
+private:
+    mutable Value mValue{0};
+    OCTK_DISABLE_COPY_MOVE(ReferenceCounter)
 };
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_MUTEX_HPP

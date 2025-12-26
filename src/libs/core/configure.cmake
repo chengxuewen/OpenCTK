@@ -54,7 +54,6 @@ endif()
 string(TIMESTAMP COMPILE_TIME %Y%m%d_%H%M%S)
 octk_configure_definition("OCTK_COMPILE_TIME" PUBLIC VALUE "${COMPILE_TIME}")
 
-
 octk_configure_feature("ENABLE_ASSERT" PUBLIC
 	LABEL "Enable this to build enable assert"
 	CONDITION ON)
@@ -75,6 +74,9 @@ octk_configure_feature("USE_STD_THREAD" PUBLIC
 	LABEL "Enable this to build use std thread"
 	CONDITION ON)
 
+octk_configure_feature("USE_STD_STEADY_CLOCK" PUBLIC
+	LABEL "Enable this to build use std chrono steady clock"
+	CONDITION ON)
 
 # int8_t type
 octk_configure_compile_test_type(INT8_T

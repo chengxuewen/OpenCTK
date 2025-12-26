@@ -3,6 +3,7 @@
 ** Library: OpenCTK
 **
 ** Copyright (C) 2025~Present ChengXueWen.
+** Copyright 2016 The WebRTC Project Authors.
 **
 ** License: MIT License
 **
@@ -22,70 +23,39 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_MUTEX_HPP
-#define _OCTK_MUTEX_HPP
+#include <octk_macros.hpp>
 
-#include <octk_global.hpp>
-#include <octk_assert.hpp>
-
-#include <mutex>
-#include <atomic>
-#include <shared_mutex>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 OCTK_BEGIN_NAMESPACE
 
-class Mutex : public std::mutex
+namespace
 {
-public:
-    using Base = std::mutex;
-    using SharedLocker = std::shared_lock<Base>;
-    using UniqueLocker = std::unique_lock<Base>;
+static int test_flag = 0;
 
-    class Locker
+OCTK_CONSTRUCTOR_FUNCTION(ctor_func)
+static void ctor_func(void)
+{
+    fprintf(stdout, "tst_decl_ctor\n");
+    test_flag = -1;
+}
+
+OCTK_DESTRUCTOR_FUNCTION(dtor_func)
+static void dtor_func(void)
+{
+    fprintf(stdout, "tst_decl_dtor\n");
+    if (1 != test_flag)
     {
-    public:
-        Locker(Base *mutex)
-            : Locker(*mutex)
-        {
-        }
-        Locker(Base &mutex)
-            : mMutex(mutex)
-        {
-            mMutex.lock();
-        }
-        virtual ~Locker()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
-        virtual void relock()
-        {
-            if (!mLocked.exchange(true))
-            {
-                mMutex.lock();
-            }
-        }
-        virtual void unlock()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
+        abort();
+    }
+}
+} // namespace
 
-    private:
-        Base &mMutex;
-        std::atomic_bool mLocked{true};
-        OCTK_DISABLE_COPY_MOVE(Locker)
-    };
-
-    using Base::Base;
-    Mutex() = default;
-    ~Mutex() = default;
-};
+TEST(CtorDtorTest, ToStringWithCause)
+{
+    EXPECT_EQ(test_flag, -1);
+    test_flag = 1;
+}
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_MUTEX_HPP

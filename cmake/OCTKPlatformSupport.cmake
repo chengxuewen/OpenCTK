@@ -42,10 +42,11 @@ set(OCTK_SYSTEM_VERSION ${CMAKE_SYSTEM_VERSION})
 set(OCTK_SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
 octk_set01(OCTK_SYSTEM_LINUX
     CMAKE_SYSTEM_NAME STREQUAL "Linux")
+octk_set01(OCTK_SYSTEM_WIN32 WIN32)
 octk_set01(OCTK_SYSTEM_WINCE
     CMAKE_SYSTEM_NAME STREQUAL "WindowsCE")
 octk_set01(OCTK_SYSTEM_WIN
-    OCTK_SYSTEM_WINCE OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	OCTK_SYSTEM_WINCE OR OCTK_SYSTEM_WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
 octk_set01(OCTK_SYSTEM_HPUX
     CMAKE_SYSTEM_NAME STREQUAL "HPUX")
 octk_set01(OCTK_SYSTEM_ANDROID
@@ -87,9 +88,8 @@ octk_set01(OCTK_SYSTEM_WATCHOS
 octk_set01(OCTK_SYSTEM_UIKIT
     APPLE AND (IOS OR TVOS OR WATCHOS))
 octk_set01(OCTK_SYSTEM_MACOS
-    APPLE AND NOT UIKIT)
+	APPLE AND NOT UIKIT)
 octk_set01(OCTK_SYSTEM_UNIX UNIX)
-octk_set01(OCTK_SYSTEM_WIN32 WIN32)
 octk_set01(OCTK_SYSTEM_APPLE APPLE)
 octk_set01(OCTK_SYSTEM_MAC APPLE)
 
@@ -145,8 +145,12 @@ octk_set01(OCTK_CXX_COMPILER_QCC
 # OpenCTK arch size variable
 #-----------------------------------------------------------------------------------------------------------------------
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	set(OCTK_ARCH_BIT 64)
+	set(OCTK_ARCH_NAME x64)
     set(OCTK_ARCH_64BIT TRUE)
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+	set(OCTK_ARCH_BIT 64)
+	set(OCTK_ARCH_NAME x64)
     set(OCTK_ARCH_32BIT TRUE)
 endif()
 
@@ -155,7 +159,11 @@ endif()
 # OpenCTK vcpkg triplets variable
 #-----------------------------------------------------------------------------------------------------------------------
 if(OCTK_PROCESSOR_X86_64 OR OCTK_PROCESSOR_AMD64)
-    set(OCTK_VCPKG_TRIPLET_ARCH x64)
+	if (OCTK_ARCH_64BIT)
+		set(OCTK_VCPKG_TRIPLET_ARCH x64)
+	else()
+		set(OCTK_VCPKG_TRIPLET_ARCH x86)
+	endif()
     set(OCTK_VCPKG_TRIPLET_ARCH_ARM OFF)
 elseif(OCTK_PROCESSOR_I686 OR OCTK_PROCESSOR_I386)
     set(OCTK_VCPKG_TRIPLET_ARCH x86)

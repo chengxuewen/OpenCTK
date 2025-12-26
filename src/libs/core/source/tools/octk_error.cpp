@@ -1,0 +1,159 @@
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
+
+#include <octk_error.hpp>
+#include <octk_spinlock.hpp>
+
+OCTK_BEGIN_NAMESPACE
+
+namespace detail
+{
+struct DomainData
+{
+    std::string type;
+    std::string name;
+    std::string description;
+};
+static SpinLock &idDomainDatasMapSpinLock()
+{
+    static SpinLock spinLock;
+    return spinLock;
+}
+static std::map<Error::Id, DomainData> *idDomainDatasMap()
+{
+    static std::map<Error::Id, DomainData> map;
+    return &map;
+}
+static bool isIdRegistered(Error::Id id)
+{
+    SpinLock::Locker locker(idDomainDatasMapSpinLock());
+    auto idDomainDatasMap = detail::idDomainDatasMap();
+    return idDomainDatasMap->find(id) != idDomainDatasMap->end();
+}
+static Error::Id fnv1aHash(const StringView name)
+{
+    constexpr Error::Id prime = 0x01000193; // 16777619
+    Error::Id hash = 0x811C9DC5;            // 2166136261
+
+    for (size_t i = 0; i < name.size(); ++i)
+    {
+        hash ^= static_cast<uint8_t>(name[i]);
+        hash *= prime;
+    }
+    return hash;
+}
+} // namespace detail
+
+Error::Id Error::Domain::Registry::registerDomain(const StringView type,
+                                                  const StringView name,
+                                                  const StringView description)
+{
+    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
+    const auto id = detail::fnv1aHash(type);
+    auto idDomainDatasMap = detail::idDomainDatasMap();
+    if (idDomainDatasMap->find(id) != idDomainDatasMap->end())
+    {
+        return kInvalidId;
+    }
+    detail::DomainData domainData{std::string(type), std::string(name), std::string(description)};
+    idDomainDatasMap->insert(std::make_pair(id, domainData));
+    return id;
+}
+
+Error::Domain::Domain(Id id)
+    : mId(detail::isIdRegistered(id) ? id : kInvalidId)
+{
+}
+
+Error::Domain::~Domain() { }
+
+StringView Error::Domain::type() const
+{
+    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
+    auto idDomainDatasMap = detail::idDomainDatasMap();
+    const auto iter = idDomainDatasMap->find(mId);
+    if (iter != idDomainDatasMap->end())
+    {
+        return iter->second.type;
+    }
+    return "";
+}
+
+StringView Error::Domain::name() const
+{
+    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
+    auto idDomainDatasMap = detail::idDomainDatasMap();
+    const auto iter = idDomainDatasMap->find(mId);
+    if (iter != idDomainDatasMap->end())
+    {
+        return iter->second.name;
+    }
+    return "";
+}
+
+StringView Error::Domain::description() const
+{
+    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
+    auto idDomainDatasMap = detail::idDomainDatasMap();
+    const auto iter = idDomainDatasMap->find(mId);
+    if (iter != idDomainDatasMap->end())
+    {
+        return iter->second.description;
+    }
+    return "";
+}
+
+Error::Error(const Domain &domain, Id code, const StringView message, const SharedDataPtr &cause)
+    : mDomain(domain)
+    , mCode(code)
+    , mMessage(message)
+    , mCause(cause)
+{
+}
+
+Error::Error(const StringView message, const SharedDataPtr &cause)
+    : mDomain(invalidDomain())
+    , mCode(kInvalidId)
+    , mMessage(message)
+    , mCause(cause)
+{
+}
+
+Error::Error(const Error &other)
+    : mDomain(other.mDomain)
+    , mCode(other.mCode)
+    , mMessage(other.mMessage)
+    , mCause(other.mCause)
+{
+}
+
+Error::~Error() { }
+
+const Error::Domain &invalidDomain()
+{
+    static const Error::Domain domain;
+    return domain;
+}
+
+OCTK_END_NAMESPACE

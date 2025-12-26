@@ -33,19 +33,25 @@ namespace detail
 
 SequenceCheckerImpl::SequenceCheckerImpl(bool attach_to_current_thread)
     : attached_(attach_to_current_thread)
-    , valid_thread_(PlatformThread::currentThreadRef())
-    , valid_queue_(TaskQueue::Current()) {}
+    , valid_thread_(PlatformThread::currentThreadId())
+    , valid_queue_(TaskQueue::Current())
+{
+}
 
 SequenceCheckerImpl::SequenceCheckerImpl(TaskQueue *attached_queue)
-    : attached_(attached_queue != nullptr), valid_thread_(PlatformThread::Ref()), valid_queue_(attached_queue) {}
+    : attached_(attached_queue != nullptr)
+    , valid_thread_(0)
+    , valid_queue_(attached_queue)
+{
+}
 
 bool SequenceCheckerImpl::IsCurrent() const
 {
     const TaskQueue *const current_queue = TaskQueue::Current();
-    const PlatformThread::Ref current_thread = PlatformThread::currentThreadRef();
+    const PlatformThread::Id current_thread = PlatformThread::currentThreadId();
     Mutex::Locker scoped_lock(&lock_);
     if (!attached_)
-    {  // Previously detached.
+    { // Previously detached.
         attached_ = true;
         valid_thread_ = current_thread;
         valid_queue_ = current_queue;
@@ -53,9 +59,9 @@ bool SequenceCheckerImpl::IsCurrent() const
     }
     if (valid_queue_)
     {
-        return valid_queue_ == current_queue;
+        // return valid_queue_ == current_queue;
     }
-    return PlatformThread::isThreadRefEqual(valid_thread_, current_thread);
+    return valid_thread_ == current_thread;
 }
 
 void SequenceCheckerImpl::Detach()
@@ -85,9 +91,13 @@ std::string SequenceCheckerImpl::ExpectationToString() const
     // TaskQueue doesn't match
 
     char msgbuf[OCTK_LINE_MAX] = {0};
-    std::snprintf(msgbuf, OCTK_LINE_MAX, "# Expected: TQ: %p Thread: %p\n"
-                                         "# Actual:   TQ: %p Thread: %p\n",
-                  valid_queue_, reinterpret_cast<const void *>(valid_thread_), current_queue,
+    std::snprintf(msgbuf,
+                  OCTK_LINE_MAX,
+                  "# Expected: TQ: %p Thread: %p\n"
+                  "# Actual:   TQ: %p Thread: %p\n",
+                  valid_queue_,
+                  reinterpret_cast<const void *>(valid_thread_),
+                  current_queue,
                   reinterpret_cast<const void *>(current_thread));
     std::stringstream message;
     message << msgbuf;
@@ -102,6 +112,6 @@ std::string SequenceCheckerImpl::ExpectationToString() const
 
     return message.str();
 }
-#endif  // OCTK_DCHECK_IS_ON
-}  // namespace detail
+#endif // OCTK_DCHECK_IS_ON
+} // namespace detail
 OCTK_END_NAMESPACE

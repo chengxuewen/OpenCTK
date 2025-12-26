@@ -210,8 +210,10 @@ ImGuiImage::SharedPtr ImGuiApplication::createImage(ImGuiImage::Format format, i
     return this->createImage(format, binary, width, height);
 }
 
-ImGuiImage::SharedPtr
-ImGuiApplication::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
+ImGuiImage::SharedPtr ImGuiApplication::createImage(ImGuiImage::Format format,
+                                                    const Binary &binary,
+                                                    int width,
+                                                    int height)
 {
     OCTK_CHECK_NOTREACHED();
     return nullptr;

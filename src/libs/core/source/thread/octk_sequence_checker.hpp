@@ -64,7 +64,7 @@ private:
     mutable Mutex lock_;
     // These are mutable so that IsCurrent can set them.
     mutable bool attached_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
-    mutable PlatformThread::Ref valid_thread_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
+    mutable PlatformThread::Id valid_thread_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
     mutable const TaskQueue *valid_queue_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
 };
 

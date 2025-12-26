@@ -93,6 +93,14 @@ octk_add_test(octk_core_tst_crypto_random
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_ctordtor
+	SOURCES
+	tst_ctordtor.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_data_rate
 	SOURCES
 	tst_data_rate.cpp
@@ -120,6 +128,22 @@ octk_add_test(octk_core_tst_date_time
 octk_add_test(octk_core_tst_divide_round
 	SOURCES
 	tst_divide_round.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_elapsed_timer
+	SOURCES
+	tst_elapsed_timer.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_error
+	SOURCES
+	tst_error.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
 	${OCTK_TEST_LINK_LIBRARIES}
@@ -322,6 +346,14 @@ octk_add_test(octk_core_tst_signals
 octk_add_test(octk_core_tst_source_location
 	SOURCES
 	tst_source_location.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_status
+	SOURCES
+	tst_status.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
 	${OCTK_TEST_LINK_LIBRARIES}

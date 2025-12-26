@@ -112,6 +112,22 @@ template <typename... Args> struct TypeList
 template <typename... Args> using type_list = TypeList<Args...>;
 
 /***********************************************************************************************************************
+ * Integer conversion macro define
+***********************************************************************************************************************/
+#if defined(OCTK_OS_WIN) && !defined(OCTK_CC_GNU)
+#    define OCTK_INT64_C(c)  c##i64  /* signed 64 bit constant */
+#    define OCTK_UINT64_C(c) c##ui64 /* unsigned 64 bit constant */
+#else
+#    ifdef __cplusplus
+#        define OCTK_INT64_C(c)  static_cast<long long>(c##LL)           /* signed 64 bit constant */
+#        define OCTK_UINT64_C(c) static_cast<unsigned long long>(c##ULL) /* unsigned 64 bit constant */
+#    else
+#        define OCTK_INT64_C(c)  ((long long)(c##LL))           /* signed 64 bit constant */
+#        define OCTK_UINT64_C(c) ((unsigned long long)(c##ULL)) /* unsigned 64 bit constant */
+#    endif
+#endif
+
+/***********************************************************************************************************************
  * type format define
 ***********************************************************************************************************************/
 #if OCTK_SIZEOF_SHORT == 2
@@ -223,6 +239,7 @@ template <typename... Args> using type_list = TypeList<Args...>;
 #else
 #    error "Could not determine size of void *"
 #endif
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_TYPES_HPP

@@ -32,17 +32,17 @@
 #include <octk_memory.hpp>
 
 #if defined(OCTK_OS_WIN)
-#   include <comdef.h>
+#    include <comdef.h>
 #elif defined(OCTK_OS_UNIX)
-#   include <time.h>
+#    include <time.h>
 #else
-#   error "Either OCTK_OS_WIN or OCTK_OS_UNIX needs to be defined."
+#    error "Either OCTK_OS_WIN or OCTK_OS_UNIX needs to be defined."
 #endif
 
 #if defined(OCTK_OS_WIN)
 // Disable warning that we don't care about:
 // warning C4722: destructor never returns, potential memory leak
-#pragma warning(disable : 4722)
+#    pragma warning(disable:4722)
 #endif
 
 #if defined(OCTK_OS_MAC)
@@ -53,9 +53,10 @@
  * but here they are used directly in order to keep this file C++.
  * https://clang.llvm.org/docs/AutomaticReferenceCounting.html#runtime-support
  */
-extern "C" {
-void *objc_autoreleasePoolPush(void);
-void objc_autoreleasePoolPop(void *pool);
+extern "C"
+{
+    void *objc_autoreleasePoolPush(void);
+    void objc_autoreleasePoolPop(void *pool);
 }
 
 namespace
@@ -63,13 +64,16 @@ namespace
 class ScopedAutoReleasePool
 {
 public:
-    ScopedAutoReleasePool() : pool_(objc_autoreleasePoolPush()) {}
+    ScopedAutoReleasePool()
+        : pool_(objc_autoreleasePoolPush())
+    {
+    }
     ~ScopedAutoReleasePool() { objc_autoreleasePoolPop(pool_); }
 
 private:
     void *const pool_;
 };
-}  // namespace
+} // namespace
 #endif
 
 OCTK_BEGIN_NAMESPACE
@@ -100,10 +104,7 @@ TaskThreadManager::~TaskThreadManager()
 }
 
 // static
-void TaskThreadManager::Add(TaskThread *message_queue)
-{
-    return Instance()->AddInternal(message_queue);
-}
+void TaskThreadManager::Add(TaskThread *message_queue) { return Instance()->AddInternal(message_queue); }
 void TaskThreadManager::AddInternal(TaskThread *message_queue)
 {
     Mutex::Locker cs(&crit_);
@@ -111,10 +112,7 @@ void TaskThreadManager::AddInternal(TaskThread *message_queue)
 }
 
 // static
-void TaskThreadManager::Remove(TaskThread *message_queue)
-{
-    return Instance()->RemoveInternal(message_queue);
-}
+void TaskThreadManager::Remove(TaskThread *message_queue) { return Instance()->RemoveInternal(message_queue); }
 void TaskThreadManager::RemoveInternal(TaskThread *message_queue)
 {
     {
@@ -149,8 +147,7 @@ void TaskThreadManager::RemoveFromSendGraph(TaskThread *thread)
     }
 }
 
-void TaskThreadManager::RegisterSendAndCheckForCycles(TaskThread *source,
-                                                      TaskThread *target)
+void TaskThreadManager::RegisterSendAndCheckForCycles(TaskThread *source, TaskThread *target)
 {
     OCTK_DCHECK(source);
     OCTK_DCHECK(target);
@@ -175,10 +172,7 @@ void TaskThreadManager::RegisterSendAndCheckForCycles(TaskThread *source,
 #endif
 
 // static
-void TaskThreadManager::ProcessAllMessageQueuesForTesting()
-{
-    return Instance()->ProcessAllMessageQueuesInternal();
-}
+void TaskThreadManager::ProcessAllMessageQueuesForTesting() { return Instance()->ProcessAllMessageQueuesInternal(); }
 
 void TaskThreadManager::ProcessAllMessageQueuesInternal()
 {
@@ -189,7 +183,7 @@ void TaskThreadManager::ProcessAllMessageQueuesInternal()
 
     {
         Mutex::Locker cs(&crit_);
-        for (TaskThread *queue: message_queues_)
+        for (TaskThread *queue : message_queues_)
         {
             if (!queue->IsProcessingMessagesForTesting())
             {
@@ -200,15 +194,11 @@ void TaskThreadManager::ProcessAllMessageQueuesInternal()
             queues_not_done.fetch_add(1);
             // Whether the task is processed, or the thread is simply cleared,
             // queues_not_done gets decremented.
-            auto sub = utils::makeScopeGuard([&queues_not_done] {
-                queues_not_done.fetch_sub(1);
-            });
+            auto sub = utils::makeScopeGuard([&queues_not_done] { queues_not_done.fetch_sub(1); });
             auto subMove = utils::makeMoveWrapper(std::move(sub));
             // Post delayed task instead of regular task to wait for all delayed tasks
             // that are ready for processing.
-            queue->PostDelayedTask([&queues_not_done, subMove]() mutable {
-                subMove.move();
-            }, TimeDelta::Zero());
+            queue->PostDelayedTask([&queues_not_done, subMove]() mutable { subMove.move(); }, TimeDelta::Zero());
         }
     }
 
@@ -236,33 +226,26 @@ TaskThread *TaskThread::Current()
 #if defined(OCTK_OS_UNIX)
 TaskThreadManager::TaskThreadManager()
 {
-#if defined(OCTK_OS_MAC)
+#    if defined(OCTK_OS_MAC)
     InitCocoaMultiThreading();
-#endif
+#    endif
     pthread_key_create(&key_, nullptr);
 }
 
-TaskThread *TaskThreadManager::CurrentTaskThread()
-{
-    return static_cast<TaskThread *>(pthread_getspecific(key_));
-}
+TaskThread *TaskThreadManager::CurrentTaskThread() { return static_cast<TaskThread *>(pthread_getspecific(key_)); }
 
-void TaskThreadManager::SetCurrentTaskThreadInternal(TaskThread *thread)
-{
-    pthread_setspecific(key_, thread);
-}
+void TaskThreadManager::SetCurrentTaskThreadInternal(TaskThread *thread) { pthread_setspecific(key_, thread); }
 #endif
 
 #if defined(OCTK_OS_WIN)
-TaskThreadManager::TaskThreadManager() : key_(TlsAlloc()) {}
-
-TaskThread* TaskThreadManager::CurrentTaskThread() {
-  return static_cast<TaskThread*>(TlsGetValue(key_));
+TaskThreadManager::TaskThreadManager()
+    : key_(TlsAlloc())
+{
 }
 
-void TaskThreadManager::SetCurrentTaskThreadInternal(TaskThread* thread) {
-  TlsSetValue(key_, thread);
-}
+TaskThread *TaskThreadManager::CurrentTaskThread() { return static_cast<TaskThread *>(TlsGetValue(key_)); }
+
+void TaskThreadManager::SetCurrentTaskThreadInternal(TaskThread *thread) { TlsSetValue(key_, thread); }
 #endif
 
 void TaskThreadManager::SetCurrentTaskThread(TaskThread *thread)
@@ -270,9 +253,9 @@ void TaskThreadManager::SetCurrentTaskThread(TaskThread *thread)
 #if OCTK_DLOG_IS_ON
     if (CurrentTaskThread() && thread)
     {
-    OCTK_DLOG(LS_ERROR) << "SetCurrentTaskThread: Overwriting an existing value?";
-  }
-#endif  // OCTK_DLOG_IS_ON
+        OCTK_DLOG(LS_ERROR) << "SetCurrentTaskThread: Overwriting an existing value?";
+    }
+#endif // OCTK_DLOG_IS_ON
 
     if (thread)
     {
@@ -295,10 +278,7 @@ void TaskThreadManager::SetCurrentTaskThread(TaskThread *thread)
     SetCurrentTaskThreadInternal(thread);
 }
 
-void TaskThreadManager::ChangeCurrentTaskThreadForTest(TaskThread *thread)
-{
-    SetCurrentTaskThreadInternal(thread);
-}
+void TaskThreadManager::ChangeCurrentTaskThreadForTest(TaskThread *thread) { SetCurrentTaskThreadInternal(thread); }
 
 TaskThread *TaskThreadManager::WrapCurrentTaskThread()
 {
@@ -322,7 +302,10 @@ void TaskThreadManager::UnwrapCurrentTaskThread()
 }
 
 TaskThread::ScopedDisallowBlockingCalls::ScopedDisallowBlockingCalls()
-    : thread_(TaskThread::Current()), previous_state_(thread_->SetAllowBlockingCalls(false)) {}
+    : thread_(TaskThread::Current())
+    , previous_state_(thread_->SetAllowBlockingCalls(false))
+{
+}
 
 TaskThread::ScopedDisallowBlockingCalls::~ScopedDisallowBlockingCalls()
 {
@@ -331,11 +314,13 @@ TaskThread::ScopedDisallowBlockingCalls::~ScopedDisallowBlockingCalls()
 }
 
 #if OCTK_DCHECK_IS_ON
-TaskThread::ScopedCountBlockingCalls::ScopedCountBlockingCalls(
-    std::function<void(uint32_t, uint32_t)> callback)
-    : thread_(TaskThread::Current()), base_blocking_call_count_(thread_->GetBlockingCallCount())
-    , base_could_be_blocking_call_count_(
-        thread_->GetCouldBeBlockingCallCount()), result_callback_(std::move(callback)) {}
+TaskThread::ScopedCountBlockingCalls::ScopedCountBlockingCalls(std::function<void(uint32_t, uint32_t)> callback)
+    : thread_(TaskThread::Current())
+    , base_blocking_call_count_(thread_->GetBlockingCallCount())
+    , base_could_be_blocking_call_count_(thread_->GetCouldBeBlockingCallCount())
+    , result_callback_(std::move(callback))
+{
+}
 
 TaskThread::ScopedCountBlockingCalls::~ScopedCountBlockingCalls()
 {
@@ -352,8 +337,7 @@ uint32_t TaskThread::ScopedCountBlockingCalls::GetBlockingCallCount() const
 
 uint32_t TaskThread::ScopedCountBlockingCalls::GetCouldBeBlockingCallCount() const
 {
-    return thread_->GetCouldBeBlockingCallCount() -
-           base_could_be_blocking_call_count_;
+    return thread_->GetCouldBeBlockingCallCount() - base_could_be_blocking_call_count_;
 }
 
 uint32_t TaskThread::ScopedCountBlockingCalls::GetTotalBlockedCallCount() const
@@ -362,16 +346,26 @@ uint32_t TaskThread::ScopedCountBlockingCalls::GetTotalBlockedCallCount() const
 }
 #endif
 
-TaskThread::TaskThread(SocketServer *ss) : TaskThread(ss, /*do_init=*/true) {}
+TaskThread::TaskThread(SocketServer *ss)
+    : TaskThread(ss, /*do_init=*/true)
+{
+}
 
-TaskThread::TaskThread(std::unique_ptr<SocketServer> ss) : TaskThread(std::move(ss), /*do_init=*/true) {}
+TaskThread::TaskThread(std::unique_ptr<SocketServer> ss)
+    : TaskThread(std::move(ss), /*do_init=*/true)
+{
+}
 
 TaskThread::TaskThread(SocketServer *ss, bool do_init)
-    : delayed_next_num_(0), fInitialized_(false), fDestroyed_(false), stop_(0), ss_(ss)
+    : delayed_next_num_(0)
+    , fInitialized_(false)
+    , fDestroyed_(false)
+    , stop_(0)
+    , ss_(ss)
 {
     OCTK_DCHECK(ss);
     ss_->SetMessageQueue(this);
-    SetName("TaskThread", this);  // default name
+    SetName("TaskThread", this); // default name
     if (do_init)
     {
         DoInit();
@@ -419,19 +413,13 @@ void TaskThread::DoDestroy()
     TaskThreadManager::Remove(this);
     // Clear.
     CurrentTaskQueueSetter set_current(this);
-    messages_ = { };
-    delayed_messages_ = { };
+    messages_ = {};
+    delayed_messages_ = {};
 }
 
-SocketServer *TaskThread::socketserver()
-{
-    return ss_;
-}
+SocketServer *TaskThread::socketserver() { return ss_; }
 
-void TaskThread::WakeUpSocketServer()
-{
-    ss_->WakeUp();
-}
+void TaskThread::WakeUpSocketServer() { ss_->WakeUp(); }
 
 void TaskThread::Quit()
 {
@@ -439,15 +427,9 @@ void TaskThread::Quit()
     WakeUpSocketServer();
 }
 
-bool TaskThread::IsQuitting()
-{
-    return stop_.load(std::memory_order_acquire) != 0;
-}
+bool TaskThread::IsQuitting() { return stop_.load(std::memory_order_acquire) != 0; }
 
-void TaskThread::Restart()
-{
-    stop_.store(0, std::memory_order_release);
-}
+void TaskThread::Restart() { stop_.store(0, std::memory_order_release); }
 
 TaskThread::Task TaskThread::Get(int cmsWait)
 {
@@ -509,9 +491,8 @@ TaskThread::Task TaskThread::Get(int cmsWait)
 
         {
             // Wait and multiplex in the meantime
-            if (!ss_->Wait(cmsNext == kForever ? SocketServer::foreverDuration()
-                                               : TimeDelta::Millis(cmsNext),
-                /*process_io=*/true))
+            if (!ss_->Wait(cmsNext == kForever ? SocketServer::foreverDuration() : TimeDelta::Millis(cmsNext),
+                           /*process_io=*/true))
             {
                 return nullptr;
             }
@@ -532,9 +513,7 @@ TaskThread::Task TaskThread::Get(int cmsWait)
     return nullptr;
 }
 
-void TaskThread::PostTaskImpl(Task task,
-                              const PostTaskTraits & /* traits */,
-                              const SourceLocation & /* location */)
+void TaskThread::PostTaskImpl(Task task, const PostTaskTraits & /* traits */, const SourceLocation & /* location */)
 {
     if (IsQuitting())
     {
@@ -617,18 +596,14 @@ void TaskThread::Dispatch(Task task)
     int64_t diff = end_time - start_time;
     if (diff >= dispatch_warning_ms_)
     {
-        OCTK_INFO() << "Message to " << name() << " took " << diff
-                    << "ms to dispatch.";
+        OCTK_INFO() << "Message to " << name() << " took " << diff << "ms to dispatch.";
         // To avoid log spew, move the warning limit to only give warning
         // for delays that are larger than the one observed.
         dispatch_warning_ms_ = diff + 1;
     }
 }
 
-bool TaskThread::IsCurrent() const
-{
-    return TaskThreadManager::Instance()->CurrentTaskThread() == this;
-}
+bool TaskThread::IsCurrent() const { return TaskThreadManager::Instance()->CurrentTaskThread() == this; }
 
 std::unique_ptr<TaskThread> TaskThread::CreateWithSocketServer()
 {
@@ -646,7 +621,7 @@ bool TaskThread::SleepMs(int milliseconds)
 
 #if defined(OCTK_OS_WIN)
     ::Sleep(milliseconds);
-  return true;
+    return true;
 #else
     // POSIX has both a usleep() and a nanosleep(), but the former is deprecated,
     // so we use nanosleep() even though it has greater precision than necessary.
@@ -699,7 +674,7 @@ bool TaskThread::Start()
         return false;
     }
 
-    Restart();  // reset IsQuitting() if the thread is being restarted
+    Restart(); // reset IsQuitting() if the thread is being restarted
 
     // Make sure that TaskThreadManager is created on the main thread before we start a new thread.
     TaskThreadManager::Instance();
@@ -730,37 +705,33 @@ bool TaskThread::Start()
     return true;
 }
 
-bool TaskThread::WrapCurrent()
-{
-    return WrapCurrentWithTaskThreadManager(TaskThreadManager::Instance(), true);
-}
+bool TaskThread::WrapCurrent() { return WrapCurrentWithTaskThreadManager(TaskThreadManager::Instance(), true); }
 
 void TaskThread::UnwrapCurrent()
 {
     // Clears the platform-specific thread-specific storage.
     TaskThreadManager::Instance()->SetCurrentTaskThread(nullptr);
 #if 1
-#if defined(OCTK_OS_WIN)
-    if (thread_ != nullptr) {
-    if (!CloseHandle(thread_)) {
-      OCTK_ERROR() << "When unwrapping thread, failed to close handle.";
+#    if defined(OCTK_OS_WIN)
+    if (thread_ != nullptr)
+    {
+        if (!CloseHandle(thread_))
+        {
+            OCTK_ERROR() << "When unwrapping thread, failed to close handle.";
+        }
+        thread_ = nullptr;
+        thread_id_ = 0;
     }
-    thread_ = nullptr;
-    thread_id_ = 0;
-  }
-#elif defined(OCTK_OS_UNIX)
+#    elif defined(OCTK_OS_UNIX)
     thread_ = 0;
-#endif
+#    endif
 #else
     mThread.detach();
     mThread = std::thread();
 #endif
 }
 
-void TaskThread::SafeWrapCurrent()
-{
-    WrapCurrentWithTaskThreadManager(TaskThreadManager::Instance(), false);
-}
+void TaskThread::SafeWrapCurrent() { WrapCurrentWithTaskThreadManager(TaskThreadManager::Instance(), false); }
 
 void TaskThread::Join()
 {
@@ -777,16 +748,16 @@ void TaskThread::Join()
     }
 
 #if 1
-#if defined(OCTK_OS_WIN)
+#    if defined(OCTK_OS_WIN)
     OCTK_DCHECK(thread_ != nullptr);
-  WaitForSingleObject(thread_, INFINITE);
-  CloseHandle(thread_);
-  thread_ = nullptr;
-  thread_id_ = 0;
-#elif defined(OCTK_OS_UNIX)
+    WaitForSingleObject(thread_, INFINITE);
+    CloseHandle(thread_);
+    thread_ = nullptr;
+    thread_id_ = 0;
+#    elif defined(OCTK_OS_UNIX)
     pthread_join(thread_, nullptr);
     thread_ = 0;
-#endif
+#    endif
 #else
     mThread.join();
 #endif
@@ -811,17 +782,18 @@ void TaskThread::AssertBlockingIsAllowedOnCurrentTaskThread()
 
 // static
 #if defined(OCTK_OS_WIN)
-DWORD WINAPI TaskThread::PreRun(LPVOID pv) {
+DWORD WINAPI TaskThread::PreRun(LPVOID pv)
+{
 #else
 void *TaskThread::PreRun(void *pv)
 {
     OCTK_TRACE("TaskThread::PreRun(%p)", pv);
 #endif
     TaskThread *thread = static_cast<TaskThread *>(pv);
-    thread->mIdString = PlatformThread::currentThreadIdString();
-    auto hex = PlatformThread::currentThreadIdHexString();
+    thread->mIdString = PlatformThread::currentThreadId().toString();
+    auto hex = PlatformThread::currentThreadId().toHexString();
     auto id = PlatformThread::currentThreadId();
-    auto ref = PlatformThread::currentThreadRef();
+    // auto ref = PlatformThread::currentThreadRef();
     TaskThreadManager::Instance()->SetCurrentTaskThread(thread);
     // SetCurrentTaskThreadName(thread->name_.c_str()); //TODO
 #if defined(OCTK_OS_MAC)
@@ -836,7 +808,7 @@ void *TaskThread::PreRun(void *pv)
 #else
     return nullptr;
 #endif
-}  // namespace rtc
+} // namespace rtc
 
 void TaskThread::Run()
 {
@@ -856,8 +828,7 @@ void TaskThread::Stop()
     Join();
 }
 
-void TaskThread::BlockingCallImpl(FunctionView<void()> functor,
-                                  const SourceLocation & /* location */)
+void TaskThread::BlockingCallImpl(FunctionView<void()> functor, const SourceLocation & /* location */)
 {
     // TRACE_EVENT0("webrtc", "TaskThread::BlockingCall");
 
@@ -890,10 +861,12 @@ void TaskThread::BlockingCallImpl(FunctionView<void()> functor,
 #endif
 
     Event done;
-    PostTask([functor, &done] {
-        auto guard = utils::makeScopeGuard([&done] { done.Set(); });
-        functor();
-    });
+    PostTask(
+        [functor, &done]
+        {
+            auto guard = utils::makeScopeGuard([&done] { done.Set(); });
+            functor();
+        });
     done.Wait(Event::foreverDuration());
 }
 
@@ -904,10 +877,7 @@ void TaskThread::EnsureIsCurrentTaskQueue()
 }
 
 // Called by the TaskThreadManager when being set as the current thread.
-void TaskThread::ClearCurrentTaskQueue()
-{
-    task_queue_registration_.reset();
-}
+void TaskThread::ClearCurrentTaskQueue() { task_queue_registration_.reset(); }
 
 void TaskThread::AllowInvokesToTaskThread(TaskThread *thread)
 {
@@ -960,7 +930,7 @@ bool TaskThread::IsInvokeToTaskThreadAllowed(TaskThread *target)
     {
         return true;
     }
-    for (const auto *thread: allowed_threads_)
+    for (const auto *thread : allowed_threads_)
     {
         if (thread == target)
         {
@@ -979,10 +949,7 @@ void TaskThread::Delete()
     delete this;
 }
 
-bool TaskThread::IsProcessingMessagesForTesting()
-{
-    return (owned_ || IsCurrent()) && !IsQuitting();
-}
+bool TaskThread::IsProcessingMessagesForTesting() { return (owned_ || IsCurrent()) && !IsQuitting(); }
 
 bool TaskThread::ProcessMessages(int cmsLoop)
 {
@@ -1038,9 +1005,9 @@ bool TaskThread::WrapCurrentWithTaskThreadManager(TaskThreadManager *thread_mana
 #elif defined(OCTK_OS_UNIX)
     thread_ = pthread_self();
 #endif
-// #else
-//     mThread = std::this_thread::
-// #endif
+    // #else
+    //     mThread = std::this_thread::
+    // #endif
     owned_ = false;
     thread_manager->SetCurrentTaskThread(this);
     return true;
@@ -1055,7 +1022,8 @@ bool TaskThread::IsRunning()
 #endif
 }
 
-AutoTaskThread::AutoTaskThread() : TaskThread(CreateDefaultSocketServer(), /*do_init=*/false)
+AutoTaskThread::AutoTaskThread()
+    : TaskThread(CreateDefaultSocketServer(), /*do_init=*/false)
 {
     if (!TaskThreadManager::Instance()->CurrentTaskThread())
     {

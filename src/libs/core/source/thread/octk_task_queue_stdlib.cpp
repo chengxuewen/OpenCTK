@@ -131,7 +131,7 @@ private:
     // tasks (including delayed tasks).
     // Placing this last ensures the thread doesn't touch uninitialized attributes
     // throughout it's lifetime.
-    PlatformThread thread_;
+    // PlatformThread thread_;
 };
 
 TaskQueueStdlib::TaskQueueStdlib(StringView queue_name,
@@ -145,15 +145,15 @@ PlatformThread TaskQueueStdlib::InitializeThread(TaskQueueStdlib *me,
                                                  ThreadPriority priority)
 {
     Event started;
-    auto thread = PlatformThread::SpawnJoinable(
-        [&started, me] {
-            CurrentTaskQueueSetter set_current(me);
-            started.Set();
-            me->ProcessTasks();
-        },
-        queue_name, ThreadAttributes().SetPriority(priority));
-    started.Wait(Event::foreverDuration());
-    return thread;
+    // auto thread = PlatformThread::SpawnJoinable(
+    //     [&started, me] {
+    //         CurrentTaskQueueSetter set_current(me);
+    //         started.Set();
+    //         me->ProcessTasks();
+    //     },
+    //     queue_name, ThreadAttributes().SetPriority(priority));
+    // started.Wait(Event::foreverDuration());
+    // return thread;
 }
 
 void TaskQueueStdlib::Delete()

@@ -22,70 +22,38 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_MUTEX_HPP
-#define _OCTK_MUTEX_HPP
+#include <private/octk_platform_thread_p.hpp>
 
-#include <octk_global.hpp>
-#include <octk_assert.hpp>
+#if defined(OCTK_OS_WIN)
 
-#include <mutex>
-#include <atomic>
-#include <shared_mutex>
+#    ifndef OCTK_OS_WINCE
+#        ifndef _MT
+#            define _MT
+#        endif
+#        include <process.h>
+#    else
+#    endif
 
 OCTK_BEGIN_NAMESPACE
 
-class Mutex : public std::mutex
+namespace detail
 {
-public:
-    using Base = std::mutex;
-    using SharedLocker = std::shared_lock<Base>;
-    using UniqueLocker = std::unique_lock<Base>;
 
-    class Locker
-    {
-    public:
-        Locker(Base *mutex)
-            : Locker(*mutex)
-        {
-        }
-        Locker(Base &mutex)
-            : mMutex(mutex)
-        {
-            mMutex.lock();
-        }
-        virtual ~Locker()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
-        virtual void relock()
-        {
-            if (!mLocked.exchange(true))
-            {
-                mMutex.lock();
-            }
-        }
-        virtual void unlock()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
+} // namespace detail
 
-    private:
-        Base &mMutex;
-        std::atomic_bool mLocked{true};
-        OCTK_DISABLE_COPY_MOVE(Locker)
-    };
+PlatformThreadPrivate::PlatformThreadPrivate(PlatformThread *p)
+    : mPPtr(p)
+{
+}
 
-    using Base::Base;
-    Mutex() = default;
-    ~Mutex() = default;
-};
+PlatformThreadPrivate::~PlatformThreadPrivate() { }
+
+void PlatformThreadPrivate::setPriority(Priority priority) { }
+
+void PlatformThreadPrivate::exit(int code) { }
+
+bool PlatformThread::Id::isEqual(const Id &other) const noexcept { return mHandle == other.mHandle; }
 
 OCTK_END_NAMESPACE
 
-#endif // _OCTK_MUTEX_HPP
+#endif // defined(OCTK_OS_WIN)
