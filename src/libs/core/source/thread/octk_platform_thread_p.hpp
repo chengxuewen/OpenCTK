@@ -27,7 +27,7 @@
 
 #include <octk_reference_counter.hpp>
 #include <octk_platform_thread.hpp>
-#include <octk_mutex.hpp>
+#include <octk_logging.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -43,14 +43,20 @@ class PlatformThreadData
 
     ~PlatformThreadData()
     {
-        OCTK_ASSERT(mRefCounter.loadRelaxed() != 0);
-        delete thread.exchange(nullptr, std::memory_order_acq_rel);
+        if (OCTK_UNLIKELY(mRefCounter.loadAcquire() != 0))
+        {
+            OCTK_FATAL("Attempting to call destruct while ref count is not 0.");
+        }
+
+        PlatformThreadData::clearCurrent();
+        thread.store(nullptr);
     }
 
 public:
     PlatformThreadData(int initialRefCount = 1)
         : mRefCounter(initialRefCount)
     {
+        // fprintf(stderr, "PlatformThreadData %p created\n", this);
     }
 
     static PlatformThreadData *current(PlatformThreadPrivate *thread);
@@ -60,12 +66,17 @@ public:
     void ref()
     {
         mRefCounter.ref();
-        OCTK_ASSERT(mRefCounter.loadRelaxed() != 0);
+        OCTK_ASSERT(mRefCounter.loadAcquire() != 0);
     }
     void deref()
     {
+        if (OCTK_UNLIKELY(mRefCounter.loadAcquire() == 0))
+        {
+            OCTK_FATAL("Attempting to call deref while ref count is 0.");
+        }
         if (!mRefCounter.deref())
         {
+            // fprintf(stderr, "PlatformThreadData %p delete\n", this);
             delete this;
         }
     }
@@ -86,6 +97,7 @@ public:
 class OCTK_CORE_API PlatformThreadPrivate
 {
 public:
+    using ThreadMutex = PlatformThread::ThreadMutex;
     using Priority = PlatformThread::Priority;
     using Handle = PlatformThread::Handle;
 
@@ -97,19 +109,19 @@ public:
 
     void setPriority(Priority priority); // impl
     bool start(Priority priority);       // impl
-    void exit(int code);                 // impl
+    Status terminate();                  // impl
 
-    virtual void onFinished() { }
-    virtual void onStarted() { }
-    virtual void run() { }
+    void onFinished() { mPPtr->onFinished(); }
+    void onStarted() { mPPtr->onStarted(); }
+    void run() { mPPtr->run(); }
 
-    mutable Mutex mMutex;
-    mutable std::condition_variable mDoneCondition;
+    mutable ThreadMutex mMutex;
+    mutable ThreadMutex::Condition mDoneCondition;
 
     int mReturnCode{-1};
     std::atomic<bool> mExited{false};
     std::atomic<bool> mRunning{false};
-    std::atomic<bool> mFinished{true};
+    std::atomic<bool> mFinished{false};
     std::atomic<bool> mInFinish{false}; //when in finish
     std::atomic<bool> mInterruptionRequested{false};
 
@@ -127,6 +139,30 @@ protected:
     OCTK_DEFINE_PPTR(PlatformThread)
     OCTK_DECLARE_PUBLIC(PlatformThread)
     OCTK_DISABLE_COPY_MOVE(PlatformThreadPrivate)
+};
+
+class AdoptedPlatformThread : public PlatformThread
+{
+    OCTK_DECLARE_PRIVATE(PlatformThread)
+public:
+    explicit AdoptedPlatformThread(PlatformThreadData *data = nullptr)
+        : PlatformThread(new PlatformThreadPrivate(this, data))
+    {
+        // thread should be running and not finished for the lifetime of the application
+        this->dFunc()->mRunning = true;
+        this->dFunc()->mFinished = false;
+        this->init();
+    }
+    ~AdoptedPlatformThread() override { OCTK_TRACE("~AdoptedPlatformThread = %p\n", this); }
+
+    void init(); // impl
+
+protected:
+    void run() override
+    {
+        // this function should never be called
+        OCTK_FATAL("AdoptedPlatformThread::run(): Internal error, this implementation should never be called.");
+    }
 };
 
 OCTK_END_NAMESPACE

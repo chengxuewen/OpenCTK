@@ -180,7 +180,7 @@ TEST(MutexTest, ProtectsSharedResourceWithMutexAndRawMutexTryLocker)
 TEST(MutexTest, ProtectsSharedResourceWithMutexAndMutexlocker)
 {
     std::vector<std::unique_ptr<std::thread>> threads;
-    LockRunner<Mutex, Mutexlocklocker<Mutex, Mutex::Locker>> runner;
+    LockRunner<Mutex, Mutexlocklocker<Mutex, Mutex::Lock>> runner;
     StartThreads(threads, &runner);
     runner.SetExpectedThreadCount(kNumThreads);
     EXPECT_TRUE(runner.Run());

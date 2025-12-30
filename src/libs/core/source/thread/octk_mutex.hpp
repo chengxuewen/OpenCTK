@@ -29,8 +29,8 @@
 #include <octk_assert.hpp>
 
 #include <mutex>
-#include <atomic>
 #include <shared_mutex>
+#include <condition_variable>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -38,52 +38,26 @@ class Mutex : public std::mutex
 {
 public:
     using Base = std::mutex;
-    using SharedLocker = std::shared_lock<Base>;
-    using UniqueLocker = std::unique_lock<Base>;
-
-    class Locker
-    {
-    public:
-        Locker(Base *mutex)
-            : Locker(*mutex)
-        {
-        }
-        Locker(Base &mutex)
-            : mMutex(mutex)
-        {
-            mMutex.lock();
-        }
-        virtual ~Locker()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
-        virtual void relock()
-        {
-            if (!mLocked.exchange(true))
-            {
-                mMutex.lock();
-            }
-        }
-        virtual void unlock()
-        {
-            if (mLocked.exchange(false))
-            {
-                mMutex.unlock();
-            }
-        }
-
-    private:
-        Base &mMutex;
-        std::atomic_bool mLocked{true};
-        OCTK_DISABLE_COPY_MOVE(Locker)
-    };
+    using Lock = std::lock_guard<Base>;
+    using UniqueLock = std::unique_lock<Base>;
+    using Condition = std::condition_variable;
 
     using Base::Base;
     Mutex() = default;
     ~Mutex() = default;
+};
+
+class RecursiveMutex : public std::recursive_mutex
+{
+public:
+    using Base = std::recursive_mutex;
+    using Lock = std::lock_guard<Base>;
+    using UniqueLock = std::unique_lock<Base>;
+    using Condition = std::condition_variable_any;
+
+    using Base::Base;
+    RecursiveMutex() = default;
+    ~RecursiveMutex() = default;
 };
 
 OCTK_END_NAMESPACE

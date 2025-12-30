@@ -46,7 +46,7 @@ void SimulatedTaskQueue::Delete()
     std::deque<TaskQueue::Task> ready_tasks;
     std::map<Timestamp, std::vector<TaskQueue::Task>> delayed_tasks;
     {
-        Mutex::Locker locker(&lock_);
+        Mutex::Lock locker(&lock_);
         ready_tasks_.swap(ready_tasks);
         delayed_tasks_.swap(delayed_tasks);
     }
@@ -57,7 +57,7 @@ void SimulatedTaskQueue::Delete()
 
 void SimulatedTaskQueue::RunReady(Timestamp at_time)
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::Lock locker(&lock_);
     for (auto it = delayed_tasks_.begin();
          it != delayed_tasks_.end() && it->first <= at_time;
          it = delayed_tasks_.erase(it))
@@ -91,7 +91,7 @@ void SimulatedTaskQueue::PostTaskImpl(TaskQueue::Task task,
                                       const PostTaskTraits & /*traits*/,
                                       const SourceLocation & /*location*/)
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::Lock locker(&lock_);
     ready_tasks_.push_back(std::move(task));
     next_run_time_ = Timestamp::MinusInfinity();
 }
@@ -101,7 +101,7 @@ void SimulatedTaskQueue::PostDelayedTaskImpl(TaskQueue::Task task,
                                              const PostDelayedTaskTraits & /*traits*/,
                                              const SourceLocation & /*location*/)
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::Lock locker(&lock_);
     Timestamp target_time = handler_->CurrentTime() + delay;
     delayed_tasks_[target_time].push_back(std::move(task));
     next_run_time_ = std::min(next_run_time_, target_time);

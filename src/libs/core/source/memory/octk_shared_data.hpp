@@ -67,7 +67,7 @@ struct SharedDataRefCounter final
     ReferenceCounter::Value &mRefCount;
     inline bool ref() noexcept { return ReferenceCounter::ref(mRefCount); }
     inline bool deref() noexcept { return ReferenceCounter::deref(mRefCount); }
-    inline int loadRelaxed() const noexcept { return ReferenceCounter::loadRelaxed(mRefCount); }
+    inline int load() const noexcept { return ReferenceCounter::load(mRefCount); }
     inline int loadAcquire() const noexcept { return ReferenceCounter::loadAcquire(mRefCount); }
 };
 } // namespace detail
@@ -85,7 +85,7 @@ public:
 
     inline void detach()
     {
-        if (mData && RefCounter{mData}.loadRelaxed() != 1)
+        if (mData && RefCounter{mData}.loadAcquire() != 1)
         {
             this->detachHelper();
         }
@@ -251,7 +251,7 @@ public:
 
     inline void detach()
     {
-        if (mData && RefCounter{mData}.loadRelaxed() != 1)
+        if (mData && RefCounter{mData}.loadAcquire() != 1)
         {
             this->detachHelper();
         }

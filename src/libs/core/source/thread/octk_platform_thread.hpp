@@ -25,8 +25,25 @@
 #pragma once
 
 #include <octk_status.hpp>
+#include <octk_mutex.hpp>
+#include <octk_core_config.hpp>
 
 #include <thread>
+#include <future>     // for std::async
+#include <functional> // for std::invoke; no guard needed as it's a C++98 header
+
+#if defined(__cpp_lib_invoke) && __cpp_lib_invoke >= 201411 && defined(__cpp_init_captures) &&                         \
+    __cpp_init_captures >= 201304 && defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201304
+#    define OCTK_PLATFORM_THREAD_HAS_VARIADIC_CREATE 1
+#else
+#    define OCTK_PLATFORM_THREAD_HAS_VARIADIC_CREATE 0
+#endif
+
+#if defined(__cpp_init_captures) && __cpp_init_captures >= 201304
+#    define OCTK_PLATFORM_THREAD_HAS_INIT_CAPTURES 1
+#else
+#    define OCTK_PLATFORM_THREAD_HAS_INIT_CAPTURES 0
+#endif
 
 #if defined(OCTK_OS_WIN)
 #    define OCTK_PLATFORM_THREAD_HANDLE_T void *;
@@ -36,10 +53,39 @@
 
 OCTK_BEGIN_NAMESPACE
 
+namespace detail
+{
+template <typename Function> struct Callable
+{
+    explicit Callable(Function &&f)
+        : mFunction(std::forward<Function>(f))
+    {
+    }
+
+    // Apply the same semantics of a lambda closure type w.r.t. the special
+    // member functions, if possible: delete the copy assignment operator,
+    // bring back all the others as per the RO5 (cf. §8.1.5.1/11 [expr.prim.lambda.closure])
+    ~Callable() = default;
+    Callable(const Callable &) = default;
+    Callable(Callable &&) = default;
+    Callable &operator=(const Callable &) = delete;
+    Callable &operator=(Callable &&) = default;
+
+    void operator()() { (void)mFunction(); }
+
+    typename std::decay<Function>::type mFunction;
+};
+} // namespace detail
+
 class PlatformThreadPrivate;
 class OCTK_CORE_API PlatformThread
 {
+    using ThreadMutex = RecursiveMutex;
+
 public:
+    using SharedPtr = std::shared_ptr<PlatformThread>;
+    using UniquePtr = std::unique_ptr<PlatformThread>;
+
     using Handle = void *;
     class Id
     {
@@ -75,6 +121,9 @@ public:
             return std::to_string(reinterpret_cast<uint64_t>(mHandle));
         }
         std::string toHexString(bool hex = false) const { return this->toString(true); }
+
+        bool valid() const noexcept { return nullptr != mHandle; }
+        bool isValid() const noexcept { return nullptr != mHandle; }
 
         bool isEqual(const Id &other) const noexcept;
         bool operator==(const Id &other) const noexcept { return this->isEqual(other); }
@@ -148,12 +197,14 @@ public:
 
     bool isFinished() const;
     bool isRunning() const;
-    Id id() const;
+    Id threadId() const;
+    int retval() const;
 
-    void start(Priority = Priority::kInherit);
-    void terminate();
+    Status start(Priority = Priority::kInherit);
+    Status terminate();
 
-    bool wait(unsigned long msecs = std::numeric_limits<unsigned long>::max());
+    OCTK_STATIC_CONSTANT_NUMBER(kWaitForeverMSecs, std::numeric_limits<unsigned long>::max())
+    bool wait(unsigned long msecs = kWaitForeverMSecs);
 
     static PlatformThread *currentThread() noexcept;
     static Id currentThreadId() noexcept;
@@ -165,12 +216,39 @@ public:
     static void usleep(unsigned long usecs);
     static void msleep(unsigned long msecs);
     static void sleep(unsigned long secs);
-    static void exit(int code = 0);
+
+    static UniquePtr create(std::future<void> &&future);
+#if OCTK_PLATFORM_THREAD_HAS_VARIADIC_CREATE
+    template <typename Func, typename... Args> static UniquePtr create(Func &&f, Args &&...args)
+    {
+        using DecayedFunction = typename std::decay<Func>::type;
+        auto threadFunction = [f = static_cast<DecayedFunction>(std::forward<Func>(f))](auto &&...largs) mutable -> void
+        { (void)std::invoke(std::move(f), std::forward<decltype(largs)>(largs)...); };
+
+        return create(std::async(std::launch::deferred, std::move(threadFunction), std::forward<Args>(args)...));
+    }
+#elif OCTK_PLATFORM_THREAD_HAS_INIT_CAPTURES
+    template <typename Func> static UniquePtr create(Func &&func)
+    {
+        using DecayedFunc = typename std::decay<Func>::type;
+        auto threadFunc = [func = static_cast<DecayedFunc>(std::forward<Func>(func))]() mutable -> void
+        { (void)func(); };
+
+        return create(std::async(std::launch::deferred, std::move(threadFunc)));
+    }
+#else
+    template <typename Func> static UniquePtr create(Func &&func)
+    {
+        return create(std::async(std::launch::deferred, detail::Callable<Func>(std::forward<Func>(func))));
+    }
+#endif
 
 protected:
     static void setTerminationEnabled(bool enabled = true);
 
-    // virtual void run();
+    virtual void onFinished() { }
+    virtual void onStarted() { }
+    virtual void run() { }
 
 protected:
     OCTK_DEFINE_DPTR(PlatformThread)

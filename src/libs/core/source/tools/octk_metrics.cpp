@@ -57,7 +57,7 @@ public:
         sample = std::min(sample, max_);
         sample = std::max(sample, min_ - 1);  // Underflow bucket.
 
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         if (info_.samples.size() == kMaxSampleMapSize &&
             info_.samples.find(sample) == info_.samples.end())
         {
@@ -69,7 +69,7 @@ public:
     // Returns a copy (or nullptr if there are no samples) and clears samples.
     std::unique_ptr<SampleInfo> GetAndReset()
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         if (info_.samples.empty())
         {
             return nullptr;
@@ -87,13 +87,13 @@ public:
     // Functions only for testing.
     void Reset()
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         info_.samples.clear();
     }
 
     int NumEvents(int sample) const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         const auto it = info_.samples.find(sample);
         return (it == info_.samples.end()) ? 0 : it->second;
     }
@@ -101,7 +101,7 @@ public:
     int NumSamples() const
     {
         int num_samples = 0;
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         for (const auto &sample: info_.samples)
         {
             num_samples += sample.second;
@@ -111,13 +111,13 @@ public:
 
     int MinSample() const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         return (info_.samples.empty()) ? -1 : info_.samples.begin()->first;
     }
 
     std::map<int, int> Samples() const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         return info_.samples;
     }
 
@@ -142,7 +142,7 @@ public:
                                   int max,
                                   int bucket_count)
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         const auto &it = map_.find(name.data());
         if (it != map_.end())
         {
@@ -156,7 +156,7 @@ public:
 
     Histogram *GetEnumerationHistogram(StringView name, int boundary)
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         const auto &it = map_.find(name.data());
         if (it != map_.end())
         {
@@ -170,7 +170,7 @@ public:
 
     void GetAndReset(std::map<std::string, std::unique_ptr<SampleInfo>, StringViewCmp> *histograms)
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         for (const auto &kv: map_)
         {
             std::unique_ptr<SampleInfo> info = kv.second->GetAndReset();
@@ -184,7 +184,7 @@ public:
     // Functions only for testing.
     void Reset()
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         for (const auto &kv: map_)
         {
             kv.second->Reset();
@@ -193,28 +193,28 @@ public:
 
     int NumEvents(StringView name, int sample) const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? 0 : it->second->NumEvents(sample);
     }
 
     int NumSamples(StringView name) const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? 0 : it->second->NumSamples();
     }
 
     int MinSample(StringView name) const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? -1 : it->second->MinSample();
     }
 
     std::map<int, int> Samples(StringView name) const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? std::map<int, int>() : it->second->Samples();
     }
@@ -388,4 +388,5 @@ std::map<int, int> Samples(StringView name)
     return map ? map->Samples(name) : std::map<int, int>();
 }
 }  // namespace metrics
+
 OCTK_END_NAMESPACE

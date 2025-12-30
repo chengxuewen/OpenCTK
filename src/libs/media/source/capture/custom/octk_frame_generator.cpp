@@ -60,7 +60,7 @@ SquareGenerator::SquareGenerator(int width, int height, OutputType type, int num
 
 void SquareGenerator::changeResolution(size_t width, size_t height)
 {
-    Mutex::Locker locker(&mMutex);
+    Mutex::Lock locker(&mMutex);
     mWidth = static_cast<int>(width);
     mHeight = static_cast<int>(height);
     OCTK_CHECK(mWidth > 0);
@@ -69,7 +69,7 @@ void SquareGenerator::changeResolution(size_t width, size_t height)
 
 FrameGeneratorInterface::Resolution SquareGenerator::getResolution() const
 {
-    Mutex::Locker locker(&mMutex);
+    Mutex::Lock locker(&mMutex);
     return {static_cast<size_t>(mWidth), static_cast<size_t>(mHeight)};
 }
 
@@ -86,7 +86,7 @@ std::shared_ptr<I420Buffer> SquareGenerator::createI420Buffer(int width, int hei
 
 FrameGeneratorInterface::VideoFrameData SquareGenerator::nextFrame()
 {
-    Mutex::Locker locker(&mMutex);
+    Mutex::Lock locker(&mMutex);
 
     std::shared_ptr<VideoFrameBuffer> buffer = nullptr;
     switch (mType)

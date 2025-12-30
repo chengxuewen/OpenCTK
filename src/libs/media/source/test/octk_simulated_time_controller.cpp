@@ -107,7 +107,7 @@ void SimulatedTimeControllerImpl::RunReadyRunners()
     // Using a dummy thread rather than nullptr to avoid implicit thread creation
     // by Thread::Current().
     SimulatedThread::CurrentThreadSetter set_current(dummy_thread_.get());
-    Mutex::Locker locker(&lock_);
+    Mutex::Lock locker(&lock_);
     OCTK_DCHECK_EQ(PlatformThread::currentThreadId(), thread_id_);
     Timestamp current_time = CurrentTime();
     // Clearing `ready_runners_` in case this is a recursive call:
@@ -146,7 +146,7 @@ void SimulatedTimeControllerImpl::RunReadyRunners()
 
 Timestamp SimulatedTimeControllerImpl::CurrentTime() const
 {
-    Mutex::Locker locker(&time_lock_);
+    Mutex::Lock locker(&time_lock_);
     return current_time_;
 }
 
@@ -154,7 +154,7 @@ Timestamp SimulatedTimeControllerImpl::NextRunTime() const
 {
     Timestamp current_time = CurrentTime();
     Timestamp next_time = Timestamp::PlusInfinity();
-    Mutex::Locker locker(&lock_);
+    Mutex::Lock locker(&lock_);
     for (auto *runner: runners_)
     {
         Timestamp next_run_time = runner->GetNextRunTime();
@@ -169,20 +169,20 @@ Timestamp SimulatedTimeControllerImpl::NextRunTime() const
 
 void SimulatedTimeControllerImpl::AdvanceTime(Timestamp target_time)
 {
-    Mutex::Locker time_lock(&time_lock_);
+    Mutex::Lock time_lock(&time_lock_);
     OCTK_DCHECK_GE(target_time, current_time_);
     current_time_ = target_time;
 }
 
 void SimulatedTimeControllerImpl::Register(SimulatedSequenceRunner *runner)
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::Lock locker(&lock_);
     runners_.push_back(runner);
 }
 
 void SimulatedTimeControllerImpl::Unregister(SimulatedSequenceRunner *runner)
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::Lock locker(&lock_);
     bool removed = RemoveByValue(&runners_, runner);
     OCTK_CHECK(removed);
     RemoveByValue(&ready_runners_, runner);

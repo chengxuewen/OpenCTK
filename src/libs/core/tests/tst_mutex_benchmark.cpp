@@ -25,7 +25,7 @@ public:
 
     int AddToCounter(int add)
     {
-        Mutex::Locker mu(&mu_);
+        Mutex::Lock mu(&mu_);
         my_counter_ += add;
         return 0;
     }

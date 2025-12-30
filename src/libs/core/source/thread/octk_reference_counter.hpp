@@ -41,12 +41,14 @@ public:
 
     bool ref() noexcept { return this->ref(mValue); }
     bool deref() noexcept { return this->deref(mValue); }
-    int loadRelaxed() const noexcept { return this->loadRelaxed(mValue); }
+
+    int load() const noexcept { return this->load(mValue); }
     int loadAcquire() const noexcept { return this->loadAcquire(mValue); }
 
     static bool ref(Value &value) noexcept { return ++value != 0; }
     static bool deref(Value &value) noexcept { return --value != 0; }
-    static int loadRelaxed(Value &value) noexcept { return value.load(std::memory_order_relaxed); }
+
+    static int load(Value &value) noexcept { return value.load(); }
     static int loadAcquire(Value &value) noexcept { return value.load(std::memory_order_acquire); }
 
 private:

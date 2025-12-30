@@ -253,7 +253,7 @@
 #        endif
 #    endif
 #    if OCTK_CC_GNU >= 408
-#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#        define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
 #    endif
 #endif
 
@@ -318,15 +318,15 @@
 #    endif
 #    if _MSC_VER >= 1920 // C++11 features supported in VC14.2 = VC2019
 #    endif
-#   if _MSC_FULL_VER >= 190023419
+#    if _MSC_FULL_VER >= 190023419
 #        define OCTK_CC_FEATURE_ATTRIBUTES         1
 #        define OCTK_CC_FEATURE_THREADSAFE_STATICS 1
 #        define OCTK_CC_FEATURE_UNIFORM_INIT       1
-#   endif
-#   if !defined(__INTEL_COMPILER) && (_MSC_VER >= 1926)
-#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
-#       define OCTK_CC_FEATURE_BUILTIN_COLUMN 1
-#   endif
+#    endif
+#    if !defined(__INTEL_COMPILER) && (_MSC_VER >= 1926)
+#        define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#        define OCTK_CC_FEATURE_BUILTIN_COLUMN          1
+#    endif
 #endif
 
 /*OCTK_CC_CLANG*/
@@ -341,8 +341,8 @@
 #    endif
 // Variadic macros are supported for gnu++98, c++11, c99 ... since 2.9
 #    if OCTK_CC_CLANG >= 209
-#        if !defined(__STRICT_ANSI__) || defined(__GXX_EXPERIMENTAL_CXX0X__) || \
-            (defined(__cplusplus) && (__cplusplus >= 201103L)) || \
+#        if !defined(__STRICT_ANSI__) || defined(__GXX_EXPERIMENTAL_CXX0X__) ||                                        \
+            (defined(__cplusplus) && (__cplusplus >= 201103L)) ||                                                      \
             (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L))
 #            define OCTK_CC_FEATURE_VARIADIC_MACROS 1
 #        endif
@@ -481,13 +481,14 @@
 #            endif
 #        endif
 #    endif
-#   if !defined(__apple_build_version__) && (__clang_major__ >= 9)
-#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
-#       define OCTK_CC_FEATURE_BUILTIN_COLUMN 1
-#   elif defined(__apple_build_version__) && (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__ % 100) >= 110003
-#       define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
-#       define OCTK_CC_FEATURE_BUILTIN_COLUMN 1
-#   endif
+#    if !defined(__apple_build_version__) && (__clang_major__ >= 9)
+#        define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#        define OCTK_CC_FEATURE_BUILTIN_COLUMN          1
+#    elif defined(__apple_build_version__) &&                                                                          \
+        (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__ % 100) >= 110003
+#        define OCTK_CC_FEATURE_BUILTIN_SOURCE_LOCATION 1
+#        define OCTK_CC_FEATURE_BUILTIN_COLUMN          1
+#    endif
 #elif defined(OCTK_CC_INTEL) && !defined(OCTK_CC_MSVC)
 #    define OCTK_CC_FEATURE_RESTRICTED_VLA     1
 #    define OCTK_CC_FEATURE_VARIADIC_MACROS    1 // C++11 feature supported as an extension in other modes, too
@@ -635,7 +636,6 @@
 #    endif
 #endif
 
-
 #ifndef OCTK_CC_FEATURE_RESTRICTED_VLA
 #    define OCTK_CC_FEATURE_RESTRICTED_VLA 0
 #endif
@@ -762,9 +762,9 @@
 #    define OCTK_CC_FEATURE_BUILTIN_COLUMN 0
 #endif
 #if defined(__cpp_deduction_guides)
-#   define OCTK_CC_FEATURE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 1
+#    define OCTK_CC_FEATURE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 1
 #else
-#   define OCTK_CC_FEATURE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 0
+#    define OCTK_CC_FEATURE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 0
 #endif
 
 

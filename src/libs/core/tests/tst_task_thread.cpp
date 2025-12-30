@@ -445,13 +445,13 @@ TEST(ThreadTest, ThreeThreadsBlockingCall)
 
         void Set(bool value)
         {
-            Mutex::Locker locker(&mutex_);
+            Mutex::Lock locker(&mutex_);
             value_ = value;
         }
 
         bool Get()
         {
-            Mutex::Locker locker(&mutex_);
+            Mutex::Lock locker(&mutex_);
             return value_;
         }
 

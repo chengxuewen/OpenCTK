@@ -107,7 +107,7 @@ TaskThreadManager::~TaskThreadManager()
 void TaskThreadManager::Add(TaskThread *message_queue) { return Instance()->AddInternal(message_queue); }
 void TaskThreadManager::AddInternal(TaskThread *message_queue)
 {
-    Mutex::Locker cs(&crit_);
+    Mutex::UniqueLock cs(crit_);
     message_queues_.push_back(message_queue);
 }
 
@@ -116,7 +116,7 @@ void TaskThreadManager::Remove(TaskThread *message_queue) { return Instance()->R
 void TaskThreadManager::RemoveInternal(TaskThread *message_queue)
 {
     {
-        Mutex::Locker cs(&crit_);
+        Mutex::UniqueLock cs(crit_);
         std::vector<TaskThread *>::iterator iter;
         // iter = absl::c_find(message_queues_, message_queue);
         iter = std::find(message_queues_.begin(), message_queues_.end(), message_queue);
@@ -182,7 +182,7 @@ void TaskThreadManager::ProcessAllMessageQueuesInternal()
     std::atomic<int> queues_not_done(0);
 
     {
-        Mutex::Locker cs(&crit_);
+        Mutex::UniqueLock cs(crit_);
         for (TaskThread *queue : message_queues_)
         {
             if (!queue->IsProcessingMessagesForTesting())
@@ -446,7 +446,7 @@ TaskThread::Task TaskThread::Get(int cmsWait)
         {
             // All queue operations need to be locked, but nothing else in this loop
             // can happen while holding the `mutex_`.
-            Mutex::Locker lock(&mutex_);
+            Mutex::UniqueLock lock(mutex_);
             // Check for delayed messages that have been triggered and calculate the
             // next trigger time.
             while (!delayed_messages_.empty())
@@ -525,7 +525,7 @@ void TaskThread::PostTaskImpl(Task task, const PostTaskTraits & /* traits */, co
     // Signal for the multiplexer to return
 
     {
-        Mutex::Locker lock(&mutex_);
+        Mutex::UniqueLock lock(mutex_);
         messages_.push(std::move(task));
     }
     WakeUpSocketServer();
@@ -548,7 +548,7 @@ void TaskThread::PostDelayedTaskImpl(Task task,
     int64_t delay_ms = delay.RoundUpTo(TimeDelta::Millis(1)).ms<int>();
     int64_t run_time_ms = DateTime::timeAfterMSecs(delay_ms);
     {
-        Mutex::Locker lock(&mutex_);
+        Mutex::UniqueLock lock(mutex_);
         DelayedMessage delayedMessage;
         delayedMessage.delay_ms = delay_ms;
         delayedMessage.run_time_ms = run_time_ms;
@@ -566,7 +566,7 @@ void TaskThread::PostDelayedTaskImpl(Task task,
 
 int TaskThread::GetDelay()
 {
-    Mutex::Locker lock(&mutex_);
+    Mutex::UniqueLock lock(mutex_);
 
     if (!messages_.empty())
     {

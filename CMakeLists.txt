@@ -141,17 +141,32 @@ else()
 	endif()
 	string(APPEND OCTK_DEFAULT_PREFIX "OpenCTK-${OCTK_VERSION}")
 endif()
-if(NOT CMAKE_INSTALL_PREFIX AND OCTK_FEATURE_DEV_BUILD)
-	set(CMAKE_INSTALL_PREFIX "${OCTK_DEFAULT_PREFIX}")
-endif()
+message(STATUS "Project default prefix set as '${OCTK_DEFAULT_PREFIX}'.")
 
-if(CMAKE_STAGING_PREFIX)
-	set(OCTK_PREFIX "${CMAKE_STAGING_PREFIX}")
+if(NOT DEFINED INPUT_OCTK_FEATURE_INSTALL_PREFIX)
+	if(OCTK_FEATURE_DEV_BUILD OR OCTK_FEATURE_NO_PREFIX OR NOT CMAKE_INSTALL_PREFIX)
+		set(OCTK_INSTALL_PREFIX "${OCTK_DEFAULT_PREFIX}")
+	else()
+		set(OCTK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+	endif()
 else()
-	set(OCTK_PREFIX "${CMAKE_INSTALL_PREFIX}")
+	set(OCTK_INSTALL_PREFIX ${INPUT_OCTK_FEATURE_INSTALL_PREFIX})
 endif()
+message(STATUS "Project install prefix set as '${OCTK_INSTALL_PREFIX}'.")
 
-if(OCTK_PREFIX STREQUAL OCTK_BINARY_DIR)
+set(OCTK_INSTALL_DIR "${OCTK_INSTALL_PREFIX}")
+set(OCTK_BUILD_DIR "${CMAKE_BINARY_DIR}")
+message(STATUS "Project build dir set as '${OCTK_BUILD_DIR}'.")
+message(STATUS "Project install dir set as '${OCTK_INSTALL_DIR}'.")
+
+if(NOT "${CMAKE_STAGING_PREFIX}" STREQUAL "")
+	set(OCTK_STAGING_PREFIX "${CMAKE_STAGING_PREFIX}")
+else()
+	set(OCTK_STAGING_PREFIX "${OCTK_DEFAULT_PREFIX}")
+endif()
+message(STATUS "Project staging prefix set as '${OCTK_DEFAULT_PREFIX}'.")
+
+if(OCTK_INSTALL_PREFIX STREQUAL OCTK_BINARY_DIR)
 	set(OCTK_WILL_INSTALL_VALUE OFF)
 else()
 	set(OCTK_WILL_INSTALL_VALUE ON)
@@ -183,7 +198,7 @@ else()
 	set(OCTK_DEFAULT_BUILD_TESTS OFF)
 	set(OCTK_DEFAULT_BUILD_BENCHMARKS OFF)
 endif()
-message(STATUS "OpenCTK Install prefix set as '${CMAKE_INSTALL_PREFIX}'.")
+message(STATUS "OpenCTK cmake install prefix set as '${CMAKE_INSTALL_PREFIX}'.")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -373,17 +388,6 @@ octk_configure_process_path(OCTK_INSTALL_SYSCONFDIR
 	"${OCTK_DEFAULT_SYS_CONF_DIR}" "Settings used by OpenCTK programs [PREFIX/etc/xdg]/[/Library/Preferences/OpenCTK]")
 octk_configure_process_path(OCTK_INSTALL_DESCRIPTIONSDIR
 	"${OCTK_INSTALL_DATADIR}/modules" "Module description files directory")
-
-# set INSTALL_DIR and BUILD_DIR
-if(NOT "${OCTK_INSTALL_PREFIX}" STREQUAL "")
-    if(NOT "${CMAKE_STAGING_PREFIX}" STREQUAL "")
-        set(OCTK_INSTALL_PREFIX "${CMAKE_STAGING_PREFIX}")
-    else()
-        set(OCTK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-    endif()
-endif()
-set(OCTK_INSTALL_DIR "${OCTK_INSTALL_PREFIX}")
-set(OCTK_BUILD_DIR "${CMAKE_BINARY_DIR}")
 
 # set CONFIG_INSTALL_DIR and CONFIG_BUILD_DIR
 set(OCTK_CONFIG_BUILD_DIR "${OCTK_BUILD_DIR}/${OCTK_INSTALL_LIBDIR}/cmake")

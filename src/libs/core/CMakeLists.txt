@@ -116,6 +116,7 @@ octk_add_library(core
 	source/thread/octk_reference_counter.hpp
 	source/thread/octk_repeating_task.cpp
 	source/thread/octk_repeating_task.hpp
+	source/thread/octk_semaphore.hpp
 	source/thread/octk_sequence_checker.cpp
 	source/thread/octk_sequence_checker.hpp
 	source/thread/octk_sleep.hpp

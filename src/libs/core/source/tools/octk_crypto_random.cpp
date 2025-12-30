@@ -128,19 +128,19 @@ namespace utils
 {
 void SetDefaultRandomGenerator()
 {
-    Mutex::Locker locker(&GetRandomGeneratorLock());
+    Mutex::UniqueLock locker(GetRandomGeneratorLock());
     GetGlobalRng().reset(new SecureRandomGenerator());
 }
 
 void SetRandomGenerator(std::unique_ptr<RandomGenerator> generator)
 {
-    Mutex::Locker locker(&GetRandomGeneratorLock());
+    Mutex::UniqueLock locker(GetRandomGeneratorLock());
     GetGlobalRng() = std::move(generator);
 }
 
 void SetRandomTestMode(bool test)
 {
-    Mutex::Locker locker(&GetRandomGeneratorLock());
+    Mutex::UniqueLock locker(GetRandomGeneratorLock());
     if (!test)
     {
         GetGlobalRng().reset(new SecureRandomGenerator());
@@ -283,4 +283,5 @@ double CreateRandomDouble()
                                std::numeric_limits<double>::epsilon());
 }
 } // namespace utils
+
 OCTK_END_NAMESPACE

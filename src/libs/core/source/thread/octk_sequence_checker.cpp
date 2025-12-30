@@ -49,7 +49,7 @@ bool SequenceCheckerImpl::IsCurrent() const
 {
     const TaskQueue *const current_queue = TaskQueue::Current();
     const PlatformThread::Id current_thread = PlatformThread::currentThreadId();
-    Mutex::Locker scoped_lock(&lock_);
+    Mutex::UniqueLock scoped_lock(lock_);
     if (!attached_)
     { // Previously detached.
         attached_ = true;
@@ -66,7 +66,7 @@ bool SequenceCheckerImpl::IsCurrent() const
 
 void SequenceCheckerImpl::Detach()
 {
-    Mutex::Locker scoped_lock(&lock_);
+    Mutex::UniqueLock scoped_lock(lock_);
     attached_ = false;
     // We don't need to touch the other members here, they will be
     // reset on the next call to IsCurrent().

@@ -22,6 +22,9 @@
 **
 ***********************************************************************************************************************/
 
+#include "../tools/octk_result.hpp"
+
+
 #include <private/octk_platform_thread_p.hpp>
 #include <octk_exception.hpp>
 #include <octk_logging.hpp>
@@ -31,6 +34,24 @@
 
 OCTK_BEGIN_NAMESPACE
 
+namespace detail
+{
+class PlatformFutureThread : public PlatformThread
+{
+    std::future<void> mFuture;
+
+public:
+    explicit PlatformFutureThread(std::future<void> &&future)
+        : mFuture(std::move(future))
+    {
+    }
+    ~PlatformFutureThread() override { }
+
+protected:
+    void run() override { mFuture.get(); }
+};
+} // namespace detail
+
 PlatformThreadData *PlatformThreadData::current(PlatformThreadPrivate *thread)
 {
     OCTK_ASSERT(nullptr != thread);
@@ -39,8 +60,12 @@ PlatformThreadData *PlatformThreadData::current(PlatformThreadPrivate *thread)
 
 PlatformThreadPrivate::PlatformThreadPrivate(PlatformThread *p, PlatformThreadData *data)
     : mPPtr(p)
-    , mData(data ? data : new PlatformThreadData)
+    , mData(data)
 {
+    if (!mData)
+    {
+        mData = new PlatformThreadData;
+    }
 }
 
 PlatformThreadPrivate::~PlatformThreadPrivate() { mData->deref(); }
@@ -48,31 +73,31 @@ PlatformThreadPrivate::~PlatformThreadPrivate() { mData->deref(); }
 PlatformThread::PlatformThread()
     : mDPtr(new PlatformThreadPrivate(this))
 {
-    mDPtr->mData->thread.store(this, std::memory_order_relaxed);
+    mDPtr->mData->thread.store(this);
     this->setName("PlatformThread", this);
 }
 
 PlatformThread::PlatformThread(PlatformThreadPrivate *d)
     : mDPtr(d)
 {
-    mDPtr->mData->thread.store(this, std::memory_order_relaxed);
+    mDPtr->mData->thread.store(this);
     this->setName("PlatformThread", this);
 }
 
 PlatformThread::~PlatformThread()
 {
     OCTK_D(PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::UniqueLock lock(d->mMutex);
     if (d->mInFinish)
     {
-        locker.unlock();
+        lock.unlock();
         this->wait();
-        locker.relock();
+        lock.lock();
     }
     if (d->mRunning && !d->mFinished && !d->mData->isAdopted)
     {
         OCTK_FATAL("PlatformThread: Destroyed while thread is still running");
-        d->mData->thread.store(nullptr, std::memory_order_release);
+        d->mData->thread.store(nullptr);
     }
 }
 
@@ -85,14 +110,14 @@ bool PlatformThread::isInterruptionRequested() const
         return false;
     }
     // slow path: if the flag is set, take into account run status:
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     return d->mRunning && !d->mFinished && !d->mInFinish;
 }
 
 Status PlatformThread::requestInterruption()
 {
     OCTK_D(PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     if (!d->mRunning || d->mFinished || d->mInFinish)
     {
         return "Thread is not running or finished";
@@ -104,14 +129,14 @@ Status PlatformThread::requestInterruption()
 const std::string &PlatformThread::name() const
 {
     OCTK_D(const PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     return d->mName;
 }
 
 Status PlatformThread::setName(const StringView name, const void *obj)
 {
     OCTK_D(PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     if (d->mRunning)
     {
         return "cannot set name while the thread is running";
@@ -131,7 +156,7 @@ Status PlatformThread::setName(const StringView name, const void *obj)
 PlatformThread::Priority PlatformThread::priority() const
 {
     OCTK_D(const PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     return d->mPriority;
 }
 
@@ -142,7 +167,7 @@ Status PlatformThread::setPriority(Priority priority)
         return "Argument cannot be InheritPriority";
     }
     OCTK_D(PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     if (!d->mRunning)
     {
         return "Cannot set priority, thread is not running";
@@ -154,14 +179,14 @@ Status PlatformThread::setPriority(Priority priority)
 uint PlatformThread::stackSize() const
 {
     OCTK_D(const PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     return d->mStackSize;
 }
 
 Status PlatformThread::setStackSize(uint stackSize)
 {
     OCTK_D(PlatformThread);
-    Mutex::Locker locker(d->mMutex);
+    ThreadMutex::Lock lock(d->mMutex);
     if (d->mRunning)
     {
         return "cannot change stack size while the thread is running";
@@ -182,24 +207,31 @@ bool PlatformThread::isRunning() const
     return d->mRunning.load(std::memory_order_relaxed) && !d->mInFinish.load(std::memory_order_relaxed);
 }
 
-PlatformThread::Id PlatformThread::id() const
+PlatformThread::Id PlatformThread::threadId() const
 {
     OCTK_D(const PlatformThread);
     return d->mData->threadHandle.load();
 }
 
-void PlatformThread::start(Priority priority)
+int PlatformThread::retval() const
+{
+    OCTK_D(const PlatformThread);
+    ThreadMutex::Lock lock(d->mMutex);
+    return d->mReturnCode;
+}
+
+Status PlatformThread::start(Priority priority)
 {
     OCTK_D(PlatformThread);
-    Mutex::UniqueLocker locker(d->mMutex);
+    ThreadMutex::UniqueLock lock(d->mMutex);
 
     if (d->mInFinish)
     {
-        d->mDoneCondition.wait(locker, [d]() { return d->mFinished.load(); });
+        d->mDoneCondition.wait(lock, [d]() { return d->mFinished.load(); });
     }
     if (d->mRunning)
     {
-        return;
+        return "PlatformThread::start: Thread already running";
     }
 
     d->mRunning = true;
@@ -213,22 +245,33 @@ void PlatformThread::start(Priority priority)
         OCTK_WARNING("PlatformThread::start: Thread creation error");
         d->mRunning = false;
         d->mFinished = false;
-        d->mData->threadHandle.store(nullptr, std::memory_order_relaxed);
+        d->mData->threadHandle.store(nullptr);
+        return "PlatformThread::start: Thread creation error";
     }
+    return okStatus;
 }
 
-void PlatformThread::terminate() { }
+Status PlatformThread::terminate()
+{
+    OCTK_D(PlatformThread);
+    ThreadMutex::Lock lock(d->mMutex);
+    if (!this->isRunning())
+    {
+        return "Thread not running";
+    }
+    return d->terminate();
+}
 
 bool PlatformThread::wait(unsigned long msecs)
 {
     OCTK_D(PlatformThread);
-    if (this->currentThreadId() == PlatformThread::currentThreadId())
+    if (this->threadId() == PlatformThread::currentThreadId())
     {
         OCTK_WARNING("PlatformThread::wait: Thread tried to wait on itself");
         return false;
     }
 
-    Mutex::UniqueLocker locker(d->mMutex);
+    ThreadMutex::UniqueLock lock(d->mMutex);
     if (d->mFinished || !d->mRunning)
     {
         return true;
@@ -236,9 +279,16 @@ bool PlatformThread::wait(unsigned long msecs)
 
     while (d->mRunning)
     {
-        if (std::cv_status::timeout == d->mDoneCondition.wait_for(locker, std::chrono::milliseconds(msecs)))
+        if (kWaitForeverMSecs == msecs)
         {
-            return false;
+            d->mDoneCondition.wait(lock);
+        }
+        else
+        {
+            if (std::cv_status::timeout == d->mDoneCondition.wait_for(lock, std::chrono::milliseconds(msecs)))
+            {
+                return false;
+            }
         }
     }
     return true;
@@ -248,7 +298,10 @@ PlatformThread *PlatformThread::currentThread() noexcept { return PlatformThread
 
 PlatformThread::Id PlatformThread::currentThreadId() noexcept
 {
-    return PlatformThreadData::current()->threadHandle.load();
+    auto threadData = PlatformThreadData::current();
+    const auto handle = threadData->threadHandle.load();
+    // OCTK_DEBUG("currentThreadId():%s", PlatformThread::Id(handle).toHexString().c_str());
+    return handle;
 }
 
 // int PlatformThread::idealConcurrencyCount() noexcept { return detail::idealConcurrencyThreadCount(); }
@@ -261,19 +314,9 @@ void PlatformThread::msleep(unsigned long msecs) { std::this_thread::sleep_for(s
 
 void PlatformThread::sleep(unsigned long secs) { std::this_thread::sleep_for(std::chrono::seconds(secs)); }
 
-void PlatformThread::exit(int code)
+PlatformThread::UniquePtr PlatformThread::create(std::future<void> &&future)
 {
-    auto thread = currentThread();
-    if (thread)
-    {
-        Mutex::UniqueLocker locker(thread->dFunc()->mMutex);
-        if (thread->dFunc()->mRunning)
-        {
-            thread->dFunc()->exit(code);
-        }
-    }
+    return UniquePtr(new detail::PlatformFutureThread(std::move(future)));
 }
-
-void PlatformThread::setTerminationEnabled(bool enabled) { }
 
 OCTK_END_NAMESPACE

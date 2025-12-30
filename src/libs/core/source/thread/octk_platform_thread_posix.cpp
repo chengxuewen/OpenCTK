@@ -63,7 +63,9 @@
 #    if defined(OCTK_OS_DARWIN) || !defined(OCTK_OS_ANDROID) && !defined(OCTK_OS_OPENBSD) &&                           \
                                        defined(_POSIX_THREAD_PRIORITY_SCHEDULING) &&                                   \
                                        (_POSIX_THREAD_PRIORITY_SCHEDULING - 0 >= 0)
-#        define OCTK_HAS_THREAD_PRIORITY_SCHEDULING
+#        define OCTK_HAS_THREAD_PRIORITY_SCHEDULING 1
+#    else
+#        define OCTK_HAS_THREAD_PRIORITY_SCHEDULING 0
 #    endif
 
 OCTK_BEGIN_NAMESPACE
@@ -115,7 +117,7 @@ static void destroyCurrentThreadData(void *p)
     currentThreadData = data;
     if (data->isAdopted)
     {
-        auto thread = data->thread.load(std::memory_order_acquire);
+        auto thread = data->thread.load();
         OCTK_ASSERT(thread);
         auto threadPrivate = static_cast<PlatformThreadPrivate *>(PlatformThreadPrivate::get(thread));
         OCTK_ASSERT(!threadPrivate->mFinished);
@@ -144,7 +146,11 @@ static void destroyCurrentThreadDataKey()
 }
 } // namespace tls
 // Utility functions for getting, setting and clearing thread specific data.
-static PlatformThreadData *currentThreadData() { return tls::currentThreadData; }
+static PlatformThreadData *getThreadData()
+{
+    // OCTK_DEBUG("getThreadData():%p", tls::currentThreadData);
+    return tls::currentThreadData;
+}
 static void setThreadData(PlatformThreadData *data)
 {
     tls::currentThreadData = data;
@@ -160,7 +166,7 @@ static void clearThreadData()
 /* thread */
 namespace thread
 {
-#    if defined(OCTK_HAS_THREAD_PRIORITY_SCHEDULING)
+#    if OCTK_HAS_THREAD_PRIORITY_SCHEDULING
 #        if defined(OCTK_OS_QNX)
 static bool calculatePriority(PlatformThread::Priority priority, int *sched_policy, int *sched_priority)
 {
@@ -284,29 +290,32 @@ static void finish(void *arg)
     {
         auto threadPrivate = reinterpret_cast<PlatformThreadPrivate *>(arg);
         auto thread = PlatformThreadPrivate::get(threadPrivate);
-        Mutex::UniqueLocker locker(threadPrivate->mMutex);
+        auto threadData = threadPrivate->mData;
+        PlatformThreadPrivate::ThreadMutex::UniqueLock lock(threadPrivate->mMutex);
         threadPrivate->mInFinish = true;
         threadPrivate->mPriority = PlatformThread::Priority::kInherit;
         void *data = &threadPrivate->mData->tls;
-        locker.unlock();
+        lock.unlock();
         threadPrivate->onFinished();
         // Application::sendPostedEvents(nullptr, Event::DeferredDelete);
         // ThreadStorageData::finish((void **)data);
-        locker.lock();
+        lock.lock();
 
         // AbstractEventDispatcher *eventDispatcher = d->data->eventDispatcher.loadRelaxed();
         // if (eventDispatcher)
         // {
         //     d->data->eventDispatcher = nullptr;
-        //     locker.unlock();
+        //     lock.unlock();
         //     eventDispatcher->closingDown();
         //     delete eventDispatcher;
-        //     locker.relock();
+        //     lock.relock();
         // }
 
         threadPrivate->mRunning = false;
         threadPrivate->mFinished = true;
         threadPrivate->mInterruptionRequested = false;
+
+        threadData->threadHandle.store(nullptr);
 
         threadPrivate->mInFinish = false;
         threadPrivate->mDoneCondition.notify_all();
@@ -334,7 +343,7 @@ static void *start(void *arg)
         auto threadData = PlatformThreadData::current(threadPrivate);
         auto thread = PlatformThreadPrivate::get(threadPrivate);
         {
-            Mutex::UniqueLocker locker(threadPrivate->mMutex);
+            PlatformThreadPrivate::ThreadMutex::UniqueLock lock(threadPrivate->mMutex);
 
             // do we need to reset the thread priority?
             if (int(threadPrivate->mPriority) & kThreadPriorityResetFlag)
@@ -342,8 +351,10 @@ static void *start(void *arg)
                 threadPrivate->setPriority(
                     PlatformThread::Priority((int)threadPrivate->mPriority & ~kThreadPriorityResetFlag));
             }
-            threadData->threadHandle.store(toHandle(pthread_self()), std::memory_order_relaxed);
+            threadData->threadHandle.store(toHandle(pthread_self()));
             setThreadData(threadData);
+
+            threadData->ref();
         }
 
         // data->ensureEventDispatcher();
@@ -385,14 +396,14 @@ static void *start(void *arg)
 
 PlatformThreadData *PlatformThreadData::current(bool createIfNecessary)
 {
-    auto *threadData = detail::currentThreadData();
+    auto *threadData = detail::getThreadData();
     if (!threadData && createIfNecessary)
     {
         threadData = new PlatformThreadData;
         OCTK_TRY
         {
             detail::setThreadData(threadData);
-            // threadData->thread = new QAdoptedThread(threadData);
+            threadData->thread = new AdoptedPlatformThread(threadData);
         }
         OCTK_CATCH(...)
         {
@@ -401,9 +412,8 @@ PlatformThreadData *PlatformThreadData::current(bool createIfNecessary)
             threadData = nullptr;
             OCTK_RETHROW;
         }
-        threadData->deref();
         threadData->isAdopted = true;
-        threadData->threadHandle.store(detail::toHandle(pthread_self()), std::memory_order_relaxed);
+        threadData->threadHandle.store(detail::toHandle(pthread_self()));
         // if (!CoreApplicationPrivate::theMainThread.loadAcquire())
         // CoreApplicationPrivate::theMainThread.storeRelease(data->thread.loadRelaxed());
     }
@@ -417,13 +427,11 @@ void PlatformThreadPrivate::setPriority(Priority priority)
     mPriority = priority;
     // copied from start() with a few modifications:
 
-#    ifdef OCTK_HAS_THREAD_PRIORITY_SCHEDULING
+#    if OCTK_HAS_THREAD_PRIORITY_SCHEDULING
     int sched_policy;
     sched_param param;
 
-    if (pthread_getschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load(std::memory_order_relaxed)),
-                              &sched_policy,
-                              &param) != 0)
+    if (pthread_getschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), &sched_policy, &param) != 0)
     {
         // failed to get the scheduling policy, don't bother setting the priority
         OCTK_WARNING("PlatformThread::setPriority: Cannot get scheduler parameters");
@@ -439,19 +447,16 @@ void PlatformThreadPrivate::setPriority(Priority priority)
     }
 
     param.sched_priority = prio;
-    int status = pthread_setschedparam(
-        detail::fromHandle<pthread_t>(mData->threadHandle.load(std::memory_order_relaxed)),
-        sched_policy,
-        &param);
+    int status = pthread_setschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), sched_policy, &param);
 
 #        ifdef SCHED_IDLE
     // were we trying to set to idle priority and failed?
     if (status == -1 && sched_policy == SCHED_IDLE && errno == EINVAL)
     {
         // reset to lowest priority possible
-        pthread_getschedparam(from_HANDLE<pthread_t>(data->threadId.loadRelaxed()), &sched_policy, &param);
+        pthread_getschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), &sched_policy, &param);
         param.sched_priority = sched_get_priority_min(sched_policy);
-        pthread_setschedparam(from_HANDLE<pthread_t>(data->threadId.loadRelaxed()), sched_policy, &param);
+        pthread_setschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), sched_policy, &param);
     }
 #        else
     OCTK_UNUSED(status);
@@ -467,7 +472,7 @@ bool PlatformThreadPrivate::start(Priority priority)
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-#    if defined(OCTK_HAS_THREAD_PRIORITY_SCHEDULING)
+#    if OCTK_HAS_THREAD_PRIORITY_SCHEDULING
     switch (priority)
     {
         case Priority::kInherit:
@@ -527,9 +532,9 @@ bool PlatformThreadPrivate::start(Priority priority)
     if (code == EPERM)
     {
         // caller does not have permission to set the scheduling parameters/policy
-#    if defined(OCTK_HAS_THREAD_PRIORITY_SCHEDULING)
+#    if OCTK_HAS_THREAD_PRIORITY_SCHEDULING
         pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
-#    endif // defined(OCTK_HAS_THREAD_PRIORITY_SCHEDULING)
+#    endif // OCTK_HAS_THREAD_PRIORITY_SCHEDULING
         code = pthread_create(&pthread, &attr, detail::thread::start, this);
     }
     mData->threadHandle = detail::toHandle(pthread);
@@ -537,12 +542,47 @@ bool PlatformThreadPrivate::start(Priority priority)
     return 0 == code;
 }
 
-void PlatformThreadPrivate::exit(int code) { }
+Status PlatformThreadPrivate::terminate()
+{
+    const auto threadHandle = mData->threadHandle.load();
+    if (!threadHandle)
+    {
+        return "threadHandle empty";
+    }
+
+    const int code = pthread_cancel(detail::fromHandle<pthread_t>(threadHandle));
+    if (code)
+    {
+        return "pthread_cancel error";
+    }
+    return okStatus;
+}
 
 bool PlatformThread::Id::isEqual(const Id &other) const noexcept
 {
     return pthread_equal(detail::fromHandle<pthread_t>(mHandle), detail::fromHandle<pthread_t>(other.mHandle));
 }
+
+void PlatformThread::setTerminationEnabled(bool enabled)
+{
+    auto thread = PlatformThread::currentThread();
+    OCTK_ASSERT_X(thread != nullptr,
+                  "PlatformThread::setTerminationEnabled()",
+                  "Current thread was not started with PlatformThread.");
+    OCTK_UNUSED(thread)
+
+#    if defined(OCTK_OS_ANDROID)
+    OCTK_UNUSED(enabled);
+#    else
+    pthread_setcancelstate(enabled ? PTHREAD_CANCEL_ENABLE : PTHREAD_CANCEL_DISABLE, nullptr);
+    if (enabled)
+    {
+        pthread_testcancel();
+    }
+#    endif
+}
+
+void AdoptedPlatformThread::init() { }
 
 OCTK_END_NAMESPACE
 

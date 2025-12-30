@@ -6,8 +6,6 @@
 #include <type_traits>
 
 OCTK_BEGIN_NAMESPACE
-#undef OCTK_CC_CPP17_OR_GREATER
-#define OCTK_CC_CPP17_OR_GREATER 0
 
 namespace type_traits
 {

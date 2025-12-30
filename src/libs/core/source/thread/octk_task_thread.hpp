@@ -231,7 +231,7 @@ public:
     bool empty() const { return size() == 0u; }
     size_t size() const
     {
-        Mutex::Locker locker(&mutex_);
+        Mutex::UniqueLock locker(mutex_);
         return messages_.size() + delayed_messages_.size();
     }
 

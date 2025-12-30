@@ -29,20 +29,20 @@ OCTK_BEGIN_NAMESPACE
 
 int64_t FakeClock::TimeNanos() const
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::UniqueLock locker(lock_);
     return time_ns_;
 }
 
 void FakeClock::SetTime(Timestamp new_time)
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::UniqueLock locker(lock_);
     OCTK_DCHECK(new_time.us() * 1000 >= time_ns_);
     time_ns_ = new_time.us() * 1000;
 }
 
 void FakeClock::AdvanceTime(TimeDelta delta)
 {
-    Mutex::Locker locker(&lock_);
+    Mutex::UniqueLock locker(lock_);
     time_ns_ += delta.ns();
 }
 
