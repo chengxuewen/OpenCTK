@@ -49,7 +49,7 @@ static inline int64_t timeSinceEpochMSecs()
 class CurrentThread : public PlatformThread
 {
 public:
-    PlatformThread::Id id;
+    PlatformThread::Id id{0};
     PlatformThread *thread{nullptr};
     std::atomic<bool> loopWait{false};
 
@@ -237,7 +237,7 @@ private:
 TEST(PlatformThreadTest, DefaultConstructedIsInvalid)
 {
     PlatformThread thread;
-    EXPECT_FALSE(thread.threadId().isValid());
+    EXPECT_EQ(thread.threadHandle(), nullptr);
 }
 
 TEST(PlatformThreadTest, CurrentThreadId)
@@ -248,12 +248,9 @@ TEST(PlatformThreadTest, CurrentThreadId)
         thread.start();
         thread.waitLoopWait();
         EXPECT_EQ(thread.id, thread.threadId());
-        EXPECT_EQ(thread.id.toString(), thread.threadId().toString());
-        EXPECT_EQ(thread.id.toHexString(), thread.threadId().toHexString());
         thread.stopLoopWait();
         EXPECT_TRUE(thread.wait(1000)); // 1000ms
-        EXPECT_FALSE(thread.threadId().isValid());
-        EXPECT_NE(thread.id.handle(), nullptr);
+        EXPECT_NE(thread.id, 0);
         EXPECT_NE(thread.id, PlatformThread::currentThreadId());
     }
 }
@@ -470,43 +467,43 @@ TEST(PlatformThreadTest, Adoption)
 
 TEST(PlatformThreadTest, AdoptedThreadSetPriority)
 {
-    ThreadWrapper nativeThread;
-    nativeThread.setWaitForStop();
-    nativeThread.startAndWait();
+    ThreadWrapper threadWrapper;
+    threadWrapper.setWaitForStop();
+    threadWrapper.startAndWait();
 
     // change the priority of a running thread
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kInherit);
-    nativeThread.platformThread()->setPriority(PlatformThread::Priority::kIdle);
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kIdle);
-    nativeThread.platformThread()->setPriority(PlatformThread::Priority::kLowest);
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kLowest);
-    nativeThread.platformThread()->setPriority(PlatformThread::Priority::kLow);
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kLow);
-    nativeThread.platformThread()->setPriority(PlatformThread::Priority::kNormal);
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kNormal);
-    nativeThread.platformThread()->setPriority(PlatformThread::Priority::kHigh);
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kHigh);
-    nativeThread.platformThread()->setPriority(PlatformThread::Priority::kHighest);
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kHighest);
-    nativeThread.platformThread()->setPriority(PlatformThread::Priority::kTimeCritical);
-    EXPECT_EQ(nativeThread.platformThread()->priority(), PlatformThread::Priority::kTimeCritical);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kInherit);
+    threadWrapper.platformThread()->setPriority(PlatformThread::Priority::kIdle);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kIdle);
+    threadWrapper.platformThread()->setPriority(PlatformThread::Priority::kLowest);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kLowest);
+    threadWrapper.platformThread()->setPriority(PlatformThread::Priority::kLow);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kLow);
+    threadWrapper.platformThread()->setPriority(PlatformThread::Priority::kNormal);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kNormal);
+    threadWrapper.platformThread()->setPriority(PlatformThread::Priority::kHigh);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kHigh);
+    threadWrapper.platformThread()->setPriority(PlatformThread::Priority::kHighest);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kHighest);
+    threadWrapper.platformThread()->setPriority(PlatformThread::Priority::kTimeCritical);
+    EXPECT_EQ(threadWrapper.platformThread()->priority(), PlatformThread::Priority::kTimeCritical);
 
-    nativeThread.stop();
-    nativeThread.join();
+    threadWrapper.stop();
+    threadWrapper.join();
 }
 
 TEST(PlatformThreadTest, AdoptedThreadExit)
 {
-    ThreadWrapper nativeThread;
-    nativeThread.setWaitForStop();
+    ThreadWrapper threadWrapper;
+    threadWrapper.setWaitForStop();
 
-    nativeThread.startAndWait();
-    EXPECT_TRUE(nativeThread.platformThread());
-    EXPECT_TRUE(nativeThread.platformThread()->isRunning());
-    EXPECT_TRUE(!nativeThread.platformThread()->isFinished());
+    threadWrapper.startAndWait();
+    EXPECT_TRUE(threadWrapper.platformThread());
+    EXPECT_TRUE(threadWrapper.platformThread()->isRunning());
+    EXPECT_TRUE(!threadWrapper.platformThread()->isFinished());
 
-    nativeThread.stop();
-    nativeThread.join();
+    threadWrapper.stop();
+    threadWrapper.join();
 }
 
 TEST(PlatformThreadTest, Waiting)

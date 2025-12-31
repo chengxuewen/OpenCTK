@@ -87,51 +87,7 @@ public:
     using UniquePtr = std::unique_ptr<PlatformThread>;
 
     using Handle = void *;
-    class Id
-    {
-    public:
-        using Handle = Handle;
-
-        Id() = default;
-        Id(Handle handle) noexcept { mHandle = handle; }
-        Id(const Id &other) noexcept { mHandle = other.mHandle; }
-        Id(Id &&other) noexcept { std::swap(mHandle, other.mHandle); }
-        ~Id() = default;
-
-        Handle handle() const { return mHandle; }
-        Id &operator=(const Id &other) noexcept
-        {
-            mHandle = other.mHandle;
-            return *this;
-        }
-        Id &operator=(Id &&other) noexcept
-        {
-            mHandle = std::move(other.mHandle);
-            return *this;
-        }
-
-        std::string toString(bool hex = false) const
-        {
-            if (hex)
-            {
-                char buf[30];
-                std::snprintf(buf, sizeof(buf), " 0x%p", mHandle);
-                return buf;
-            }
-            return std::to_string(reinterpret_cast<uint64_t>(mHandle));
-        }
-        std::string toHexString(bool hex = false) const { return this->toString(true); }
-
-        bool valid() const noexcept { return nullptr != mHandle; }
-        bool isValid() const noexcept { return nullptr != mHandle; }
-
-        bool isEqual(const Id &other) const noexcept;
-        bool operator==(const Id &other) const noexcept { return this->isEqual(other); }
-        bool operator!=(const Id &other) const noexcept { return !this->isEqual(other); }
-
-    private:
-        Handle mHandle{nullptr};
-    };
+    using Id = size_t;
 
     enum class Priority : int
     {
@@ -152,7 +108,7 @@ public:
     bool isInterruptionRequested() const;
     Status requestInterruption();
 
-    const std::string &name() const;
+    std::string name() const;
     Status setName(const StringView name, const void *obj = nullptr);
 
     /**
@@ -197,6 +153,8 @@ public:
 
     bool isFinished() const;
     bool isRunning() const;
+
+    Handle threadHandle() const;
     Id threadId() const;
     int retval() const;
 
@@ -206,16 +164,18 @@ public:
     OCTK_STATIC_CONSTANT_NUMBER(kWaitForeverMSecs, std::numeric_limits<unsigned long>::max())
     bool wait(unsigned long msecs = kWaitForeverMSecs);
 
+    static bool isThreadHandleEqual(const Handle &lhs, const Handle &rhs);
+    static void setCurrentThreadName(const StringView name);
+    static int idealConcurrencyThreadCount() noexcept;
+
     static PlatformThread *currentThread() noexcept;
+    static Handle currentThreadHandle() noexcept;
     static Id currentThreadId() noexcept;
-
-    // static int idealConcurrencyCount() noexcept;
-
-    static void yieldCurrentThread();
 
     static void usleep(unsigned long usecs);
     static void msleep(unsigned long msecs);
     static void sleep(unsigned long secs);
+    static void yield();
 
     static UniquePtr create(std::future<void> &&future);
 #if OCTK_PLATFORM_THREAD_HAS_VARIADIC_CREATE

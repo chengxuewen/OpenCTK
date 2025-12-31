@@ -315,6 +315,7 @@ static void finish(void *arg)
         threadPrivate->mFinished = true;
         threadPrivate->mInterruptionRequested = false;
 
+        threadData->threadId.store(0);
         threadData->threadHandle.store(nullptr);
 
         threadPrivate->mInFinish = false;
@@ -351,7 +352,8 @@ static void *start(void *arg)
                 threadPrivate->setPriority(
                     PlatformThread::Priority((int)threadPrivate->mPriority & ~kThreadPriorityResetFlag));
             }
-            threadData->threadHandle.store(toHandle(pthread_self()));
+            threadData->threadId.store(PlatformThread::currentThreadId());
+            threadData->threadHandle.store(detail::toHandle(pthread_self()));
             setThreadData(threadData);
 
             threadData->ref();
@@ -413,6 +415,7 @@ PlatformThreadData *PlatformThreadData::current(bool createIfNecessary)
             OCTK_RETHROW;
         }
         threadData->isAdopted = true;
+        threadData->threadId.store(PlatformThread::currentThreadId());
         threadData->threadHandle.store(detail::toHandle(pthread_self()));
         // if (!CoreApplicationPrivate::theMainThread.loadAcquire())
         // CoreApplicationPrivate::theMainThread.storeRelease(data->thread.loadRelaxed());
@@ -558,9 +561,122 @@ Status PlatformThreadPrivate::terminate()
     return okStatus;
 }
 
-bool PlatformThread::Id::isEqual(const Id &other) const noexcept
+bool PlatformThread::isThreadHandleEqual(const Handle &lhs, const Handle &rhs)
 {
-    return pthread_equal(detail::fromHandle<pthread_t>(mHandle), detail::fromHandle<pthread_t>(other.mHandle));
+    return pthread_equal(detail::fromHandle<pthread_t>(lhs), detail::fromHandle<pthread_t>(rhs));
+}
+
+void PlatformThread::setCurrentThreadName(const StringView name)
+{
+#    if defined(OCTK_OS_LINUX) || defined(OCTK_LINUXBASE)
+    prctl(PR_SET_NAME, reinterpret_cast<unsigned long>(name.data()), 0, 0, 0);
+#    elif defined(OCTK_OS_MAC)
+    pthread_setname_np(name.data());
+#    elif defined(OCTK_OS_QNX)
+    pthread_setname_np(pthread_self(), name.data());
+#    endif
+}
+
+int PlatformThread::idealConcurrencyThreadCount() noexcept
+{
+    int cores = 1;
+#    if defined(PTK_OS_MAC)
+    // Mac OS X
+#        if defined(__MAC_10_7)
+    size_t size = sizeof(cores);
+    sysctlbyname("hw.activecpu", &cores, &size, NULL, 0);
+#        else
+    cores = MPProcessorsScheduled();
+#        endif
+#    elif defined(PTK_OS_HPUX)
+    // HP-UX
+    struct pst_dynamic psd;
+    if (pstat_getdynamic(&psd, sizeof(psd), 1, 0) == -1)
+    {
+        perror("pstat_getdynamic");
+        cores = -1;
+    }
+    else
+    {
+        cores = (int)psd.psd_proc_cnt;
+    }
+#    elif defined(PTK_OS_BSD4)
+    // FreeBSD, OpenBSD, NetBSD, BSD/OS
+    ptk_size_t len = sizeof(cores);
+    ptk_int_t mib[2];
+    mib[0] = CTL_HW;
+    mib[1] = HW_NCPU;
+    if (sysctl(mib, 2, &cores, &len, NULL, 0) != 0)
+    {
+        perror("sysctl");
+        cores = -1;
+    }
+#    elif defined(PTK_OS_IRIX)
+    // IRIX
+    cores = (int)sysconf(_SC_NPROC_ONLN);
+#    elif defined(PTK_OS_INTEGRITY)
+#        if (__INTEGRITY_MAJOR_VERSION >= 10)
+    // Integrity V10+ does support multicore CPUs
+    Value processorCount;
+    if (GetProcessorCount(CurrentTask(), &processorCount) == 0)
+    {
+        cores = processorCount;
+    }
+    else
+#        endif
+    {
+        cores = 1;
+    }
+#    elif defined(PTK_OS_VXWORKS)
+    // VxWorks
+#        if defined(QT_VXWORKS_HAS_CPUSET)
+    cpuset_t cpus = vxCpuEnabledGet();
+    cores = 0;
+
+    // 128 cores should be enough for everyone ;)
+    for (int i = 0; i < 128 && !CPUSET_ISZERO(cpus); ++i)
+    {
+        if (CPUSET_ISSET(cpus, i))
+        {
+            CPUSET_CLR(cpus, i);
+            cores++;
+        }
+    }
+#        else
+    {
+        // as of aug 2008 VxWorks < 6.6 only supports one single core CPU
+        cores = 1;
+    }
+#        endif
+#    elif defined(PTK_OS_WASM)
+    cores = 1;
+#    else
+    // the rest: Linux, Solaris, AIX, Tru64
+    cores = (int)sysconf(_SC_NPROCESSORS_ONLN);
+    if (cores <= 0)
+    {
+        cores = 1;
+    }
+#    endif
+    return cores;
+}
+
+PlatformThread::Handle PlatformThread::currentThreadHandle() noexcept { return detail::toHandle(pthread_self()); }
+
+PlatformThread::Id PlatformThread::currentThreadId() noexcept
+{
+#    if defined(OCTK_OS_MAC) || defined(OCTK_OS_IOS)
+    uint64_t tid{0};
+    pthread_threadid_np(pthread_self(), &tid);
+    return static_cast<Id>(tid);
+#    elif defined(OCTK_OS_ANDROID)
+    return static_cast<Id>(gettid());
+#    elif defined(OCTK_OS_LINUX)
+    return static_cast<Id>(::syscall(__NR_gettid));
+#    else
+    // Default implementation for nacl and solaris.
+    return reinterpret_cast<Id>(pthread_self());
+#    endif
 }
 
 void PlatformThread::setTerminationEnabled(bool enabled)

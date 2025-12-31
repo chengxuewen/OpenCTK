@@ -415,6 +415,14 @@ octk_add_test(octk_core_tst_task_thread
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_thread_pool
+	SOURCES
+	tst_thread_pool.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_time_delta
 	SOURCES
 	tst_time_delta.cpp

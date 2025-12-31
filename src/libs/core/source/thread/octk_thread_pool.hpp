@@ -36,18 +36,70 @@ class ThreadPoolPrivate;
 class OCTK_CORE_API ThreadPool
 {
 public:
+    enum Priority : int8_t
+    {
+        kLowest = -128,
+        kLow = -64,
+        kNormal = 0,
+        kHigh = +64,
+        kHighest = +127
+    };
+
+    class Task
+    {
+        OCTK_DISABLE_COPY_MOVE(Task)
+        struct Deleter final
+        {
+            const bool autoDelete;
+            void operator()(Task *task) const
+            {
+                if (autoDelete)
+                {
+                    delete task;
+                }
+            }
+        };
+
+    public:
+        using SharedPtr = std::shared_ptr<Task>;
+
+        Task() = default;
+        virtual ~Task() = default;
+
+        virtual void run() = 0;
+
+        static SharedPtr create(std::function<void()> function);
+        static SharedPtr makeShared(Task *task, bool autoDelete = false);
+    };
+
     using TaskFunc = std::function<void(void)>;
 
-    ThreadPool(const std::string &name, size_t count = 1);
-    explicit ThreadPool(ThreadPoolPrivate *d);
+    ThreadPool();
+    ThreadPool(ThreadPoolPrivate *d);
     virtual ~ThreadPool();
 
     static ThreadPool *defaultInstance();
 
-    void runTask(const TaskFunc &task);
-    void runTask(TaskFunc &&task);
+    void start(std::function<void()> function, Priority priority = Priority::kNormal);
+    bool tryStart(std::function<void()> function);
 
-    void removePending();
+    void start(const Task::SharedPtr &task, Priority priority = Priority::kNormal);
+    bool tryStart(const Task::SharedPtr &task);
+
+    int maxThreadCount() const;
+    void setMaxThreadCount(int count);
+
+    int expiryTimeout() const;
+    void setExpiryTimeout(int msecs);
+
+    OCTK_STATIC_CONSTANT_NUMBER(kWaitForeverMSecs, std::numeric_limits<unsigned long>::max())
+    bool waitForDone(unsigned long msecs = kWaitForeverMSecs);
+    // bool contains(Task *task) const;
+    // void cancel(Task *task);
+    // bool take(Task *task);
+    void clear();
+
+    int maxQueueSize() const;
 
 protected:
     OCTK_DEFINE_DPTR(ThreadPool)

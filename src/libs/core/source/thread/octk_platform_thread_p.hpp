@@ -31,12 +31,6 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace detail
-{
-static int idealConcurrencyThreadCount() noexcept;
-} // namespace detail
-
-
 class PlatformThreadData
 {
     mutable ReferenceCounter mRefCounter;
@@ -90,8 +84,9 @@ public:
 
 
     std::vector<void *> tls;
-    std::atomic<PlatformThread *> thread;
-    std::atomic<PlatformThread::Handle> threadHandle;
+    std::atomic<PlatformThread *> thread{nullptr};
+    std::atomic<PlatformThread::Id> threadId{0};
+    std::atomic<PlatformThread::Handle> threadHandle{nullptr};
 };
 
 class OCTK_CORE_API PlatformThreadPrivate

@@ -120,6 +120,11 @@ template <typename F> ScopeGuard(F (&)()) -> ScopeGuard<F (*)()>;
 namespace utils
 {
 template <typename F> [[nodiscard]] ScopeGuard<F> makeScopeGuard(F f) { return {std::move(f)}; }
+template <typename FC, typename F> [[nodiscard]] ScopeGuard<F> makeScopeGuard(const FC &fc, F f)
+{
+    fc();
+    return {std::move(f)};
+}
 } // namespace utils
 
 OCTK_END_NAMESPACE

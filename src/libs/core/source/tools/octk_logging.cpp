@@ -39,28 +39,35 @@ OCTK_BEGIN_NAMESPACE
 
 namespace detail
 {
-static std::mutex &loggersMapMutex()
+static inline std::mutex &loggersMapMutex()
 {
     static std::mutex mutex;
     return mutex;
 }
 
-static std::unordered_map<int, Logger::Ptr> &loggersIdMap()
+static inline std::unordered_map<int, Logger::Pointer> &loggersIdMap()
 {
-    static std::unordered_map<int, Logger::Ptr> map;
+    static std::unordered_map<int, Logger::Pointer> map;
     return map;
 }
 
-static std::unordered_map<std::string, Logger::Ptr> &loggersNameMap()
+static inline std::unordered_map<std::string, Logger::Pointer> &loggersNameMap()
 {
-    static std::unordered_map<std::string, Logger::Ptr> map;
+    static std::unordered_map<std::string, Logger::Pointer> map;
     return map;
 }
 
-static std::atomic<int> &loggerIdNumberCounter()
+static inline std::atomic<int> &loggerIdNumberCounter()
 {
     static std::atomic<int> counter = ATOMIC_VAR_INIT(0);
     return counter;
+}
+
+static inline std::string currentThreadIdString()
+{
+    std::stringstream ss;
+    ss << std::this_thread::get_id();
+    return ss.str();
 }
 }; // namespace detail
 
@@ -77,7 +84,7 @@ LoggerPrivate::LoggerPrivate(Logger *p, const char *name)
 
 LoggerPrivate::~LoggerPrivate() { }
 
-bool LoggerPrivate::messageHandlerOutput(const LoggerPrivate::Context &context, const char *message)
+bool LoggerPrivate::messageHandlerOutput(const Context &context, const char *message)
 {
     const auto handlerWraper = mMessageHandlerWraper.load();
     if (handlerWraper)
@@ -96,6 +103,7 @@ Logger::Logger(const char *name, LogLevel defaultLevel)
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>(baseFilename, 0, 0, false, 7));
     mDPtr->mLogger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
+    mDPtr->mLogger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] <%t> %v");
     mDPtr->mLogger->set_level(spdlog::level::trace);
     mDPtr->mLogger->flush_on(spdlog::level::debug);
     this->switchLevel(defaultLevel);
@@ -108,14 +116,14 @@ Logger::Logger(LoggerPrivate *d)
 
 Logger::~Logger() { }
 
-Logger::Ptr Logger::logger(int idNumber)
+Logger::Pointer Logger::logger(int idNumber)
 {
     std::lock_guard<std::mutex> locker(detail::loggersMapMutex());
     const auto iter = detail::loggersIdMap().find(idNumber);
     return detail::loggersIdMap().end() != iter ? iter->second : nullptr;
 }
 
-Logger::Ptr Logger::logger(const char *name)
+Logger::Pointer Logger::logger(const char *name)
 {
     std::lock_guard<std::mutex> locker(detail::loggersMapMutex());
     const auto iter = detail::loggersNameMap().find(name);
@@ -134,14 +142,14 @@ const char *Logger::loggerName(int idNumber)
     return logger ? logger->name() : nullptr;
 }
 
-std::vector<Logger::Ptr> Logger::allLoggers()
+std::vector<Logger::Pointer> Logger::allLoggers()
 {
-    std::vector<Logger::Ptr> loggers;
+    std::vector<Logger::Pointer> loggers;
     std::lock_guard<std::mutex> locker(detail::loggersMapMutex());
     std::transform(detail::loggersNameMap().begin(),
                    detail::loggersNameMap().end(),
                    std::back_inserter(loggers),
-                   [](const std::pair<std::string, Logger::Ptr> &pair) { return pair.second; });
+                   [](const std::pair<std::string, Logger::Pointer> &pair) { return pair.second; });
     return loggers;
 }
 
@@ -206,7 +214,7 @@ void Logger::output(const Context &context, const char *message)
                             message);
         }
     }
-    if (octk::LogLevel::Fatal == context.level)
+    if (LogLevel::Fatal == context.level)
     {
         this->fatalAbort();
     }
@@ -216,7 +224,7 @@ void Logger::vlogging(const Context &context, const char *format, va_list args)
 {
     OCTK_D(Logger);
     char message[OCTK_LOGGING_BUFFER_SIZE_MAX] = {0};
-    vsnprintf(message, OCTK_LOGGING_BUFFER_SIZE_MAX, format, args);
+    std::vsnprintf(message, OCTK_LOGGING_BUFFER_SIZE_MAX, format, args);
     if (!d->messageHandlerOutput(context, message))
     {
         if (d->mNoSource)
@@ -230,7 +238,7 @@ void Logger::vlogging(const Context &context, const char *format, va_list args)
                             message);
         }
     }
-    if (octk::LogLevel::Fatal == context.level)
+    if (LogLevel::Fatal == context.level)
     {
         this->fatalAbort();
     }

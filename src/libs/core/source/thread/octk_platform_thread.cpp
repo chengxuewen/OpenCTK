@@ -71,10 +71,8 @@ PlatformThreadPrivate::PlatformThreadPrivate(PlatformThread *p, PlatformThreadDa
 PlatformThreadPrivate::~PlatformThreadPrivate() { mData->deref(); }
 
 PlatformThread::PlatformThread()
-    : mDPtr(new PlatformThreadPrivate(this))
+    : PlatformThread(new PlatformThreadPrivate(this))
 {
-    mDPtr->mData->thread.store(this);
-    this->setName("PlatformThread", this);
 }
 
 PlatformThread::PlatformThread(PlatformThreadPrivate *d)
@@ -126,7 +124,7 @@ Status PlatformThread::requestInterruption()
     return okStatus;
 }
 
-const std::string &PlatformThread::name() const
+std::string PlatformThread::name() const
 {
     OCTK_D(const PlatformThread);
     ThreadMutex::Lock lock(d->mMutex);
@@ -207,10 +205,16 @@ bool PlatformThread::isRunning() const
     return d->mRunning.load(std::memory_order_relaxed) && !d->mInFinish.load(std::memory_order_relaxed);
 }
 
-PlatformThread::Id PlatformThread::threadId() const
+PlatformThread::Handle PlatformThread::threadHandle() const
 {
     OCTK_D(const PlatformThread);
     return d->mData->threadHandle.load();
+}
+
+PlatformThread::Id PlatformThread::threadId() const
+{
+    OCTK_D(const PlatformThread);
+    return d->mData->threadId.load();
 }
 
 int PlatformThread::retval() const
@@ -296,17 +300,7 @@ bool PlatformThread::wait(unsigned long msecs)
 
 PlatformThread *PlatformThread::currentThread() noexcept { return PlatformThreadData::current()->thread.load(); }
 
-PlatformThread::Id PlatformThread::currentThreadId() noexcept
-{
-    auto threadData = PlatformThreadData::current();
-    const auto handle = threadData->threadHandle.load();
-    // OCTK_DEBUG("currentThreadId():%s", PlatformThread::Id(handle).toHexString().c_str());
-    return handle;
-}
-
-// int PlatformThread::idealConcurrencyCount() noexcept { return detail::idealConcurrencyThreadCount(); }
-
-void PlatformThread::yieldCurrentThread() { std::this_thread::yield(); }
+void PlatformThread::yield() { std::this_thread::yield(); }
 
 void PlatformThread::usleep(unsigned long usecs) { std::this_thread::sleep_for(std::chrono::microseconds(usecs)); }
 

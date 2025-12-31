@@ -790,8 +790,7 @@ void *TaskThread::PreRun(void *pv)
     OCTK_TRACE("TaskThread::PreRun(%p)", pv);
 #endif
     TaskThread *thread = static_cast<TaskThread *>(pv);
-    thread->mIdString = PlatformThread::currentThreadId().toString();
-    auto hex = PlatformThread::currentThreadId().toHexString();
+    thread->mIdString = std::to_string(PlatformThread::currentThreadId());
     auto id = PlatformThread::currentThreadId();
     // auto ref = PlatformThread::currentThreadRef();
     TaskThreadManager::Instance()->SetCurrentTaskThread(thread);

@@ -55,7 +55,7 @@ class LoggerPrivate;
 class OCTK_CORE_API Logger
 {
 public:
-    using Ptr = Logger *;
+    using Pointer = Logger *;
 
     struct Context final
     {
@@ -336,11 +336,11 @@ public:
     explicit Logger(LoggerPrivate *d);
     virtual ~Logger();
 
-    static Logger::Ptr logger(int idNumber);
-    static Logger::Ptr logger(const char *name);
+    static Pointer logger(int idNumber);
+    static Pointer logger(const char *name);
     static int loggerIdNumber(const char *name);
     static const char *loggerName(int idNumber);
-    static std::vector<Logger::Ptr> allLoggers();
+    static std::vector<Pointer> allLoggers();
 
     int idNumber() const;
     const char *name() const;
