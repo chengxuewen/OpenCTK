@@ -50,12 +50,12 @@ public:
     void removeSink(VideoSinkInterface<VideoFrame> *sink) override;
     void setFramePreprocessor(std::unique_ptr<FramePreprocessor> preprocessor)
     {
-        Mutex::Lock locker(&mMutex);
+        Mutex::Lock locker(mMutex);
         mPreprocessor = std::move(preprocessor);
     }
     void setEnableAdaptation(bool enable_adaptation)
     {
-        Mutex::Lock locker(&mMutex);
+        Mutex::Lock locker(mMutex);
         mEnableAdaptation = enable_adaptation;
     }
     void onOutputFormatRequest(int width, int height, const Optional<int> &max_fps);

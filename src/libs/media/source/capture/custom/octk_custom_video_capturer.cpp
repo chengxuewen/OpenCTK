@@ -51,7 +51,7 @@ void CustomVideoCapturer::onFrame(const VideoFrame &original_frame)
 
     bool enable_adaptation;
     {
-        Mutex::Lock locker(&mMutex);
+        Mutex::Lock locker(mMutex);
         enable_adaptation = mEnableAdaptation;
     }
     if (!enable_adaptation)
@@ -123,7 +123,7 @@ void CustomVideoCapturer::updateVideoAdapter() { mVideoAdapter.OnSinkWants(mBroa
 
 VideoFrame CustomVideoCapturer::maybePreprocess(const VideoFrame &frame)
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     if (mPreprocessor != nullptr)
     {
         return mPreprocessor->Preprocess(frame);

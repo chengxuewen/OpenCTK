@@ -181,10 +181,9 @@ public:
                 {
                     if (0)
                     {
-                        OCTK_TRACE("Event_Refresh width:%d, height:%d, tid:%s",
+                        OCTK_TRACE("Event_Refresh width:%d, height:%d",
                                    mWindowWidth,
-                                   mWindowHeight,
-                                   octk::PlatformThread::currentThreadIdHexString().c_str());
+                                   mWindowHeight);
                     }
                     if (VideoType::I420 == mVideoType)
                     {
@@ -237,14 +236,13 @@ public:
         const auto timestampMSecs = timestampUSecs / octk::DateTime::kUSecsPerMSec;
         if (0)
         {
-            OCTK_TRACE("VideoRenderer::onFrame:type=%d, width:%d, height:%d, ntp:%lld, ts:%lld(%s), tid:%s",
+            OCTK_TRACE("VideoRenderer::onFrame:type=%d, width:%d, height:%d, ntp:%lld, ts:%lld(%s)",
                        frameBuffer->type(),
                        frame.width(),
                        frame.height(),
                        frame.ntpTimeMSecs(),
                        timestampUSecs,
-                       octk::DateTime::localTimeStringFromSteadyTimeMSecs(timestampMSecs).c_str(),
-                       octk::PlatformThread::currentThreadIdHexString().c_str());
+                       octk::DateTime::localTimeStringFromSteadyTimeMSecs(timestampMSecs).c_str());
         }
 
         SDL_Event event;

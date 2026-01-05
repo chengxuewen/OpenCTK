@@ -205,6 +205,12 @@ bool PlatformThread::isRunning() const
     return d->mRunning.load(std::memory_order_relaxed) && !d->mInFinish.load(std::memory_order_relaxed);
 }
 
+bool PlatformThread::isAdopted() const
+{
+    OCTK_D(const PlatformThread);
+    return d->mData->isAdopted;
+}
+
 PlatformThread::Handle PlatformThread::threadHandle() const
 {
     OCTK_D(const PlatformThread);
@@ -266,7 +272,7 @@ Status PlatformThread::terminate()
     return d->terminate();
 }
 
-bool PlatformThread::wait(unsigned long msecs)
+bool PlatformThread::wait(unsigned int msecs)
 {
     OCTK_D(PlatformThread);
     if (this->threadId() == PlatformThread::currentThreadId())

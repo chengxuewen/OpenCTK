@@ -17,15 +17,17 @@ using namespace octk;
 class PerfTestData
 {
 public:
-    PerfTestData() : cache_line_barrier_1_(), cache_line_barrier_2_()
+    PerfTestData()
+        : cache_line_barrier_1_()
+        , cache_line_barrier_2_()
     {
-        cache_line_barrier_1_[0]++;  // Avoid 'is not used'.
-        cache_line_barrier_2_[0]++;  // Avoid 'is not used'.
+        cache_line_barrier_1_[0]++; // Avoid 'is not used'.
+        cache_line_barrier_2_[0]++; // Avoid 'is not used'.
     }
 
     int AddToCounter(int add)
     {
-        Mutex::Lock mu(&mu_);
+        Mutex::Lock mu(mu_);
         my_counter_ += add;
         return 0;
     }
@@ -40,7 +42,7 @@ private:
 void BM_LockWithMutex(benchmark::State &state)
 {
     static PerfTestData test_data;
-    for (auto s: state)
+    for (auto s : state)
     {
         OCTK_UNUSED(s);
         int add_to_counter = test_data.AddToCounter(2);

@@ -25,44 +25,176 @@
 #ifndef _OCTK_THREAD_POOL_P_HPP
 #define _OCTK_THREAD_POOL_P_HPP
 
-#include "../tools/octk_assert.hpp"
-#include "../tools/octk_logging.hpp"
-
-
 #include <octk_thread_pool.hpp>
-#include <octk_string_view.hpp>
+#include <octk_logging.hpp>
+#include <octk_assert.hpp>
 
 #include <set>
+#include <map>
 #include <list>
 #include <mutex>
 #include <queue>
 #include <thread>
 #include <condition_variable>
 
+OCTK_DECLARE_LOGGER(OCTK_CORE_API, OCTK_THREAD_POOL_LOGGER)
+
 OCTK_BEGIN_NAMESPACE
 
-class ThreadPoolThread
+struct ThreadPoolLocalData final
+{
+    static ThreadPoolLocalData *current();
+    static void init(const ThreadPool::Thread::SharedPtr &thread);
+
+    ThreadPoolLocalData();
+    ~ThreadPoolLocalData();
+
+    ThreadPool::Thread::SharedPtr thread{nullptr};
+};
+
+class ThreadPoolTaskQueue
+{
+public:
+    using Id = uint64_t;
+    using Task = ThreadPool::Task;
+    using Priority = ThreadPool::Priority;
+
+    struct Item
+    {
+        Task::SharedPtr task;
+        uint64_t sequenceId;
+        Priority priority;
+
+        struct Compare
+        {
+            bool operator()(const Item &lhs, const Item &rhs) const
+            {
+                if (lhs.priority != rhs.priority)
+                {
+                    // Priority given to values with higher values
+                    return static_cast<int>(lhs.priority) > static_cast<int>(rhs.priority);
+                }
+                // When of the same priority, the one with a lower sequence number
+                return lhs.sequenceId < rhs.sequenceId;
+            }
+        };
+    };
+
+    ThreadPoolTaskQueue() = default;
+    ~ThreadPoolTaskQueue() = default;
+
+    Id push(const Task::SharedPtr &task, Priority priority)
+    {
+        // push item with sequenceId priority
+        const auto id = mIdCounter++;
+        mTasks.insert({task, id, priority});
+#if 0
+        OCTK_DEBUG("push %p, id:%llu, priority:%d", task.get(), id, static_cast<int>(priority));
+        for (auto iter = mTasks.begin(); iter != mTasks.end(); ++iter)
+        {
+            OCTK_DEBUG("item %p, id:%llu, priority:%d",
+                       iter->task.get(),
+                       iter->sequenceId,
+                       static_cast<int>(iter->priority));
+        }
+#endif
+        return id;
+    }
+
+    Task::SharedPtr first()
+    {
+        // get first item in queue
+        // while (!mTasks.empty())
+        // {
+        //     if (mTasks.begin()->canceled)
+        //     {
+        //         mTasks.erase(mTasks.begin());
+        //         continue;
+        //     }
+        //     break;
+        // }
+        return mTasks.empty() ? nullptr : mTasks.begin()->task;
+    }
+    Task::SharedPtr pop()
+    {
+        auto task = this->first();
+        if (task.get())
+        {
+            mTasks.erase(mTasks.begin());
+        }
+        return task;
+    }
+
+    void clear() { mTasks.clear(); }
+    bool cancel(Task *task)
+    {
+        bool canceled = false;
+        for (auto iter = mTasks.begin(); iter != mTasks.end();)
+        {
+            if (iter->task.get() == task)
+            {
+                iter = mTasks.erase(iter);
+                canceled = true;
+            }
+            else
+            {
+                ++iter;
+            }
+        }
+        return canceled;
+    }
+    bool cancel(Id id)
+    {
+        bool canceled = false;
+        for (auto iter = mTasks.begin(); iter != mTasks.end(); /*++iter*/)
+        {
+            if (iter->sequenceId == id)
+            {
+                iter = mTasks.erase(iter);
+                canceled = true;
+            }
+            else
+            {
+                ++iter;
+            }
+        }
+        return canceled;
+    }
+
+    size_t size() const { return mTasks.size(); }
+    bool empty() const { return mTasks.empty(); }
+
+private:
+    std::atomic<Id> mIdCounter{0};
+    std::multiset<Item, Item::Compare> mTasks;
+};
+
+class ThreadPoolTaskThread : public ThreadPool::Thread
 {
 public:
     using Task = ThreadPool::Task;
 
-    using SharedPtr = std::shared_ptr<ThreadPoolThread>;
+    using SharedPtr = std::shared_ptr<ThreadPoolTaskThread>;
+    using WeakPtr = std::weak_ptr<ThreadPoolTaskThread>;
 
-    ThreadPoolThread(ThreadPoolPrivate *manager)
-        : mManager(manager)
+    ThreadPoolTaskThread(ThreadPoolPrivate *manager)
+        : ThreadPool::Thread(false)
+        , mManager(manager)
     {
     }
-    ~ThreadPoolThread() { this->exitWait(); }
+    ~ThreadPoolTaskThread() override
+    {
+        this->exitWait();
+        // OCTK_DEBUG("ThreadPoolTaskThread::~ThreadPoolTaskThread():%p", this);
+    }
 
-    void setName(const StringView name) { mName = name.data(); }
+    void init(const StringView name, const WeakPtr &weakThis);
 
     void wake();
     void wakeAll();
 
     void start();
     void exitWait();
-
-    bool isFinished() const { return mFinished.load(); }
 
     Task::SharedPtr task() { return mTask; }
     void setTask(const Task::SharedPtr &task)
@@ -77,87 +209,39 @@ protected:
 
 private:
     std::string mName;
+    WeakPtr mWeakThis;
     std::thread mThread;
     Task::SharedPtr mTask;
+    std::once_flag mInitFlag;
     std::atomic<bool> mExit{true};
-    std::atomic<bool> mFinished{true};
     ThreadPoolPrivate *const mManager;
     std::condition_variable mTaskReadyCondition;
 };
 
-class ThreadPoolTaskQueue
+class ThreadPool::ThreadPrivate
 {
+    OCTK_DEFINE_PPTR(Thread)
+    OCTK_DECLARE_PUBLIC(Thread)
+    OCTK_DISABLE_COPY_MOVE(ThreadPrivate)
 public:
-    using Task = ThreadPool::Task;
-    using Priority = ThreadPool::Priority;
-
-    struct Item
+    ThreadPrivate(Thread *p, bool adopted)
+        : mPPtr(p)
+        , mAdopted(adopted)
     {
-        Task::SharedPtr task;
-        uint64_t sequenceId;
-        Priority priority;
-
-        bool operator<(const Item &other) const
-        {
-            if (priority != other.priority)
-            {
-                // Priority given to values with lower values
-                return static_cast<int>(priority) > static_cast<int>(other.priority);
-            }
-            // When of the same priority, the one with a higher sequence number (inserted later) has a lower priority
-            return sequenceId > other.sequenceId;
-        }
-    };
-
-    ThreadPoolTaskQueue() = default;
-    ~ThreadPoolTaskQueue() = default;
-
-    void push(const Task::SharedPtr &task, Priority priority)
-    {
-        // push item with sequenceId priority
-        mQueue.push({task, mIdCounter++, priority});
     }
+    virtual ~ThreadPrivate() { }
 
-    Task::SharedPtr first()
-    {
-        // get first item in queue
-        return mQueue.top().task;
-    }
-    Task::SharedPtr pop()
-    {
-        auto task = std::move(mQueue.top().task);
-        mQueue.pop();
-        return task;
-    }
-    Task::SharedPtr tryPop()
-    {
-        if (mQueue.empty())
-        {
-            return nullptr;
-        }
-        auto task = std::move(mQueue.top().task);
-        mQueue.pop();
-        return task;
-    }
-    void clear()
-    {
-        while (!mQueue.empty())
-        {
-            mQueue.pop();
-        }
-    }
-
-    size_t size() const { return mQueue.size(); }
-    bool empty() const { return mQueue.empty(); }
-
-private:
-    std::priority_queue<Item> mQueue;
-    std::atomic<uint64_t> mIdCounter{0};
+    mutable std::mutex mMutex;
+    std::thread::id mThreadId;
+    const bool mAdopted{false};
+    std::atomic<bool> mRunning{false};
+    std::atomic<bool> mInFinish{false};
+    mutable std::condition_variable mDoneCondition;
 };
 
 class OCTK_CORE_API ThreadPoolPrivate
 {
-    friend class ThreadPoolThread;
+    friend class ThreadPoolTaskThread;
     OCTK_DEFINE_PPTR(ThreadPool)
     OCTK_DECLARE_PUBLIC(ThreadPool)
     OCTK_DISABLE_COPY_MOVE(ThreadPoolPrivate)
@@ -168,6 +252,7 @@ public:
     explicit ThreadPoolPrivate(ThreadPool *p);
     virtual ~ThreadPoolPrivate();
 
+    ThreadPoolTaskThread::SharedPtr findThread(ThreadPoolTaskThread *thread);
     void enqueueTask(const Task::SharedPtr &task, Priority priority);
     void startThread(const Task::SharedPtr &task);
     bool tryStart(const Task::SharedPtr &task);
@@ -183,16 +268,18 @@ public:
     std::condition_variable mCondition;
 
     ThreadPoolTaskQueue mTaskQueue;
-    std::list<ThreadPoolThread *> mWaitingThreads;
-    std::list<ThreadPoolThread *> mExpiredThreads;
-    std::set<ThreadPoolThread::SharedPtr> mAllThreads;
     std::condition_variable mNoActiveThreadsCondition;
+    std::list<ThreadPoolTaskThread *> mWaitingThreads;
+    std::list<ThreadPoolTaskThread *> mExpiredThreads;
+    std::map<ThreadPoolTaskThread *, ThreadPoolTaskThread::SharedPtr> mAllThreads;
+
+    std::atomic<uint64_t> mTasksCompletedCount{0};
+    std::atomic<uint64_t> mTasksDispatchedCount{0};
 
     int mExpiryTimeout = 30000;
     int mActiveThreadCount = 0;
     int mReservedThreadCount = 0;
-    std::atomic<int> mMaxQueueSize{256};
-    int mMaxThreadCount = std::thread::hardware_concurrency();
+    int mMaxThreadCount = ThreadPool::idealThreadCount();
 };
 
 OCTK_END_NAMESPACE

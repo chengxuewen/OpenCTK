@@ -24,7 +24,7 @@ public:
     // The parent is letting us know we have a usage neasurement.
     void OnResourceUsageStateMeasured(ResourceUsageState usage_state)
     {
-        Mutex::Lock locker(&lock_);
+        Mutex::Lock locker(lock_);
         if (!listener_)
             return;
         listener_->OnResourceUsageStateMeasured(SharedRefPtr<Resource>(this), usage_state);
@@ -34,7 +34,7 @@ public:
     std::string Name() const override { return mName; }
     void SetResourceListener(ResourceListener *listener) override
     {
-        Mutex::Lock locker(&lock_);
+        Mutex::Lock locker(lock_);
         OCTK_DCHECK(!listener_ || !listener);
         listener_ = listener;
     }
@@ -58,7 +58,7 @@ SharedRefPtr<Resource> BroadcastResourceListener::SourceResource() const { retur
 
 void BroadcastResourceListener::StartListening()
 {
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     OCTK_DCHECK(!is_listening_);
     source_resource_->SetResourceListener(this);
     is_listening_ = true;
@@ -66,7 +66,7 @@ void BroadcastResourceListener::StartListening()
 
 void BroadcastResourceListener::StopListening()
 {
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     OCTK_DCHECK(is_listening_);
     OCTK_DCHECK(adapters_.empty());
     source_resource_->SetResourceListener(nullptr);
@@ -75,7 +75,7 @@ void BroadcastResourceListener::StopListening()
 
 SharedRefPtr<Resource> BroadcastResourceListener::CreateAdapterResource()
 {
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     OCTK_DCHECK(is_listening_);
     SharedRefPtr<AdapterResource> adapter =
         utils::makeRefCounted<AdapterResource>(source_resource_->Name() + "Adapter");
@@ -85,7 +85,7 @@ SharedRefPtr<Resource> BroadcastResourceListener::CreateAdapterResource()
 
 void BroadcastResourceListener::RemoveAdapterResource(SharedRefPtr<Resource> resource)
 {
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     auto it = std::find(adapters_.begin(), adapters_.end(), resource);
     OCTK_DCHECK(it != adapters_.end());
     adapters_.erase(it);
@@ -94,7 +94,7 @@ void BroadcastResourceListener::RemoveAdapterResource(SharedRefPtr<Resource> res
 std::vector<SharedRefPtr<Resource>> BroadcastResourceListener::GetAdapterResources()
 {
     std::vector<SharedRefPtr<Resource>> resources;
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     for (const auto &adapter : adapters_)
     {
         resources.push_back(adapter);
@@ -106,7 +106,7 @@ void BroadcastResourceListener::OnResourceUsageStateMeasured(SharedRefPtr<Resour
                                                              ResourceUsageState usage_state)
 {
     OCTK_DCHECK_EQ(resource, source_resource_);
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     for (const auto &adapter : adapters_)
     {
         adapter->OnResourceUsageStateMeasured(usage_state);

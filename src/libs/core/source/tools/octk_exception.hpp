@@ -37,7 +37,7 @@ OCTK_BEGIN_NAMESPACE
 
 namespace detail
 {
-static inline void noop(void) {}
+static inline void noop(void) { }
 
 struct ExceptionWhat final
 {
@@ -92,15 +92,15 @@ template <typename R> Expected<R, std::string> tryCatchCall(const std::function<
 
 OCTK_END_NAMESPACE
 
-#ifndef OCTK_HAS_EXCEPTIONS
-#    define OCTK_TRY                              if (true)
-#    define OCTK_CATCH(A)                         else
+#if OCTK_HAS_EXCEPTIONS
+#    define OCTK_TRY                              try
+#    define OCTK_CATCH(A)                         catch (A)
 #    define OCTK_RETHROW                          throw
 #    define OCTK_THROW_DELEGATE(Exception, what)  throw Exception(octk::detail::getCStrHelper(what))
 #    define OCTK_THROW_NO_MSG_DELEGATE(Exception) throw Exception()
 #else
-#    define OCTK_TRY                              try
-#    define OCTK_CATCH(A)                         catch (A)
+#    define OCTK_TRY                              if (true)
+#    define OCTK_CATCH(A)                         else
 #    define OCTK_RETHROW                          octk::detail::noop()
 #    define OCTK_THROW_DELEGATE(Exception, what)  OCTK_FATAL("%s", detail::getCStrHelper(what))
 #    define OCTK_THROW_NO_MSG_DELEGATE(Exception) OCTK_FATAL("%s", #Exception)

@@ -26,97 +26,77 @@
 #ifndef _OCTK_SINGLETON_HPP
 #define _OCTK_SINGLETON_HPP
 
-#include <octk_memory.hpp>
+#include <octk_type_traits.hpp>
 
 #include <atomic>
 #include <mutex>
 
 OCTK_BEGIN_NAMESPACE
-template <typename T> struct SingletonScopedPointerDeleter
+
+template <typename T, bool UseManualLifetime, typename = void> struct Singleton;
+
+template <typename T> class Singleton<T, false, type_traits::enable_if_t<true>>
 {
-    constexpr SingletonScopedPointerDeleter() noexcept = default;
-    void operator()(T *pointer) const noexcept
-    {
-        static_assert(sizeof(T) >= 0, "cannot delete an incomplete type");
-        static_assert(!std::is_void<T>::value, "cannot delete an incomplete type");
-        delete pointer;
-    }
-};
-
-
-template <typename T> class Singleton
-{
-    typedef SingletonScopedPointerDeleter<T> Deleter;
-
 public:
-    typedef void (*InitFunc)(T *);
+    static constexpr bool UseManualLifetime = false;
 
-    static T *instance()
+    static T &instance()
     {
-        OCTK_ASSERT(mAvailabled.load());
-        std::call_once(mOnceFlag, create);
-        return mInstance;
-    }
-
-    template <InitFunc func = nullptr> static T *instance()
-    {
-        OCTK_ASSERT(mAvailabled.load());
-        std::call_once(mOnceFlag,
-                       []()
-                       {
-                           create();
-                           if (func)
-                           {
-                               func(mInstance);
-                           }
-                       });
-        return mInstance;
-    }
-
-    void destroy()
-    {
-        this->onAboutToBeDestroyed();
-        delete this->detachScoped();
+        static T instance;
+        return instance;
     }
 
 protected:
-    Singleton() { }
-    virtual ~Singleton() { }
+    Singleton() = default;
+    virtual ~Singleton() = default;
+    OCTK_DISABLE_COPY_MOVE(Singleton)
+};
+template <typename T> using AutoSingleton = Singleton<T, false>;
 
-    virtual void onAboutToBeDestroyed() { }
-    virtual void initSingleton() { }
+template <typename T> class Singleton<T, true, type_traits::enable_if_t<true>>
+{
+public:
+    static constexpr bool UseManualLifetime = true;
+
+    static T &instance()
+    {
+        std::call_once(mOnceFlag, create);
+        OCTK_ASSERT(mInstance.load());
+        return *mInstance.load();
+    }
+
+protected:
+    Singleton() = default;
+    virtual ~Singleton() = default;
 
     T *detachScoped()
     {
-        mAvailabled.store(false);
         mScoped.release();
-        return mInstance;
+        return mInstance.exchange(nullptr);
     }
+
+    void destroy() { delete this->detachScoped(); }
 
 private:
     static void create()
     {
         mScoped.reset(new T);
-        mInstance = mScoped.get();
-        mInstance->initSingleton();
+        mInstance.store(mScoped.get());
     }
 
-    static T *mInstance;
     static std::once_flag mOnceFlag;
-    static std::atomic<bool> mAvailabled;
-    static std::unique_ptr<T, Deleter> mScoped;
+    static std::atomic<T *> mInstance;
+    static std::unique_ptr<T> mScoped;
     OCTK_DISABLE_COPY_MOVE(Singleton)
 };
+template <typename T> using ManualSingleton = Singleton<T, true>;
 
-template <typename T> T *Singleton<T>::mInstance = nullptr;
-template <typename T> std::once_flag Singleton<T>::mOnceFlag;
-template <typename T> std::atomic<bool> Singleton<T>::mAvailabled = true;
-template <typename T> std::unique_ptr<T, SingletonScopedPointerDeleter<T>> Singleton<T>::mScoped(nullptr);
+template <typename T> std::once_flag Singleton<T, true>::mOnceFlag;
+template <typename T> std::atomic<T *> Singleton<T, true>::mInstance = nullptr;
+template <typename T> std::unique_ptr<T> Singleton<T, true>::mScoped = nullptr;
 
 OCTK_END_NAMESPACE
 
-#define OCTK_DECLARE_SINGLETON(CLASS)                                                                                  \
-    friend class octk::Singleton<CLASS>;                                                                               \
-    friend struct octk::SingletonScopedPointerDeleter<CLASS>;
+#define OCTK_DECLARE_SINGLETON(CLASS) friend class octk::Singleton<CLASS, UseManualLifetime>;
 
 #endif // _OCTK_SINGLETON_HPP

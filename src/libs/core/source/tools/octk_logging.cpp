@@ -103,7 +103,7 @@ Logger::Logger(const char *name, LogLevel defaultLevel)
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>(baseFilename, 0, 0, false, 7));
     mDPtr->mLogger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
-    mDPtr->mLogger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] <%t> %v");
+    mDPtr->mLogger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] <%t> [%s:%#] %v");
     mDPtr->mLogger->set_level(spdlog::level::trace);
     mDPtr->mLogger->flush_on(spdlog::level::debug);
     this->switchLevel(defaultLevel);

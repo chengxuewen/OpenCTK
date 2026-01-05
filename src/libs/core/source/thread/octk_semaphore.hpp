@@ -25,23 +25,73 @@
 #pragma once
 
 #include <octk_assert.hpp>
-#include <octk_global.hpp>
+#include <octk_utility.hpp>
 
-#if OCTK_CC_CPP20_OR_GREATER
-#    include <semaphore>
-#endif
+#include <thread>
+#include <condition_variable>
 
 OCTK_BEGIN_NAMESPACE
 
 template <std::ptrdiff_t LeastMaxValue = std::numeric_limits<std::ptrdiff_t>::max()>
 class OCTK_CORE_API CountingSemaphore
 {
+    // using Mutex = std::recursive_mutex;
+    using Mutex = std::mutex;
+    using Lock = std::lock_guard<Mutex>;
+    using UniqueLock = std::unique_lock<Mutex>;
+    // using Condition = std::condition_variable_any;
+    using Condition = std::condition_variable;
+
 public:
+    class Releaser
+    {
+    public:
+        Releaser() = default;
+        explicit Releaser(CountingSemaphore &sem, int n = 1) noexcept
+            : mSem(&sem)
+            , mCount(n)
+        {
+        }
+        explicit Releaser(CountingSemaphore *sem, int n = 1) noexcept
+            : mSem(sem)
+            , mCount(n)
+        {
+        }
+        Releaser(Releaser &&other) noexcept
+            : mSem(other.cancel())
+            , mCount(other.mCount)
+        {
+        }
+        Releaser &operator=(Releaser &&other) noexcept
+        {
+            Releaser moved(std::move(other));
+            swap(moved);
+            return *this;
+        }
+
+        ~Releaser()
+        {
+            if (mSem)
+                mSem->release(mCount);
+        }
+
+        void swap(Releaser &other) noexcept
+        {
+            std::swap(mSem, other.mSem);
+            std::swap(mCount, other.mCount);
+        }
+
+        CountingSemaphore *semaphore() const noexcept { return mSem; }
+
+        CountingSemaphore *cancel() noexcept { return utils::exchange(mSem, nullptr); }
+
+    private:
+        CountingSemaphore *mSem = nullptr;
+        int mCount;
+    };
+
     explicit CountingSemaphore(std::ptrdiff_t desired = 0)
         : mCount(desired)
-#if OCTK_CC_CPP20_OR_GREATER
-        , mSemaphore(desired)
-#endif
     {
         OCTK_ASSERT(desired >= 0 && desired <= max());
     }
@@ -53,116 +103,73 @@ public:
         return LeastMaxValue;
     }
 
-    void acquire()
+    void acquire(std::ptrdiff_t n = 1)
     {
-#if OCTK_CC_CPP20_OR_GREATER
-        mSemaphore.acquire();
-#else
-        std::unique_lock<decltype(mMutex)> lock{mMutex};
-        mCondition.wait(lock, [&]() { return mCount > 0; });
-#endif
-        mCount.fetch_sub(1, std::memory_order_relaxed);
+        UniqueLock lock{mMutex};
+        mCondition.wait(lock, [&]() { return mCount >= n; });
+        mCount -= n;
     }
-    bool tryAcquire()
+
+    bool tryAcquire(std::ptrdiff_t n = 1)
     {
-#if OCTK_CC_CPP20_OR_GREATER
-        if (mSemaphore.try_acquire())
-        {
-            mCount.fetch_sub(1, std::memory_order_relaxed);
-            return true;
-        }
-        return false;
-#else
-        std::unique_lock<decltype(mMutex)> lock{mMutex};
-        if (mCount <= 0)
+        Lock lock{mMutex};
+        if (mCount < n)
         {
             return false;
         }
-        --mCount;
+        mCount -= n;
         return true;
-#endif
     }
-    template <typename Rep, typename Period> bool tryAcquireFor(const std::chrono::duration<Rep, Period> &relTime)
+    OCTK_STATIC_CONSTANT_NUMBER(kWaitForeverMSecs, std::numeric_limits<unsigned int>::max())
+    bool tryAcquire(std::ptrdiff_t n, unsigned int msecs)
     {
-#if OCTK_CC_CPP20_OR_GREATER
-        if (mSemaphore.try_acquire_for(relTime))
-        {
-            mCount.fetch_sub(1, std::memory_order_relaxed);
-            return true;
-        }
-        return false;
-#else
-        const auto timeout_time = std::chrono::steady_clock::now() + relTime;
-        return this->tryAcquireWait(timeout_time);
-#endif
+        return this->tryAcquireWait(n, std::chrono::steady_clock::now() + std::chrono::milliseconds(msecs));
+    }
+
+    template <typename Rep, typename Period>
+    bool tryAcquireFor(std::ptrdiff_t n, const std::chrono::duration<Rep, Period> &relTime)
+    {
+        const auto absTime = std::chrono::steady_clock::now() + relTime;
+        return this->tryAcquireWait(n, absTime);
     }
 
     template <typename Clock, typename Duration>
-    bool tryAcquireUntil(const std::chrono::time_point<Clock, Duration> &absTime)
+    bool tryAcquireUntil(std::ptrdiff_t n, const std::chrono::time_point<Clock, Duration> &absTime)
     {
-#if OCTK_CC_CPP20_OR_GREATER
-        if (mSemaphore.try_acquire_until(absTime))
-        {
-            mCount.fetch_sub(1, std::memory_order_relaxed);
-            return true;
-        }
-        return false;
-#else
-        return this->tryAcquireWait(absTime);
-#endif
+        return this->tryAcquireWait(n, absTime);
     }
 
     void release(std::ptrdiff_t update = 1)
     {
-#if OCTK_CC_CPP20_OR_GREATER
-        mCount.fetch_add(update, std::memory_order_relaxed);
-        mSemaphore.release(update);
-#else
-        {
-            std::lock_guard<decltype(mMutex)> lock{mMutex};
-            OCTK_ASSERT(update >= 0 && update <= max() - mCount);
-            mCount += update;
-            if (mCount <= 0)
-            {
-                return;
-            }
-        } // avoid hurry up and wait
+        Lock lock{mMutex};
+        OCTK_ASSERT(update >= 0 && update <= this->max() - mCount);
+        mCount += update;
         mCondition.notify_all();
-#endif
     }
 
     std::ptrdiff_t available() const
     {
-#if !OCTK_CC_CPP20_OR_GREATER
-        std::lock_guard<decltype(mMutex)> lock{mMutex};
-#endif
+        Lock lock{mMutex};
         return mCount.load();
     }
 
 
 protected:
-#if !OCTK_CC_CPP20_OR_GREATER
     template <typename Clock, typename Duration>
-    bool tryAcquireWait(const std::chrono::time_point<Clock, Duration> &timeout_time)
+    bool tryAcquireWait(std::ptrdiff_t n, const std::chrono::time_point<Clock, Duration> &timeoutTime)
     {
-        std::unique_lock<decltype(mMutex)> lock{mMutex};
-        if (!mCondition.wait_until(lock, timeout_time, [&]() { return mCount > 0; }))
+        UniqueLock lock{mMutex};
+        if (!mCondition.wait_until(lock, timeoutTime, [&]() { return mCount >= n; }))
         {
             return false;
         }
-        --mCount;
+        mCount -= n;
         return true;
     }
-#endif
 
 private:
-#if OCTK_CC_CPP20_OR_GREATER
-    std::counting_semaphore<LeastMaxValue> mSemaphore;
-#else
-    mutable std::mutex mMutex;
-    // std::ptrdiff_t mCount{0};
-    std::condition_variable mCondition;
-#endif
+    mutable Mutex mMutex;
+    Condition mCondition;
     std::atomic<std::ptrdiff_t> mCount{0};
     OCTK_DISABLE_COPY_MOVE(CountingSemaphore)
 };

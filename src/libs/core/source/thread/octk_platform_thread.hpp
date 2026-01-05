@@ -32,6 +32,15 @@
 #include <future>     // for std::async
 #include <functional> // for std::invoke; no guard needed as it's a C++98 header
 
+/**
+ * @addtogroup core
+ * @{
+ * @addtogroup PlatformThread
+ * @brief
+ * @{
+ * @details
+ */
+
 #if defined(__cpp_lib_invoke) && __cpp_lib_invoke >= 201411 && defined(__cpp_init_captures) &&                         \
     __cpp_init_captures >= 201304 && defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201304
 #    define OCTK_PLATFORM_THREAD_HAS_VARIADIC_CREATE 1
@@ -153,6 +162,7 @@ public:
 
     bool isFinished() const;
     bool isRunning() const;
+    bool isAdopted() const;
 
     Handle threadHandle() const;
     Id threadId() const;
@@ -161,8 +171,8 @@ public:
     Status start(Priority = Priority::kInherit);
     Status terminate();
 
-    OCTK_STATIC_CONSTANT_NUMBER(kWaitForeverMSecs, std::numeric_limits<unsigned long>::max())
-    bool wait(unsigned long msecs = kWaitForeverMSecs);
+    OCTK_STATIC_CONSTANT_NUMBER(kWaitForeverMSecs, std::numeric_limits<unsigned int>::max())
+    bool wait(unsigned int msecs = kWaitForeverMSecs);
 
     static bool isThreadHandleEqual(const Handle &lhs, const Handle &rhs);
     static void setCurrentThreadName(const StringView name);
@@ -217,3 +227,8 @@ protected:
 };
 
 OCTK_END_NAMESPACE
+
+/**
+ * @}
+ * @}
+ */

@@ -41,14 +41,18 @@ template <typename T> void asConst(const T &&) = delete;
 /***********************************************************************************************************************
   * like cxx14 std::exchange
 ***********************************************************************************************************************/
+#if OCTK_CC_CPP14_OR_GREATER
+using std::exchange;
+#else
 template <typename T, typename U = T>
-OCTK_CXX14_CONSTEXPR T exchange(T &t, U &&newValue)
-    noexcept(Conjunction<std::is_nothrow_move_constructible<T>, std::is_nothrow_assignable<T &, U>>::value)
+OCTK_CXX14_CONSTEXPR T exchange(T &t, U &&newValue) noexcept(
+    Conjunction<std::is_nothrow_move_constructible<T>, std::is_nothrow_assignable<T &, U>>::value)
 {
     T old = std::move(t);
     t = std::forward<U>(newValue);
     return old;
 }
+#endif
 
 /***********************************************************************************************************************
   * like cxx20 std::identity

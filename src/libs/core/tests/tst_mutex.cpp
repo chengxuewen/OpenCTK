@@ -34,11 +34,13 @@ namespace
 
 constexpr int kNumThreads = 16;
 
-template <class MutexType>
-class OCTK_ATTRIBUTE_LOCKABLE RawMutexLocker
+template <class MutexType> class OCTK_ATTRIBUTE_LOCKABLE RawMutexLocker
 {
 public:
-    explicit RawMutexLocker(MutexType &mutex) : mMutex(mutex) {}
+    explicit RawMutexLocker(MutexType &mutex)
+        : mMutex(mutex)
+    {
+    }
     void lock() OCTK_ATTRIBUTE_EXCLUSIVE_LOCK_FUNCTION() { mMutex.lock(); }
     void unlock() OCTK_ATTRIBUTE_UNLOCK_FUNCTION() { mMutex.unlock(); }
 
@@ -49,7 +51,10 @@ private:
 class OCTK_ATTRIBUTE_LOCKABLE RawMutexTryLocker
 {
 public:
-    explicit RawMutexTryLocker(Mutex &mutex) : mMutex(mutex) {}
+    explicit RawMutexTryLocker(Mutex &mutex)
+        : mMutex(mutex)
+    {
+    }
     void lock() OCTK_ATTRIBUTE_EXCLUSIVE_LOCK_FUNCTION()
     {
         while (!mMutex.try_lock())
@@ -63,12 +68,14 @@ private:
     Mutex &mMutex;
 };
 
-template <class MutexType, class MutexlockType>
-class Mutexlocklocker
+template <class MutexType, class MutexlockType> class Mutexlocklocker
 {
 public:
-    explicit Mutexlocklocker(MutexType &mutex) : mMutex(mutex) {}
-    void lock() { mlock = utils::make_unique<MutexlockType>(&mMutex); }
+    explicit Mutexlocklocker(MutexType &mutex)
+        : mMutex(mutex)
+    {
+    }
+    void lock() { mlock = utils::make_unique<MutexlockType>(mMutex); }
     void unlock() { mlock = nullptr; }
 
 private:
@@ -76,8 +83,7 @@ private:
     std::unique_ptr<MutexlockType> mlock;
 };
 
-template <class MutexType, class Mutexlocker>
-class LockRunner
+template <class MutexType, class Mutexlocker> class LockRunner
 {
 public:
     template <typename... Args>
@@ -85,8 +91,11 @@ public:
         : mThreadsActive(0)
         , mStartEvent(true, false)
         , mDoneEvent(true, false)
-        , mSharedValue(0), mMutex(args...)
-        , mlocker(mMutex) {}
+        , mSharedValue(0)
+        , mMutex(args...)
+        , mlocker(mMutex)
+    {
+    }
 
     bool Run()
     {
@@ -145,8 +154,7 @@ private:
     Mutexlocker mlocker;
 };
 
-template <typename Runner>
-void StartThreads(std::vector<std::unique_ptr<std::thread>> &threads, Runner *handler)
+template <typename Runner> void StartThreads(std::vector<std::unique_ptr<std::thread>> &threads, Runner *handler)
 {
     for (int i = 0; i < kNumThreads; ++i)
     {
@@ -163,7 +171,10 @@ TEST(MutexTest, ProtectsSharedResourceWithMutexAndRawMutexLocker)
     runner.SetExpectedThreadCount(kNumThreads);
     EXPECT_TRUE(runner.Run());
     EXPECT_EQ(0, runner.shared_value());
-    for (auto &&thread: threads) { thread->join(); }
+    for (auto &&thread : threads)
+    {
+        thread->join();
+    }
 }
 
 TEST(MutexTest, ProtectsSharedResourceWithMutexAndRawMutexTryLocker)
@@ -174,7 +185,10 @@ TEST(MutexTest, ProtectsSharedResourceWithMutexAndRawMutexTryLocker)
     runner.SetExpectedThreadCount(kNumThreads);
     EXPECT_TRUE(runner.Run());
     EXPECT_EQ(0, runner.shared_value());
-    for (auto &&thread: threads) { thread->join(); }
+    for (auto &&thread : threads)
+    {
+        thread->join();
+    }
 }
 
 TEST(MutexTest, ProtectsSharedResourceWithMutexAndMutexlocker)
@@ -185,6 +199,9 @@ TEST(MutexTest, ProtectsSharedResourceWithMutexAndMutexlocker)
     runner.SetExpectedThreadCount(kNumThreads);
     EXPECT_TRUE(runner.Run());
     EXPECT_EQ(0, runner.shared_value());
-    for (auto &&thread: threads) { thread->join(); }
+    for (auto &&thread : threads)
+    {
+        thread->join();
+    }
 }
-}  // namespace
+} // namespace

@@ -48,7 +48,7 @@ public:
 
     Timestamp GetNextRunTime() const override
     {
-        Mutex::Lock locker(&lock_);
+        Mutex::Lock locker(lock_);
         return next_run_time_;
     }
     TaskQueue *GetAsTaskQueue() override { return this; }

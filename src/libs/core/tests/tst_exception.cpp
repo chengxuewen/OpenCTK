@@ -1,12 +1,27 @@
-/*
- *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be found
- *  in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
- */
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+** Copyright 2016 The WebRTC Project Authors.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
 
 #include <octk_exception.hpp>
 
@@ -16,19 +31,19 @@
 #include <cstdint>
 #include <utility>
 
-using namespace octk;
+OCTK_BEGIN_NAMESPACE
 
 namespace
 {
-}  // namespace
+} // namespace
 
 #if OCTK_HAS_EXCEPTIONS
-#   define EXPECT_THROW_OR_DEATH(statement, expected_exception) EXPECT_THROW(statement, expected_exception)
+#    define EXPECT_THROW_OR_DEATH(statement, expected_exception) EXPECT_THROW(statement, expected_exception)
 #else
-#   define EXPECT_THROW_OR_DEATH(statement, expected_exception) EXPECT_DEATH(statement, #expected_exception)
+#    define EXPECT_THROW_OR_DEATH(statement, expected_exception) EXPECT_DEATH(statement, #expected_exception)
 #endif
 
-TEST(BufferTest, Test_std_logic_error)
+TEST(ExceptionTest, StdLogicError)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::logic_error, ""), std::logic_error);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::logic_error, "std::logic_error:d", 1), std::logic_error);
@@ -41,7 +56,7 @@ TEST(BufferTest, Test_std_logic_error)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_LOGIC_ERROR(std::string("std::logic_error")), std::logic_error);
 }
 
-TEST(BufferTest, Test_std_invalid_argument)
+TEST(ExceptionTest, StdInvalidArgument)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::invalid_argument, ""), std::invalid_argument);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::invalid_argument, "std::invalid_argument:d", 1), std::invalid_argument);
@@ -56,7 +71,7 @@ TEST(BufferTest, Test_std_invalid_argument)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_INVALID_ARGUMENT(std::string("std::invalid_argument")), std::invalid_argument);
 }
 
-TEST(BufferTest, Test_std_domain_error)
+TEST(ExceptionTest, StdDomainError)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::domain_error, ""), std::domain_error);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::domain_error, "std::domain_error:d", 1), std::domain_error);
@@ -69,7 +84,7 @@ TEST(BufferTest, Test_std_domain_error)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_DOMAIN_ERROR(std::string("std::domain_error")), std::domain_error);
 }
 
-TEST(BufferTest, Test_std_length_error)
+TEST(ExceptionTest, StdLengthError)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::length_error, ""), std::length_error);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::length_error, "std::length_error:d", 1), std::length_error);
@@ -82,7 +97,7 @@ TEST(BufferTest, Test_std_length_error)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_LENGTH_ERROR(std::string("std::length_error")), std::length_error);
 }
 
-TEST(BufferTest, Test_std_out_of_range)
+TEST(ExceptionTest, StdOutOfRange)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::out_of_range, ""), std::out_of_range);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::out_of_range, "std::out_of_range:d", 1), std::out_of_range);
@@ -95,7 +110,7 @@ TEST(BufferTest, Test_std_out_of_range)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_OUT_OF_RANGE(std::string("std::out_of_range")), std::out_of_range);
 }
 
-TEST(BufferTest, Test_std_runtime_error)
+TEST(ExceptionTest, StdRuntimeError)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::runtime_error, ""), std::runtime_error);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::runtime_error, "std::runtime_error:d", 1), std::runtime_error);
@@ -108,7 +123,7 @@ TEST(BufferTest, Test_std_runtime_error)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_RUNTIME_ERROR(std::string("std::runtime_error")), std::runtime_error);
 }
 
-TEST(BufferTest, Test_std_range_error)
+TEST(ExceptionTest, StdRangeError)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::range_error, ""), std::range_error);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::range_error, "std::range_error:d", 1), std::range_error);
@@ -121,7 +136,7 @@ TEST(BufferTest, Test_std_range_error)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_RANGE_ERROR(std::string("std::range_error")), std::range_error);
 }
 
-TEST(BufferTest, Test_std_overflow_error)
+TEST(ExceptionTest, StdOverflowError)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::overflow_error, ""), std::overflow_error);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::overflow_error, "std::overflow_error:d", 1), std::overflow_error);
@@ -134,7 +149,7 @@ TEST(BufferTest, Test_std_overflow_error)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_OVERFLOW_ERROR(std::string("std::overflow_error")), std::overflow_error);
 }
 
-TEST(BufferTest, Test_std_underflow_error)
+TEST(ExceptionTest, StdUnderflowError)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::underflow_error, ""), std::underflow_error);
     EXPECT_THROW_OR_DEATH(OCTK_THROW(std::underflow_error, "std::underflow_error:d", 1), std::underflow_error);
@@ -147,14 +162,16 @@ TEST(BufferTest, Test_std_underflow_error)
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_UNDERFLOW_ERROR(std::string("std::underflow_error")), std::underflow_error);
 }
 
-TEST(BufferTest, Test_std_bad_function_call)
+TEST(ExceptionTest, StdBadFunctionCall)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW_NO_MSG(std::bad_function_call), std::bad_function_call);
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_BAD_FUNCTION_CALL(), std::bad_function_call);
 }
 
-TEST(BufferTest, Test_std_bad_alloc)
+TEST(ExceptionTest, StdBadAlloc)
 {
     EXPECT_THROW_OR_DEATH(OCTK_THROW_NO_MSG(std::bad_alloc), std::bad_alloc);
     EXPECT_THROW_OR_DEATH(OCTK_THROW_STD_BAD_ALLOC(), std::bad_alloc);
 }
+
+OCTK_END_NAMESPACE

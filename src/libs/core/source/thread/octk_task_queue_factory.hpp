@@ -35,18 +35,22 @@ class TaskQueueFactory
 public:
     // TaskQueue priority levels. On some platforms these will map to thread
     // priorities, on others such as Mac and iOS, GCD queue priorities.
-    enum class Priority { NORMAL = 0, HIGH, LOW };
+    enum class Priority
+    {
+        NORMAL = 0,
+        HIGH,
+        LOW
+    };
 
     virtual ~TaskQueueFactory() = default;
-    virtual std::unique_ptr<TaskQueue, TaskQueueDeleter> CreateTaskQueue(StringView name,
-                                                                         Priority priority) const = 0;
+    virtual std::unique_ptr<TaskQueue, TaskQueueDeleter> CreateTaskQueue(StringView name, Priority priority) const = 0;
 };
 
 namespace utils
 {
 // std::unique_ptr<TaskQueueFactory> CreateDefaultTaskQueueFactory(const FieldTrialsView* field_trials = nullptr);
-OCTK_CORE_API std::unique_ptr<TaskQueueFactory> createDefaultTaskQueueFactory();
-}
+static std::unique_ptr<TaskQueueFactory> createDefaultTaskQueueFactory() { return nullptr; } //TODO:IMPL
+} // namespace utils
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_TASK_QUEUE_FACTORY_HPP

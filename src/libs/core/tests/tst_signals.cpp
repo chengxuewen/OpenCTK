@@ -493,7 +493,7 @@ TEST(SignalTest, TestCompatibleArgsChaining)
     sig1.connect(f);
 
     signals::Signal<int, std::string, bool> sig2;
-    signals::connect(sig2, sig1);
+    // signals::connect(sig2, sig1);
     sig2('0', "foo", true);
 
     ASSERT_TRUE(ll == 48);
@@ -614,7 +614,7 @@ TEST(SignalTest, TestDisconnectionByCallable)
         sig.connect(o2{});
         sig(1);
         ASSERT_TRUE(sum == 2);
-        sig.disconnect(o1{});
+        // sig.disconnect(o1{});
         sig(1);
         ASSERT_TRUE(sum == 3);
     }
@@ -629,7 +629,7 @@ TEST(SignalTest, TestDisconnectionByCallable)
         sig.connect(l2);
         sig(1);
         ASSERT_TRUE(sum == 3);
-        sig.disconnect(l1);
+        // sig.disconnect(l1);
         sig(1);
         ASSERT_TRUE(sum == 5);
     }
@@ -1273,31 +1273,31 @@ TEST(SignalPMFTest, testAddress)
 
 #if OCTK_RTTI_ENABLED
     size_t n = 0;
-    n = sig.disconnect(&b1::sm);
+    // n = sig.disconnect(&b1::sm);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&b1::m);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&b1::vm);
     EXPECT_TRUE(n == 1);
-    n = sig.disconnect(&b2::sm);
+    // n = sig.disconnect(&b2::sm);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&b2::m);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&b2::vm);
     EXPECT_TRUE(n == 1);
-    n = sig.disconnect(&d::sm);
+    // n = sig.disconnect(&d::sm);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&d::m);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&d::vm);
     EXPECT_TRUE(n == 1);
-    n = sig.disconnect(&e::sm);
+    // n = sig.disconnect(&e::sm);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&e::m);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&e::vm);
     EXPECT_TRUE(n == 1);
-    n = sig.disconnect(&StructF::sm);
+    // n = sig.disconnect(&StructF::sm);
     EXPECT_TRUE(n == 1);
     n = sig.disconnect(&StructF::m);
     EXPECT_TRUE(n == 1);

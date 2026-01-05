@@ -71,7 +71,7 @@ void SimulatedThread::RunReady(Timestamp at_time)
     CurrentThreadSetter set_current(this);
     ProcessMessages(0);
     int delay_ms = GetDelay();
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     if (delay_ms == kForever)
     {
         next_run_time_ = Timestamp::PlusInfinity();
@@ -110,7 +110,7 @@ void SimulatedThread::PostTaskImpl(Invocable<void() &&> task,
                                    const SourceLocation &location)
 {
     TaskThread::PostTaskImpl(std::move(task), traits, location);
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     next_run_time_ = Timestamp::MinusInfinity();
 }
 
@@ -120,7 +120,7 @@ void SimulatedThread::PostDelayedTaskImpl(Invocable<void() &&> task,
                                           const SourceLocation &location)
 {
     TaskThread::PostDelayedTaskImpl(std::move(task), delay, traits, location);
-    Mutex::Lock locker(&lock_);
+    Mutex::Lock locker(lock_);
     next_run_time_ = std::min(next_run_time_, Timestamp::Millis(DateTime::TimeMillis()) + delay);
 }
 

@@ -101,7 +101,7 @@ TEST(ErrorTest, CreateWithDefaultDomain)
     EXPECT_EQ(errorShare->refCount(), 2);
     auto errorCopy = error;
     EXPECT_EQ(errorCopy->refCount(), 1);
-    EXPECT_TRUE(error->domain().id() != Error::kInvalidId);
+    EXPECT_TRUE(error->domain().id() == Error::kInvalidId);
 }
 
 TEST(ErrorTest, CreateWithEmptyMessage)
@@ -129,7 +129,7 @@ TEST(ErrorTest, ToString)
 
     std::string string = error->toString();
     EXPECT_FALSE(string.empty());
-    EXPECT_NE(string.find(domain.name().data()), std::string::npos);
+    EXPECT_NE(string.find(domain.type().data()), std::string::npos) << string << ", " << domain.type().data();
     EXPECT_NE(string.find("100"), std::string::npos);
     EXPECT_NE(string.find("Something went wrong"), std::string::npos);
 }

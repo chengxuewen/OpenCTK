@@ -54,13 +54,13 @@ FrameGeneratorCapturer::~FrameGeneratorCapturer()
 
 void FrameGeneratorCapturer::setFakeRotation(VideoRotation rotation)
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     mFakeRotation = rotation;
 }
 
 void FrameGeneratorCapturer::setFakeColorSpace(Optional<ColorSpace> colorSpace)
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     mFakeColorSpace = colorSpace;
 }
 
@@ -85,7 +85,7 @@ bool FrameGeneratorCapturer::init()
 
 void FrameGeneratorCapturer::insertFrame()
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     if (mSending)
     {
         // TODO(srte): Use more advanced frame rate control to allow arbitrary fractions.
@@ -115,7 +115,7 @@ Optional<FrameGeneratorCapturer::Resolution> FrameGeneratorCapturer::getResoluti
 
 void FrameGeneratorCapturer::start()
 { {
-        Mutex::Lock locker(&mMutex);
+        Mutex::Lock locker(mMutex);
         mSending = true;
     }
     if (!mFrameTask.Running())
@@ -132,19 +132,19 @@ void FrameGeneratorCapturer::start()
 
 void FrameGeneratorCapturer::stop()
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     mSending = false;
 }
 
 void FrameGeneratorCapturer::changeResolution(size_t width, size_t height)
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     mFrameGenerator->changeResolution(width, height);
 }
 
 void FrameGeneratorCapturer::changeFramerate(int targetFramerate)
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     OCTK_CHECK(mTargetCaptureFps > 0);
     if (targetFramerate > mSourceFps)
     {
@@ -171,7 +171,7 @@ void FrameGeneratorCapturer::onOutputFormatRequest(int width, int height, const 
 
 void FrameGeneratorCapturer::setSinkWantsObserver(SinkWantsObserver *observer)
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     OCTK_DCHECK(!mSinkWantsObserver);
     mSinkWantsObserver = observer;
 }
@@ -179,7 +179,7 @@ void FrameGeneratorCapturer::setSinkWantsObserver(SinkWantsObserver *observer)
 void FrameGeneratorCapturer::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
     CustomVideoCapturer::addOrUpdateSink(sink, wants); {
-        Mutex::Lock locker(&mMutex);
+        Mutex::Lock locker(mMutex);
         if (mSinkWantsObserver)
         {
             // Tests need to observe unmodified sink wants.
@@ -203,7 +203,7 @@ void FrameGeneratorCapturer::forceFrame()
 
 int FrameGeneratorCapturer::getCurrentConfiguredFramerate()
 {
-    Mutex::Lock locker(&mMutex);
+    Mutex::Lock locker(mMutex);
     return mTargetCaptureFps;
 }
 
