@@ -15,6 +15,15 @@ namespace type_traits
 template <bool B, class T = void> using enable_if_t = typename std::enable_if<B, T>::type;
 
 /***********************************************************************************************************************
+ * like cxx17 std::is_convertible_v
+***********************************************************************************************************************/
+#if OCTK_CC_CPP17_OR_GREATER
+using std::is_convertible_v;
+#else
+template <typename F, typename T> constexpr bool is_convertible_v = std::is_convertible<F, T>::value;
+#endif
+
+/***********************************************************************************************************************
  * like cxx17 std::is_function_v
 ***********************************************************************************************************************/
 #if OCTK_CC_CPP17_OR_GREATER
@@ -326,6 +335,7 @@ struct has_call_operator<F, void_t<decltype(&std::remove_reference<F>::type::ope
 #endif
 template <typename T> constexpr bool has_call_operator_v = has_call_operator<T>::value;
 } // namespace type_traits
+
 
 template <typename... Ts> using VoidType = type_traits::void_t<Ts...>; //TODO::DEL
 

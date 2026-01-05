@@ -36,7 +36,7 @@
 #include <octk_video_frame.hpp>
 #include <octk_optional.hpp>
 #include <octk_memory.hpp>
-#include <octk_result.hpp>
+#include <octk_status.hpp>
 #include <octk_mutex.hpp>
 #include <octk_clock.hpp>
 
@@ -143,7 +143,7 @@ public:
     FrameGeneratorCapturerVideoTrackSource(std::unique_ptr<FrameGeneratorCapturer> video_capturer, bool isScreenCast);
     ~FrameGeneratorCapturerVideoTrackSource() override;
 
-    ResultS start();
+    Status start();
     void stop();
 
     bool isScreencast() const override;

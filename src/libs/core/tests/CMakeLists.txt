@@ -295,6 +295,14 @@ octk_add_test(octk_core_tst_platform_thread
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_result
+	SOURCES
+	tst_result.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_scope_guard
 	SOURCES
 	tst_scope_guard.cpp

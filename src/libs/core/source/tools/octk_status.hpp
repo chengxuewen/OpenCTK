@@ -28,18 +28,40 @@
 
 OCTK_BEGIN_NAMESPACE
 
+/**
+ * @class Status
+ * @brief A class representing the status of an operation, either success or failure with error information.
+ *
+ * The Status class is a wrapper around an Error object, providing a convenient way to represent
+ * the result of an operation. It can be in either a success state or an error state.
+ */
 class Status
 {
 public:
-    Status() noexcept { }
-    Status(const Status &other)
-        : mError(other.mError)
-    {
-    }
-    Status(Status &&other)
-        : mError(std::move(other.mError))
-    {
-    }
+    /**
+     * @brief Default constructor. Creates a successful status.
+     */
+    Status() noexcept = default;
+
+    /**
+     * @brief Copy constructor.
+     * @param other The Status object to copy from.
+     */
+    Status(const Status &) noexcept = default;
+
+    /**
+     * @brief Move constructor.
+     * @param other The Status object to move from.
+     */
+    Status(Status &&) noexcept = default;
+
+    /**
+     * @brief Constructs a Status with error information.
+     * @param domain The error domain.
+     * @param code The error code.
+     * @param message The error message.
+     * @param cause The cause of this error (optional).
+     */
     Status(const Error::Domain &domain,
            Error::Id code,
            const StringView message,
@@ -47,58 +69,206 @@ public:
         : mError(Error::create(domain, code, message, cause))
     {
     }
-    Status(const char *message, const Error::SharedDataPtr &cause = {})
+
+    /**
+     * @brief Constructs a Status with a message. Uses the default error domain.
+     * @param message The error message.
+     * @param cause The cause of this error (optional).
+     */
+    Status(const char *message, const Error::SharedDataPtr &cause)
         : mError(Error::create(message, cause))
     {
     }
-    Status(const StringView message, const Error::SharedDataPtr &cause = {})
+
+    /**
+     * @brief Constructs a Status with a message. Uses the default error domain.
+     * @param message The error message.
+     * @param cause The cause of this error (optional).
+     */
+    Status(const StringView message, const Error::SharedDataPtr &cause)
         : mError(Error::create(message, cause))
     {
     }
+
+    /**
+     * @brief Constructs a Status with a message. Uses the default error domain.
+     * @param message The error message.
+     */
+    Status(const char *message)
+        : mError(Error::create(message))
+    {
+    }
+
+    /**
+     * @brief Constructs a Status with a message. Uses the default error domain.
+     * @param message The error message.
+     */
+    Status(const StringView message)
+        : mError(Error::create(message))
+    {
+    }
+
+    /**
+     * @brief Constructs a Status with a message. Uses the default error domain.
+     * @param message The error message.
+     */
+    Status(const std::string &message)
+        : mError(Error::create(message))
+    {
+    }
+
+    /**
+     * @brief Constructs a Status from an existing Error object.
+     * @param error The Error object to wrap.
+     */
     Status(const Error::SharedDataPtr &error)
         : mError(error)
     {
     }
+
+    /**
+     * @brief Constructs a Status from an existing Error object using move semantics.
+     * @param error The Error object to wrap.
+     */
     Status(Error::SharedDataPtr &&error)
         : mError(std::move(error))
     {
     }
-    virtual ~Status() noexcept { }
 
-    Status &operator=(const Status &other)
-    {
-        mError = other.mError;
-        return *this;
-    }
-    Status &operator=(Status &&other)
-    {
-        mError = std::move(other.mError);
-        return *this;
-    }
+    /**
+     * @brief Destructor.
+     */
+    ~Status() noexcept = default;
 
+    /**
+     * @brief Copy assignment operator.
+     * @param other The Status object to copy from.
+     * @return A reference to this Status object.
+     */
+    Status &operator=(const Status &) noexcept = default;
+
+    /**
+     * @brief Move assignment operator.
+     * @param other The Status object to move from.
+     * @return A reference to this Status object.
+     */
+    Status &operator=(Status &&) noexcept = default;
+
+    /**
+     * @brief Equality operator.
+     * @param other The Status object to compare with.
+     * @return true if both Status objects represent the same state, false otherwise.
+     */
     bool operator==(const Status &other) const { return mError == other.mError; }
+
+    /**
+     * @brief Inequality operator.
+     * @param other The Status object to compare with.
+     * @return true if Status objects represent different states, false otherwise.
+     */
     bool operator!=(const Status &other) const { return mError != other.mError; }
 
-    bool ok() const { return !mError.data(); }
-    bool isOk() const { return !mError.data(); }
-    bool success() const { return !mError.data(); }
-    bool isSuccess() const { return !mError.data(); }
-    operator bool() const { return !mError.data(); }
+    /**
+     * @brief Assignment operator for StringView.
+     * @param message The error message.
+     * @return A reference to this Status object.
+     */
+    Status &operator=(const std::string &message) noexcept
+    {
+        mError = Error::create(message);
+        return *this;
+    }
 
+    /**
+     * @brief Assignment operator for StringView.
+     * @param message The error message.
+     * @return A reference to this Status object.
+     */
+    Status &operator=(const StringView message) noexcept
+    {
+        mError = Error::create(message);
+        return *this;
+    }
+
+    /**
+     * @brief Assignment operator for const char*.
+     * @param message The error message.
+     * @return A reference to this Status object.
+     */
+    Status &operator=(const char *message) noexcept
+    {
+        mError = Error::create(message);
+        return *this;
+    }
+
+    /**
+     * @brief Checks if the operation was successful.
+     * @return true if successful, false otherwise.
+     */
+    bool ok() const { return !mError.data(); }
+
+    /**
+     * @brief Checks if the operation was successful (alternative method name for compatibility).
+     * @return true if successful, false otherwise.
+     */
+    bool isOk() const { return ok(); }
+
+    /**
+     * @brief Converts to bool type. Returns true if the operation was successful.
+     * @return true if successful, false otherwise.
+     */
+    operator bool() const { return ok(); }
+
+    /**
+     * @brief Gets the error object if the operation failed.
+     * @return A pointer to the Error object, or nullptr if successful.
+     */
     const Error *error() const { return mError.data(); }
+
+    /**
+     * @brief Gets the error code directly.
+     * @return The error code, or Error::kInvalidId if successful.
+     */
+    Error::Id errorCode() const { return mError.data() ? mError.data()->code() : Error::kInvalidId; }
+
+    /**
+     * @brief Gets the error message directly.
+     * @return The error message, or an empty string if successful.
+     */
+    std::string errorMessage() const { return mError.data() ? mError.data()->message() : ""; }
+
+    /**
+     * @brief Gets the full error string including domain, code, and message.
+     * @return The formatted error string, or an empty string if successful.
+     */
     std::string errorString() const { return mError.data() ? mError.data()->toString() : ""; }
 
 private:
-    Error::SharedDataPtr mError{nullptr};
+    Error::SharedDataPtr mError{nullptr}; ///< The error object, nullptr if successful.
 };
 
+/**
+ * @brief Output stream operator for Status objects.
+ * @param os The output stream.
+ * @param status The Status object to output.
+ * @return The output stream.
+ */
 inline std::ostream &operator<<(std::ostream &os, const Status &status)
 {
-    const std::string string = status.isOk() ? "OK" : status.errorString().c_str();
-    os << string;
+    if (status.ok())
+    {
+        os << "OK";
+    }
+    else
+    {
+        os << status.errorString();
+    }
     return os;
 }
 
+/**
+ * @brief A constant representing a successful status.
+ */
 static const Status okStatus{};
 
 OCTK_END_NAMESPACE

@@ -75,7 +75,8 @@ bool FrameGeneratorCapturer::init()
     mFrameTask = RepeatingTaskHandle::DelayedStart(
         mTaskQueue.get(),
         TimeDelta::Seconds(1) / getCurrentConfiguredFramerate(),
-        [this] {
+        [this]
+        {
             insertFrame();
             return TimeDelta::Seconds(1) / getCurrentConfiguredFramerate();
         },
@@ -97,12 +98,12 @@ void FrameGeneratorCapturer::insertFrame()
 
         FrameGeneratorInterface::VideoFrameData frameData = mFrameGenerator->nextFrame();
         VideoFrame frame = VideoFrame::Builder()
-            .setVideoFrameBuffer(frameData.buffer)
-            .setRotation(mFakeRotation)
-            .setTimestampUSecs(mClock->TimeInMicroseconds())
-            .setUpdateRect(frameData.updateRect)
-            .setColorSpace(mFakeColorSpace)
-            .build();
+                               .setVideoFrameBuffer(frameData.buffer)
+                               .setRotation(mFakeRotation)
+                               .setTimestampUSecs(mClock->TimeInMicroseconds())
+                               .setUpdateRect(frameData.updateRect)
+                               .setColorSpace(mFakeColorSpace)
+                               .build();
         CustomVideoCapturer::onFrame(frame);
     }
 }
@@ -114,7 +115,8 @@ Optional<FrameGeneratorCapturer::Resolution> FrameGeneratorCapturer::getResoluti
 }
 
 void FrameGeneratorCapturer::start()
-{ {
+{
+    {
         Mutex::Lock locker(mMutex);
         mSending = true;
     }
@@ -122,7 +124,8 @@ void FrameGeneratorCapturer::start()
     {
         mFrameTask = RepeatingTaskHandle::Start(
             mTaskQueue.get(),
-            [this] {
+            [this]
+            {
                 insertFrame();
                 return TimeDelta::Seconds(1) / getCurrentConfiguredFramerate();
             },
@@ -178,7 +181,8 @@ void FrameGeneratorCapturer::setSinkWantsObserver(SinkWantsObserver *observer)
 
 void FrameGeneratorCapturer::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
-    CustomVideoCapturer::addOrUpdateSink(sink, wants); {
+    CustomVideoCapturer::addOrUpdateSink(sink, wants);
+    {
         Mutex::Lock locker(mMutex);
         if (mSinkWantsObserver)
         {
@@ -215,9 +219,7 @@ class FrameGeneratorCapturerVideoTrackSourcePrivate
 
 public:
     FrameGeneratorCapturerVideoTrackSourcePrivate(FrameGeneratorCapturerVideoTrackSource *p, bool isScreenCast);
-    virtual ~FrameGeneratorCapturerVideoTrackSourcePrivate()
-    {
-    }
+    virtual ~FrameGeneratorCapturerVideoTrackSourcePrivate() { }
 
     const std::unique_ptr<TaskQueueFactory> mTaskQueueFactory{utils::createDefaultTaskQueueFactory()};
     std::unique_ptr<FrameGeneratorCapturer> mFrameGeneratorCapturer;
@@ -275,7 +277,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
 
 FrameGeneratorCapturerVideoTrackSource::~FrameGeneratorCapturerVideoTrackSource() { this->stop(); }
 
-ResultS FrameGeneratorCapturerVideoTrackSource::start()
+Status FrameGeneratorCapturerVideoTrackSource::start()
 {
     OCTK_D(FrameGeneratorCapturerVideoTrackSource);
     if (d->mInitOnceFlag.enter())
@@ -288,7 +290,7 @@ ResultS FrameGeneratorCapturerVideoTrackSource::start()
         d->mFrameGeneratorCapturer->start();
         this->setState(kLive);
     }
-    return utils::okResult;
+    return okStatus;
 }
 
 void FrameGeneratorCapturerVideoTrackSource::stop()

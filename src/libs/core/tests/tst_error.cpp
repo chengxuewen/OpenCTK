@@ -3,7 +3,6 @@
 ** Library: OpenCTK
 **
 ** Copyright (C) 2025~Present ChengXueWen.
-** Copyright 2016 The WebRTC Project Authors.
 **
 ** License: MIT License
 **
@@ -96,12 +95,19 @@ TEST(ErrorTest, CreateWithDefaultDomain)
 {
     const auto error = Error::create("Default domain Test");
     auto domain = error->domain();
+    EXPECT_TRUE(domain.id() == Error::kInvalidId);
+
     const auto errorShare = error;
+    EXPECT_EQ(error->refCount(), 2);
+    EXPECT_EQ(errorShare->refCount(), 2);
+
+    EXPECT_EQ(error->message(), "Default domain Test");
+    EXPECT_EQ(error->code(), Error::kInvalidId);
+
     EXPECT_EQ(error->refCount(), 2);
     EXPECT_EQ(errorShare->refCount(), 2);
     auto errorCopy = error;
     EXPECT_EQ(errorCopy->refCount(), 1);
-    EXPECT_TRUE(error->domain().id() == Error::kInvalidId);
 }
 
 TEST(ErrorTest, CreateWithEmptyMessage)
@@ -158,6 +164,138 @@ TEST(ErrorTest, Depth)
 
     auto error2 = Error::create(domain, TestDomain::kTestError3, "Level 2", error1);
     EXPECT_EQ(error2->depth(), 2u);
+}
+
+TEST(ErrorTest, DomainBasicOperations)
+{
+    auto domain = testDomain();
+
+    // Test basic domain information
+    EXPECT_TRUE(domain.isValid());
+    EXPECT_NE(domain.id(), Error::kInvalidId);
+    EXPECT_EQ(domain.type(), "TestDomain");
+    EXPECT_EQ(domain.name(), "testDomain");
+    EXPECT_EQ(domain.description(), "Test domain");
+
+    // Test domain comparison operations
+    auto sameDomain = testDomain();
+    auto another = anotherDomain();
+
+    EXPECT_EQ(domain, sameDomain);
+    EXPECT_NE(domain, another);
+    EXPECT_NE(domain, Error::Domain()); // Compare with default constructed invalid domain
+}
+
+TEST(ErrorTest, InvalidDomain)
+{
+    Error::Domain invalidDomain;
+    EXPECT_FALSE(invalidDomain.isValid());
+    EXPECT_EQ(invalidDomain.id(), Error::kInvalidId);
+    EXPECT_EQ(invalidDomain.type(), "");
+    EXPECT_EQ(invalidDomain.name(), "");
+    EXPECT_EQ(invalidDomain.description(), "");
+
+    // Test creating an error with an invalid domain
+    auto error = Error::create(invalidDomain, 123, "Test");
+    EXPECT_FALSE(error->domain().isValid()); // Should use default domain
+}
+
+TEST(ErrorTest, CopyAndMoveSemantics)
+{
+    // Test Error copy semantics
+    auto cause = Error::create(testDomain(), TestDomain::kTestError2, "Cause");
+    // Create original error with cause directly
+    const auto original = Error::create(testDomain(), TestDomain::kTestError1, "Original", cause);
+
+    const auto copied = original;
+    EXPECT_EQ(copied->code(), original->code());
+    EXPECT_EQ(copied->message(), original->message());
+    EXPECT_EQ(&copied->domain(), &original->domain());
+    EXPECT_EQ(copied->cause(), original->cause());
+    EXPECT_EQ(copied->refCount(), 2); // Should share reference count
+
+    // Test Error move semantics
+    auto moved = std::move(original);
+    EXPECT_EQ(moved->code(), TestDomain::kTestError1);
+    EXPECT_EQ(moved->message(), "Original");
+}
+
+TEST(ErrorTest, DomainCopyAndMoveSemantics)
+{
+    auto domain = testDomain();
+
+    // Test domain copy
+    Error::Domain copied(domain);
+    EXPECT_EQ(copied, domain);
+    EXPECT_EQ(copied.id(), domain.id());
+    EXPECT_EQ(copied.type(), domain.type());
+
+    // Test domain move
+    Error::Domain moved(std::move(copied));
+    EXPECT_EQ(moved, domain);
+    EXPECT_EQ(moved.id(), domain.id());
+
+    // Test copy assignment
+    Error::Domain copyAssigned;
+    copyAssigned = domain;
+    EXPECT_EQ(copyAssigned, domain);
+
+    // Test move assignment
+    Error::Domain moveAssigned;
+    moveAssigned = std::move(copyAssigned);
+    EXPECT_EQ(moveAssigned, domain);
+}
+
+TEST(ErrorTest, DomainRegistry)
+{
+    // Test domain registration (indirectly tested via OCTK_DEFINE_ERROR_DOMAIN macro)
+    EXPECT_TRUE(testDomain().isValid());
+    EXPECT_TRUE(anotherDomain().isValid());
+    EXPECT_NE(testDomain().id(), anotherDomain().id());
+
+    // Test domain type uniqueness
+    EXPECT_EQ(testDomain().type(), "TestDomain");
+    EXPECT_EQ(anotherDomain().type(), "AnotherDomain");
+}
+
+// Note: Hash collision tests may be difficult to trigger as the hash algorithm is well-designed
+// but we can verify registration failure scenarios
+TEST(ErrorTest, DomainRegistryConflictHandling)
+{
+    // Attempt to register a domain with the same type as an existing one (should fail)
+    // Note: This requires access to Registry::registerDomain, which may require adjusting access permissions
+    // Or testing conflict handling logic through other means
+}
+
+TEST(ErrorTest, ErrorChainMaxDepth)
+{
+    const int kMaxDepth = 10;
+    auto error = Error::create(testDomain(), TestDomain::kTestError1, "Level 0");
+
+    // Create an error chain with depth 11
+    Error::SharedDataPtr current = error;
+    for (int i = 1; i <= kMaxDepth + 1; ++i)
+    {
+        current = Error::create(testDomain(), TestDomain::kTestError1, "Level " + std::to_string(i), current);
+    }
+
+    // Check depth calculation
+    EXPECT_EQ(current->depth(), static_cast<size_t>(kMaxDepth + 1));
+
+    // Check if string representation is truncated
+    std::string errorStr = current->toString();
+    EXPECT_TRUE(errorStr.find("error chain too deep") != std::string::npos);
+}
+
+TEST(ErrorTest, MultipleDomains)
+{
+    // Test errors from different domains
+    auto error1 = Error::create(testDomain(), TestDomain::kTestError1, "Test error");
+    auto error2 = Error::create(anotherDomain(), AnotherDomain::kAnotherError, "Another error");
+
+    EXPECT_NE(&error1->domain(), &error2->domain());
+    EXPECT_NE(error1->code(), error2->code());
+    EXPECT_NE(error1->toString(), error2->toString());
 }
 
 OCTK_END_NAMESPACE

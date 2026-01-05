@@ -52,6 +52,10 @@ public:
     class OCTK_CORE_API Domain
     {
         Id mId{kInvalidId};
+        StringView mType;
+        StringView mName;
+        StringView mDescription;
+        mutable std::atomic<bool> mCacheInitialized{false};
 
     public:
         using Id = Error::Id;
@@ -63,8 +67,8 @@ public:
 
         Domain() = default;
         explicit Domain(Id id);
-        Domain(const Domain &other) { mId = other.mId; }
-        Domain(Domain &&other) { std::swap(mId, other.mId); }
+        Domain(Domain &&other);
+        Domain(const Domain &other);
         virtual ~Domain();
 
         Domain &operator=(const Domain &other)
@@ -81,9 +85,9 @@ public:
         Id id() const { return mId; }
         bool isValid() const { return kInvalidId != mId; }
 
-        StringView type() const;
-        StringView name() const;
-        StringView description() const;
+        StringView type() const { return mType; }
+        StringView name() const { return mName; }
+        StringView description() const { return mDescription; }
 
         bool operator==(const Domain &other) const { return mId == other.mId; }
         bool operator!=(const Domain &other) const { return mId != other.mId; }
@@ -95,8 +99,20 @@ public:
             {
                 return std::string(message);
             }
-            const auto codeMessage = message.empty() ? this->codeString(code) : message;
-            return std::string(this->type()) + "[" + std::to_string(code) + "]: " + std::string(codeMessage);
+            auto codeMessage = std::string(this->codeString(code));
+            if (!codeMessage.empty())
+            {
+                codeMessage = "<" + codeMessage + ">";
+            }
+            if (!message.empty())
+            {
+                if (!codeMessage.empty())
+                {
+                    codeMessage += ": ";
+                }
+                codeMessage += message.data();
+            }
+            return std::string(this->type()) + "[" + std::to_string(code) + "]:" + codeMessage;
         }
     };
 
@@ -125,10 +141,20 @@ public:
     std::string toString() const
     {
         std::string string = mDomain.toString(mCode, mMessage);
-        if (mCause)
+        const Error *current = this;
+        const int maxDepth = 10;
+        int depth = 0;
+        while (current->mCause && depth < maxDepth)
         {
-            string += "\nCaused by: " + mCause->toString();
+            current = current->mCause.data();
+            string += "\nCaused by: " + current->mDomain.toString(current->mCode, current->mMessage);
+            ++depth;
         }
+        if (current->mCause && depth >= maxDepth)
+        {
+            string += "\nCaused by: ... (error chain too deep)";
+        }
+
         return string;
     }
     size_t depth() const

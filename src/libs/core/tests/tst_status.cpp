@@ -3,7 +3,6 @@
 ** Library: OpenCTK
 **
 ** Copyright (C) 2025~Present ChengXueWen.
-** Copyright 2016 The WebRTC Project Authors.
 **
 ** License: MIT License
 **
@@ -259,6 +258,135 @@ TEST(StatusTest, Comparison)
 
     EXPECT_NE(error1, error3);
     EXPECT_NE(ok1, error1);
+}
+
+TEST(StatusTest, MissingConstructors)
+{
+    auto domain = testDomain();
+
+    // Test Status(const StringView, const Error::SharedDataPtr &)
+    auto cause1 = Error::create(domain, TestDomain::kTestError1, "Cause 1");
+    Status status1(StringView("Test message"), cause1);
+    EXPECT_FALSE(status1.ok());
+    EXPECT_EQ(status1.error()->message(), "Test message");
+    EXPECT_NE(status1.error()->cause(), nullptr);
+
+    // Test Status(const std::string &)
+    std::string msg = "Std string message";
+    Status status2(msg);
+    EXPECT_FALSE(status2.ok());
+    EXPECT_EQ(status2.error()->message(), "Std string message");
+
+    // Test Status(const std::string &, const Error::SharedDataPtr &)
+    auto cause2 = Error::create(domain, TestDomain::kTestError2, "Cause 2");
+    Status status3(msg, cause2);
+    EXPECT_FALSE(status3.ok());
+    EXPECT_EQ(status3.error()->message(), "Std string message");
+    EXPECT_NE(status3.error()->cause(), nullptr);
+
+    // Test Status(Error::SharedDataPtr &&)
+    auto error = Error::create(domain, TestDomain::kTestError3, "Rvalue error");
+    Status status4(std::move(error));
+    EXPECT_FALSE(status4.ok());
+    EXPECT_EQ(status4.error()->code(), TestDomain::kTestError3);
+}
+
+TEST(StatusTest, MissingAssignmentOperators)
+{
+    auto domain = testDomain();
+    Status status;
+
+    // Test operator=(const char *)
+    status = "C string assignment";
+    EXPECT_FALSE(status.ok());
+    EXPECT_EQ(status.error()->message(), "C string assignment");
+
+    // Test operator=(const StringView)
+    status = StringView("StringView assignment");
+    EXPECT_FALSE(status.ok());
+    EXPECT_EQ(status.error()->message(), "StringView assignment");
+
+    // Test operator=(const std::string &)
+    std::string msg = "Std string assignment";
+    status = msg;
+    EXPECT_FALSE(status.ok());
+    EXPECT_EQ(status.error()->message(), "Std string assignment");
+}
+
+TEST(StatusTest, IsOkMethod)
+{
+    Status okStatus;
+    Status errorStatus("Error message");
+
+    EXPECT_TRUE(okStatus.isOk());
+    EXPECT_FALSE(errorStatus.isOk());
+}
+
+TEST(StatusTest, ErrorCodeAndMessageMethods)
+{
+    auto domain = testDomain();
+    auto cause = Error::create(domain, TestDomain::kTestError2, "Cause");
+    Status status(domain, TestDomain::kTestError1, "Test message", cause);
+
+    // Test errorCode()
+    EXPECT_EQ(status.errorCode(), TestDomain::kTestError1);
+
+    // Test errorMessage()
+    EXPECT_EQ(status.errorMessage(), std::string("Test message")) << status.errorMessage();
+
+    // Test with successful status
+    Status okStatus;
+    EXPECT_EQ(okStatus.errorCode(), Error::kInvalidId);
+    EXPECT_TRUE(okStatus.errorMessage().empty());
+}
+
+TEST(StatusTest, BoundaryCases)
+{
+    auto domain = testDomain();
+
+    // Test with empty message
+    Status emptyMsgStatus(domain, TestDomain::kTestError1, "");
+    EXPECT_FALSE(emptyMsgStatus.ok());
+    EXPECT_TRUE(emptyMsgStatus.errorMessage().empty());
+
+    // Test with very long message
+    std::string longMsg(1000, 'x');
+    Status longMsgStatus(domain, TestDomain::kTestError1, longMsg);
+    EXPECT_FALSE(longMsgStatus.ok());
+    EXPECT_EQ(longMsgStatus.errorMessage(), longMsg);
+
+    // Test with different domains
+    auto domain2 = anotherDomain();
+    Status status1(domain, TestDomain::kTestError1, "Error in test domain");
+    Status status2(domain2, AnotherDomain::kAnotherError, "Error in another domain");
+    EXPECT_NE(status1, status2);
+}
+
+TEST(StatusTest, OkStatusConstant)
+{
+    // Test the okStatus constant
+    EXPECT_TRUE(okStatus.ok());
+    EXPECT_TRUE(okStatus.isOk());
+    EXPECT_TRUE(static_cast<bool>(okStatus));
+    EXPECT_EQ(okStatus.error(), nullptr);
+    EXPECT_TRUE(okStatus.errorString().empty());
+
+    // Test comparison with okStatus
+    Status status;
+    EXPECT_EQ(status, okStatus);
+
+    Status errorStatus("Error");
+    EXPECT_NE(errorStatus, okStatus);
+}
+
+TEST(StatusTest, StreamOutputForOkStatus)
+{
+    Status okStatus;
+    std::ostringstream oss;
+    oss << okStatus;
+
+    std::string result = oss.str();
+    EXPECT_EQ(result, "OK");
 }
 
 TEST(IntegrationTest, ErrorChainPropagation)

@@ -22,93 +22,425 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_RESULT_HPP
-#define _OCTK_RESULT_HPP
+#pragma once
 
+#include <octk_type_traits.hpp>
 #include <octk_optional.hpp>
+#include <octk_variant.hpp>
+#include <octk_error.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-struct OkResult final
-{
-    // clang-format off
-    struct init { };
-    explicit constexpr OkResult(init /*unused*/) noexcept { }
-    // clang-format off
-};
-namespace utils
-{
-constexpr OkResult okResult{ OkResult::init{} };
-} // namespace utils
-
-template <typename T = std::string>
-class Result
+/**
+ * @brief Represents a result that can be either a value (success) or an error (failure).
+ *
+ * The Result class provides a type-safe way to handle operations that can either succeed with a value
+ * or fail with an error message. It uses a variant to efficiently store either the value or the error,
+ * ensuring that only one of them is present at any time.
+ *
+ * @tparam T The type of the value returned on success.
+ */
+template <typename T> class Result
 {
     template <typename U> friend class Result;
+
 public:
-    using ErrorType = T;
+    /**
+     * @brief The type of the value stored in the Result on success.
+     */
+    using Value = T;
 
-    Result() noexcept { }
-    Result(OkResult /*unused*/) noexcept { }
+    /**
+     * @brief Default constructor. Creates an empty Result.
+     *
+     * The Result is initialized in an empty state, containing neither a value nor an error.
+     */
+    Result() noexcept
+        : mData(VariantMonostate{})
+    {
+    }
 
-    template <typename U>
+    /**
+     * @brief Copy constructor. Creates a Result by copying another Result.
+     *
+     * @param other The Result to copy from.
+     */
+    Result(const Result &other) = default;
+
+    /**
+     * @brief Move constructor. Creates a Result by moving from another Result.
+     *
+     * @param other The Result to move from.
+     */
+    Result(Result &&other) noexcept
+        : mData(std::move(other.mData))
+    {
+    }
+
+    /**
+     * @brief Copy constructor from a Result of a convertible type.
+     *
+     * @tparam U The type of the other Result's value, which must be convertible to T.
+     * @param other The Result to copy from.
+     */
+    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
     Result(const Result<U> &other)
-        : mError(other.mError)
     {
+        if (other.ok())
+        {
+            mData = T(other.value());
+        }
+        else
+        {
+            mData = utils::get<Error::SharedDataPtr>(other.mData);
+        }
     }
-    Result(const Result &error)
-        : mError(error.mError)
+
+    /**
+     * @brief Move constructor from a Result of a convertible type.
+     *
+     * @tparam U The type of the other Result's value, which must be convertible to T.
+     * @param other The Result to move from.
+     */
+    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
+    Result(Result<U> &&other)
     {
+        if (other.ok())
+        {
+            mData = T(std::move(other.value()));
+        }
+        else
+        {
+            mData = std::move(utils::get<Error::SharedDataPtr>(other.mData));
+        }
     }
-    Result(Result &&error)
-        : mError(std::move(error.mError))
-    {
-    }
+
+    /**
+     * @brief Constructs a Result with a value (success).
+     *
+     * @param value The value to store in the Result.
+     */
     Result(const T &value)
-        : mError(value)
-    {
-    }
-    Result(T &&value)
-        : mError(std::move(value))
+        : mData(value)
     {
     }
 
-    template <typename U> Result &operator=(const Result<U> &other)
+    /**
+     * @brief Constructs a Result with a moved value (success).
+     *
+     * @param value The value to move into the Result.
+     */
+    Result(T &&value) noexcept
+        : mData(std::move(value))
     {
-        mError = other.mError;
-        return *this;
     }
-    template <typename U> Result &operator=(Result<U> &&other)
+
+    /**
+     * @brief Constructs a Result with an error message (failure).
+     *
+     * @param domain The error domain.
+     * @param code The error code.
+     * @param message The error message.
+     * @param cause Optional cause of the error.
+     */
+    Result(const Error::Domain &domain,
+           Error::Id code,
+           const StringView message,
+           const Error::SharedDataPtr &cause = {})
+        : mData(Error::create(domain, code, message, cause))
     {
-        mError = std::move(other.mError);
-        return *this;
     }
-    Result &operator=(const Result &other)
+
+    /**
+     * @brief Constructs a Result with an existing error (failure).
+     *
+     * @param error The shared error pointer to store.
+     */
+    Result(const Error::SharedDataPtr &error)
+        : mData(error)
     {
-        mError = other.mError;
-        return *this;
     }
-    Result &operator=(Result &&other)
+
+    /**
+     * @brief Constructs a Result with a moved error (failure).
+     *
+     * @param error The shared error pointer to move into the Result.
+     */
+    Result(Error::SharedDataPtr &&error) noexcept
+        : mData(std::move(error))
     {
-        mError = std::move(other.mError);
+    }
+
+    /**
+     * @brief Copy assignment operator.
+     *
+     * @param other The Result to copy from.
+     * @return Reference to this Result.
+     */
+    Result &operator=(const Result &other) = default;
+
+    /**
+     * @brief Move assignment operator.
+     *
+     * @param other The Result to move from.
+     * @return Reference to this Result.
+     */
+    Result &operator=(Result &&other) noexcept
+    {
+        if (this != &other)
+        {
+            mData = std::move(other.mData);
+        }
         return *this;
     }
 
-    bool ok() const { return !mError.has_value(); }
-    bool isOk() const { return !mError.has_value(); }
-    bool success() const { return !mError.has_value(); }
-    bool isSuccess() const { return !mError.has_value(); }
+    /**
+     * @brief Copy assignment from a Result of a convertible type.
+     *
+     * @tparam U The type of the other Result's value, which must be convertible to T.
+     * @param other The Result to copy from.
+     * @return Reference to this Result.
+     */
+    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
+    Result &operator=(const Result<U> &other)
+    {
+        if (other.ok())
+        {
+            mData = T(other.value());
+        }
+        else
+        {
+            mData = utils::get<Error::SharedDataPtr>(other.mData);
+        }
+        return *this;
+    }
 
-    const T &error() const { return mError.value(); }
+    /**
+     * @brief Move assignment from a Result of a convertible type.
+     *
+     * @tparam U The type of the other Result's value, which must be convertible to T.
+     * @param other The Result to move from.
+     * @return Reference to this Result.
+     */
+    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
+    Result &operator=(Result<U> &&other)
+    {
+        if (other.ok())
+        {
+            mData = T(std::move(other.value()));
+        }
+        else
+        {
+            mData = std::move(utils::get<Error::SharedDataPtr>(other.mData));
+        }
+        return *this;
+    }
 
-    operator bool() const { return !mError.has_value(); }
+    /**
+     * @brief Checks if the Result contains a value (success).
+     *
+     * @return true if the Result contains a value, false otherwise.
+     */
+    OCTK_CONSTEXPR bool ok() const { return utils::holds_alternative<T>(mData); }
+
+    /**
+     * @brief Checks if the Result contains a value (success).
+     *
+     * Alias for ok().
+     * @return true if the Result contains a value, false otherwise.
+     */
+    OCTK_CONSTEXPR bool isOk() const { return this->ok(); }
+
+    /**
+     * @brief Checks if the Result contains a value (success).
+     *
+     * Alias for ok().
+     * @return true if the Result contains a value, false otherwise.
+     */
+    OCTK_CONSTEXPR bool success() const { return this->ok(); }
+
+    /**
+     * @brief Checks if the Result contains a value (success).
+     *
+     * Alias for ok().
+     * @return true if the Result contains a value, false otherwise.
+     */
+    OCTK_CONSTEXPR bool isSuccess() const { return this->ok(); }
+
+    /**
+     * @brief Converts the Result to a boolean value.
+     *
+     * @return true if the Result contains a value, false otherwise.
+     */
+    OCTK_CONSTEXPR operator bool() const { return this->ok(); }
+
+    /**
+     * @brief Gets a reference to the stored value.
+     *
+     * @pre The Result must contain a value (ok() must return true).
+     * @return Reference to the stored value.
+     * @throw BadVariantAccess if the Result does not contain a value.
+     */
+    OCTK_CONSTEXPR T &value() & { return utils::get<T>(mData); }
+
+    /**
+     * @brief Gets a const reference to the stored value.
+     *
+     * @pre The Result must contain a value (ok() must return true).
+     * @return Const reference to the stored value.
+     * @throw BadVariantAccess if the Result does not contain a value.
+     */
+    OCTK_CONSTEXPR const T &value() const & { return utils::get<T>(mData); }
+
+    /**
+     * @brief Gets an rvalue reference to the stored value.
+     *
+     * @pre The Result must contain a value (ok() must return true).
+     * @return Rvalue reference to the stored value.
+     * @throw BadVariantAccess if the Result does not contain a value.
+     */
+    OCTK_CONSTEXPR T &&value() && { return std::move(utils::get<T>(mData)); }
+
+    /**
+     * @brief Gets a const rvalue reference to the stored value.
+     *
+     * @pre The Result must contain a value (ok() must return true).
+     * @return Const rvalue reference to the stored value.
+     * @throw BadVariantAccess if the Result does not contain a value.
+     */
+    OCTK_CONSTEXPR const T &&value() const && { return std::move(utils::get<const T>(mData)); }
+
+    /**
+     * @brief Gets the stored value if present, otherwise returns a default value.
+     *
+     * @tparam U Type of the default value, which must be convertible to T.
+     * @param defaultValue The default value to return if the Result does not contain a value.
+     * @return The stored value if present, otherwise defaultValue.
+     */
+    template <typename U> T valueOr(U &&defaultValue) const &
+    {
+        if (this->ok())
+        {
+            return this->value();
+        }
+        return std::forward<U>(defaultValue);
+    }
+
+    /**
+     * @brief Gets the stored value if present, otherwise returns a default value (rvalue overload).
+     *
+     * @tparam U Type of the default value, which must be convertible to T.
+     * @param defaultValue The default value to return if the Result does not contain a value.
+     * @return The stored value if present, otherwise defaultValue.
+     */
+    template <typename U> T valueOr(U &&defaultValue) &&
+    {
+        if (this->ok())
+        {
+            return std::move(this->value());
+        }
+        return std::forward<U>(defaultValue);
+    }
+
+    /**
+     * @brief Gets the stored value if present, otherwise invokes a function to produce a value.
+     *
+     * @tparam F Type of the function, which must return a value convertible to T.
+     * @param f The function to invoke if the Result does not contain a value.
+     * @return The stored value if present, otherwise the result of invoking f().
+     */
+    template <typename F> T valueOrElse(F &&f) const &
+    {
+        if (this->ok())
+        {
+            return this->value();
+        }
+        return std::forward<F>(f)();
+    }
+
+    /**
+     * @brief Gets the stored value if present, otherwise invokes a function to produce a value (rvalue overload).
+     *
+     * @tparam F Type of the function, which must return a value convertible to T.
+     * @param f The function to invoke if the Result does not contain a value.
+     * @return The stored value if present, otherwise the result of invoking f().
+     */
+    template <typename F> T valueOrElse(F &&f) &&
+    {
+        if (this->ok())
+        {
+            return std::move(this->value());
+        }
+        return std::forward<F>(f)();
+    }
+
+    /**
+     * @brief Gets a pointer to the stored error.
+     *
+     * @return Pointer to the stored error if present, otherwise nullptr.
+     */
+    Error *error()
+    {
+        if (utils::holds_alternative<Error::SharedDataPtr>(mData))
+        {
+            return utils::get<Error::SharedDataPtr>(mData).data();
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief Gets a const pointer to the stored error.
+     *
+     * @return Const pointer to the stored error if present, otherwise nullptr.
+     */
+    const Error *error() const
+    {
+        if (utils::holds_alternative<Error::SharedDataPtr>(mData))
+        {
+            return utils::get<Error::SharedDataPtr>(mData).data();
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief Gets a string representation of the error.
+     *
+     * @return String representation of the error if present, otherwise an empty string.
+     */
+    std::string errorString() const
+    {
+        if (const Error *err = this->error())
+        {
+            return err->toString();
+        }
+        return "";
+    }
+
+    /**
+     * @brief Swaps the contents of this Result with another Result.
+     *
+     * @param other The Result to swap with.
+     */
+    void swap(Result &other) noexcept { std::swap(mData, other.mData); }
+
+    /**
+     * @brief Swaps the contents of two Result objects.
+     *
+     * @param lhs The first Result to swap.
+     * @param rhs The second Result to swap.
+     */
+    friend void swap(Result &lhs, Result &rhs) noexcept { lhs.swap(rhs); }
 
 private:
-    Optional<T> mError;
+    /**
+     * @brief Stores either a value, an error, or nothing.
+     *
+     * The variant can hold one of three types:
+     * - VariantMonostate: Empty state
+     * - T: Value on success
+     * - Error::SharedDataPtr: Error on failure
+     */
+    Variant<VariantMonostate, T, Error::SharedDataPtr> mData;
 };
 
-using ResultS = Result<std::string>;
-
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_RESULT_HPP

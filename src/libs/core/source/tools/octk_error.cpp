@@ -70,59 +70,58 @@ Error::Id Error::Domain::Registry::registerDomain(const StringView type,
                                                   const StringView description)
 {
     SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
-    const auto id = detail::fnv1aHash(type);
-    auto idDomainDatasMap = detail::idDomainDatasMap();
-    if (idDomainDatasMap->find(id) != idDomainDatasMap->end())
+    auto id = detail::fnv1aHash(type);
+    auto map = detail::idDomainDatasMap();
+    int retryCount = 0;
+    const int maxRetries = 5;
+    while (map->find(id) != map->end() && retryCount < maxRetries)
+    {
+        std::string modifiedType = std::string(type) + "_" + std::to_string(retryCount);
+        id = detail::fnv1aHash(modifiedType);
+        ++retryCount;
+    }
+
+    if (retryCount >= maxRetries)
     {
         return kInvalidId;
     }
+
     detail::DomainData domainData{std::string(type), std::string(name), std::string(description)};
-    idDomainDatasMap->insert(std::make_pair(id, domainData));
+    map->insert(std::make_pair(id, domainData));
     return id;
 }
 
 Error::Domain::Domain(Id id)
     : mId(detail::isIdRegistered(id) ? id : kInvalidId)
 {
+    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
+    auto idDomainDatasMap = detail::idDomainDatasMap();
+    const auto iter = idDomainDatasMap->find(mId);
+    if (iter != idDomainDatasMap->end())
+    {
+        mType = iter->second.type;
+        mName = iter->second.name;
+        mDescription = iter->second.description;
+    }
+}
+
+Error::Domain::Domain(Domain &&other)
+{
+    std::swap(mId, other.mId);
+    std::swap(mType, other.mType);
+    std::swap(mName, other.mName);
+    std::swap(mDescription, other.mDescription);
+}
+
+Error::Domain::Domain(const Domain &other)
+{
+    mId = other.mId;
+    mType = other.mType;
+    mName = other.mName;
+    mDescription = other.mDescription;
 }
 
 Error::Domain::~Domain() { }
-
-StringView Error::Domain::type() const
-{
-    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
-    auto idDomainDatasMap = detail::idDomainDatasMap();
-    const auto iter = idDomainDatasMap->find(mId);
-    if (iter != idDomainDatasMap->end())
-    {
-        return iter->second.type;
-    }
-    return "";
-}
-
-StringView Error::Domain::name() const
-{
-    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
-    auto idDomainDatasMap = detail::idDomainDatasMap();
-    const auto iter = idDomainDatasMap->find(mId);
-    if (iter != idDomainDatasMap->end())
-    {
-        return iter->second.name;
-    }
-    return "";
-}
-
-StringView Error::Domain::description() const
-{
-    SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
-    auto idDomainDatasMap = detail::idDomainDatasMap();
-    const auto iter = idDomainDatasMap->find(mId);
-    if (iter != idDomainDatasMap->end())
-    {
-        return iter->second.description;
-    }
-    return "";
-}
 
 Error::Error(const Domain &domain, Id code, const StringView message, const SharedDataPtr &cause)
     : mDomain(domain)
