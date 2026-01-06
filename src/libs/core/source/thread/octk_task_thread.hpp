@@ -26,7 +26,7 @@
 #define _OCTK_TASK_THREAD_HPP
 
 #include <octk_function_view.hpp>
-#include <octk_task_queue.hpp>
+#include <octk_task_queue_old.hpp>
 #include <octk_spinlock.hpp>
 #include <octk_socket.hpp>
 #include <octk_mutex.hpp>
@@ -123,7 +123,7 @@ private:
 
 // WARNING! SUBCLASSES MUST CALL Stop() IN THEIR DESTRUCTORS!  See ~TaskThread().
 
-class OCTK_ATTRIBUTE_LOCKABLE OCTK_CORE_API TaskThread : public TaskQueue
+class OCTK_ATTRIBUTE_LOCKABLE OCTK_CORE_API TaskThread : public TaskQueueOld
 {
 public:
     static const int kForever = -1;
@@ -303,7 +303,7 @@ public:
     // true.
     bool IsInvokeToTaskThreadAllowed(TaskThread *target);
 
-    // From TaskQueue
+    // From TaskQueueOld
     void Delete() override;
 
     // ProcessMessages will process I/O and dispatch messages until:
@@ -379,7 +379,7 @@ protected:
         mutable Task functor;
     };
 
-    // TaskQueue implementation.
+    // TaskQueueOld implementation.
     void PostTaskImpl(Task task, const PostTaskTraits &traits, const SourceLocation &location) override;
     void PostDelayedTaskImpl(Task task,
                              TimeDelta delay,
@@ -491,7 +491,7 @@ private:
     // Only touched from the worker thread itself.
     bool blocking_calls_allowed_ = true;
 
-    std::unique_ptr<TaskQueue::CurrentTaskQueueSetter> task_queue_registration_;
+    std::unique_ptr<TaskQueueOld::CurrentTaskQueueSetter> task_queue_registration_;
 
     friend class TaskThreadManager;
 

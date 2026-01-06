@@ -32,6 +32,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
+// TODO: move to core thread?
 class SimulatedThread : public TaskThread, public sim_time_impl::SimulatedSequenceRunner
 {
 public:
@@ -49,15 +50,15 @@ public:
         return next_run_time_;
     }
 
-    TaskQueue *GetAsTaskQueue() override { return this; }
+    TaskQueueOld *GetAsTaskQueue() override { return this; }
 
     // Thread interface
     void BlockingCallImpl(FunctionView<void()> functor,
                           const SourceLocation &location) override;
-    void PostTaskImpl(TaskQueue::Task task,
+    void PostTaskImpl(TaskQueueOld::Task task,
                       const PostTaskTraits &traits,
                       const SourceLocation &location) override;
-    void PostDelayedTaskImpl(TaskQueue::Task task,
+    void PostDelayedTaskImpl(TaskQueueOld::Task task,
                              TimeDelta delay,
                              const PostDelayedTaskTraits &traits,
                              const SourceLocation &location) override;

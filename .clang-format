@@ -100,7 +100,7 @@ AllowShortEnumsOnASingleLine: true
 AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: true
 # 允许短的函数放在同一行, 可选值: None, InlineOnly(定义在类中), Empty(空函数), Inline(定义在类中，空函数), All
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: InlineOnly
 # 允许lambda在一行中, 同上, 建议All
 AllowShortLambdasOnASingleLine: All
 # 是否将简单的if(else/else if)语句中的body跟if(else/else if)放置于同一行，可选值
@@ -121,7 +121,7 @@ AlwaysBreakBeforeMultilineStrings: false
 # - No: 永远不对开发者的风格作处理
 # - MultiLine: 建议值, 即仅在开发者写的模板声明(包括函数)跨越多行时, 进行换行, 否则维持原样
 # - Yes: 不管如何都进行分行, 不建议
-AlwaysBreakTemplateDeclarations: MultiLine
+AlwaysBreakTemplateDeclarations: Yes
 # 属性宏列表, 自定义, 用于语言扩展或静态分析注解, 可忽略
 AttributeMacros:
   - __capability

@@ -35,9 +35,14 @@ OCTK_BEGIN_NAMESPACE
 // The epoch is assumed to be before any represented timestamps, this means that
 // negative values are not valid. The most notable feature is that the
 // difference of two Timestamps results in a TimeDelta.
-class Timestamp final : public UnitBase<Timestamp>
+class OCTK_CORE_API Timestamp final : public UnitBase<Timestamp>
 {
 public:
+    static Timestamp nowSteadyTime();
+    static Timestamp nowSystemTime();
+    static Timestamp untilSteadyTime(const TimeDelta delta) { return nowSteadyTime() + delta; }
+    static Timestamp untilSystemTime(const TimeDelta delta) { return nowSystemTime() + delta; }
+
     template <typename T>
     static OCTK_CXX14_CONSTEXPR Timestamp Seconds(T value)
     {
@@ -78,18 +83,9 @@ public:
         return ToValue<T>();
     }
 
-    constexpr int64_t seconds_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000000>(fallback_value);
-    }
-    constexpr int64_t ms_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000>(fallback_value);
-    }
-    constexpr int64_t us_or(int64_t fallback_value) const
-    {
-        return ToValueOr(fallback_value);
-    }
+    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
+    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
+    constexpr int64_t us_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
 
     OCTK_CXX14_CONSTEXPR Timestamp operator+(const TimeDelta delta) const
     {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <octk_move_wrapper.hpp>
+#include <octk_utility.hpp>
 #include <octk_memory.hpp>
 
 #include <gmock/gmock.h>

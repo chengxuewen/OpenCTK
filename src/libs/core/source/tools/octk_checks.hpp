@@ -33,18 +33,20 @@
 // OCTK_DCHECK_IS_ON. (Test its value, not if it's defined; it'll always be
 // defined, to either a true or a false value.)
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-#   define OCTK_DCHECK_IS_ON 0
+#    define OCTK_DCHECK_IS_ON 0
 #else
-#   define OCTK_DCHECK_IS_ON 0
+#    define OCTK_DCHECK_IS_ON 0
 #endif
 
 // #define OCTK_CHECK(condition) \
 //    if (!(condition)) OCTK_FATAL(octk::StringView("Check \""#condition"\" failed!"))
-#define OCTK_CHECK(condition) \
-    if (!(condition)) octk::Logger::FatalLogCall("Check \""#condition"\" failed!") & OCTK_FATAL()
+#define OCTK_CHECK(condition)                                                                                          \
+    if (!(condition))                                                                                                  \
+    octk::Logger::FatalLogCall("Check \"" #condition "\" failed!") & OCTK_FATAL()
 
-#define OCTK_CHECK_OP(name, op, val1, val2) \
-    if (!octk::Safe##name((val1), (val2)) ) OCTK_FATAL(octk::StringView("Check \""#val1" "#op" "#val2"\" failed!"))
+#define OCTK_CHECK_OP(name, op, val1, val2)                                                                            \
+    if (!octk::Safe##name((val1), (val2)))                                                                             \
+    OCTK_FATAL(octk::StringView("Check \"" #val1 " " #op " " #val2 "\" failed!"))
 
 #define OCTK_CHECK_EQ(val1, val2) OCTK_CHECK_OP(Eq, ==, val1, val2)
 #define OCTK_CHECK_NE(val1, val2) OCTK_CHECK_OP(Ne, !=, val1, val2)
@@ -57,21 +59,21 @@
 // code in debug builds. It does reference the condition parameter in all cases,
 // though, so callers won't risk getting warnings about unused variables.
 #if OCTK_DCHECK_IS_ON
-#   define OCTK_DCHECK(condition) OCTK_CHECK(condition)
-#   define OCTK_DCHECK_EQ(v1, v2) OCTK_CHECK_EQ(v1, v2)
-#   define OCTK_DCHECK_NE(v1, v2) OCTK_CHECK_NE(v1, v2)
-#   define OCTK_DCHECK_LE(v1, v2) OCTK_CHECK_LE(v1, v2)
-#   define OCTK_DCHECK_LT(v1, v2) OCTK_CHECK_LT(v1, v2)
-#   define OCTK_DCHECK_GE(v1, v2) OCTK_CHECK_GE(v1, v2)
-#   define OCTK_DCHECK_GT(v1, v2) OCTK_CHECK_GT(v1, v2)
+#    define OCTK_DCHECK(condition) OCTK_CHECK(condition)
+#    define OCTK_DCHECK_EQ(v1, v2) OCTK_CHECK_EQ(v1, v2)
+#    define OCTK_DCHECK_NE(v1, v2) OCTK_CHECK_NE(v1, v2)
+#    define OCTK_DCHECK_LE(v1, v2) OCTK_CHECK_LE(v1, v2)
+#    define OCTK_DCHECK_LT(v1, v2) OCTK_CHECK_LT(v1, v2)
+#    define OCTK_DCHECK_GE(v1, v2) OCTK_CHECK_GE(v1, v2)
+#    define OCTK_DCHECK_GT(v1, v2) OCTK_CHECK_GT(v1, v2)
 #else
-#   define OCTK_DCHECK(condition) OCTK_CHECK(true)
-#   define OCTK_DCHECK_EQ(v1, v2) OCTK_CHECK(true)
-#   define OCTK_DCHECK_NE(v1, v2) OCTK_CHECK(true)
-#   define OCTK_DCHECK_LE(v1, v2) OCTK_CHECK(true)
-#   define OCTK_DCHECK_LT(v1, v2) OCTK_CHECK(true)
-#   define OCTK_DCHECK_GE(v1, v2) OCTK_CHECK(true)
-#   define OCTK_DCHECK_GT(v1, v2) OCTK_CHECK(true)
+#    define OCTK_DCHECK(condition) OCTK_CHECK(true)
+#    define OCTK_DCHECK_EQ(v1, v2) OCTK_CHECK(true)
+#    define OCTK_DCHECK_NE(v1, v2) OCTK_CHECK(true)
+#    define OCTK_DCHECK_LE(v1, v2) OCTK_CHECK(true)
+#    define OCTK_DCHECK_LT(v1, v2) OCTK_CHECK(true)
+#    define OCTK_DCHECK_GE(v1, v2) OCTK_CHECK(true)
+#    define OCTK_DCHECK_GT(v1, v2) OCTK_CHECK(true)
 #endif
 
 #define OCTK_DCHECK_NOTREACHED() OCTK_DCHECK(false)
@@ -92,4 +94,4 @@
 //   OCTK_DCHECK((x)->IsCurrent()); \
 //   []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) {}()
 
-#endif  // _OCTK_CHECKS_HPP
+#endif // _OCTK_CHECKS_HPP

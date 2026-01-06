@@ -22,81 +22,56 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_REPEATING_TASK_HPP
-#define _OCTK_REPEATING_TASK_HPP
+#pragma once
 
-#include <octk_pending_task_safety_flag.hpp>
 #include <octk_task_queue.hpp>
 #include <octk_time_delta.hpp>
 #include <octk_clock.hpp>
 
-#include <type_traits>
-#include <utility>
 #include <memory>
 
 OCTK_BEGIN_NAMESPACE
 
-namespace detail
-{
-// Methods simplifying external tracing of RepeatingTaskHandle operations.
-void RepeatingTaskHandleDTraceProbeStart();
-void RepeatingTaskHandleDTraceProbeDelayedStart();
-void RepeatingTaskImplDTraceProbeRun();
-}  // namespace detail
-
-// Allows starting tasks that repeat themselves on a TaskQueue indefinately
-// until they are stopped or the TaskQueue is destroyed. It allows starting and
-// stopping multiple times, but you must stop one task before starting another
-// and it can only be stopped when in the running state. The public interface is
-// not thread safe.
-class OCTK_CORE_API RepeatingTaskHandle
+class OCTK_CORE_API RepeatingTaskHandle final
 {
 public:
     RepeatingTaskHandle() = default;
-    ~RepeatingTaskHandle() = default;
     RepeatingTaskHandle(RepeatingTaskHandle &&other) = default;
     RepeatingTaskHandle &operator=(RepeatingTaskHandle &&other) = default;
-    RepeatingTaskHandle(const RepeatingTaskHandle &) = delete;
-    RepeatingTaskHandle &operator=(const RepeatingTaskHandle &) = delete;
+    ~RepeatingTaskHandle();
 
-    // Start can be used to start a task that will be reposted with a delay
-    // determined by the return value of the provided closure. The actual task is
-    // owned by the TaskQueue and will live until it has been stopped or the
-    // TaskQueue deletes it. It's perfectly fine to destroy the handle while the
-    // task is running, since the repeated task is owned by the TaskQueue.
-    // The tasks are scheduled onto the task queue using the specified precision.
-    static RepeatingTaskHandle Start(TaskQueue *task_queue,
-                                     Invocable<TimeDelta()> closure,
-                                     TaskQueue::DelayPrecision precision =
-                                     TaskQueue::DelayPrecision::kLow,
+    static RepeatingTaskHandle start(TaskQueueBase *taskQueue,
+                                     UniqueFunction<TimeDelta()> closure,
                                      Clock *clock = Clock::GetRealTimeClock(),
                                      const SourceLocation &location = SourceLocation::current());
 
-    // DelayedStart is equivalent to Start except that the first invocation of the
-    // closure will be delayed by the given amount.
-    static RepeatingTaskHandle DelayedStart(TaskQueue *task_queue,
-                                            TimeDelta first_delay,
-                                            Invocable<TimeDelta()> closure,
-                                            TaskQueue::DelayPrecision precision =
-                                            TaskQueue::DelayPrecision::kLow,
+    static RepeatingTaskHandle delayedStart(TaskQueueBase *taskQueue,
+                                            TimeDelta firstDelay,
+                                            UniqueFunction<TimeDelta()> closure,
                                             Clock *clock = Clock::GetRealTimeClock(),
                                             const SourceLocation &location = SourceLocation::current());
 
-    // Stops future invocations of the repeating task closure. Can only be called
-    // from the TaskQueue where the task is running. The closure is guaranteed to
-    // not be running after Stop() returns unless Stop() is called from the
-    // closure itself.
-    void Stop();
+    /**
+     * Stops future invocations of the repeating task closure.
+     * Can only be called from the TaskQueueBase where the task is running.
+     * The closure is guaranteed to not be running after stop() returns unless stop() is called from the closure itself.
+     */
+    void stop();
 
-    // Returns true until Stop() was called.
-    // Can only be called from the TaskQueue where the task is running.
-    bool Running() const;
+    /**
+     * Returns true until stop() was called.
+     * Can only be called from the TaskQueueBase where the task is running.
+     * @return True if the task is running.
+     */
+    bool isRunning() const;
 
-private:
-    explicit RepeatingTaskHandle(SharedRefPtr<PendingTaskSafetyFlag> alive_flag)
-        : repeating_task_(std::move(alive_flag)) {}
-    SharedRefPtr<PendingTaskSafetyFlag> repeating_task_;
+protected:
+    OCTK_DECLARE_DISABLE_COPY(RepeatingTaskHandle)
+    explicit RepeatingTaskHandle(const TaskQueueBase::SafetyFlag::SharedPtr &aliveFlag)
+        : mAliveFlag(aliveFlag)
+    {
+    }
+    TaskQueueBase::SafetyFlag::SharedPtr mAliveFlag;
 };
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_REPEATING_TASK_HPP
+OCTK_END_NAMESPACE

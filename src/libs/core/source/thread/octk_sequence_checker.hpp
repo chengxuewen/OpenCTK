@@ -27,7 +27,7 @@
 
 #include <octk_platform_thread.hpp>
 #include <octk_type_traits.hpp>
-#include <octk_task_queue.hpp>
+#include <octk_task_queue_old.hpp>
 #include <octk_checks.hpp>
 #include <octk_mutex.hpp>
 
@@ -46,7 +46,7 @@ class OCTK_CORE_API SequenceCheckerImpl
 {
 public:
     explicit SequenceCheckerImpl(bool attach_to_current_thread);
-    explicit SequenceCheckerImpl(TaskQueue *attached_queue);
+    explicit SequenceCheckerImpl(TaskQueueOld *attached_queue);
     ~SequenceCheckerImpl() = default;
 
     bool IsCurrent() const;
@@ -65,7 +65,7 @@ private:
     // These are mutable so that IsCurrent can set them.
     mutable bool attached_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
     mutable PlatformThread::Id valid_thread_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
-    mutable const TaskQueue *valid_queue_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
+    mutable const TaskQueueOld *valid_queue_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
 };
 
 // Do nothing implementation, for use in release mode.
@@ -76,7 +76,7 @@ class SequenceCheckerDoNothing
 {
 public:
     explicit SequenceCheckerDoNothing(bool /* attach_to_current_thread */) { }
-    explicit SequenceCheckerDoNothing(TaskQueue * /* attached_queue */) { }
+    explicit SequenceCheckerDoNothing(TaskQueueOld * /* attached_queue */) { }
     bool IsCurrent() const { return true; }
     void Detach() { }
 };
@@ -145,7 +145,7 @@ public:
     // In theory we could have something like:
     //
     //  SequenceChecker(InitialState initial_state = kAttached,
-    //                  TaskQueue* attached_queue = TaskQueue::Current());
+    //                  TaskQueueOld* attached_queue = TaskQueueOld::Current());
     //
     // But the problem with that is having the call to `Current()` exist for
     // `SequenceCheckerDoNothing`.
@@ -153,7 +153,7 @@ public:
         : Impl(initial_state)
     {
     }
-    explicit SequenceChecker(TaskQueue *attached_queue)
+    explicit SequenceChecker(TaskQueueOld *attached_queue)
         : Impl(attached_queue)
     {
     }
@@ -192,14 +192,14 @@ public:
 //  public:
 //   class Encoder {
 //    public:
-//     rtc::TaskQueue& Queue() { return encoder_queue_; }
+//     rtc::TaskQueueOld& Queue() { return encoder_queue_; }
 //     void Encode() {
 //       OCTK_DCHECK_RUN_ON(&encoder_queue_);
 //       DoSomething(var_);
 //     }
 //
 //    private:
-//     rtc::TaskQueue& encoder_queue_;
+//     rtc::TaskQueueOld& encoder_queue_;
 //     Frame var_ OCTK_GUARDED_BY(encoder_queue_);
 //   };
 //
@@ -225,7 +225,7 @@ public:
 // Such annotation has to be attached to a function, and that function has to be
 // called. Thus current implementation creates a noop lambda and calls it.
 #define OCTK_DCHECK_RUN_ON(x)                                                                                          \
-    OCTK_DCHECK((x)->IsCurrent()) << octk::detail::ExpectationToString(x);                                           \
+    OCTK_DCHECK((x)->IsCurrent()) << octk::detail::ExpectationToString(x);                                             \
     []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) { }()
 OCTK_END_NAMESPACE
 

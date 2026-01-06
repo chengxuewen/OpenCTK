@@ -24,7 +24,7 @@
 
 #include <octk_task_queue_factory.hpp>
 #include <octk_platform_thread.hpp>
-#include <octk_task_queue.hpp>
+#include <octk_task_queue_old.hpp>
 #include <octk_task_event.hpp>
 #include <octk_date_time.hpp>
 #include <octk_memory.hpp>
@@ -38,22 +38,18 @@ OCTK_BEGIN_NAMESPACE
 namespace
 {
 
-ThreadPriority TaskQueuePriorityToThreadPriority(
-    TaskQueueFactory::Priority priority)
+ThreadPriority TaskQueuePriorityToThreadPriority(TaskQueueFactory::Priority priority)
 {
     switch (priority)
     {
-        case TaskQueueFactory::Priority::HIGH:
-            return ThreadPriority::kRealtime;
-        case TaskQueueFactory::Priority::LOW:
-            return ThreadPriority::kLow;
-        case TaskQueueFactory::Priority::NORMAL:
-            return ThreadPriority::kNormal;
+        case TaskQueueFactory::Priority::HIGH: return ThreadPriority::kRealtime;
+        case TaskQueueFactory::Priority::LOW: return ThreadPriority::kLow;
+        case TaskQueueFactory::Priority::NORMAL: return ThreadPriority::kNormal;
     }
     return ThreadPriority::kNormal;
 }
 
-class TaskQueueStdlib final : public TaskQueue
+class TaskQueueStdlib final : public TaskQueueOld
 {
 public:
     TaskQueueStdlib(StringView queue_name, ThreadPriority priority);
@@ -62,9 +58,7 @@ public:
     void Delete() override;
 
 protected:
-    void PostTaskImpl(Task task,
-                      const PostTaskTraits &traits,
-                      const SourceLocation &location) override;
+    void PostTaskImpl(Task task, const PostTaskTraits &traits, const SourceLocation &location) override;
     void PostDelayedTaskImpl(Task task,
                              TimeDelta delay,
                              const PostDelayedTaskTraits &traits,
@@ -76,13 +70,12 @@ private:
     struct DelayedEntryTimeout
     {
         // TODO(bugs.webrtc.org/13756): Migrate to Timestamp.
-        int64_t next_fire_at_us{ };
-        OrderId order{ };
+        int64_t next_fire_at_us{};
+        OrderId order{};
 
         bool operator<(const DelayedEntryTimeout &o) const
         {
-            return std::tie(next_fire_at_us, order) <
-                   std::tie(o.next_fire_at_us, o.order);
+            return std::tie(next_fire_at_us, order) < std::tie(o.next_fire_at_us, o.order);
         }
     };
 
@@ -93,9 +86,7 @@ private:
         TimeDelta sleep_time = Event::foreverDuration();
     };
 
-    static PlatformThread InitializeThread(TaskQueueStdlib *me,
-                                           StringView queue_name,
-                                           ThreadPriority priority);
+    static PlatformThread InitializeThread(TaskQueueStdlib *me, StringView queue_name, ThreadPriority priority);
 
     NextTask GetNextTask();
 
@@ -131,30 +122,31 @@ private:
     // tasks (including delayed tasks).
     // Placing this last ensures the thread doesn't touch uninitialized attributes
     // throughout it's lifetime.
-    // PlatformThread thread_;
+    PlatformThread thread_;
 };
 
-TaskQueueStdlib::TaskQueueStdlib(StringView queue_name,
-                                 ThreadPriority priority)
-    : flag_notify_(/*manual_reset=*/false, /*initially_signaled=*/false), thread_(
-    InitializeThread(this, queue_name, priority)) {}
+TaskQueueStdlib::TaskQueueStdlib(StringView queue_name, ThreadPriority priority)
+    : flag_notify_(/*manual_reset=*/false, /*initially_signaled=*/false)
+    //, thread_(InitializeThread(this, queue_name, priority))
+{
+}
 
 // static
-PlatformThread TaskQueueStdlib::InitializeThread(TaskQueueStdlib *me,
-                                                 StringView queue_name,
-                                                 ThreadPriority priority)
+PlatformThread TaskQueueStdlib::InitializeThread(TaskQueueStdlib *me, StringView queue_name, ThreadPriority priority)
 {
     Event started;
-    // auto thread = PlatformThread::SpawnJoinable(
-    //     [&started, me] {
-    //         CurrentTaskQueueSetter set_current(me);
-    //         started.Set();
-    //         me->ProcessTasks();
-    //     },
-    //     queue_name, ThreadAttributes().SetPriority(priority));
-    // started.Wait(Event::foreverDuration());
-    // return thread;
-}
+    #if 0
+    auto thread = PlatformThread::SpawnJoinable(
+        [&started, me] {
+            CurrentTaskQueueSetter set_current(me);
+            started.Set();
+            me->ProcessTasks();
+        },
+        queue_name, ThreadAttributes().SetPriority(priority));
+    started.Wait(Event::foreverDuration());
+    return thread;
+    // #endif
+// }
 
 void TaskQueueStdlib::Delete()
 {
@@ -170,9 +162,7 @@ void TaskQueueStdlib::Delete()
     delete this;
 }
 
-void TaskQueueStdlib::PostTaskImpl(Task task,
-                                   const PostTaskTraits &traits,
-                                   const SourceLocation &location)
+void TaskQueueStdlib::PostTaskImpl(Task task, const PostTaskTraits &traits, const SourceLocation &location)
 {
     {
         Mutex::Locker locker(&pending_lock_);
@@ -276,12 +266,12 @@ void TaskQueueStdlib::ProcessTasks()
 
     // Ensure remaining deleted tasks are destroyed with Current() set up to this
     // task queue.
-    std::queue<std::pair<OrderId, Task> > pending_queue;
+    std::queue<std::pair<OrderId, Task>> pending_queue;
     {
         Mutex::Locker locker(&pending_lock_);
         pending_queue_.swap(pending_queue);
     }
-    pending_queue = { };
+    pending_queue = {};
 #if OCTK_DCHECK_IS_ON
     Mutex::Locker locker(&pending_lock_);
     OCTK_DCHECK(pending_queue_.empty());
@@ -320,14 +310,13 @@ void TaskQueueStdlib::NotifyWake()
 class TaskQueueStdlibFactory final : public TaskQueueFactory
 {
 public:
-    std::unique_ptr<TaskQueue, TaskQueueDeleter> CreateTaskQueue(StringView name,
-                                                                 Priority priority) const override
+    std::unique_ptr<TaskQueueOld, TaskQueueDeleter> CreateTaskQueue(StringView name, Priority priority) const override
     {
-        return std::unique_ptr<TaskQueue, TaskQueueDeleter>(
+        return std::unique_ptr<TaskQueueOld, TaskQueueDeleter>(
             new TaskQueueStdlib(name, TaskQueuePriorityToThreadPriority(priority)));
     }
 };
-}  // namespace
+} // namespace
 
 namespace utils
 {

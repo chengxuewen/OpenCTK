@@ -29,7 +29,7 @@
 #include <octk_function_view.hpp>
 #include <octk_string_view.hpp>
 #include <octk_scope_guard.hpp>
-#include <octk_task_queue.hpp>
+#include <octk_task_queue_old.hpp>
 #include <octk_task_event.hpp>
 #include <octk_checks.hpp>
 
@@ -39,7 +39,7 @@ OCTK_BEGIN_NAMESPACE
 
 namespace utils
 {
-inline void sendTask(TaskQueue *task_queue,
+inline void sendTask(TaskQueueOld *task_queue,
                      FunctionView<void()> task)
 {
     if (task_queue->IsCurrent())
@@ -60,7 +60,7 @@ inline void sendTask(TaskQueue *task_queue,
 class TaskQueueForTest
 {
 public:
-    explicit TaskQueueForTest(std::unique_ptr<TaskQueue, TaskQueueDeleter> task_queue)
+    explicit TaskQueueForTest(std::unique_ptr<TaskQueueOld, TaskQueueDeleter> task_queue)
         : impl_(std::move(task_queue)) {}
     explicit TaskQueueForTest(StringView name = "TestQueue",
                               TaskQueueFactory::Priority priority = TaskQueueFactory::Priority::NORMAL)
@@ -69,7 +69,7 @@ public:
     TaskQueueForTest &operator=(const TaskQueueForTest &) = delete;
     ~TaskQueueForTest()
     {
-        // Stop the TaskQueue before invalidating impl_ pointer so that tasks that
+        // Stop the TaskQueueOld before invalidating impl_ pointer so that tasks that
         // race with the TaskQueueForTest destructor could still use TaskQueueForTest
         // functions like 'IsCurrent'.
         impl_.get_deleter()(impl_.get());
@@ -79,20 +79,20 @@ public:
     bool IsCurrent() const { return impl_->IsCurrent(); }
 
     // Returns non-owning pointer to the task queue implementation.
-    TaskQueue *Get() { return impl_.get(); }
+    TaskQueueOld *Get() { return impl_.get(); }
 
-    void PostTask(TaskQueue::Task task,
+    void PostTask(TaskQueueOld::Task task,
                   const SourceLocation &location = SourceLocation::current())
     {
         impl_->PostTask(std::move(task), location);
     }
-    void PostDelayedTask(TaskQueue::Task task,
+    void PostDelayedTask(TaskQueueOld::Task task,
                          TimeDelta delay,
                          const SourceLocation &location = SourceLocation::current())
     {
         impl_->PostDelayedTask(std::move(task), delay, location);
     }
-    void PostDelayedHighPrecisionTask(TaskQueue::Task task,
+    void PostDelayedHighPrecisionTask(TaskQueueOld::Task task,
                                       TimeDelta delay,
                                       const SourceLocation &location = SourceLocation::current())
     {
@@ -117,7 +117,7 @@ public:
     }
 
 private:
-    std::unique_ptr<TaskQueue, TaskQueueDeleter> impl_;
+    std::unique_ptr<TaskQueueOld, TaskQueueDeleter> impl_;
 };
 OCTK_END_NAMESPACE
 

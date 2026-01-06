@@ -29,29 +29,29 @@
 
 #include <thread>
 
-OCTK_DEFINE_LOGGER_WITH_LEVEL("octk_thread_pool", OCTK_THREAD_POOL_LOGGER, octk::LogLevel::Warning)
+OCTK_DEFINE_LOGGER_WITH_LEVEL("octk::ThreadPool", OCTK_THREAD_POOL_LOGGER, octk::LogLevel::Warning)
 
 OCTK_BEGIN_NAMESPACE
 
 namespace detail
 {
-class ThreadPoolFunctionTask : public ThreadPool::Task
-{
-    std::function<void()> mFunction;
-
-public:
-    ThreadPoolFunctionTask(std::function<void()> &&function)
-        : mFunction(std::move(function))
-    {
-    }
-
-protected:
-    void run() override
-    {
-        OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolFunctionTask::run()");
-        mFunction();
-    }
-};
+// class ThreadPoolFunctionTask : public ThreadPool::Task
+// {
+//     std::function<void()> mFunction;
+//
+// public:
+//     ThreadPoolFunctionTask(std::function<void()> &&function)
+//         : mFunction(std::move(function))
+//     {
+//     }
+//
+// protected:
+//     void run() override
+//     {
+//         OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolFunctionTask::run()");
+//         mFunction();
+//     }
+// };
 
 namespace tls
 {
@@ -184,7 +184,7 @@ void ThreadPoolTaskThread::run()
             task = mManager->mTaskQueue.pop();
             if (!task)
             {
-                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p do TaskQueue empty", this);
+                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p do task queue empty", this);
                 break;
             }
         } while (!mExit.load());
@@ -269,16 +269,6 @@ void ThreadPoolTaskThread::registerThreadInactive()
     }
 }
 
-ThreadPool::Task::SharedPtr ThreadPool::Task::create(std::function<void()> function)
-{
-    return SharedPtr(new detail::ThreadPoolFunctionTask(std::move(function)), Deleter{true});
-}
-
-ThreadPool::Task::SharedPtr ThreadPool::Task::makeShared(Task *task, bool autoDelete)
-{
-    return SharedPtr(task, Deleter{autoDelete});
-}
-
 ThreadPool::Thread::Thread(bool adopted)
     : mDPtr(new ThreadPrivate(this, adopted))
 {
@@ -346,16 +336,24 @@ bool ThreadPool::Thread::wait(unsigned int msecs)
     return true;
 }
 
-ThreadPool::Thread::SharedPtr ThreadPool::Thread::current() noexcept { return ThreadPoolLocalData::current()->thread; }
+ThreadPool::Thread::SharedPtr ThreadPool::Thread::current() noexcept
+{
+    return ThreadPoolLocalData::current()->thread;
+}
 
-ThreadPool::Thread::Id ThreadPool::Thread::currentThreadId() noexcept { return std::this_thread::get_id(); }
+ThreadPool::Thread::Id ThreadPool::Thread::currentThreadId() noexcept
+{
+    return std::this_thread::get_id();
+}
 
 ThreadPoolPrivate::ThreadPoolPrivate(ThreadPool *p)
     : mPPtr(p)
 {
 }
 
-ThreadPoolPrivate::~ThreadPoolPrivate() { }
+ThreadPoolPrivate::~ThreadPoolPrivate()
+{
+}
 
 ThreadPoolTaskThread::SharedPtr ThreadPoolPrivate::findThread(ThreadPoolTaskThread *thread)
 {
@@ -455,7 +453,10 @@ int ThreadPoolPrivate::activeThreadCount() const
     return mAllThreads.size() - mExpiredThreads.size() - mWaitingThreads.size() + mReservedThreadCount;
 }
 
-bool ThreadPoolPrivate::isDone() const { return mTaskQueue.empty() && 0 == mActiveThreadCount; }
+bool ThreadPoolPrivate::isDone() const
+{
+    return mTaskQueue.empty() && 0 == mActiveThreadCount;
+}
 
 void ThreadPoolPrivate::reset()
 {
@@ -488,7 +489,10 @@ ThreadPool::ThreadPool(ThreadPoolPrivate *d)
 {
 }
 
-ThreadPool::~ThreadPool() { this->waitForDone(); }
+ThreadPool::~ThreadPool()
+{
+    this->waitForDone();
+}
 
 ThreadPool *ThreadPool::defaultInstance()
 {
@@ -698,6 +702,9 @@ uint64_t ThreadPool::tasksDispatchedCount() const
     return d->mTasksDispatchedCount.load();
 }
 
-int ThreadPool::idealThreadCount() { return std::thread::hardware_concurrency(); }
+int ThreadPool::idealThreadCount()
+{
+    return std::thread::hardware_concurrency();
+}
 
 OCTK_END_NAMESPACE

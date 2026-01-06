@@ -42,6 +42,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
+// TODO: move to core thread?
 namespace sim_time_impl
 {
 class SimulatedSequenceRunner
@@ -53,11 +54,11 @@ public:
     // Runs all ready tasks and modules and updates next run time.
     virtual void RunReady(Timestamp at_time) = 0;
 
-    // All implementations also implements TaskQueue in some form, but if we'd
+    // All implementations also implements TaskQueueOld in some form, but if we'd
     // inherit from it in this interface we'd run into issues with double
     // inheritance. Therefore we simply allow the implementations to provide a
     // casted pointer to themself.
-    virtual TaskQueue *GetAsTaskQueue() = 0;
+    virtual TaskQueueOld *GetAsTaskQueue() = 0;
 };
 
 class SimulatedTimeControllerImpl : public TaskQueueFactory, public YieldInterface
@@ -66,7 +67,7 @@ public:
     explicit SimulatedTimeControllerImpl(Timestamp start_time);
     ~SimulatedTimeControllerImpl() override;
 
-    std::unique_ptr<TaskQueue, TaskQueueDeleter> CreateTaskQueue(StringView name,
+    std::unique_ptr<TaskQueueOld, TaskQueueDeleter> CreateTaskQueue(StringView name,
                                                                  Priority priority) const
     OCTK_ATTRIBUTE_LOCKS_EXCLUDED(time_lock_) override;
 
@@ -107,9 +108,9 @@ public:
     OCTK_ATTRIBUTE_LOCKS_EXCLUDED(lock_);
 
     // Indicates that `yielding_from` is not ready to run.
-    void StartYield(TaskQueue *yielding_from);
+    void StartYield(TaskQueueOld *yielding_from);
     // Indicates that processing can be continued on `yielding_from`.
-    void StopYield(TaskQueue *yielding_from);
+    void StopYield(TaskQueueOld *yielding_from);
 
 private:
     const PlatformThread::Id thread_id_;
@@ -130,25 +131,25 @@ private:
     OCTK_ATTRIBUTE_GUARDED_BY(lock_);
 
     // Runners on which YieldExecution has been called.
-    std::unordered_set<TaskQueue *> yielded_;
+    std::unordered_set<TaskQueueOld *> yielded_;
 };
 }  // namespace sim_time_impl
 
 // Used to satisfy sequence checkers for non task queue sequences.
-class TokenTaskQueue : public TaskQueue
+class TokenTaskQueue : public TaskQueueOld
 {
 public:
     // Promoted to public
-    using CurrentTaskQueueSetter = TaskQueue::CurrentTaskQueueSetter;
+    using CurrentTaskQueueSetter = TaskQueueOld::CurrentTaskQueueSetter;
 
     void Delete() override { OCTK_DCHECK_NOTREACHED(); }
-    void PostTaskImpl(TaskQueue::Task task,
+    void PostTaskImpl(TaskQueueOld::Task task,
                       const PostTaskTraits &traits,
                       const SourceLocation &location) override
     {
         OCTK_DCHECK_NOTREACHED();
     }
-    void PostDelayedTaskImpl(TaskQueue::Task task,
+    void PostDelayedTaskImpl(TaskQueueOld::Task task,
                              TimeDelta delay,
                              const PostDelayedTaskTraits &traits,
                              const SourceLocation &location) override

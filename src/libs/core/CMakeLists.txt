@@ -127,19 +127,22 @@ octk_add_library(core
 	source/thread/octk_socket.cpp
 	source/thread/octk_socket.hpp
 	source/thread/octk_spinlock.hpp
+	source/thread/octk_task.cpp
+	source/thread/octk_task.hpp
 	source/thread/octk_task_event.cpp
 	source/thread/octk_task_event.hpp
 	source/thread/octk_task_queue.cpp
 	source/thread/octk_task_queue.hpp
+	source/thread/octk_task_queue_old.cpp
+	source/thread/octk_task_queue_old.hpp
 	source/thread/octk_task_queue_factory.cpp
 	source/thread/octk_task_queue_factory.hpp
 #	source/thread/octk_task_queue_stdlib.cpp
+	source/thread/octk_task_queue_thread.cpp
+	source/thread/octk_task_queue_thread.hpp
 	source/thread/octk_task_thread.cpp
 	source/thread/octk_task_thread.hpp
 	source/thread/octk_task_thread_p.hpp
-	source/thread/octk_thread.cpp
-	source/thread/octk_thread.hpp
-	source/thread/octk_thread_p.hpp
 	source/thread/octk_thread_pool.cpp
 	source/thread/octk_thread_pool.hpp
 	source/thread/octk_thread_pool_p.hpp
@@ -147,6 +150,8 @@ octk_add_library(core
 	source/thread/octk_time_controller.hpp
 	source/thread/octk_yield_policy.cpp
 	source/thread/octk_yield_policy.hpp
+	source/time/octk_date_time.cpp
+	source/time/octk_date_time.hpp
 	source/time/octk_elapsed_timer.cpp
 	source/time/octk_elapsed_timer.hpp
 	source/tools/octk_algorithm.hpp
@@ -159,8 +164,6 @@ octk_add_library(core
 	source/tools/octk_clock.hpp
 	source/tools/octk_crypto_random.cpp
 	source/tools/octk_crypto_random.hpp
-	source/tools/octk_date_time.cpp
-	source/tools/octk_date_time.hpp
 	source/tools/octk_error.cpp
 	source/tools/octk_error.hpp
 	source/tools/octk_exception.hpp
@@ -179,7 +182,6 @@ octk_add_library(core
 	source/tools/octk_logging_p.hpp
 	source/tools/octk_metrics.cpp
 	source/tools/octk_metrics.hpp
-	source/tools/octk_move_wrapper.hpp
 	source/tools/octk_ntp_time.cpp
 	source/tools/octk_ntp_time.hpp
 	source/tools/octk_once_flag.cpp

@@ -27,10 +27,10 @@
 
 #include <octk_sequence_checker.hpp>
 #include <octk_shared_ref_ptr.hpp>
-#include <octk_move_wrapper.hpp>
 #include <octk_nullability.hpp>
-#include <octk_task_queue.hpp>
+#include <octk_task_queue_old.hpp>
 #include <octk_ref_count.hpp>
+#include <octk_utility.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -75,45 +75,50 @@ class OCTK_CORE_API PendingTaskSafetyFlag final : public RefCountedNonVirtual<Pe
 public:
     static SharedRefPtr<PendingTaskSafetyFlag> Create();
 
-// Creates a flag, but with its SequenceChecker initially detached. Hence, it
-// may be created on a different thread than the flag will be used on.
+    // Creates a flag, but with its SequenceChecker initially detached. Hence, it
+    // may be created on a different thread than the flag will be used on.
     static SharedRefPtr<PendingTaskSafetyFlag> CreateDetached();
 
-// Creates a flag, but with its SequenceChecker explicitly initialized for
-// a given task queue and the `alive()` flag specified.
+    // Creates a flag, but with its SequenceChecker explicitly initialized for
+    // a given task queue and the `alive()` flag specified.
     static SharedRefPtr<PendingTaskSafetyFlag> CreateAttachedToTaskQueue(bool alive,
-                                                                         Nonnull<TaskQueue *> attached_queue);
+                                                                         Nonnull<TaskQueueOld *> attached_queue);
 
-// Same as `CreateDetached()` except the initial state of the returned flag
-// will be `!alive()`.
+    // Same as `CreateDetached()` except the initial state of the returned flag
+    // will be `!alive()`.
     static SharedRefPtr<PendingTaskSafetyFlag> CreateDetachedInactive();
 
-    ~
-    PendingTaskSafetyFlag() = default;
+    ~PendingTaskSafetyFlag() = default;
 
     void SetNotAlive();
-// The SetAlive method is intended to support Start/Stop/Restart usecases.
-// When a class has called SetNotAlive on a flag used for posted tasks, and
-// decides it wants to post new tasks and have them run, there are two
-// reasonable ways to do that:
-//
-// (i) Use the below SetAlive method. One subtlety is that any task posted
-//     prior to SetNotAlive, and still in the queue, is resurrected and will
-//     run.
-//
-// (ii) Create a fresh flag, and just drop the reference to the old one. This
-//      avoids the above problem, and ensures that tasks poster prior to
-//      SetNotAlive stay cancelled. Instead, there's a potential data race on
-//      the flag pointer itself. Some synchronization is required between the
-//      thread overwriting the flag pointer, and the threads that want to post
-//      tasks and therefore read that same pointer.
+    // The SetAlive method is intended to support Start/Stop/Restart usecases.
+    // When a class has called SetNotAlive on a flag used for posted tasks, and
+    // decides it wants to post new tasks and have them run, there are two
+    // reasonable ways to do that:
+    //
+    // (i) Use the below SetAlive method. One subtlety is that any task posted
+    //     prior to SetNotAlive, and still in the queue, is resurrected and will
+    //     run.
+    //
+    // (ii) Create a fresh flag, and just drop the reference to the old one. This
+    //      avoids the above problem, and ensures that tasks poster prior to
+    //      SetNotAlive stay cancelled. Instead, there's a potential data race on
+    //      the flag pointer itself. Some synchronization is required between the
+    //      thread overwriting the flag pointer, and the threads that want to post
+    //      tasks and therefore read that same pointer.
     void SetAlive();
     bool alive() const;
 
 protected:
-    explicit PendingTaskSafetyFlag(bool alive) : alive_(alive) {}
-    PendingTaskSafetyFlag(bool alive, Nonnull<TaskQueue *> attached_queue)
-        : alive_(alive), main_sequence_(attached_queue) {}
+    explicit PendingTaskSafetyFlag(bool alive)
+        : alive_(alive)
+    {
+    }
+    PendingTaskSafetyFlag(bool alive, Nonnull<TaskQueueOld *> attached_queue)
+        : alive_(alive)
+        , main_sequence_(attached_queue)
+    {
+    }
 
 private:
     static SharedRefPtr<PendingTaskSafetyFlag> CreateInternal(bool alive);
@@ -140,15 +145,17 @@ class OCTK_CORE_API ScopedTaskSafety final
 {
 public:
     ScopedTaskSafety() = default;
-    explicit ScopedTaskSafety(SharedRefPtr<PendingTaskSafetyFlag> flag) : flag_(std::move(flag)) {}
+    explicit ScopedTaskSafety(SharedRefPtr<PendingTaskSafetyFlag> flag)
+        : flag_(std::move(flag))
+    {
+    }
     ~ScopedTaskSafety() { flag_->SetNotAlive(); }
 
-// Returns a new reference to the safety flag.
+    // Returns a new reference to the safety flag.
     SharedRefPtr<PendingTaskSafetyFlag> flag() const { return flag_; }
 
-// Marks the current flag as not-alive and attaches to a new one.
-    void reset(SharedRefPtr<PendingTaskSafetyFlag> new_flag =
-    PendingTaskSafetyFlag::Create())
+    // Marks the current flag as not-alive and attaches to a new one.
+    void reset(SharedRefPtr<PendingTaskSafetyFlag> new_flag = PendingTaskSafetyFlag::Create())
     {
         flag_->SetNotAlive();
         flag_ = std::move(new_flag);
@@ -166,19 +173,19 @@ public:
     ScopedTaskSafetyDetached() = default;
     ~ScopedTaskSafetyDetached() { flag_->SetNotAlive(); }
 
-// Returns a new reference to the safety flag.
+    // Returns a new reference to the safety flag.
     SharedRefPtr<PendingTaskSafetyFlag> flag() const { return flag_; }
 
 private:
     SharedRefPtr<PendingTaskSafetyFlag> flag_ = PendingTaskSafetyFlag::CreateDetached();
 };
 
-inline TaskQueue::Task SafeTask(SharedRefPtr<PendingTaskSafetyFlag> flag,
-                                TaskQueue::Task task)
+inline TaskQueueOld::Task SafeTask(SharedRefPtr<PendingTaskSafetyFlag> flag, TaskQueueOld::Task task)
 {
     auto moveFlag = utils::makeMoveWrapper(std::move(flag));
     auto moveTask = utils::makeMoveWrapper(std::move(task));
-    return [moveFlag, moveTask]() mutable {
+    return [moveFlag, moveTask]() mutable
+    {
         if (moveFlag.move()->alive())
         {
             moveTask.move()();

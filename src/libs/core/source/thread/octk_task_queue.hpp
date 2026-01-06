@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -22,198 +22,96 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_TASK_QUEUE_HPP
-#define _OCTK_TASK_QUEUE_HPP
+#pragma once
 
 #include <octk_source_location.hpp>
 #include <octk_time_delta.hpp>
-#include <octk_invocable.hpp>
-
-#include <functional>
+#include <octk_logging.hpp>
+#include <octk_task.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-#if 1
-
-// Asynchronously executes tasks in a way that guarantees that they're executed
-// in FIFO order and that tasks never overlap. Tasks may always execute on the
-// same worker thread and they may not. To DCHECK that tasks are executing on a
-// known task queue, use IsCurrent().
-class OCTK_ATTRIBUTE_LOCKABLE OCTK_CORE_API TaskQueue
+class OCTK_CORE_API TaskQueueBase
 {
 public:
-    using Task = Invocable<void() &&>;
-
-    enum class DelayPrecision
+    struct Deleter final
     {
-        // This may include up to a 17 ms leeway in addition to OS timer precision.
-        // See PostDelayedTask() for more information.
-        kLow,
-        // This does not have the additional delay that kLow has, but it is still
-        // limited by OS timer precision. See PostDelayedHighPrecisionTask() for
-        // more information.
-        kHigh,
+        void operator()(TaskQueueBase *taskQueue) const { taskQueue->destroy(); }
     };
+    using SharedPtr = std::shared_ptr<TaskQueueBase>;
+    using UniquePtr = std::unique_ptr<TaskQueueBase, Deleter>;
 
-// Starts destruction of the task queue.
-// On return ensures no task are running and no new tasks are able to start
-// on the task queue.
-// Responsible for deallocation. Deallocation may happen synchronously during
-// Delete or asynchronously after Delete returns.
-// Code not running on the TaskQueue should not make any assumption when
-// TaskQueue is deallocated and thus should not call any methods after Delete.
-// Code running on the TaskQueue should not call Delete, but can assume
-// TaskQueue still exists and may call other methods, e.g. PostTask.
-// Should be called on the same task queue or thread that this task queue
-// was created on.
-    virtual void Delete() = 0;
-
-// Schedules a `task` to execute. Tasks are executed in FIFO order.
-// When a TaskQueue is deleted, pending tasks will not be executed but they
-// will be deleted.
-//
-// As long as tasks are not posted from task destruction, posted tasks are
-// guaranteed to be destroyed with current() pointing to the task queue they
-// were posted to, whether they're executed or not. That means SequenceChecker
-// works during task destruction, a fact that can be used to guarantee
-// thread-compatible object deletion happening on a particular task queue
-// which can simplify class design.
-// Note that this guarantee does not apply to delayed tasks.
-//
-// May be called on any thread or task queue, including this task queue.
-    void PostTask(Task task, const SourceLocation &location = SourceLocation::current())
+    class OCTK_CORE_API CurrentSetter final
     {
-        PostTaskImpl(std::move(task), PostTaskTraits{ }, location);
-    }
-
-// Prefer PostDelayedTask() over PostDelayedHighPrecisionTask() whenever
-// possible.
-//
-// Schedules a `task` to execute a specified `delay` from when the call is
-// made, using "low" precision. All scheduling is affected by OS-specific
-// leeway and current workloads which means that in terms of precision there
-// are no hard guarantees, but in addition to the OS induced leeway, "low"
-// precision adds up to a 17 ms additional leeway. The purpose of this leeway
-// is to achieve more efficient CPU scheduling and reduce Idle Wake Up
-// frequency.
-//
-// The task may execute with [-1, 17 + OS induced leeway) ms additional delay.
-//
-// Avoid making assumptions about the precision of the OS scheduler. On macOS,
-// the OS induced leeway may be 10% of sleep interval. On Windows, 1 ms
-// precision timers may be used but there are cases, such as when running on
-// battery, when the timer precision can be as poor as 15 ms.
-//
-// "Low" precision is not implemented everywhere yet. Where not yet
-// implemented, PostDelayedTask() has "high" precision. See
-// https://crbug.com/webrtc/13583 for more information.
-//
-// May be called on any thread or task queue, including this task queue.
-    void PostDelayedTask(Task task, TimeDelta delay, const SourceLocation &location = SourceLocation::current())
-    {
-        PostDelayedTaskImpl(std::move(task), delay, PostDelayedTaskTraits{ }, location);
-    }
-
-// Prefer PostDelayedTask() over PostDelayedHighPrecisionTask() whenever
-// possible.
-//
-// Schedules a `task` to execute a specified `delay` from when the call is
-// made, using "high" precision. All scheduling is affected by OS-specific
-// leeway and current workloads which means that in terms of precision there
-// are no hard guarantees.
-//
-// The task may execute with [-1, OS induced leeway] ms additional delay.
-//
-// Avoid making assumptions about the precision of the OS scheduler. On macOS,
-// the OS induced leeway may be 10% of sleep interval. On Windows, 1 ms
-// precision timers may be used but there are cases, such as when running on
-// battery, when the timer precision can be as poor as 15 ms.
-//
-// May be called on any thread or task queue, including this task queue.
-    void PostDelayedHighPrecisionTask(Task task,
-                                      TimeDelta delay,
-                                      const SourceLocation &location = SourceLocation::current())
-    {
-        PostDelayedTaskTraits traits;
-        traits.high_precision = true;
-        PostDelayedTaskImpl(std::move(task), delay, traits, location);
-    }
-
-// As specified by `precision`, calls either PostDelayedTask() or
-// PostDelayedHighPrecisionTask().
-    void PostDelayedTaskWithPrecision(DelayPrecision precision,
-                                      Task task,
-                                      TimeDelta delay,
-                                      const SourceLocation &location = SourceLocation::current())
-    {
-        switch (precision)
-        {
-            case DelayPrecision::kLow:
-                PostDelayedTask(std::move(task), delay, location);
-                break;
-            case DelayPrecision::kHigh:
-                PostDelayedHighPrecisionTask(std::move(task), delay, location);
-                break;
-        }
-    }
-
-// Returns the task queue that is running the current thread.
-// Returns nullptr if this thread is not associated with any task queue.
-// May be called on any thread or task queue, including this task queue.
-    static TaskQueue *Current();
-    bool IsCurrent() const { return Current() == this; }
-
-protected:
-// This is currently only present here to simplify introduction of future
-// planned task queue changes.
-    struct PostTaskTraits {};
-
-    struct PostDelayedTaskTraits
-    {
-        // If `high_precision` is false, tasks may execute within up to a 17 ms
-        // leeway in addition to OS timer precision. Otherwise the task should be
-        // limited to OS timer precision. See PostDelayedTask() and
-        // PostDelayedHighPrecisionTask() for more information.
-        bool high_precision = false;
-    };
-
-    class OCTK_CORE_API CurrentTaskQueueSetter
-    {
+        TaskQueueBase *const mPrevious;
+        OCTK_DISABLE_COPY_MOVE(CurrentSetter)
     public:
-        explicit CurrentTaskQueueSetter(TaskQueue *task_queue);
-        CurrentTaskQueueSetter(const CurrentTaskQueueSetter &) = delete;
-        CurrentTaskQueueSetter &operator=(const CurrentTaskQueueSetter &) = delete;
-        ~CurrentTaskQueueSetter();
-
-    private:
-        TaskQueue *const previous_;
+        explicit CurrentSetter(TaskQueueBase *taskQueue);
+        ~CurrentSetter();
     };
 
-// Subclasses should implement this method to support the behavior defined in
-// the PostTask and PostTaskTraits docs above.
-    virtual void PostTaskImpl(Task task,
-                              const PostTaskTraits &traits,
-                              const SourceLocation &location) = 0;
+    class OCTK_CORE_API SafetyFlag final
+    {
+        std::atomic<bool> mAlive{true};
 
-// Subclasses should implement this method to support the behavior defined in
-// the PostDelayedTask/PostHighPrecisionDelayedTask and PostDelayedTaskTraits
-// docs above.
-    virtual void PostDelayedTaskImpl(Task task,
-                                     TimeDelta delay,
-                                     const PostDelayedTaskTraits &traits,
-                                     const SourceLocation &location) = 0;
+        explicit SafetyFlag(bool alive)
+            : mAlive(alive) { };
 
-// Users of the TaskQueue should call Delete instead of directly deleting
-// this object.
-    virtual ~TaskQueue() = default;
+    public:
+        using SharedPtr = std::shared_ptr<SafetyFlag>;
+
+        static SharedPtr create() { return SharedPtr(new SafetyFlag(true)); }
+        static SharedPtr createDetached()
+        {
+            return SharedPtr(new SafetyFlag(true));
+        } // TODO::impl main_sequence_.Detach();
+
+        ~SafetyFlag() { }
+
+        bool isAlive() const { return mAlive.load(std::memory_order_acquire); }
+        void setNotAlive() { mAlive.store(false, std::memory_order_release); }
+        void setAlive() { mAlive.store(true, std::memory_order_release); }
+    };
+
+    virtual ~TaskQueueBase() = default;
+
+    virtual void destroy() = 0;
+    virtual bool cancelTask(const Task *task) = 0;
+
+    void postTask(Task *task, bool autoDelete, const SourceLocation &location = SourceLocation::current())
+    {
+        this->postTask(Task::makeShared(task, autoDelete), location);
+    }
+    void postTask(UniqueFunction<void() &&> function, const SourceLocation &location = SourceLocation::current())
+    {
+        this->postTask(Task::create(std::move(function)), location);
+    }
+    virtual void postTask(const Task::SharedPtr &task, const SourceLocation &location = SourceLocation::current()) = 0;
+
+
+    void postDelayedTask(Task *task,
+                         bool autoDelete,
+                         const TimeDelta &delay,
+                         const SourceLocation &location = SourceLocation::current())
+    {
+        this->postDelayedTask(Task::makeShared(task, autoDelete), delay, location);
+    }
+    void postDelayedTask(UniqueFunction<void() &&> function,
+                         const TimeDelta &delay,
+                         const SourceLocation &location = SourceLocation::current())
+    {
+        this->postDelayedTask(Task::create(std::move(function)), delay, location);
+    }
+    virtual void postDelayedTask(const Task::SharedPtr &task,
+                                 const TimeDelta &delay,
+                                 const SourceLocation &location = SourceLocation::current()) = 0;
+
+
+    bool isCurrent() const { return this->current() == this; }
+
+    static TaskQueueBase *current();
 };
 
-struct TaskQueueDeleter
-{
-    void operator()(TaskQueue *task_queue) const { task_queue->Delete(); }
-};
-
-#endif
 OCTK_END_NAMESPACE
 
-#endif // _OCTK_TASK_QUEUE_HPP
+OCTK_DECLARE_LOGGER(OCTK_CORE_API, OCTK_TASK_QUEUE_LOGGER)

@@ -139,6 +139,14 @@ Error::Error(const StringView message, const SharedDataPtr &cause)
 {
 }
 
+Error::Error(const char *message, const SharedDataPtr &cause)
+    : mDomain(invalidDomain())
+    , mCode(kInvalidId)
+    , mMessage(message)
+    , mCause(cause)
+{
+}
+
 Error::Error(const Error &other)
     : mDomain(other.mDomain)
     , mCode(other.mCode)

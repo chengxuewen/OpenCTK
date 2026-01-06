@@ -96,7 +96,7 @@ void SimulatedThread::BlockingCallImpl(FunctionView<void()> functor,
     }
     else
     {
-        TaskQueue *yielding_from = TaskQueue::Current();
+        TaskQueueOld *yielding_from = TaskQueueOld::Current();
         handler_->StartYield(yielding_from);
         RunReady(Timestamp::MinusInfinity());
         CurrentThreadSetter set_current(this);

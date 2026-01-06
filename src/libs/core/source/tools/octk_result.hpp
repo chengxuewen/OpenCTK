@@ -27,6 +27,7 @@
 #include <octk_type_traits.hpp>
 #include <octk_optional.hpp>
 #include <octk_variant.hpp>
+#include <octk_status.hpp>
 #include <octk_error.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -375,31 +376,31 @@ public:
     }
 
     /**
-     * @brief Gets a pointer to the stored error.
+     * @brief Gets a shared pointer to the stored error.
      *
-     * @return Pointer to the stored error if present, otherwise nullptr.
+     * @return Shared pointer to the stored error if present, otherwise an empty shared pointer.
      */
-    Error *error()
+    Error::SharedDataPtr error()
     {
         if (utils::holds_alternative<Error::SharedDataPtr>(mData))
         {
-            return utils::get<Error::SharedDataPtr>(mData).data();
+            return utils::get<Error::SharedDataPtr>(mData);
         }
-        return nullptr;
+        return Error::SharedDataPtr();
     }
 
     /**
-     * @brief Gets a const pointer to the stored error.
+     * @brief Gets a shared pointer to the stored error (const version).
      *
-     * @return Const pointer to the stored error if present, otherwise nullptr.
+     * @return Shared pointer to the stored error if present, otherwise an empty shared pointer.
      */
-    const Error *error() const
+    const Error::SharedDataPtr error() const
     {
         if (utils::holds_alternative<Error::SharedDataPtr>(mData))
         {
-            return utils::get<Error::SharedDataPtr>(mData).data();
+            return utils::get<Error::SharedDataPtr>(mData);
         }
-        return nullptr;
+        return Error::SharedDataPtr();
     }
 
     /**
@@ -414,6 +415,17 @@ public:
             return err->toString();
         }
         return "";
+    }
+
+    /**
+     * @brief Converts the Result to a Status object.
+     *
+     * @return A Status object representing the Result.
+     */
+    Status status() const
+    {
+        const auto error = this->error();
+        return error.data() ? Status(error) : okStatus;
     }
 
     /**

@@ -22,66 +22,27 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_THREAD_HPP
-#define _OCTK_THREAD_HPP
-
-#include <octk_global.hpp>
-
-#include <memory>
+#include <octk_task_queue_old.hpp>
 
 OCTK_BEGIN_NAMESPACE
-
-class ThreadPrivate;
-
-class OCTK_CORE_API Thread
+namespace
 {
-public:
-#if defined(OCTK_OS_WIN)
-    using Handle = void *;
-#else
-    using Handle = pthread_t;
-#endif
+OCTK_CONST_INIT thread_local TaskQueueOld *current = nullptr;
+}  // namespace
 
-    enum class Priority
-    {
-        kLow = 1,
-        kNormal,
-        kHigh,
-        kRealtime,
-    };
+TaskQueueOld *TaskQueueOld::Current()
+{
+    return current;
+}
 
-    struct attributes
-    {
-        Priority priority = Priority::kNormal;
-        attributes &SetPriority(Priority p)
-        {
-            priority = p;
-            return *this;
-        }
-    };
+TaskQueueOld::CurrentTaskQueueSetter::CurrentTaskQueueSetter(TaskQueueOld *task_queue)
+    : previous_(current)
+{
+    current = task_queue;
+}
 
-    Thread();
-    explicit Thread(ThreadPrivate *d);
-    virtual ~Thread();
-
-//    static bool SleepMSecs(int millis);
-//    bool IsCurrent() const;
-//
-//    template <typename Function, typename... Args>
-//    void Start(Function &&f, Args &&... args);
-//
-//    static Thread *Current();
-
-    /**
-     * @brief Request rescheduling of threads.
-     */
-    static void yield();
-
-protected:
-    OCTK_DEFINE_DPTR(Thread);
-    OCTK_DECLARE_PRIVATE(Thread);
-    OCTK_DISABLE_COPY_MOVE(Thread)
-};
+TaskQueueOld::CurrentTaskQueueSetter::~CurrentTaskQueueSetter()
+{
+    current = previous_;
+}
 OCTK_END_NAMESPACE
-
-#endif  // _OCTK_THREAD_HPP

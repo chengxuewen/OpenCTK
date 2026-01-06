@@ -34,11 +34,11 @@ namespace detail
 SequenceCheckerImpl::SequenceCheckerImpl(bool attach_to_current_thread)
     : attached_(attach_to_current_thread)
     , valid_thread_(PlatformThread::currentThreadId())
-    , valid_queue_(TaskQueue::Current())
+    , valid_queue_(TaskQueueOld::Current())
 {
 }
 
-SequenceCheckerImpl::SequenceCheckerImpl(TaskQueue *attached_queue)
+SequenceCheckerImpl::SequenceCheckerImpl(TaskQueueOld *attached_queue)
     : attached_(attached_queue != nullptr)
     , valid_thread_(0)
     , valid_queue_(attached_queue)
@@ -47,7 +47,7 @@ SequenceCheckerImpl::SequenceCheckerImpl(TaskQueue *attached_queue)
 
 bool SequenceCheckerImpl::IsCurrent() const
 {
-    const TaskQueue *const current_queue = TaskQueue::Current();
+    const TaskQueueOld *const current_queue = TaskQueueOld::Current();
     const PlatformThread::Id current_thread = PlatformThread::currentThreadId();
     Mutex::UniqueLock scoped_lock(lock_);
     if (!attached_)
@@ -75,7 +75,7 @@ void SequenceCheckerImpl::Detach()
 #if OCTK_DCHECK_IS_ON
 std::string SequenceCheckerImpl::ExpectationToString() const
 {
-    const TaskQueue *const current_queue = TaskQueue::Current();
+    const TaskQueueOld *const current_queue = TaskQueueOld::Current();
     const PlatformThread::Ref current_thread = PlatformThread::currentThreadRef();
     Mutex::Locker scoped_lock(&lock_);
     if (!attached_)
@@ -88,7 +88,7 @@ std::string SequenceCheckerImpl::ExpectationToString() const
     //
     // # Expected: TQ: 0x0 SysQ: 0x7fff69541330 Thread: 0x11dcf6dc0
     // # Actual:   TQ: 0x7fa8f0604190 SysQ: 0x7fa8f0604a30 Thread: 0x700006f1a000
-    // TaskQueue doesn't match
+    // TaskQueueOld doesn't match
 
     char msgbuf[OCTK_LINE_MAX] = {0};
     std::snprintf(msgbuf,
@@ -103,7 +103,7 @@ std::string SequenceCheckerImpl::ExpectationToString() const
     message << msgbuf;
     if ((valid_queue_ || current_queue) && valid_queue_ != current_queue)
     {
-        message << "TaskQueue doesn't match\n";
+        message << "TaskQueueOld doesn't match\n";
     }
     else if (!PlatformThread::isThreadRefEqual(valid_thread_, current_thread))
     {

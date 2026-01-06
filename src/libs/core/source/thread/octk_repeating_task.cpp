@@ -28,128 +28,133 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace
+namespace detail
 {
-
-class RepeatingTask
+class RepeatingTaskClosure final
 {
 public:
-    RepeatingTask(TaskQueue *task_queue,
-                  TaskQueue::DelayPrecision precision,
-                  TimeDelta first_delay,
-                  Invocable<TimeDelta()> task,
-                  Clock *clock,
-                  SharedRefPtr<PendingTaskSafetyFlag> alive_flag,
-                  const SourceLocation &location);
-    RepeatingTask(RepeatingTask &&) = default;
-    RepeatingTask &operator=(RepeatingTask &&) = delete;
-    ~RepeatingTask() = default;
+    RepeatingTaskClosure(TaskQueueBase *taskQueue,
+                         TimeDelta firstDelay,
+                         UniqueFunction<TimeDelta()> closure,
+                         Clock *clock,
+                         const TaskQueueBase::SafetyFlag::SharedPtr &aliveFlag,
+                         const SourceLocation &location);
+    RepeatingTaskClosure(RepeatingTaskClosure &&) = default;
+    RepeatingTaskClosure &operator=(RepeatingTaskClosure &&) = delete;
+    ~RepeatingTaskClosure();
 
     void operator()() &&;
 
 private:
-    TaskQueue *const mTaskQueue;
-    const TaskQueue::DelayPrecision precision_;
-    Clock *const clock_;
-    const SourceLocation location_;
-    Invocable<TimeDelta()> task_;
+    TaskQueueBase *const mTaskQueue;
+    Clock *const mClock;
+    const SourceLocation mLocation;
+    UniqueFunction<TimeDelta()> mClosure;
     // This is always finite.
-    Timestamp next_run_time_ OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
-    SharedRefPtr<PendingTaskSafetyFlag> alive_flag_
-    OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
+    Timestamp mNextRunTime OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
+    TaskQueueBase::SafetyFlag::SharedPtr mAliveFlag OCTK_ATTRIBUTE_GUARDED_BY(mTaskQueue);
 };
 
-RepeatingTask::RepeatingTask(TaskQueue *task_queue,
-                             TaskQueue::DelayPrecision precision,
-                             TimeDelta first_delay,
-                             Invocable<TimeDelta()> task,
-                             Clock *clock,
-                             SharedRefPtr<PendingTaskSafetyFlag> alive_flag,
-                             const SourceLocation &location)
-    : mTaskQueue(task_queue), precision_(precision), clock_(clock), location_(location), task_(std::move(task))
-    , next_run_time_(clock_->CurrentTime() + first_delay), alive_flag_(std::move(alive_flag)) {}
-
-void RepeatingTask::operator()() &&
+RepeatingTaskClosure::RepeatingTaskClosure(TaskQueueBase *taskQueue,
+                                           TimeDelta firstDelay,
+                                           UniqueFunction<TimeDelta()> closure,
+                                           Clock *clock,
+                                           const TaskQueueBase::SafetyFlag::SharedPtr &aliveFlag,
+                                           const SourceLocation &location)
+    : mTaskQueue(taskQueue)
+    , mClock(clock)
+    , mLocation(location)
+    , mClosure(std::move(closure))
+    , mNextRunTime(mClock->CurrentTime() + firstDelay)
+    , mAliveFlag(aliveFlag)
 {
-    OCTK_DCHECK_RUN_ON(mTaskQueue);
-    if (!alive_flag_->alive())
+    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::RepeatingTaskClosure() ctor:%p", this);
+}
+
+RepeatingTaskClosure::~RepeatingTaskClosure()
+{
+    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::~RepeatingTaskClosure() dtor:%p", this);
+}
+
+void RepeatingTaskClosure::operator()() &&
+{
+    // OCTK_DCHECK_RUN_ON(mTaskQueue);
+    if (!mAliveFlag->isAlive())
     {
+        OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::operator() not Alive:%p", this);
         return;
     }
 
-    detail::RepeatingTaskImplDTraceProbeRun();
-    TimeDelta delay = task_();
+    // detail::RepeatingTaskImplDTraceProbeRun();
+    TimeDelta delay = mClosure();
     OCTK_DCHECK_GE(delay, TimeDelta::Zero());
 
     // A delay of +infinity means that the task should not be run again.
     // Alternatively, the closure might have stopped this task.
-    if (delay.IsPlusInfinity() || !alive_flag_->alive())
+    if (delay.IsPlusInfinity() || !mAliveFlag->isAlive())
     {
+        OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskHandle::operator() not be run again %p", this);
         return;
     }
 
-    TimeDelta lost_time = clock_->CurrentTime() - next_run_time_;
-    next_run_time_ += delay;
+    TimeDelta lost_time = mClock->CurrentTime() - mNextRunTime;
+    mNextRunTime += delay;
     delay -= lost_time;
     delay = std::max(delay, TimeDelta::Zero());
 
-    mTaskQueue->PostDelayedTaskWithPrecision(precision_, std::move(*this), delay,
-                                              location_);
+    mTaskQueue->postDelayedTask(std::move(*this), delay, mLocation);
 }
-}  // namespace
+} // namespace detail
 
-RepeatingTaskHandle RepeatingTaskHandle::Start(TaskQueue *task_queue,
-                                               Invocable<TimeDelta()> closure,
-                                               TaskQueue::DelayPrecision precision,
+RepeatingTaskHandle::~RepeatingTaskHandle()
+{
+    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskHandle::RepeatingTaskHandle() dtor:%p", this);
+}
+
+RepeatingTaskHandle RepeatingTaskHandle::start(TaskQueueBase *taskQueue,
+                                               UniqueFunction<TimeDelta()> closure,
                                                Clock *clock,
                                                const SourceLocation &location)
 {
-    auto alive_flag = PendingTaskSafetyFlag::CreateDetached();
-    detail::RepeatingTaskHandleDTraceProbeStart();
-    task_queue->PostTask(RepeatingTask(task_queue, precision, TimeDelta::Zero(),
-                                       std::move(closure), clock, alive_flag, location),
-                         location);
-    return RepeatingTaskHandle(std::move(alive_flag));
+    auto aliveFlag = TaskQueueBase::SafetyFlag::createDetached();
+    // detail::RepeatingTaskHandleDTraceProbeStart();
+    auto function = detail::RepeatingTaskClosure(taskQueue,
+                                                 TimeDelta::Zero(),
+                                                 std::move(closure),
+                                                 clock,
+                                                 aliveFlag,
+                                                 location);
+    taskQueue->postTask(std::move(function), location);
+    return RepeatingTaskHandle(std::move(aliveFlag));
 }
 
-// DelayedStart is equivalent to Start except that the first invocation of the
-// closure will be delayed by the given amount.
-RepeatingTaskHandle RepeatingTaskHandle::DelayedStart(TaskQueue *task_queue,
-                                                      TimeDelta first_delay,
-                                                      Invocable<TimeDelta()> closure,
-                                                      TaskQueue::DelayPrecision precision,
+// delayedStart is equivalent to Start except that the first invocation of the closure will be delayed
+// by the given amount.
+RepeatingTaskHandle RepeatingTaskHandle::delayedStart(TaskQueueBase *taskQueue,
+                                                      TimeDelta firstDelay,
+                                                      UniqueFunction<TimeDelta()> closure,
                                                       Clock *clock,
                                                       const SourceLocation &location)
 {
-    auto alive_flag = PendingTaskSafetyFlag::CreateDetached();
-    detail::RepeatingTaskHandleDTraceProbeDelayedStart();
-    task_queue->PostDelayedTaskWithPrecision(precision,
-                                             RepeatingTask(task_queue, precision, first_delay, std::move(closure),
-                                                           clock, alive_flag, location),
-                                             first_delay, location);
-    return RepeatingTaskHandle(std::move(alive_flag));
+    auto aliveFlag = TaskQueueBase::SafetyFlag::createDetached();
+    // detail::RepeatingTaskHandleDTraceProbeDelayedStart();
+    auto function = detail::RepeatingTaskClosure(taskQueue, firstDelay, std::move(closure), clock, aliveFlag, location);
+    taskQueue->postDelayedTask(std::move(function), firstDelay, location);
+    return RepeatingTaskHandle(std::move(aliveFlag));
 }
 
-void RepeatingTaskHandle::Stop()
+void RepeatingTaskHandle::stop()
 {
-    if (repeating_task_)
+    if (mAliveFlag)
     {
-        repeating_task_->SetNotAlive();
-        repeating_task_ = nullptr;
+        mAliveFlag->setNotAlive();
+        mAliveFlag.reset();
     }
 }
 
-bool RepeatingTaskHandle::Running() const
+bool RepeatingTaskHandle::isRunning() const
 {
-    return repeating_task_ != nullptr;
+    return mAliveFlag != nullptr;
 }
 
-namespace detail
-{
-// These methods are empty, but can be externally equipped with actions using
-// dtrace.
-void RepeatingTaskHandleDTraceProbeStart() {}
-void RepeatingTaskHandleDTraceProbeDelayedStart() {}
-void RepeatingTaskImplDTraceProbeRun() {}
-}  // namespace detail
 OCTK_END_NAMESPACE

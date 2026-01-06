@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_UTILITY_HPP
-#define _OCTK_UTILITY_HPP
+#pragma once
 
 #include <octk_type_traits.hpp>
 
@@ -34,9 +33,14 @@ namespace utils
   * like std::conjunction
 ***********************************************************************************************************************/
 // this adds const to non-const objects (like std::as_const)
-template <typename T> constexpr typename std::add_const<T>::type &asConst(T &t) noexcept { return t; }
+template <typename T>
+constexpr typename std::add_const<T>::type &asConst(T &t) noexcept
+{
+    return t;
+}
 // prevent rvalue arguments:
-template <typename T> void asConst(const T &&) = delete;
+template <typename T>
+void asConst(const T &&) = delete;
 
 /***********************************************************************************************************************
   * like cxx14 std::exchange
@@ -59,18 +63,85 @@ OCTK_CXX14_CONSTEXPR T exchange(T &t, U &&newValue) noexcept(
 ***********************************************************************************************************************/
 struct identity
 {
-    template <typename T> constexpr T &&operator()(T &&t) const noexcept { return std::forward<T>(t); }
+    template <typename T>
+    constexpr T &&operator()(T &&t) const noexcept
+    {
+        return std::forward<T>(t);
+    }
     using is_transparent = void;
 };
 
 /***********************************************************************************************************************
   * like cxx23 std::to_underlying
 ***********************************************************************************************************************/
-template <typename Enum> constexpr typename std::underlying_type<Enum>::type toUnderlying(Enum e) noexcept
+template <typename Enum>
+constexpr typename std::underlying_type<Enum>::type toUnderlying(Enum e) noexcept
 {
     return static_cast<typename std::underlying_type<Enum>::type>(e);
 }
-} // namespace utils
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_UTILITY_HPP
+/***********************************************************************************************************************
+ * @brief C++11 closures don't support move-in capture. Nor does std::bind. facepalm.
+ * http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3610.html
+ *
+ * "[...] a work-around that should make people's stomach crawl:
+ *  write a wrapper that performs move-on-copy, much like the deprecated auto_ptr"
+ *  Unlike auto_ptr, this doesn't require a heap allocation.
+***********************************************************************************************************************/
+template <typename T>
+class MoveWrapper
+{
+public:
+    /**
+     * @brief If value can be default-constructed, why not? Then we don't have to move it in
+     */
+    MoveWrapper() = default;
+    explicit MoveWrapper(T &&t)
+        : mValue(std::move(t))
+    {
+    }
+    /**
+     * @brief If you want these you're probably doing it wrong, though they'd be easy enough to implement
+     */
+    MoveWrapper &operator=(MoveWrapper const &) = delete;
+    MoveWrapper &operator=(MoveWrapper &&) = delete;
+    /// copy is move
+    MoveWrapper(const MoveWrapper &other)
+        : mValue(std::move(other.mValue))
+    {
+    }
+    /// move is also move
+    MoveWrapper(MoveWrapper &&other)
+        : mValue(std::move(other.mValue))
+    {
+    }
+
+    const T &operator*() const { return mValue; }
+    T &operator*() { return mValue; }
+
+    const T *operator->() const { return &mValue; }
+    T *operator->() { return &mValue; }
+
+    const T &ref() const { return mValue; }
+    T &ref() { return mValue; }
+
+    const T *get() const { return &mValue; }
+    T *get() { return &mValue; }
+
+    /// move the value out (sugar for std::move(*moveWrapper))
+    T &&move() { return std::move(mValue); }
+
+private:
+    mutable T mValue;
+};
+/// Make a MoveWrapper from the argument. Because the name "makeMoveWrapper"
+/// is already quite transparent in its intent, this will work for lvalues as
+/// if you had wrapped them in std::move.
+template <typename T, typename T0 = typename std::remove_reference<T>::type>
+MoveWrapper<T0> makeMoveWrapper(T &&t)
+{
+    return MoveWrapper<T0>(std::forward<T0>(t));
+}
+} // namespace utils
+
+OCTK_END_NAMESPACE

@@ -55,40 +55,16 @@ public:
 
     constexpr bool IsZero() const { return mValue == 0; }
     constexpr bool IsFinite() const { return !IsInfinite(); }
-    constexpr bool IsInfinite() const
-    {
-        return mValue == PlusInfinityVal() || mValue == MinusInfinityVal();
-    }
+    constexpr bool IsInfinite() const { return mValue == PlusInfinityVal() || mValue == MinusInfinityVal(); }
     constexpr bool IsPlusInfinity() const { return mValue == PlusInfinityVal(); }
-    constexpr bool IsMinusInfinity() const
-    {
-        return mValue == MinusInfinityVal();
-    }
+    constexpr bool IsMinusInfinity() const { return mValue == MinusInfinityVal(); }
 
-    constexpr bool operator==(const UnitBase<Unit_T> &other) const
-    {
-        return mValue == other.mValue;
-    }
-    constexpr bool operator!=(const UnitBase<Unit_T> &other) const
-    {
-        return mValue != other.mValue;
-    }
-    constexpr bool operator<=(const UnitBase<Unit_T> &other) const
-    {
-        return mValue <= other.mValue;
-    }
-    constexpr bool operator>=(const UnitBase<Unit_T> &other) const
-    {
-        return mValue >= other.mValue;
-    }
-    constexpr bool operator>(const UnitBase<Unit_T> &other) const
-    {
-        return mValue > other.mValue;
-    }
-    constexpr bool operator<(const UnitBase<Unit_T> &other) const
-    {
-        return mValue < other.mValue;
-    }
+    constexpr bool operator==(const UnitBase<Unit_T> &other) const { return mValue == other.mValue; }
+    constexpr bool operator!=(const UnitBase<Unit_T> &other) const { return mValue != other.mValue; }
+    constexpr bool operator<=(const UnitBase<Unit_T> &other) const { return mValue <= other.mValue; }
+    constexpr bool operator>=(const UnitBase<Unit_T> &other) const { return mValue >= other.mValue; }
+    constexpr bool operator>(const UnitBase<Unit_T> &other) const { return mValue > other.mValue; }
+    constexpr bool operator<(const UnitBase<Unit_T> &other) const { return mValue < other.mValue; }
     OCTK_CXX14_CONSTEXPR Unit_T RoundTo(const Unit_T &resolution) const
     {
         OCTK_DCHECK(IsFinite());
@@ -168,8 +144,9 @@ protected:
     template <typename T>
     constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type ToValue() const
     {
-        return IsPlusInfinity() ? std::numeric_limits<T>::infinity()
-                                : IsMinusInfinity() ? -std::numeric_limits<T>::infinity() : mValue;
+        return IsPlusInfinity()    ? std::numeric_limits<T>::infinity()
+               : IsMinusInfinity() ? -std::numeric_limits<T>::infinity()
+                                   : mValue;
     }
     template <typename T>
     constexpr T ToValueOr(T fallback_value) const
@@ -203,32 +180,25 @@ protected:
         return utils::dchecked_cast<T>(ToValue() * Factor);
     }
     template <int64_t Factor, typename T>
-    constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type
-    ToMultiple() const
+    constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type ToMultiple() const
     {
         return ToValue<T>() * Factor;
     }
 
-    explicit constexpr UnitBase(int64_t value) : mValue(value) {}
+    explicit constexpr UnitBase(int64_t value)
+        : mValue(value)
+    {
+    }
 
 private:
     template <class RelativeUnit_T>
     friend class RelativeUnit;
 
-    static inline constexpr int64_t PlusInfinityVal()
-    {
-        return utils::numericMax<int64_t>();
-    }
-    static inline constexpr int64_t MinusInfinityVal()
-    {
-        return utils::numericMin<int64_t>();
-    }
+    static inline constexpr int64_t PlusInfinityVal() { return utils::numericMax<int64_t>(); }
+    static inline constexpr int64_t MinusInfinityVal() { return utils::numericMin<int64_t>(); }
 
     OCTK_CXX14_CONSTEXPR Unit_T &AsSubClassRef() { return static_cast<Unit_T &>(*this); }
-    OCTK_CXX14_CONSTEXPR const Unit_T &AsSubClassRef() const
-    {
-        return static_cast<const Unit_T &>(*this);
-    }
+    OCTK_CXX14_CONSTEXPR const Unit_T &AsSubClassRef() const { return static_cast<const Unit_T &>(*this); }
 
     int64_t mValue;
 };
@@ -244,10 +214,7 @@ public:
     {
         return utils::mathMax(min_value, utils::mathMin(UnitBase<Unit_T>::AsSubClassRef(), max_value));
     }
-    OCTK_CXX14_CONSTEXPR void Clamp(Unit_T min_value, Unit_T max_value)
-    {
-        *this = Clamped(min_value, max_value);
-    }
+    OCTK_CXX14_CONSTEXPR void Clamp(Unit_T min_value, Unit_T max_value) { *this = Clamped(min_value, max_value); }
     OCTK_CXX14_CONSTEXPR Unit_T operator+(const Unit_T other) const
     {
         if (this->IsPlusInfinity() || other.IsPlusInfinity())
@@ -308,22 +275,16 @@ public:
     {
         return UnitBase<Unit_T>::FromValue(std::llround(this->ToValue() * scalar));
     }
-    constexpr Unit_T operator*(int64_t scalar) const
-    {
-        return UnitBase<Unit_T>::FromValue(this->ToValue() * scalar);
-    }
-    constexpr Unit_T operator*(int32_t scalar) const
-    {
-        return UnitBase<Unit_T>::FromValue(this->ToValue() * scalar);
-    }
-    constexpr Unit_T operator*(size_t scalar) const
-    {
-        return UnitBase<Unit_T>::FromValue(this->ToValue() * scalar);
-    }
+    constexpr Unit_T operator*(int64_t scalar) const { return UnitBase<Unit_T>::FromValue(this->ToValue() * scalar); }
+    constexpr Unit_T operator*(int32_t scalar) const { return UnitBase<Unit_T>::FromValue(this->ToValue() * scalar); }
+    constexpr Unit_T operator*(size_t scalar) const { return UnitBase<Unit_T>::FromValue(this->ToValue() * scalar); }
 
 protected:
     using UnitBase<Unit_T>::UnitBase;
-    constexpr RelativeUnit() : UnitBase<Unit_T>(0) {}
+    constexpr RelativeUnit()
+        : UnitBase<Unit_T>(0)
+    {
+    }
 };
 
 template <class Unit_T>
@@ -360,6 +321,7 @@ inline OCTK_CXX14_CONSTEXPR Unit_T operator-(RelativeUnit<Unit_T> other)
     }
     return -1 * other;
 }
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_UNIT_BASE_HPP

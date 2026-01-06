@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -22,29 +22,32 @@
 **
 ***********************************************************************************************************************/
 
-#include <private/octk_thread_p.hpp>
-#include <octk_memory.hpp>
+#pragma once
+
+#include <octk_unique_function.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-ThreadPrivate::ThreadPrivate(Thread *p)
-    : mPPtr(p)
+class Task
 {
-}
+    OCTK_DISABLE_COPY_MOVE(Task)
+public:
+    using Id = uint64_t;
+    using SharedPtr = std::shared_ptr<Task>;
 
-ThreadPrivate::~ThreadPrivate()
-{
-}
+    Task() = default;
+    virtual ~Task() = default;
 
-Thread::Thread() : Thread(new ThreadPrivate(this)) {}
-Thread::Thread(ThreadPrivate *d) : mDPtr(d) {}
+    virtual void run() = 0;
 
-Thread::~Thread()
-{
-}
+    static SharedPtr create(std::function<void()> function);
+    static SharedPtr create(UniqueFunction<void() &&> function);
+    static SharedPtr makeShared(Task *task, bool autoDelete = false);
+    template <typename T, typename... Args>
+    static SharedPtr makeShared(Args &&...args)
+    {
+        return makeShared(new T(std::forward<Args>(args)...), true);
+    }
+};
 
-void Thread::yield()
-{
-    std::this_thread::yield();
-}
 OCTK_END_NAMESPACE

@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -23,26 +23,32 @@
 ***********************************************************************************************************************/
 
 #include <octk_task_queue.hpp>
+#include <octk_timestamp.hpp>
+#include <octk_checks.hpp>
+
+OCTK_DEFINE_LOGGER_WITH_LEVEL("octk::TaskQueue", OCTK_TASK_QUEUE_LOGGER, octk::LogLevel::Warning)
 
 OCTK_BEGIN_NAMESPACE
-namespace
-{
-OCTK_CONST_INIT thread_local TaskQueue *current = nullptr;
-}  // namespace
 
-TaskQueue *TaskQueue::Current()
+namespace detail
 {
-    return current;
+static thread_local TaskQueueBase *currentTaskQueue = nullptr;
+} // namespace detail
+
+TaskQueueBase::CurrentSetter::CurrentSetter(TaskQueueBase *taskQueue)
+    : mPrevious(TaskQueueBase::current())
+{
+    detail::currentTaskQueue = taskQueue;
 }
 
-TaskQueue::CurrentTaskQueueSetter::CurrentTaskQueueSetter(TaskQueue *task_queue)
-    : previous_(current)
+TaskQueueBase::CurrentSetter::~CurrentSetter()
 {
-    current = task_queue;
+    detail::currentTaskQueue = mPrevious;
 }
 
-TaskQueue::CurrentTaskQueueSetter::~CurrentTaskQueueSetter()
+TaskQueueBase *TaskQueueBase::current()
 {
-    current = previous_;
+    return detail::currentTaskQueue;
 }
+
 OCTK_END_NAMESPACE

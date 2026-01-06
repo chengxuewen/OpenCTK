@@ -26,6 +26,7 @@
 #define _OCTK_THREAD_POOL_HPP
 
 #include <octk_singleton.hpp>
+#include <octk_task.hpp>
 
 #include <functional>
 #include <thread>
@@ -88,37 +89,6 @@ public:
         kNormal = 0,
         kHigh = +64,
         kHighest = +127
-    };
-
-    class Task
-    {
-        OCTK_DISABLE_COPY_MOVE(Task)
-        struct Deleter final
-        {
-            const bool autoDelete;
-            void operator()(Task *task) const
-            {
-                if (autoDelete)
-                {
-                    delete task;
-                }
-            }
-        };
-
-    public:
-        using SharedPtr = std::shared_ptr<Task>;
-
-        Task() = default;
-        virtual ~Task() = default;
-
-        virtual void run() = 0;
-
-        static SharedPtr create(std::function<void()> function);
-        static SharedPtr makeShared(Task *task, bool autoDelete = false);
-        template <typename T, typename... Args> static SharedPtr makeShared(Args &&...args)
-        {
-            return makeShared(new T(std::forward<Args>(args)...), true);
-        }
     };
 
     class ThreadPrivate;

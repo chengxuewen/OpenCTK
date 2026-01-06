@@ -43,8 +43,8 @@ void SimulatedTaskQueue::Delete()
 {
     // Need to destroy the tasks outside of the lock because task destruction
     // can lead to re-entry in SimulatedTaskQueue via custom destructors.
-    std::deque<TaskQueue::Task> ready_tasks;
-    std::map<Timestamp, std::vector<TaskQueue::Task>> delayed_tasks;
+    std::deque<TaskQueueOld::Task> ready_tasks;
+    std::map<Timestamp, std::vector<TaskQueueOld::Task>> delayed_tasks;
     {
         Mutex::Lock locker(lock_);
         ready_tasks_.swap(ready_tasks);
@@ -70,7 +70,7 @@ void SimulatedTaskQueue::RunReady(Timestamp at_time)
     CurrentTaskQueueSetter set_current(this);
     while (!ready_tasks_.empty())
     {
-        TaskQueue::Task ready = std::move(ready_tasks_.front());
+        TaskQueueOld::Task ready = std::move(ready_tasks_.front());
         ready_tasks_.pop_front();
         lock_.unlock();
         std::move(ready)();
@@ -87,7 +87,7 @@ void SimulatedTaskQueue::RunReady(Timestamp at_time)
     }
 }
 
-void SimulatedTaskQueue::PostTaskImpl(TaskQueue::Task task,
+void SimulatedTaskQueue::PostTaskImpl(TaskQueueOld::Task task,
                                       const PostTaskTraits & /*traits*/,
                                       const SourceLocation & /*location*/)
 {
@@ -96,7 +96,7 @@ void SimulatedTaskQueue::PostTaskImpl(TaskQueue::Task task,
     next_run_time_ = Timestamp::MinusInfinity();
 }
 
-void SimulatedTaskQueue::PostDelayedTaskImpl(TaskQueue::Task task,
+void SimulatedTaskQueue::PostDelayedTaskImpl(TaskQueueOld::Task task,
                                              TimeDelta delay,
                                              const PostDelayedTaskTraits & /*traits*/,
                                              const SourceLocation & /*location*/)

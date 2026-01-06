@@ -27,20 +27,19 @@
 OCTK_BEGIN_NAMESPACE
 
 // static
-SharedRefPtr<PendingTaskSafetyFlag>
-PendingTaskSafetyFlag::CreateInternal(bool alive)
+SharedRefPtr<PendingTaskSafetyFlag> PendingTaskSafetyFlag::CreateInternal(bool alive)
 {
     // Explicit new, to access private constructor.
     return SharedRefPtr<PendingTaskSafetyFlag>(new PendingTaskSafetyFlag(alive));
 }
 
 // static
-SharedRefPtr <PendingTaskSafetyFlag> PendingTaskSafetyFlag::Create()
+SharedRefPtr<PendingTaskSafetyFlag> PendingTaskSafetyFlag::Create()
 {
     return CreateInternal(true);
 }
 
-SharedRefPtr <PendingTaskSafetyFlag> PendingTaskSafetyFlag::CreateDetached()
+SharedRefPtr<PendingTaskSafetyFlag> PendingTaskSafetyFlag::CreateDetached()
 {
     SharedRefPtr<PendingTaskSafetyFlag> safety_flag = CreateInternal(true);
     safety_flag->main_sequence_.Detach();
@@ -49,14 +48,15 @@ SharedRefPtr <PendingTaskSafetyFlag> PendingTaskSafetyFlag::CreateDetached()
 
 // Creates a flag, but with its SequenceChecker explicitly initialized for
 // a given task queue and the `alive()` flag specified.
-SharedRefPtr <PendingTaskSafetyFlag>
-PendingTaskSafetyFlag::CreateAttachedToTaskQueue(bool alive, Nonnull<TaskQueue *> attached_queue)
+SharedRefPtr<PendingTaskSafetyFlag> PendingTaskSafetyFlag::CreateAttachedToTaskQueue(
+    bool alive,
+    Nonnull<TaskQueueOld *> attached_queue)
 {
-    OCTK_DCHECK(attached_queue) << "Null TaskQueue provided";
+    OCTK_DCHECK(attached_queue) << "Null TaskQueueOld provided";
     return SharedRefPtr<PendingTaskSafetyFlag>(new PendingTaskSafetyFlag(alive, attached_queue));
 }
 
-SharedRefPtr <PendingTaskSafetyFlag> PendingTaskSafetyFlag::CreateDetachedInactive()
+SharedRefPtr<PendingTaskSafetyFlag> PendingTaskSafetyFlag::CreateDetachedInactive()
 {
     SharedRefPtr<PendingTaskSafetyFlag> safety_flag = CreateInternal(false);
     safety_flag->main_sequence_.Detach();

@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -22,25 +22,66 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_EXPECTED_HPP
-#define _OCTK_EXPECTED_HPP
-
-#include <octk_global.hpp>
-
-#include <tl/expected.hpp>
+#include <octk_task.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-template <typename E> using Unexpected = tl::unexpected<E>;
-
-template <typename T, typename E> using Expected = tl::expected<T, E>;
-
-namespace utils
+namespace detail
 {
-using tl::make_unexpected;
-template <typename E> Unexpected<typename std::decay<E>::type> makeUnexpected(E &&e) { return tl::make_unexpected(e); }
-} // namespace utils
+struct TaskDeleter final
+{
+    const bool autoDelete;
+    void operator()(Task *task) const
+    {
+        if (autoDelete)
+        {
+            delete task;
+        }
+    }
+};
+
+class FunctionTask : public Task
+{
+    std::function<void()> mFunction;
+
+public:
+    FunctionTask(std::function<void()> &&function)
+        : mFunction(std::move(function))
+    {
+    }
+
+protected:
+    void run() override { mFunction(); }
+};
+
+class UniqueFunctionTask : public Task
+{
+    UniqueFunction<void() &&> mFunction;
+
+public:
+    UniqueFunctionTask(UniqueFunction<void() &&> function)
+        : mFunction(std::move(function))
+    {
+    }
+
+protected:
+    void run() override { std::move(mFunction)(); }
+};
+} // namespace detail
+
+Task::SharedPtr Task::create(std::function<void()> function)
+{
+    return SharedPtr(new detail::FunctionTask(std::move(function)), detail::TaskDeleter{true});
+}
+
+Task::SharedPtr Task::create(UniqueFunction<void() &&> function)
+{
+    return SharedPtr(new detail::UniqueFunctionTask(std::move(function)), detail::TaskDeleter{true});
+}
+
+Task::SharedPtr Task::makeShared(Task *task, bool autoDelete)
+{
+    return SharedPtr(task, detail::TaskDeleter{autoDelete});
+}
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_EXPECTED_HPP

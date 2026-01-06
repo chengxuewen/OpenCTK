@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -22,37 +22,57 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_THREAD_P_HPP
-#define _OCTK_THREAD_P_HPP
+#pragma once
 
-#include <octk_thread.hpp>
-#include <octk_optional.hpp>
-
-#include <thread>
+#include <octk_task_queue.hpp>
+#include <octk_logging.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class OCTK_CORE_API ThreadPrivate
+class TaskQueueThreadPrivate;
+class TaskQueueThread : public TaskQueueBase
 {
+protected:
+    struct NextTask
+    {
+        bool finalTask{false};
+        Task::SharedPtr runTask;
+        TimeDelta sleepTime{TimeDelta::PlusInfinity()};
+    };
+
+    TaskQueueThread();
+
 public:
-    using Handle = Thread::Handle;
+    static SharedPtr makeShared();
+    static UniquePtr makeUnique();
 
-    explicit ThreadPrivate(Thread *p);
-    virtual ~ThreadPrivate();
+    ~TaskQueueThread() override;
 
-    void dispatch(void);
+    void destroy() override;
+    bool cancelTask(const Task *task) override;
 
-    // std::thread mThread;
-
-    Optional<Handle> handle_;
-    bool joinable_ = false;
+    using TaskQueueBase::postTask;
+    void postTask(const Task::SharedPtr &task, const SourceLocation &location = SourceLocation::current()) override;
+    using TaskQueueBase::postDelayedTask;
+    void postDelayedTask(const Task::SharedPtr &task,
+                         const TimeDelta &delay,
+                         const SourceLocation &location = SourceLocation::current()) override;
 
 protected:
-    OCTK_DEFINE_PPTR(Thread)
-    OCTK_DECLARE_PUBLIC(Thread)
+    NextTask popNextTask();
+    void processTasks();
 
-    OCTK_DISABLE_COPY_MOVE(ThreadPrivate)
+    OCTK_DEFINE_DPTR(TaskQueueThread)
+    OCTK_DECLARE_PRIVATE(TaskQueueThread)
+    OCTK_DISABLE_COPY_MOVE(TaskQueueThread)
 };
-OCTK_END_NAMESPACE
 
-#endif  // _OCTK_THREAD_P_HPP
+
+// class TaskQueuePlatformThread : public TaskQueueBase
+// {
+// public:
+//     TaskQueuePlatformThread();
+//     ~TaskQueuePlatformThread() override = default;
+// };
+
+OCTK_END_NAMESPACE

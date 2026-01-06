@@ -61,7 +61,7 @@ SimulatedTimeControllerImpl::SimulatedTimeControllerImpl(Timestamp start_time)
 
 SimulatedTimeControllerImpl::~SimulatedTimeControllerImpl() = default;
 
-std::unique_ptr<TaskQueue, TaskQueueDeleter>
+std::unique_ptr<TaskQueueOld, TaskQueueDeleter>
 SimulatedTimeControllerImpl::CreateTaskQueue(StringView name,
                                              TaskQueueFactory::Priority priority) const
 {
@@ -85,11 +85,11 @@ void SimulatedTimeControllerImpl::YieldExecution()
 {
     if (PlatformThread::currentThreadId() == thread_id_)
     {
-        TaskQueue *yielding_from = TaskQueue::Current();
+        TaskQueueOld *yielding_from = TaskQueueOld::Current();
         // Since we might continue execution on a process thread, we should reset
         // the thread local task queue reference. This ensures that thread checkers
         // won't think we are executing on the yielding task queue. It also ensure
-        // that TaskQueue::Current() won't return the yielding task queue.
+        // that TaskQueueOld::Current() won't return the yielding task queue.
         TokenTaskQueue::CurrentTaskQueueSetter reset_queue(nullptr);
         // When we yield, we don't want to risk executing further tasks on the
         // currently executing task queue. If there's a ready task that also yields,
@@ -188,13 +188,13 @@ void SimulatedTimeControllerImpl::Unregister(SimulatedSequenceRunner *runner)
     RemoveByValue(&ready_runners_, runner);
 }
 
-void SimulatedTimeControllerImpl::StartYield(TaskQueue *yielding_from)
+void SimulatedTimeControllerImpl::StartYield(TaskQueueOld *yielding_from)
 {
     auto inserted = yielded_.insert(yielding_from);
     OCTK_DCHECK(inserted.second);
 }
 
-void SimulatedTimeControllerImpl::StopYield(TaskQueue *yielding_from)
+void SimulatedTimeControllerImpl::StopYield(TaskQueueOld *yielding_from)
 {
     yielded_.erase(yielding_from);
 }

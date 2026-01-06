@@ -25,7 +25,7 @@
 #ifndef _OCTK_TASK_QUEUE_FACTORY_HPP
 #define _OCTK_TASK_QUEUE_FACTORY_HPP
 
-#include <octk_task_queue.hpp>
+#include <octk_task_queue_old.hpp>
 #include <octk_string_view.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -33,7 +33,7 @@ OCTK_BEGIN_NAMESPACE
 class TaskQueueFactory
 {
 public:
-    // TaskQueue priority levels. On some platforms these will map to thread
+    // TaskQueueOld priority levels. On some platforms these will map to thread
     // priorities, on others such as Mac and iOS, GCD queue priorities.
     enum class Priority
     {
@@ -43,13 +43,18 @@ public:
     };
 
     virtual ~TaskQueueFactory() = default;
-    virtual std::unique_ptr<TaskQueue, TaskQueueDeleter> CreateTaskQueue(StringView name, Priority priority) const = 0;
+    virtual std::unique_ptr<TaskQueueOld, TaskQueueDeleter> CreateTaskQueue(StringView name,
+                                                                            Priority priority) const = 0;
 };
 
 namespace utils
 {
 // std::unique_ptr<TaskQueueFactory> CreateDefaultTaskQueueFactory(const FieldTrialsView* field_trials = nullptr);
-static std::unique_ptr<TaskQueueFactory> createDefaultTaskQueueFactory() { return nullptr; } //TODO:IMPL
+static std::unique_ptr<TaskQueueFactory> createDefaultTaskQueueFactory()
+{
+    return nullptr;
+} //TODO:IMPL
+// static std::unique_ptr<TaskQueueFactory> createDefaultTaskQueueFactory();
 } // namespace utils
 OCTK_END_NAMESPACE
 

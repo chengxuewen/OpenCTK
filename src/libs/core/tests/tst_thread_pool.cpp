@@ -3,7 +3,6 @@
 ** Library: OpenCTK
 **
 ** Copyright (C) 2025~Present ChengXueWen.
-** Copyright 2016 The WebRTC Project Authors.
 **
 ** License: MIT License
 **
@@ -66,14 +65,14 @@ void sleepTestFunctionMutex()
 }
 
 std::atomic<bool> ran{false}; // bool
-class TestTask : public ThreadPool::Task
+class TestTask : public Task
 {
 public:
     void run() override { ran.store(true); }
 };
 
 std::atomic<int> *value = nullptr;
-class IntAccessor : public ThreadPool::Task
+class IntAccessor : public Task
 {
 public:
     void run() override
@@ -88,7 +87,7 @@ public:
 
 Semaphore threadRecyclingSemaphore;
 std::thread::id recycledThreadId;
-class ThreadRecorderTask : public ThreadPool::Task
+class ThreadRecorderTask : public Task
 {
 public:
     void run() override
@@ -99,7 +98,7 @@ public:
 };
 
 
-class ExpiryTimeoutTask : public ThreadPool::Task
+class ExpiryTimeoutTask : public Task
 {
 public:
     ThreadPool::Thread::SharedPtr thread;
@@ -118,7 +117,7 @@ public:
 
 
 #if OCTK_HAS_EXCEPTIONS
-class ExceptionTask : public ThreadPool::Task
+class ExceptionTask : public Task
 {
 public:
     std::string exceptionWhat;
@@ -127,7 +126,7 @@ public:
 #endif // OCTK_HAS_EXCEPTIONS
 
 std::atomic<int> count;
-class CountingTask : public ThreadPool::Task
+class CountingTask : public Task
 {
 public:
     void run() { ++count; }
@@ -218,7 +217,7 @@ TEST(ThreadPoolTest, RunTask)
 {
     ThreadPool manager;
     ran.store(false);
-    manager.start(ThreadPool::Task::makeShared<TestTask>());
+    manager.start(Task::makeShared<TestTask>());
     manager.waitForDone();
     EXPECT_TRUE(ran.load());
 }
@@ -368,7 +367,7 @@ TEST(ThreadPoolTest, SetMaxThreadCount)
 
 TEST(ThreadPoolTest, SetMaxThreadCountStartsAndStopsThreads)
 {
-    class WaitingTask : public ThreadPool::Task
+    class WaitingTask : public Task
     {
     public:
         Semaphore waitForStarted, waitToFinish;
@@ -573,7 +572,7 @@ TEST(ThreadPoolTest, ReleaseThread)
 
 TEST(ThreadPoolTest, ReserveAndStart)
 {
-    class WaitingTask : public ThreadPool::Task
+    class WaitingTask : public Task
     {
     public:
         std::atomic<int> count;
@@ -648,7 +647,7 @@ TEST(ThreadPoolTest, Start)
 
 TEST(ThreadPoolTest, TryStart)
 {
-    class WaitingTask : public ThreadPool::Task
+    class WaitingTask : public Task
     {
     public:
         Semaphore semaphore;
@@ -684,7 +683,7 @@ std::atomic<int> peakActiveThreads;
 } // namespace
 TEST(ThreadPoolTest, TryStartPeakThreadCount)
 {
-    class CounterTask : public ThreadPool::Task
+    class CounterTask : public Task
     {
     public:
         CounterTask() { }
@@ -728,7 +727,7 @@ TEST(ThreadPoolTest, TryStartPeakThreadCount)
 
 TEST(ThreadPoolTest, TryStartCount)
 {
-    class SleeperTask : public ThreadPool::Task
+    class SleeperTask : public Task
     {
     public:
         std::atomic<int> doneCount{0};
@@ -768,7 +767,7 @@ TEST(ThreadPoolTest, PriorityStart)
     std::vector<int> priorities = {2};
     for (auto otherCount : priorities)
     {
-        class Holder : public ThreadPool::Task
+        class Holder : public Task
         {
         public:
             Semaphore &sem;
@@ -778,25 +777,25 @@ TEST(ThreadPoolTest, PriorityStart)
             }
             void run() { sem.acquire(); }
         };
-        class Runner : public ThreadPool::Task
+        class Runner : public Task
         {
         public:
-            std::atomic<ThreadPool::Task *> &ptr;
-            Runner(std::atomic<ThreadPool::Task *> &p)
+            std::atomic<Task *> &ptr;
+            Runner(std::atomic<Task *> &p)
                 : ptr(p)
             {
             }
             void run()
             {
                 // OCTK_DEBUG("run %p", this);
-                ThreadPool::Task *expected = nullptr;
+                Task *expected = nullptr;
                 ptr.compare_exchange_strong(expected, this);
             }
         };
 
         Semaphore sem;
-        std::atomic<ThreadPool::Task *> firstStarted;
-        ThreadPool::Task *expected{nullptr};
+        std::atomic<Task *> firstStarted;
+        Task *expected{nullptr};
         ThreadPool threadPool;
         threadPool.setMaxThreadCount(1); // start only one thread at a time
 
@@ -857,7 +856,7 @@ TEST(ThreadPoolTest, WaitForDone)
 TEST(ThreadPoolTest, WaitForDoneTimeout)
 {
     std::mutex mutex;
-    class BlockedTask : public ThreadPool::Task
+    class BlockedTask : public Task
     {
     public:
         std::mutex &mutex;
@@ -886,7 +885,7 @@ TEST(ThreadPoolTest, WaitForDoneTimeout)
 TEST(ThreadPoolTest, Clear)
 {
     Semaphore sem(0);
-    class BlockingTask : public ThreadPool::Task
+    class BlockingTask : public Task
     {
     public:
         Semaphore &sem;
@@ -920,7 +919,7 @@ TEST(ThreadPoolTest, Cancel)
     Semaphore sem(0);
     Semaphore startedThreads(0);
 
-    class BlockingTask : public ThreadPool::Task
+    class BlockingTask : public Task
     {
     public:
         Semaphore &sem;
@@ -1031,13 +1030,13 @@ TEST(ThreadPoolTest, StressTest)
     static std::atomic<int> dtorCount{0};
     static std::atomic<int> waitCount{0};
     static std::atomic<int> runCount{0};
-    class Task : public ThreadPool::Task
+    class StressTestTask : public Task
     {
         Semaphore semaphore;
 
     public:
-        Task() { ctorCount.fetch_add(1); }
-        ~Task() override { dtorCount.fetch_add(1); }
+        StressTestTask() { ctorCount.fetch_add(1); }
+        ~StressTestTask() override { dtorCount.fetch_add(1); }
 
         void start() { ThreadPool::instance().start(this, false); }
 
@@ -1085,7 +1084,7 @@ TEST(ThreadPoolTest, StressTest)
     while (total.elapsed() < 30000)
     {
         debugFlag.store(0);
-        Task t;
+        StressTestTask t;
         debugFlag.store(1);
         t.start();
         debugFlag.store(2);
@@ -1100,10 +1099,10 @@ TEST(ThreadPoolTest, StressTest)
 
 TEST(ThreadPoolTest, CancelAllAndIncreaseMaxThreadCount)
 {
-    class Task : public ThreadPool::Task
+    class CancelTask : public Task
     {
     public:
-        Task(Semaphore *mainBarrier, Semaphore *threadBarrier)
+        CancelTask(Semaphore *mainBarrier, Semaphore *threadBarrier)
             : m_mainBarrier(mainBarrier)
             , m_threadBarrier(threadBarrier)
         {
@@ -1126,9 +1125,9 @@ TEST(ThreadPoolTest, CancelAllAndIncreaseMaxThreadCount)
     ThreadPool threadPool;
     threadPool.setMaxThreadCount(1);
 
-    Task *task1 = new Task(&mainBarrier, &taskBarrier);
-    Task *task2 = new Task(&mainBarrier, &taskBarrier);
-    Task *task3 = new Task(&mainBarrier, &taskBarrier);
+    CancelTask *task1 = new CancelTask(&mainBarrier, &taskBarrier);
+    CancelTask *task2 = new CancelTask(&mainBarrier, &taskBarrier);
+    CancelTask *task3 = new CancelTask(&mainBarrier, &taskBarrier);
 
     threadPool.start(task1, false);
     threadPool.start(task2, false);
@@ -1165,7 +1164,7 @@ TEST(ThreadPoolTest, CancelAllAndIncreaseMaxThreadCount)
 namespace
 {
 typedef void (*FunctionPointer)();
-class FunctionPointerTask : public ThreadPool::Task
+class FunctionPointerTask : public Task
 {
 public:
     FunctionPointerTask(FunctionPointer function)
@@ -1177,14 +1176,14 @@ public:
 private:
     FunctionPointer function;
 };
-ThreadPool::Task *createTask(FunctionPointer pointer) { return new FunctionPointerTask(pointer); }
+Task *createTask(FunctionPointer pointer) { return new FunctionPointerTask(pointer); }
 } // namespace
 TEST(ThreadPoolTest, WaitForDoneAfterCancel)
 {
-    class Task : public ThreadPool::Task
+    class CancelTask : public Task
     {
     public:
-        Task(Semaphore *mainBarrier, Semaphore *threadBarrier)
+        CancelTask(Semaphore *mainBarrier, Semaphore *threadBarrier)
             : m_mainBarrier(mainBarrier)
             , m_threadBarrier(threadBarrier)
         {
@@ -1214,7 +1213,7 @@ TEST(ThreadPoolTest, WaitForDoneAfterCancel)
     // Fill all the threads with tasks that wait for the threadBarrier
     for (int i = 0; i < threadCount; i++)
     {
-        auto *task = new Task(&mainBarrier, &threadBarrier);
+        auto *task = new CancelTask(&mainBarrier, &threadBarrier);
         manager.start(task);
     }
 

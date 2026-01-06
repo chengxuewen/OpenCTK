@@ -33,7 +33,7 @@ std::unique_ptr<TaskQueueFactory> TimeController::CreateTaskQueueFactory()
     {
     public:
         explicit FactoryWrapper(TaskQueueFactory *inner_factory) : inner_(inner_factory) {}
-        std::unique_ptr<TaskQueue, TaskQueueDeleter> CreateTaskQueue(StringView name, Priority priority) const override
+        std::unique_ptr<TaskQueueOld, TaskQueueDeleter> CreateTaskQueue(StringView name, Priority priority) const override
         {
             return inner_->CreateTaskQueue(name, priority);
         }

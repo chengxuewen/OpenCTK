@@ -118,6 +118,7 @@ public:
 
     Error(const Domain &domain, Id code, const StringView message, const SharedDataPtr &cause = {});
     Error(const StringView message, const SharedDataPtr &cause = {});
+    Error(const char *message, const SharedDataPtr &cause = {});
     Error(const Error &other);
     virtual ~Error();
 

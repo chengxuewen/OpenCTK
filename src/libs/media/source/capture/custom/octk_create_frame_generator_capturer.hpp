@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_CREATE_FRAME_GENERATOR_CAPTURER_HPP
-#define _OCTK_CREATE_FRAME_GENERATOR_CAPTURER_HPP
+#pragma once
 
 #include <octk_frame_generator_capturer.hpp>
 #include <octk_custom_video_capturer.hpp>
@@ -33,26 +32,24 @@
 
 OCTK_BEGIN_NAMESPACE
 
-namespace frame_gen_cap_impl
-{
-template <typename T>
-class AutoOpt : public Optional<T>
-{
-public:
-    using Optional<T>::optional;
-    T *operator->()
-    {
-        if (!Optional<T>::has_value())
-        {
-            this->emplace(T());
-        }
-        return Optional<T>::operator->();
-    }
-};
-}  // namespace frame_gen_cap_impl
-
 struct FrameGeneratorCapturerConfig
 {
+    template <typename T>
+    class AutoOpt : public Optional<T>
+    {
+    public:
+        using Optional<T>::optional;
+        T *operator->()
+        {
+            if (!Optional<T>::has_value())
+            {
+                this->emplace(T());
+            }
+            return Optional<T>::operator->();
+        }
+    };
+
+public:
     struct SquaresVideo
     {
         int framerate = 30;
@@ -99,39 +96,38 @@ struct FrameGeneratorCapturerConfig
         };
     };
 
-    frame_gen_cap_impl::AutoOpt<SquaresVideo> squares_video;
-    frame_gen_cap_impl::AutoOpt<SquareSlides> squares_slides;
-    frame_gen_cap_impl::AutoOpt<VideoFile> video_file;
-    frame_gen_cap_impl::AutoOpt<ImageSlides> image_slides;
+    AutoOpt<SquareSlides> squaresSlides;
+    AutoOpt<SquaresVideo> squaresVideo;
+    AutoOpt<ImageSlides> imageSlides;
+    AutoOpt<VideoFile> videoFile;
 };
 
 namespace utils
 {
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
+OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> createFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &taskQueueFactory,
-    FrameGeneratorCapturerConfig::SquaresVideo config);
+    FrameGeneratorCapturerConfig::SquaresVideo config,
+    const TaskQueueBase::SharedPtr &taskQueue = nullptr);
 
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
+OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> createFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &taskQueueFactory,
-    FrameGeneratorCapturerConfig::SquareSlides config);
+    FrameGeneratorCapturerConfig::SquareSlides config,
+    const TaskQueueBase::SharedPtr &taskQueue = nullptr);
 
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
+OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> createFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &taskQueueFactory,
-    FrameGeneratorCapturerConfig::VideoFile config);
+    FrameGeneratorCapturerConfig::VideoFile config,
+    const TaskQueueBase::SharedPtr &taskQueue = nullptr);
 
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
+OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> createFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &taskQueueFactory,
-    FrameGeneratorCapturerConfig::ImageSlides config);
+    FrameGeneratorCapturerConfig::ImageSlides config,
+    const TaskQueueBase::SharedPtr &taskQueue = nullptr);
 
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> CreateFrameGeneratorCapturer(
+OCTK_MEDIA_API std::unique_ptr<FrameGeneratorCapturer> createFrameGeneratorCapturer(
     Clock *clock,
-    TaskQueueFactory &taskQueueFactory,
-    const FrameGeneratorCapturerConfig &config);
+    const FrameGeneratorCapturerConfig &config,
+    const TaskQueueBase::SharedPtr &taskQueue = nullptr);
 } // namespace utils
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_CREATE_FRAME_GENERATOR_CAPTURER_HPP
+OCTK_END_NAMESPACE

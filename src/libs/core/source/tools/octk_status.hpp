@@ -220,10 +220,10 @@ public:
     operator bool() const { return ok(); }
 
     /**
-     * @brief Gets the error object if the operation failed.
-     * @return A pointer to the Error object, or nullptr if successful.
+     * @brief Gets shared pointer to the stored error object if the operation failed.
+     * @return Shared pointer to the stored error if present, otherwise an empty shared pointer.
      */
-    const Error *error() const { return mError.data(); }
+    const Error::SharedDataPtr error() const { return mError; }
 
     /**
      * @brief Gets the error code directly.

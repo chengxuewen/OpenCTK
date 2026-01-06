@@ -22,26 +22,20 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_FRAME_GENERATOR_CAPTURER_HPP
-#define _OCTK_FRAME_GENERATOR_CAPTURER_HPP
+#pragma once
 
-#include <octk_video_source_interface.hpp>
 #include <octk_custom_video_capturer.hpp>
-#include <octk_task_queue_factory.hpp>
 #include <octk_video_track_source.hpp>
 #include <octk_video_broadcaster.hpp>
+#include <octk_task_queue_thread.hpp>
 #include <octk_frame_generator.hpp>
 #include <octk_repeating_task.hpp>
 #include <octk_video_adapter.hpp>
 #include <octk_video_frame.hpp>
 #include <octk_optional.hpp>
-#include <octk_memory.hpp>
 #include <octk_status.hpp>
 #include <octk_mutex.hpp>
 #include <octk_clock.hpp>
-
-#include <cstddef>
-#include <cstdint>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -61,7 +55,7 @@ public:
     FrameGeneratorCapturer(Clock *clock,
                            std::unique_ptr<FrameGeneratorInterface> frameGenerator,
                            int targetFps,
-                           TaskQueueFactory &taskQueueFactory);
+                           const TaskQueueBase::SharedPtr &taskQueue = nullptr);
     virtual ~FrameGeneratorCapturer();
 
     void start() override;
@@ -110,7 +104,7 @@ private:
     VideoRotation mFakeRotation = VideoRotation::Angle0;
     Optional<ColorSpace> mFakeColorSpace OCTK_ATTRIBUTE_GUARDED_BY(&mMutex);
 
-    std::unique_ptr<TaskQueue, TaskQueueDeleter> mTaskQueue;
+    TaskQueueBase::SharedPtr mTaskQueue;
 };
 
 /**
@@ -158,5 +152,3 @@ private:
 };
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_FRAME_GENERATOR_CAPTURER_HPP

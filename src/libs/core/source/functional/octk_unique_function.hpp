@@ -47,7 +47,8 @@ namespace detail
 } // namespace detail
 } // namespace unique_function
 
-template <typename T> using UniqueFunction = fu2::unique_function<T>;
+template <typename T>
+using UniqueFunction = fu2::unique_function<T>;
 
 /**
  * @}

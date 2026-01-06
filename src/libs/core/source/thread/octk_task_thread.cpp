@@ -24,12 +24,12 @@
 
 #include <private/octk_task_thread_p.hpp>
 #include <octk_sequence_checker.hpp>
-#include <octk_move_wrapper.hpp>
 #include <octk_scope_guard.hpp>
-#include <octk_task_queue.hpp>
+#include <octk_task_queue_old.hpp>
 #include <octk_task_event.hpp>
 #include <octk_date_time.hpp>
 #include <octk_memory.hpp>
+#include <octk_utility.hpp>
 
 #if defined(OCTK_OS_WIN)
 #    include <comdef.h>
@@ -269,7 +269,7 @@ void TaskThreadManager::SetCurrentTaskThread(TaskThread *thread)
             // The current thread is being cleared, e.g. as a result of
             // UnwrapCurrent() being called or when a thread is being stopped
             // (see PreRun()). This signals that the TaskThread instance is being detached
-            // from the thread, which also means that TaskQueue::Current() must not
+            // from the thread, which also means that TaskQueueOld::Current() must not
             // return a pointer to the TaskThread instance.
             current->ClearCurrentTaskQueue();
         }
@@ -872,7 +872,7 @@ void TaskThread::BlockingCallImpl(FunctionView<void()> functor, const SourceLoca
 // Called by the TaskThreadManager when being set as the current thread.
 void TaskThread::EnsureIsCurrentTaskQueue()
 {
-    task_queue_registration_ = utils::make_unique<TaskQueue::CurrentTaskQueueSetter>(this);
+    task_queue_registration_ = utils::make_unique<TaskQueueOld::CurrentTaskQueueSetter>(this);
 }
 
 // Called by the TaskThreadManager when being set as the current thread.

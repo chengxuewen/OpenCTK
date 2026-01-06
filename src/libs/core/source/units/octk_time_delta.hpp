@@ -22,10 +22,8 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_TIME_DELTA_HPP
-#define _OCTK_TIME_DELTA_HPP
+#pragma once
 
-#include <octk_global.hpp>
 #include <octk_unit_base.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -91,23 +89,12 @@ public:
         return ToMultiple<1000, T>();
     }
 
-    constexpr int64_t seconds_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000000>(fallback_value);
-    }
-    constexpr int64_t ms_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000>(fallback_value);
-    }
-    constexpr int64_t us_or(int64_t fallback_value) const
-    {
-        return ToValueOr(fallback_value);
-    }
+    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
+    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
+    constexpr int64_t us_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
 
-    constexpr TimeDelta Abs() const
-    {
-        return us() < 0 ? TimeDelta::Micros(-us()) : *this;
-    }
+    constexpr TimeDelta Abs() const { return us() < 0 ? TimeDelta::Micros(-us()) : *this; }
+
 
 private:
     friend class UnitBase<TimeDelta>;
@@ -123,6 +110,5 @@ void AbslStringify(Sink &sink, TimeDelta value)
 {
     sink.Append(toString(value));
 }
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_TIME_DELTA_HPP
+OCTK_END_NAMESPACE

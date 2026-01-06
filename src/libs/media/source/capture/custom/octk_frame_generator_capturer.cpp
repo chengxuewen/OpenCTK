@@ -29,17 +29,18 @@
 #include <octk_once_flag.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
 FrameGeneratorCapturer::FrameGeneratorCapturer(Clock *clock,
                                                std::unique_ptr<FrameGeneratorInterface> frameGenerator,
                                                int targetFps,
-                                               TaskQueueFactory &taskQueueFactory)
+                                               const TaskQueueBase::SharedPtr &taskQueue)
     : mClock(clock)
     , mSending(true)
     , mSinkWantsObserver(nullptr)
     , mFrameGenerator(std::move(frameGenerator))
     , mSourceFps(targetFps)
     , mTargetCaptureFps(targetFps)
-    , mTaskQueue(taskQueueFactory.CreateTaskQueue("FrameGenCapQ", TaskQueueFactory::Priority::HIGH))
+    , mTaskQueue(taskQueue ? taskQueue : TaskQueueThread::makeShared())
 {
     OCTK_DCHECK(mFrameGenerator);
     OCTK_DCHECK_GT(targetFps, 0);
@@ -48,7 +49,7 @@ FrameGeneratorCapturer::FrameGeneratorCapturer(Clock *clock,
 FrameGeneratorCapturer::~FrameGeneratorCapturer()
 {
     this->stop();
-    // Deconstruct first as tasks in the TaskQueue access other fields of the instance of this class.
+    // Deconstruct first as tasks in th access other fields of the instance of this class.
     mTaskQueue = nullptr;
 }
 
@@ -72,15 +73,14 @@ bool FrameGeneratorCapturer::init()
         return false;
     }
 
-    mFrameTask = RepeatingTaskHandle::DelayedStart(
-        mTaskQueue.get(),
-        TimeDelta::Seconds(1) / getCurrentConfiguredFramerate(),
-        [this]
-        {
-            insertFrame();
-            return TimeDelta::Seconds(1) / getCurrentConfiguredFramerate();
-        },
-        TaskQueue::DelayPrecision::kHigh);
+    mFrameTask = RepeatingTaskHandle::delayedStart(mTaskQueue.get(),
+                                                   TimeDelta::Seconds(1) / this->getCurrentConfiguredFramerate(),
+                                                   [this]
+                                                   {
+                                                       this->insertFrame();
+                                                       return TimeDelta::Seconds(1) /
+                                                              this->getCurrentConfiguredFramerate();
+                                                   });
     return true;
 }
 
@@ -120,16 +120,15 @@ void FrameGeneratorCapturer::start()
         Mutex::Lock locker(mMutex);
         mSending = true;
     }
-    if (!mFrameTask.Running())
+    if (!mFrameTask.isRunning())
     {
-        mFrameTask = RepeatingTaskHandle::Start(
-            mTaskQueue.get(),
-            [this]
-            {
-                insertFrame();
-                return TimeDelta::Seconds(1) / getCurrentConfiguredFramerate();
-            },
-            TaskQueue::DelayPrecision::kHigh);
+        mFrameTask = RepeatingTaskHandle::start(mTaskQueue.get(),
+                                                [this]
+                                                {
+                                                    this->insertFrame();
+                                                    return TimeDelta::Seconds(1) /
+                                                           this->getCurrentConfiguredFramerate();
+                                                });
     }
 }
 
@@ -163,9 +162,15 @@ void FrameGeneratorCapturer::changeFramerate(int targetFramerate)
     mTargetCaptureFps = std::min(mSourceFps, targetFramerate);
 }
 
-int FrameGeneratorCapturer::getFrameWidth() const { return static_cast<int>(mFrameGenerator->getResolution().width); }
+int FrameGeneratorCapturer::getFrameWidth() const
+{
+    return static_cast<int>(mFrameGenerator->getResolution().width);
+}
 
-int FrameGeneratorCapturer::getFrameHeight() const { return static_cast<int>(mFrameGenerator->getResolution().height); }
+int FrameGeneratorCapturer::getFrameHeight() const
+{
+    return static_cast<int>(mFrameGenerator->getResolution().height);
+}
 
 void FrameGeneratorCapturer::onOutputFormatRequest(int width, int height, const Optional<int> &max_fps)
 {
@@ -202,7 +207,7 @@ void FrameGeneratorCapturer::removeSink(VideoSinkInterface<VideoFrame> *sink)
 void FrameGeneratorCapturer::forceFrame()
 {
     // One-time non-repeating task,
-    mTaskQueue->PostTask([this] { insertFrame(); });
+    mTaskQueue->postTask([this] { this->insertFrame(); });
 }
 
 int FrameGeneratorCapturer::getCurrentConfiguredFramerate()
@@ -221,7 +226,7 @@ public:
     FrameGeneratorCapturerVideoTrackSourcePrivate(FrameGeneratorCapturerVideoTrackSource *p, bool isScreenCast);
     virtual ~FrameGeneratorCapturerVideoTrackSourcePrivate() { }
 
-    const std::unique_ptr<TaskQueueFactory> mTaskQueueFactory{utils::createDefaultTaskQueueFactory()};
+    TaskQueueBase::SharedPtr mTaskQueue{TaskQueueThread::makeShared()};
     std::unique_ptr<FrameGeneratorCapturer> mFrameGeneratorCapturer;
     std::atomic_bool mStarted{false};
     const bool mIsScreenCast;
@@ -247,7 +252,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(C
         clock,
         utils::CreateSquareFrameGenerator(config.width, config.height, utils::nullopt, config.num_squares_generated),
         config.frames_per_second,
-        *d->mTaskQueueFactory);
+        d->mTaskQueue);
 }
 
 FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
@@ -262,7 +267,7 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
     d->mFrameGeneratorCapturer = utils::make_unique<FrameGeneratorCapturer>(clock,
                                                                             std::move(frameGenerator),
                                                                             targetFps,
-                                                                            *d->mTaskQueueFactory);
+                                                                            d->mTaskQueue);
 }
 
 FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
@@ -275,7 +280,10 @@ FrameGeneratorCapturerVideoTrackSource::FrameGeneratorCapturerVideoTrackSource(
     d->mFrameGeneratorCapturer = std::move(frameGeneratorCapturer);
 }
 
-FrameGeneratorCapturerVideoTrackSource::~FrameGeneratorCapturerVideoTrackSource() { this->stop(); }
+FrameGeneratorCapturerVideoTrackSource::~FrameGeneratorCapturerVideoTrackSource()
+{
+    this->stop();
+}
 
 Status FrameGeneratorCapturerVideoTrackSource::start()
 {

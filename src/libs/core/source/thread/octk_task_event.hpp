@@ -47,7 +47,7 @@ OCTK_BEGIN_NAMESPACE
 //
 // Example of what this would catch (`ScopeToProtect` calls `Foo`):
 //
-//  void Foo(TaskQueue* tq) {
+//  void Foo(TaskQueueOld* tq) {
 //    Event event;
 //    tq->PostTask([&event]() {
 //      event.Set();
@@ -56,7 +56,7 @@ OCTK_BEGIN_NAMESPACE
 //  }
 //
 //  void ScopeToProtect() {
-//    TaskQueue* tq = GetSomeTaskQueue();
+//    TaskQueueOld* tq = GetSomeTaskQueue();
 //    OCTK_DISALLOW_WAIT();  // Policy takes effect.
 //    Foo(tq);
 //  }

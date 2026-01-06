@@ -55,8 +55,7 @@ struct ThreadPoolLocalData final
 class ThreadPoolTaskQueue
 {
 public:
-    using Id = uint64_t;
-    using Task = ThreadPool::Task;
+    using Id = Task::Id;
     using Priority = ThreadPool::Priority;
 
     struct Item
@@ -104,15 +103,6 @@ public:
     Task::SharedPtr first()
     {
         // get first item in queue
-        // while (!mTasks.empty())
-        // {
-        //     if (mTasks.begin()->canceled)
-        //     {
-        //         mTasks.erase(mTasks.begin());
-        //         continue;
-        //     }
-        //     break;
-        // }
         return mTasks.empty() ? nullptr : mTasks.begin()->task;
     }
     Task::SharedPtr pop()
@@ -166,14 +156,12 @@ public:
 
 private:
     std::atomic<Id> mIdCounter{0};
-    std::multiset<Item, Item::Compare> mTasks;
+    std::set<Item, Item::Compare> mTasks;
 };
 
 class ThreadPoolTaskThread : public ThreadPool::Thread
 {
 public:
-    using Task = ThreadPool::Task;
-
     using SharedPtr = std::shared_ptr<ThreadPoolTaskThread>;
     using WeakPtr = std::weak_ptr<ThreadPoolTaskThread>;
 
@@ -182,11 +170,7 @@ public:
         , mManager(manager)
     {
     }
-    ~ThreadPoolTaskThread() override
-    {
-        this->exitWait();
-        // OCTK_DEBUG("ThreadPoolTaskThread::~ThreadPoolTaskThread():%p", this);
-    }
+    ~ThreadPoolTaskThread() override { this->exitWait(); }
 
     void init(const StringView name, const WeakPtr &weakThis);
 
@@ -246,7 +230,6 @@ class OCTK_CORE_API ThreadPoolPrivate
     OCTK_DECLARE_PUBLIC(ThreadPool)
     OCTK_DISABLE_COPY_MOVE(ThreadPoolPrivate)
 public:
-    using Task = ThreadPool::Task;
     using Priority = ThreadPool::Priority;
 
     explicit ThreadPoolPrivate(ThreadPool *p);

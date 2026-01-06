@@ -303,14 +303,14 @@ octk_add_test(octk_core_tst_platform_thread
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
-#octk_add_test(octk_core_tst_repeating_task
-#	SOURCES
-#	tst_repeating_task.cpp
-#	INCLUDE_DIRECTORIES
-#	LIBRARIES
-#	${OCTK_TEST_LINK_LIBRARIES}
-#	OUTPUT_DIRECTORY
-#	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_repeating_task
+	SOURCES
+	tst_repeating_task.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_result
 	SOURCES
 	tst_result.cpp
@@ -439,6 +439,14 @@ octk_add_test(octk_core_tst_status
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_task_queue_thread
+	SOURCES
+	tst_task_queue_thread.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_task_thread
 #	SOURCES
 #	tst_task_thread.cpp

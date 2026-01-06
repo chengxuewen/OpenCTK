@@ -37,7 +37,8 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class SimulatedTaskQueue : public TaskQueue, public sim_time_impl::SimulatedSequenceRunner
+// TODO: move to core thread?
+class SimulatedTaskQueue : public TaskQueueOld, public sim_time_impl::SimulatedSequenceRunner
 {
 public:
     SimulatedTaskQueue(sim_time_impl::SimulatedTimeControllerImpl *handler, StringView name);
@@ -51,14 +52,12 @@ public:
         Mutex::Lock locker(lock_);
         return next_run_time_;
     }
-    TaskQueue *GetAsTaskQueue() override { return this; }
+    TaskQueueOld *GetAsTaskQueue() override { return this; }
 
-    // TaskQueue interface
+    // TaskQueueOld interface
     void Delete() override;
-    void PostTaskImpl(TaskQueue::Task task,
-                      const PostTaskTraits &traits,
-                      const SourceLocation &location) override;
-    void PostDelayedTaskImpl(TaskQueue::Task task,
+    void PostTaskImpl(TaskQueueOld::Task task, const PostTaskTraits &traits, const SourceLocation &location) override;
+    void PostDelayedTaskImpl(TaskQueueOld::Task task,
                              TimeDelta delay,
                              const PostDelayedTaskTraits &traits,
                              const SourceLocation &location) override;
@@ -70,8 +69,8 @@ private:
 
     mutable Mutex lock_;
 
-    std::deque<TaskQueue::Task> ready_tasks_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
-    std::map<Timestamp, std::vector<TaskQueue::Task>> delayed_tasks_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
+    std::deque<TaskQueueOld::Task> ready_tasks_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
+    std::map<Timestamp, std::vector<TaskQueueOld::Task>> delayed_tasks_ OCTK_ATTRIBUTE_GUARDED_BY(lock_);
 
     Timestamp next_run_time_ OCTK_ATTRIBUTE_GUARDED_BY(lock_) = Timestamp::PlusInfinity();
 };
