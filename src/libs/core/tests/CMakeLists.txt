@@ -85,6 +85,14 @@ set(OCTK_TEST_LINK_LIBRARIES octk::core OCTK3rdparty::WrapGTest OCTK3rdparty::Wr
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_concurrent
+	SOURCES
+	tst_concurrent.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_crypto_random
 #	SOURCES
 #	tst_crypto_random.cpp
@@ -197,6 +205,14 @@ octk_add_test(octk_core_tst_function_view
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(octk_core_tst_future
+#	SOURCES
+#	tst_future.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_inlined_vector
 #	SOURCES
 #	${OCTKWrapAbseil_SOURCE_DIR}/absl/container/internal/test_instance_tracker.cc

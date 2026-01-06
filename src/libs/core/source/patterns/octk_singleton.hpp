@@ -71,6 +71,7 @@ protected:
 
     T *detachScoped()
     {
+        OCTK_ASSERT(mInstance.load());
         mScoped.release();
         return mInstance.exchange(nullptr);
     }

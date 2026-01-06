@@ -107,6 +107,10 @@ octk_add_library(core
 	source/text/octk_string_utils.cpp
 	source/text/octk_string_utils.hpp
 	source/text/octk_string_view.hpp
+	source/thread/octk_concurrent.cpp
+	source/thread/octk_concurrent.hpp
+#	source/thread/octk_future.cpp
+#	source/thread/octk_future.hpp
 	source/thread/octk_mutex.hpp
 	source/thread/octk_pending_task_safety_flag.cpp
 	source/thread/octk_pending_task_safety_flag.hpp
