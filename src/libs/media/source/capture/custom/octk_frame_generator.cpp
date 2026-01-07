@@ -46,6 +46,7 @@ const char *FrameGeneratorInterface::outputTypeToString(FrameGeneratorInterface:
         case OutputType::kNV12: return "NV12";
         default: OCTK_DCHECK_NOTREACHED();
     }
+    return "";
 }
 
 SquareGenerator::SquareGenerator(int width, int height, OutputType type, int num_squares)
@@ -2291,7 +2292,7 @@ bool YuvFileGenerator::readnextFrame()
 
 FrameGeneratorInterface::Resolution YuvFileGenerator::getResolution() const
 {
-    return {.width = width_, .height = height_};
+    return {width_, height_};
 }
 
 NV12FileGenerator::NV12FileGenerator(std::vector<FILE *> files, size_t width, size_t height, int frame_repeat_count)
@@ -2341,7 +2342,7 @@ FrameGeneratorInterface::VideoFrameData NV12FileGenerator::nextFrame()
 
 FrameGeneratorInterface::Resolution NV12FileGenerator::getResolution() const
 {
-    return {.width = width_, .height = height_};
+    return {width_, height_};
 }
 
 bool NV12FileGenerator::readnextFrame()

@@ -58,6 +58,12 @@ PlatformThreadData *PlatformThreadData::current(PlatformThreadPrivate *thread)
     return thread->mData;
 }
 
+PlatformThreadData *PlatformThreadData::current(PlatformThread *thread)
+{
+    OCTK_ASSERT(nullptr != thread);
+    return PlatformThreadPrivate::get(thread)->mData;
+}
+
 PlatformThreadPrivate::PlatformThreadPrivate(PlatformThread *p, PlatformThreadData *data)
     : mPPtr(p)
     , mData(data)
@@ -68,7 +74,10 @@ PlatformThreadPrivate::PlatformThreadPrivate(PlatformThread *p, PlatformThreadDa
     }
 }
 
-PlatformThreadPrivate::~PlatformThreadPrivate() { mData->deref(); }
+PlatformThreadPrivate::~PlatformThreadPrivate()
+{
+    mData->deref();
+}
 
 PlatformThread::PlatformThread()
     : PlatformThread(new PlatformThreadPrivate(this))
@@ -174,14 +183,14 @@ Status PlatformThread::setPriority(Priority priority)
     return okStatus;
 }
 
-uint PlatformThread::stackSize() const
+uint_t PlatformThread::stackSize() const
 {
     OCTK_D(const PlatformThread);
     ThreadMutex::Lock lock(d->mMutex);
     return d->mStackSize;
 }
 
-Status PlatformThread::setStackSize(uint stackSize)
+Status PlatformThread::setStackSize(uint_t stackSize)
 {
     OCTK_D(PlatformThread);
     ThreadMutex::Lock lock(d->mMutex);
@@ -211,11 +220,11 @@ bool PlatformThread::isAdopted() const
     return d->mData->isAdopted;
 }
 
-PlatformThread::Handle PlatformThread::threadHandle() const
-{
-    OCTK_D(const PlatformThread);
-    return d->mData->threadHandle.load();
-}
+// PlatformThread::Handle PlatformThread::threadHandle() const
+// {
+//     OCTK_D(const PlatformThread);
+//     return d->mData->threadHandle.load();
+// }
 
 PlatformThread::Id PlatformThread::threadId() const
 {
@@ -255,7 +264,7 @@ Status PlatformThread::start(Priority priority)
         OCTK_WARNING("PlatformThread::start: Thread creation error");
         d->mRunning = false;
         d->mFinished = false;
-        d->mData->threadHandle.store(nullptr);
+        // d->mData->threadHandle.store(nullptr);
         return "PlatformThread::start: Thread creation error";
     }
     return okStatus;
@@ -304,15 +313,30 @@ bool PlatformThread::wait(unsigned int msecs)
     return true;
 }
 
-PlatformThread *PlatformThread::currentThread() noexcept { return PlatformThreadData::current()->thread.load(); }
+PlatformThread *PlatformThread::currentThread() noexcept
+{
+    return PlatformThreadData::current()->thread.load();
+}
 
-void PlatformThread::yield() { std::this_thread::yield(); }
+void PlatformThread::yield()
+{
+    std::this_thread::yield();
+}
 
-void PlatformThread::usleep(unsigned long usecs) { std::this_thread::sleep_for(std::chrono::microseconds(usecs)); }
+void PlatformThread::usleep(unsigned long usecs)
+{
+    std::this_thread::sleep_for(std::chrono::microseconds(usecs));
+}
 
-void PlatformThread::msleep(unsigned long msecs) { std::this_thread::sleep_for(std::chrono::milliseconds(msecs)); }
+void PlatformThread::msleep(unsigned long msecs)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(msecs));
+}
 
-void PlatformThread::sleep(unsigned long secs) { std::this_thread::sleep_for(std::chrono::seconds(secs)); }
+void PlatformThread::sleep(unsigned long secs)
+{
+    std::this_thread::sleep_for(std::chrono::seconds(secs));
+}
 
 PlatformThread::UniquePtr PlatformThread::create(std::future<void> &&future)
 {

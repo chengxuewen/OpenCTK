@@ -24,7 +24,7 @@
 
 #include <octk_task_event.hpp>
 #include <octk_optional.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 Event::Event() : Event(false, false) {}
@@ -115,3 +115,4 @@ bool Event::Wait(TimeDelta give_up_after, TimeDelta warn_after)
     return std::cv_status::no_timeout == status;
 }
 OCTK_END_NAMESPACE
+#endif

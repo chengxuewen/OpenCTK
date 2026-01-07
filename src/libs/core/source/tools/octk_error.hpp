@@ -24,11 +24,11 @@
 
 #pragma once
 
-#include <map>
 #include <octk_string_view.hpp>
 #include <octk_shared_data.hpp>
 
-#include <vector>
+#include <map>
+#include <ostream>
 
 #define OCTK_DECLARE_ERROR_DOMAIN(Export, Name) Export const octk::Error::Domain &Name();
 
@@ -60,7 +60,7 @@ public:
     public:
         using Id = Error::Id;
 
-        struct Registry
+        struct OCTK_CORE_API Registry
         {
             static Id registerDomain(const StringView type, const StringView name, const StringView description = "");
         };

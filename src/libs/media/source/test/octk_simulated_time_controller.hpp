@@ -78,9 +78,9 @@ public:
     OCTK_ATTRIBUTE_LOCKS_EXCLUDED(time_lock_, lock_) override;
 
     // Create thread using provided `socket_server`.
-    std::unique_ptr<TaskThread> CreateThread(const std::string &name,
-                                             std::unique_ptr<SocketServer> socket_server)
-    OCTK_ATTRIBUTE_LOCKS_EXCLUDED(time_lock_, lock_);
+    //std::unique_ptr<TaskThread> CreateThread(const std::string &name,
+    //                                         std::unique_ptr<SocketServer> socket_server)
+    //OCTK_ATTRIBUTE_LOCKS_EXCLUDED(time_lock_, lock_);
 
     // Runs all runners in `runners_` that has tasks or modules ready for
     // execution.

@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_LOGGING_HPP
-#define _OCTK_LOGGING_HPP
+#pragma once
 
 #include <octk_string_utils.hpp>
 
@@ -361,10 +360,12 @@ public:
 protected:
     void fatalAbort();
 
+private:
     OCTK_DEFINE_DPTR(Logger)
     OCTK_DECLARE_PRIVATE(Logger)
     OCTK_DISABLE_COPY_MOVE(Logger)
 };
+
 OCTK_END_NAMESPACE
 
 #define OCTK_STRFUNC_NAME octk::utils::extractFunctionName(OCTK_STRFUNC).c_str()
@@ -420,5 +421,3 @@ OCTK_DECLARE_LOGGER(OCTK_CORE_API, OCTK_LOGGER)
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Critical, __FILE__, OCTK_STRFUNC, __LINE__).logging
 #define OCTK_FATAL                                                                                                     \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Fatal, __FILE__, OCTK_STRFUNC, __LINE__).logging
-
-#endif // _OCTK_LOGGING_HPP

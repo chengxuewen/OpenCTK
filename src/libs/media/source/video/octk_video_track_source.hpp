@@ -67,8 +67,8 @@ protected:
     virtual VideoSourceInterface<VideoFrame> *source() = 0;
 
 private:
-    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker mWorkerThreadChecker{SequenceChecker::kDetached};
-    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker mSignalingThreadChecker;
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS ContextChecker mWorkerThreadChecker{ContextChecker::InitialState::kDetached};
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS ContextChecker mSignalingThreadChecker;
     SourceState mState OCTK_ATTRIBUTE_GUARDED_BY(&mSignalingThreadChecker);
     const bool mIsRemote;
 };

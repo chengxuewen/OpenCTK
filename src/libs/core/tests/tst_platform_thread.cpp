@@ -161,7 +161,9 @@ protected:
     }
 };
 
-void noop(void *) { }
+void noop(void *)
+{
+}
 class ThreadWrapper
 {
 public:
@@ -237,7 +239,7 @@ private:
 TEST(PlatformThreadTest, DefaultConstructedIsInvalid)
 {
     PlatformThread thread;
-    EXPECT_EQ(thread.threadHandle(), nullptr);
+    EXPECT_EQ(thread.threadId(), 0);
 }
 
 TEST(PlatformThreadTest, CurrentThreadId)

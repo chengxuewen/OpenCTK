@@ -80,28 +80,6 @@ static void finish(void *arg);
 static_assert(sizeof(pthread_t) <= sizeof(PlatformThread::Handle), "PlatformThread::Handle size error");
 OCTK_STATIC_CONSTANT_NUMBER(kThreadPriorityResetFlag, 0x80000000)
 
-/* Handle help functions */
-template <typename T>
-static typename std::enable_if<std::is_integral<T>::value, PlatformThread::Handle>::type toHandle(T ref)
-{
-    return reinterpret_cast<PlatformThread::Handle>(static_cast<intptr_t>(ref));
-}
-template <typename T>
-static typename std::enable_if<std::is_pointer<T>::value, PlatformThread::Handle>::type toHandle(T ref)
-{
-    return ref;
-}
-template <typename T>
-static typename std::enable_if<std::is_integral<T>::value, T>::type fromHandle(const PlatformThread::Handle &handle)
-{
-    return static_cast<T>(reinterpret_cast<intptr_t>(handle));
-}
-template <typename T>
-static typename std::enable_if<std::is_pointer<T>::value, T>::type fromHandle(const PlatformThread::Handle &handle)
-{
-    return static_cast<T>(handle);
-}
-
 /* tls */
 namespace tls
 {
@@ -367,7 +345,8 @@ static void *start(void *arg)
             // have a cross platform way of setting the name of an arbitrary thread.
             if (threadPrivate->mName.empty())
             {
-                setCurrentName(threadPrivate->mName.c_str());
+                //setCurrentName(threadPrivate->mName.c_str());
+                PlatformThread::setCurrentThreadName(threadPrivate->mName.c_str());
             }
         }
 #    endif
@@ -469,8 +448,6 @@ void PlatformThreadPrivate::setPriority(Priority priority)
 
 bool PlatformThreadPrivate::start(Priority priority)
 {
-    mPriority = priority;
-
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -529,6 +506,7 @@ bool PlatformThreadPrivate::start(Priority priority)
             return false;
         }
     }
+    mPriority = priority;
 
     pthread_t pthread;
     int code = pthread_create(&pthread, &attr, detail::thread::start, this);

@@ -26,10 +26,9 @@
 #define _OCTK_TIME_CONTROLLER_HPP
 
 #include <octk_task_queue_factory.hpp>
-#include <octk_task_thread.hpp>
 #include <octk_time_delta.hpp>
 #include <octk_clock.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 // Interface for controlling time progress. This allows us to execute test code
@@ -54,12 +53,12 @@ public:
     // Creates an TaskThread instance. If `socket_server` is nullptr, a default
     // noop socket server is created.
     // Returned thread is not null and started.
-    virtual std::unique_ptr<TaskThread> CreateThread(const std::string &name,
-                                                     std::unique_ptr<SocketServer> socket_server = nullptr) = 0;
+    // virtual std::unique_ptr<TaskThread> CreateThread(const std::string &name,
+    //                                                  std::unique_ptr<SocketServer> socket_server = nullptr) = 0;
 
     // Creates an TaskThread instance that ensure that it's set as the current
     // thread.
-    virtual TaskThread *GetMainThread() = 0;
+    // virtual TaskThread *GetMainThread() = 0;
     // Allow task queues and process threads created by this instance to execute
     // for the given `duration`.
     virtual void AdvanceTime(TimeDelta duration) = 0;
@@ -95,5 +94,5 @@ public:
     virtual void Sleep(TimeDelta duration) = 0;
 };
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_TIME_CONTROLLER_HPP

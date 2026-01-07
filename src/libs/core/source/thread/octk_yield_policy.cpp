@@ -23,7 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <octk_yield_policy.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 namespace detail
@@ -61,3 +61,4 @@ void ScopedYieldPolicy::YieldExecution()
     }
 }
 OCTK_END_NAMESPACE
+#endif

@@ -33,7 +33,7 @@
 OCTK_BEGIN_NAMESPACE
 
 template <std::ptrdiff_t LeastMaxValue = std::numeric_limits<std::ptrdiff_t>::max()>
-class OCTK_CORE_API CountingSemaphore
+class CountingSemaphore
 {
     // using Mutex = std::recursive_mutex;
     using Mutex = std::mutex;

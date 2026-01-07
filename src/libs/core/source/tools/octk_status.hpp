@@ -26,6 +26,8 @@
 
 #include <octk_error.hpp>
 
+#include <ostream>
+
 OCTK_BEGIN_NAMESPACE
 
 /**

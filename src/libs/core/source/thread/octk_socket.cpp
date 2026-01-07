@@ -23,7 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <octk_socket.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 NullSocketServer::NullSocketServer() = default;
 NullSocketServer::~NullSocketServer() {}
@@ -49,3 +49,4 @@ Socket *NullSocketServer::CreateSocket(int /* family */, int /* type */)
     return nullptr;
 }
 OCTK_END_NAMESPACE
+#endif

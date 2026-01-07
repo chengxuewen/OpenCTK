@@ -8,7 +8,7 @@
 #include <octk_rtc_context.hpp>
 #include <octk_ref_count.hpp>
 #include <octk_memory.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 namespace
@@ -105,7 +105,7 @@ RtcContext RtcContextFactory::CreateWithDefaults() &&
     if (task_queue_factory_ == nullptr)
     {
         // Set(utils::createDefaultTaskQueueFactory(field_trials_));
-        Set(utils::createDefaultTaskQueueFactory());
+        //Set(utils::createDefaultTaskQueueFactory());
     }
     if (event_log_ == nullptr)
     {
@@ -130,3 +130,4 @@ RtcContext RtcContextFactory::Create() const
 }
 
 OCTK_END_NAMESPACE
+#endif

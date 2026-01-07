@@ -24,22 +24,23 @@
 
 #include <octk_timestamp.hpp>
 
+#include <chrono>
 #include <string>
 #include <sstream>
 
 OCTK_BEGIN_NAMESPACE
 
-Timestamp Timestamp::nowSteadyTime()
-{
-    const auto now = std::chrono::steady_clock::now();
-    return Timestamp::Micros(std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count());
-}
-
-Timestamp Timestamp::nowSystemTime()
-{
-    const auto now = std::chrono::system_clock::now();
-    return Timestamp::Micros(std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count());
-}
+// Timestamp Timestamp::nowSteadyTime()
+// {
+//     const auto now = std::chrono::steady_clock::now();
+//     return Timestamp::Micros(std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count());
+// }
+//
+// Timestamp Timestamp::nowSystemTime()
+// {
+//     const auto now = std::chrono::system_clock::now();
+//     return Timestamp::Micros(std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count());
+// }
 
 std::string toString(Timestamp value)
 {

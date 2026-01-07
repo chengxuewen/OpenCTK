@@ -25,7 +25,7 @@
 #include <octk_sequence_checker.hpp>
 
 #include <sstream>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 namespace detail
@@ -76,8 +76,8 @@ void SequenceCheckerImpl::Detach()
 std::string SequenceCheckerImpl::ExpectationToString() const
 {
     const TaskQueueOld *const current_queue = TaskQueueOld::Current();
-    const PlatformThread::Ref current_thread = PlatformThread::currentThreadRef();
-    Mutex::Locker scoped_lock(&lock_);
+    // const PlatformThread::Ref current_thread = PlatformThread::currentThreadRef();
+    // Mutex::Locker scoped_lock(&lock_);
     if (!attached_)
     {
         return "Checker currently not attached.";
@@ -90,28 +90,29 @@ std::string SequenceCheckerImpl::ExpectationToString() const
     // # Actual:   TQ: 0x7fa8f0604190 SysQ: 0x7fa8f0604a30 Thread: 0x700006f1a000
     // TaskQueueOld doesn't match
 
-    char msgbuf[OCTK_LINE_MAX] = {0};
-    std::snprintf(msgbuf,
-                  OCTK_LINE_MAX,
-                  "# Expected: TQ: %p Thread: %p\n"
-                  "# Actual:   TQ: %p Thread: %p\n",
-                  valid_queue_,
-                  reinterpret_cast<const void *>(valid_thread_),
-                  current_queue,
-                  reinterpret_cast<const void *>(current_thread));
+    // char msgbuf[OCTK_LINE_MAX] = {0};
+    // std::snprintf(msgbuf,
+    //               OCTK_LINE_MAX,
+    //               "# Expected: TQ: %p Thread: %p\n"
+    //               "# Actual:   TQ: %p Thread: %p\n",
+    //               valid_queue_,
+    //               reinterpret_cast<const void *>(valid_thread_),
+    //               current_queue,
+    //               reinterpret_cast<const void *>(current_thread));
     std::stringstream message;
-    message << msgbuf;
-    if ((valid_queue_ || current_queue) && valid_queue_ != current_queue)
-    {
-        message << "TaskQueueOld doesn't match\n";
-    }
-    else if (!PlatformThread::isThreadRefEqual(valid_thread_, current_thread))
-    {
-        message << "Threads don't match\n";
-    }
+    // message << msgbuf;
+    // if ((valid_queue_ || current_queue) && valid_queue_ != current_queue)
+    // {
+    //     message << "TaskQueueOld doesn't match\n";
+    // }
+    // else if (!PlatformThread::isThreadRefEqual(valid_thread_, current_thread))
+    // {
+    //     message << "Threads don't match\n";
+    // }
 
     return message.str();
 }
 #endif // OCTK_DCHECK_IS_ON
 } // namespace detail
 OCTK_END_NAMESPACE
+#endif

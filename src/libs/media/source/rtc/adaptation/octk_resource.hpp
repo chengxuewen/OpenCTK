@@ -15,6 +15,8 @@
 #include <octk_media_global.hpp>
 #include <octk_ref_count.hpp>
 
+#include <string>
+
 OCTK_BEGIN_NAMESPACE
 
 class Resource;

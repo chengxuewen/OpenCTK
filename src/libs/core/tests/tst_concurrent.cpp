@@ -3,7 +3,6 @@
 ** Library: OpenCTK
 **
 ** Copyright (C) 2025~Present ChengXueWen.
-** Copyright 2016 The WebRTC Project Authors.
 **
 ** License: MIT License
 **

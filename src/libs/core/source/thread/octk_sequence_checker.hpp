@@ -31,6 +31,7 @@
 #include <octk_checks.hpp>
 #include <octk_mutex.hpp>
 
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 namespace detail
@@ -228,5 +229,6 @@ public:
     OCTK_DCHECK((x)->IsCurrent()) << octk::detail::ExpectationToString(x);                                             \
     []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) { }()
 OCTK_END_NAMESPACE
+#endif
 
 #endif // _OCTK_SEQUENCE_CHECKER_HPP

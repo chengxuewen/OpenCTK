@@ -23,7 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <octk_pending_task_safety_flag.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 // static
@@ -82,3 +82,4 @@ bool PendingTaskSafetyFlag::alive() const
 }
 
 OCTK_END_NAMESPACE
+#endif

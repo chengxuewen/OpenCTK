@@ -22,14 +22,38 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_PLATFORM_THREAD_P_HPP
-#define _OCTK_PLATFORM_THREAD_P_HPP
+#pragma once
 
 #include <octk_reference_counter.hpp>
 #include <octk_platform_thread.hpp>
 #include <octk_logging.hpp>
 
 OCTK_BEGIN_NAMESPACE
+//
+// namespace detail
+// {
+// /* Handle help functions */
+// template <typename T>
+// static typename std::enable_if<std::is_integral<T>::value, PlatformThread::Handle>::type toHandle(T ref)
+// {
+//     return reinterpret_cast<PlatformThread::Handle>(static_cast<intptr_t>(ref));
+// }
+// template <typename T>
+// static typename std::enable_if<std::is_pointer<T>::value, PlatformThread::Handle>::type toHandle(T ref)
+// {
+//     return ref;
+// }
+// template <typename T>
+// static typename std::enable_if<std::is_integral<T>::value, T>::type fromHandle(const PlatformThread::Handle &handle)
+// {
+//     return static_cast<T>(reinterpret_cast<intptr_t>(handle));
+// }
+// template <typename T>
+// static typename std::enable_if<std::is_pointer<T>::value, T>::type fromHandle(const PlatformThread::Handle &handle)
+// {
+//     return static_cast<T>(handle);
+// }
+// } // namespace detail
 
 class PlatformThreadData
 {
@@ -55,7 +79,8 @@ public:
 
     static PlatformThreadData *current(PlatformThreadPrivate *thread);
     static PlatformThreadData *current(bool createIfNecessary = true); // impl
-    static void clearCurrent();                                        // impl
+    static PlatformThreadData *current(PlatformThread *thread);
+    static void clearCurrent(); // impl
 
     void ref()
     {
@@ -82,11 +107,9 @@ public:
     int loopLevel{0};
     int scopeLevel{0};
 
-
     std::vector<void *> tls;
-    std::atomic<PlatformThread *> thread{nullptr};
     std::atomic<PlatformThread::Id> threadId{0};
-    std::atomic<PlatformThread::Handle> threadHandle{nullptr};
+    std::atomic<PlatformThread *> thread{nullptr};
 };
 
 class OCTK_CORE_API PlatformThreadPrivate
@@ -94,11 +117,11 @@ class OCTK_CORE_API PlatformThreadPrivate
 public:
     using ThreadMutex = PlatformThread::ThreadMutex;
     using Priority = PlatformThread::Priority;
-    using Handle = PlatformThread::Handle;
 
     PlatformThreadPrivate(PlatformThread *p, PlatformThreadData *data = nullptr);
     virtual ~PlatformThreadPrivate();
 
+    static void setTerminationEnabled(bool enabled = true) { PlatformThread::setTerminationEnabled(enabled); }
     static PlatformThreadPrivate *get(PlatformThread *p) { return p->dFunc(); }
     static PlatformThread *get(PlatformThreadPrivate *d) { return d->pFunc(); }
 
@@ -121,13 +144,16 @@ public:
     std::atomic<bool> mInterruptionRequested{false};
 
     std::string mName;
-    uint mStackSize{0};
+    uint_t mStackSize{0};
+    bool mTerminatePending{false};
+    bool mTerminationEnabled{false};
+    PlatformThreadData *mData{nullptr};
     Priority mPriority{Priority::kInherit};
 
-    PlatformThreadData *mData{nullptr};
-#if defined(OCTK_OS_WIN)
+#ifdef OCTK_OS_WIN
+    HANDLE mThreadHandle{nullptr};
 #else
-    pthread_t mThread{};
+    pthread_t mThreadHandle{0};
 #endif
 
 protected:
@@ -161,5 +187,3 @@ protected:
 };
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_PLATFORM_THREAD_P_HPP

@@ -125,12 +125,12 @@ octk_add_library(media
 	source/rtp/octk_rtp_transceiver_interface.hpp
 	source/rtp/octk_rtp_video_header.cpp
 	source/rtp/octk_rtp_video_header.hpp
-	source/test/octk_simulated_task_queue.cpp
-	source/test/octk_simulated_task_queue.hpp
-	source/test/octk_simulated_thread.cpp
-	source/test/octk_simulated_thread.hpp
-	source/test/octk_simulated_time_controller.cpp
-	source/test/octk_simulated_time_controller.hpp
+#	source/test/octk_simulated_task_queue.cpp
+#	source/test/octk_simulated_task_queue.hpp
+#	source/test/octk_simulated_thread.cpp
+#	source/test/octk_simulated_thread.hpp
+#	source/test/octk_simulated_time_controller.cpp
+#	source/test/octk_simulated_time_controller.hpp
 	source/video/octk_color_space.cpp
 	source/video/octk_color_space.hpp
 	source/video/octk_encoded_frame.cpp

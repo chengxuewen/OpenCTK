@@ -23,7 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <octk_task_queue_old.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 namespace
 {
@@ -46,3 +46,4 @@ TaskQueueOld::CurrentTaskQueueSetter::~CurrentTaskQueueSetter()
     current = previous_;
 }
 OCTK_END_NAMESPACE
+#endif

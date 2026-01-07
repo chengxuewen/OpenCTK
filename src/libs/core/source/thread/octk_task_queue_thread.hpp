@@ -30,7 +30,7 @@
 OCTK_BEGIN_NAMESPACE
 
 class TaskQueueThreadPrivate;
-class TaskQueueThread : public TaskQueueBase
+class OCTK_CORE_API TaskQueueThread : public TaskQueueBase
 {
 protected:
     struct NextTask

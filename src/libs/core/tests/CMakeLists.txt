@@ -93,6 +93,14 @@ octk_add_test(octk_core_tst_concurrent
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_context_checker
+	SOURCES
+	tst_context_checker.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_crypto_random
 #	SOURCES
 #	tst_crypto_random.cpp
@@ -343,14 +351,6 @@ octk_add_test(octk_core_tst_semaphore
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-#octk_add_test(octk_core_tst_sequence_checker
-#	SOURCES
-#	tst_sequence_checker.cpp
-#	INCLUDE_DIRECTORIES
-#	LIBRARIES
-#	${OCTK_TEST_LINK_LIBRARIES}
-#	OUTPUT_DIRECTORY
-#	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_shared_buffer
 #	SOURCES
 #	tst_shared_buffer.cpp

@@ -35,13 +35,13 @@ OCTK_BEGIN_NAMESPACE
 // The epoch is assumed to be before any represented timestamps, this means that
 // negative values are not valid. The most notable feature is that the
 // difference of two Timestamps results in a TimeDelta.
-class OCTK_CORE_API Timestamp final : public UnitBase<Timestamp>
+class Timestamp final : public UnitBase<Timestamp>
 {
 public:
-    static Timestamp nowSteadyTime();
-    static Timestamp nowSystemTime();
-    static Timestamp untilSteadyTime(const TimeDelta delta) { return nowSteadyTime() + delta; }
-    static Timestamp untilSystemTime(const TimeDelta delta) { return nowSystemTime() + delta; }
+    // static Timestamp nowSteadyTime();
+    // static Timestamp nowSystemTime();
+    // static Timestamp untilSteadyTime(const TimeDelta delta) { return nowSteadyTime() + delta; }
+    // static Timestamp untilSystemTime(const TimeDelta delta) { return nowSystemTime() + delta; }
 
     template <typename T>
     static OCTK_CXX14_CONSTEXPR Timestamp Seconds(T value)

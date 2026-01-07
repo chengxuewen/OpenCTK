@@ -37,6 +37,7 @@ const char *DegradationPreferenceToString(DegradationPreference degradation_pref
         case DegradationPreference::BALANCED: return "balanced";
     }
     OCTK_CHECK_NOTREACHED();
+    return "";
 }
 
 const double kDefaultBitratePriority = 1.0;

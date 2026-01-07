@@ -31,7 +31,7 @@
 #include <octk_task_queue_old.hpp>
 #include <octk_ref_count.hpp>
 #include <octk_utility.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 // The PendingTaskSafetyFlag and the ScopedTaskSafety are designed to address
@@ -193,5 +193,5 @@ inline TaskQueueOld::Task SafeTask(SharedRefPtr<PendingTaskSafetyFlag> flag, Tas
     };
 }
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_PENDING_TASK_SAFETY_FLAG_HPP

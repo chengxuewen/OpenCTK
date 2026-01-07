@@ -23,7 +23,6 @@
 ***********************************************************************************************************************/
 
 #include <octk_fake_clock.hpp>
-#include <octk_task_thread.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -51,13 +50,13 @@ void ThreadProcessingFakeClock::SetTime(Timestamp time)
     clock_.SetTime(time);
     // If message queues are waiting in a socket select() with a timeout provided
     // by the OS, they should wake up and dispatch all messages that are ready.
-    TaskThreadManager::ProcessAllMessageQueuesForTesting();
+    // TaskThreadManager::ProcessAllMessageQueuesForTesting(); //TODO
 }
 
 void ThreadProcessingFakeClock::AdvanceTime(TimeDelta delta)
 {
     clock_.AdvanceTime(delta);
-    TaskThreadManager::ProcessAllMessageQueuesForTesting();
+    // TaskThreadManager::ProcessAllMessageQueuesForTesting(); //TODO
 }
 
 ScopedBaseFakeClock::ScopedBaseFakeClock()

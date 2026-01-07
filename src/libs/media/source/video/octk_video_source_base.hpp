@@ -27,7 +27,7 @@
 
 #include <octk_video_source_interface.hpp>
 #include <octk_video_sink_interface.hpp>
-#include <octk_sequence_checker.hpp>
+#include <octk_context_checker.hpp>
 #include <octk_video_frame.hpp>
 
 #include <vector>
@@ -95,7 +95,7 @@ protected:
 
     // Keep the `mSourceSequence` checker protected to allow sub classes the
     // ability to call Detach() if/when appropriate.
-    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker mSourceSequence;
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS ContextChecker mSourceSequence;
 
 private:
     std::vector<SinkPair> mSinks OCTK_ATTRIBUTE_GUARDED_BY(&mSourceSequence);

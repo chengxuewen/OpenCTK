@@ -10,7 +10,6 @@
 
 #include <octk_task_event.hpp>
 #include <octk_time_delta.hpp>
-#include <octk_thread.hpp>
 #include <octk_memory.hpp>
 #include <octk_mutex.hpp>
 
@@ -27,6 +26,7 @@
 #include <thread>
 #include <vector>
 
+#if 0
 using namespace octk;
 
 namespace
@@ -100,7 +100,7 @@ public:
     bool Run()
     {
         // Signal all threads to start.
-        mStartEvent.Set();
+       // mStartEvent.Set();
 
         // Wait for all threads to finish.
         return mDoneEvent.Wait(kLongTime());
@@ -147,8 +147,8 @@ private:
     static constexpr int kOperationsToRun = 1000;
 
     std::atomic<int> mThreadsActive;
-    Event mStartEvent;
-    Event mDoneEvent;
+    //Event mStartEvent;
+    //Event mDoneEvent;
     int mSharedValue;
     MutexType mMutex;
     Mutexlocker mlocker;
@@ -205,3 +205,4 @@ TEST(MutexTest, ProtectsSharedResourceWithMutexAndMutexlocker)
     }
 }
 } // namespace
+#endif

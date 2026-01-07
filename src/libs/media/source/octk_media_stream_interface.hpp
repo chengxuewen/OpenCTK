@@ -30,7 +30,7 @@
 
 #include <octk_recordable_encoded_frame.hpp>
 #include <octk_video_source_interface.hpp>
-#include <octk_sequence_checker.hpp>
+#include <octk_context_checker.hpp>
 #include <octk_video_frame.hpp>
 #include <octk_optional.hpp>
 #include <octk_assert.hpp>
@@ -69,14 +69,14 @@ public:
 
     virtual void registerObserver(ObserverInterface *observer)
     {
-        OCTK_DCHECK_RUN_ON(&sequence_checker_);
+        OCTK_DCHECK_RUN_ON(&mContextChecker);
         OCTK_DCHECK(observer != nullptr);
         observers_.push_back(observer);
     }
 
     virtual void unregisterObserver(ObserverInterface *observer)
     {
-        OCTK_DCHECK_RUN_ON(&sequence_checker_);
+        OCTK_DCHECK_RUN_ON(&mContextChecker);
         for (std::list<ObserverInterface *>::iterator it = observers_.begin(); it != observers_.end(); it++)
         {
             if (*it == observer)
@@ -89,7 +89,7 @@ public:
 
     void fireOnChanged()
     {
-        OCTK_DCHECK_RUN_ON(&sequence_checker_);
+        OCTK_DCHECK_RUN_ON(&mContextChecker);
         // Copy the list of observers to avoid a crash if the observer object
         // unregisters as a result of the OnChanged() call. If the same list is used
         // UnregisterObserver will affect the list make the iterator invalid.
@@ -101,10 +101,10 @@ public:
     }
 
 protected:
-    std::list<ObserverInterface *> observers_ OCTK_ATTRIBUTE_GUARDED_BY(sequence_checker_);
+    std::list<ObserverInterface *> observers_ OCTK_ATTRIBUTE_GUARDED_BY(mContextChecker);
 
 private:
-    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS SequenceChecker sequence_checker_{SequenceChecker::kDetached};
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS ContextChecker mContextChecker{ContextChecker::InitialState::kDetached};
 };
 
 // Base class for sources. A MediaStreamTrack has an underlying source that

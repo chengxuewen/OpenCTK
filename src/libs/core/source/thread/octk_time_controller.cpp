@@ -24,7 +24,7 @@
 
 #include <octk_time_controller.hpp>
 #include <octk_memory.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 std::unique_ptr<TaskQueueFactory> TimeController::CreateTaskQueueFactory()
@@ -60,3 +60,4 @@ bool TimeController::Wait(const std::function<bool()> &condition, TimeDelta max_
     return condition();
 }
 OCTK_END_NAMESPACE
+#endif

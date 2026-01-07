@@ -28,7 +28,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class Task
+class OCTK_CORE_API Task
 {
     OCTK_DISABLE_COPY_MOVE(Task)
 public:

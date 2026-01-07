@@ -49,7 +49,6 @@ find_package(Threads REQUIRED)
 list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 octk_find_package(WrapJson PROVIDED_TARGETS OCTK3rdparty::WrapJson)
-octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
 octk_find_package(WrapSpdlog PROVIDED_TARGETS OCTK3rdparty::WrapSpdlog)
 octk_find_package(WrapVariant PROVIDED_TARGETS OCTK3rdparty::WrapVariant)
 octk_find_package(WrapExpected PROVIDED_TARGETS OCTK3rdparty::WrapExpected)
@@ -109,6 +108,8 @@ octk_add_library(core
 	source/text/octk_string_view.hpp
 	source/thread/octk_concurrent.cpp
 	source/thread/octk_concurrent.hpp
+	source/thread/octk_context_checker.cpp
+	source/thread/octk_context_checker.hpp
 #	source/thread/octk_future.cpp
 #	source/thread/octk_future.hpp
 	source/thread/octk_mutex.hpp
@@ -137,12 +138,8 @@ octk_add_library(core
 	source/thread/octk_task_queue_old.hpp
 	source/thread/octk_task_queue_factory.cpp
 	source/thread/octk_task_queue_factory.hpp
-#	source/thread/octk_task_queue_stdlib.cpp
 	source/thread/octk_task_queue_thread.cpp
 	source/thread/octk_task_queue_thread.hpp
-	source/thread/octk_task_thread.cpp
-	source/thread/octk_task_thread.hpp
-	source/thread/octk_task_thread_p.hpp
 	source/thread/octk_thread_pool.cpp
 	source/thread/octk_thread_pool.hpp
 	source/thread/octk_thread_pool_p.hpp
@@ -215,7 +212,6 @@ octk_add_library(core
 	source/octk_pch.hpp
 	EXTERNAL_HEADERS_DIRS
 	${OCTKWrapJson_INSTALL_DIR}/include
-#	${OCTKWrapAbseil_INSTALL_DIR}/include
 	${OCTKWrapVariant_INSTALL_DIR}/include
 	${OCTKWrapOptional_INSTALL_DIR}/include
 	${OCTKWrapExpected_INSTALL_DIR}/include
@@ -225,7 +221,6 @@ octk_add_library(core
     OCTK3rdparty::WrapSpdlog
 	PUBLIC_LIBRARIES
     OCTK3rdparty::WrapJson
-#    OCTK3rdparty::WrapAbseil
 	OCTK3rdparty::WrapFunction2
 	OCTK3rdparty::WrapVariant
 	OCTK3rdparty::WrapExpected
@@ -245,7 +240,6 @@ octk_internal_extend_target(octk_core
 	CONDITION NOT OCTK_SYSTEM_WIN)
 octk_internal_extend_target(octk_core
 	SOURCES
-	source/thread/octk_task_thread.mm
 	source/tools/octk_file_utils.mm
 	CONDITION OCTK_SYSTEM_MAC)
 

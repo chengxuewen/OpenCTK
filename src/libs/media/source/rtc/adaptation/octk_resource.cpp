@@ -15,6 +15,7 @@ const char *ResourceUsageStateToString(ResourceUsageState usage_state)
         case ResourceUsageState::kUnderuse: return "kUnderuse";
     }
     OCTK_CHECK_NOTREACHED();
+    return "";
 }
 
 ResourceListener::~ResourceListener() { }

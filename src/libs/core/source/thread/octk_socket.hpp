@@ -26,7 +26,7 @@
 #define _OCTK_SOCKET_HPP
 
 #include <octk_task_event.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 // General interface for the socket implementations of various networks.  The
@@ -188,5 +188,5 @@ private:
     Event event_;
 };
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_SOCKET_HPP

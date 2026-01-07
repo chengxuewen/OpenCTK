@@ -35,24 +35,6 @@ OCTK_BEGIN_NAMESPACE
 
 namespace detail
 {
-// class ThreadPoolFunctionTask : public ThreadPool::Task
-// {
-//     std::function<void()> mFunction;
-//
-// public:
-//     ThreadPoolFunctionTask(std::function<void()> &&function)
-//         : mFunction(std::move(function))
-//     {
-//     }
-//
-// protected:
-//     void run() override
-//     {
-//         OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolFunctionTask::run()");
-//         mFunction();
-//     }
-// };
-
 namespace tls
 {
 static thread_local ThreadPoolLocalData currentThreadData;
@@ -61,11 +43,11 @@ static thread_local ThreadPoolLocalData currentThreadData;
 
 ThreadPoolLocalData::ThreadPoolLocalData()
 {
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolLocalData::ThreadPoolLocalData");
+    // OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolLocalData::ThreadPoolLocalData");
 }
 ThreadPoolLocalData::~ThreadPoolLocalData()
 {
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolLocalData::~ThreadPoolLocalData:start");
+    // OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolLocalData::~ThreadPoolLocalData:start");
     if (thread.get())
     {
         std::lock_guard<std::mutex> lock(thread->dFunc()->mMutex);
@@ -74,7 +56,7 @@ ThreadPoolLocalData::~ThreadPoolLocalData()
         thread->dFunc()->mRunning.store(false);
         thread.reset();
     }
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolLocalData::~ThreadPoolLocalData:stop");
+    // OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPoolLocalData::~ThreadPoolLocalData:stop");
 }
 ThreadPoolLocalData *ThreadPoolLocalData::current()
 {

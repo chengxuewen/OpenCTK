@@ -92,7 +92,7 @@ public:
     };
 
     class ThreadPrivate;
-    class Thread
+    class OCTK_CORE_API Thread
     {
         friend class ThreadPoolLocalData;
         friend class ThreadPoolTaskThread;

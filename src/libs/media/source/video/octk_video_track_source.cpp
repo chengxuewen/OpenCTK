@@ -45,13 +45,13 @@ void VideoTrackSource::setState(SourceState newState)
 
 void VideoTrackSource::addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants)
 {
-    OCTK_DCHECK(mWorkerThreadChecker.IsCurrent());
+    OCTK_DCHECK(mWorkerThreadChecker.isCurrent());
     source()->addOrUpdateSink(sink, wants);
 }
 
 void VideoTrackSource::removeSink(VideoSinkInterface<VideoFrame> *sink)
 {
-    OCTK_DCHECK(mWorkerThreadChecker.IsCurrent());
+    OCTK_DCHECK(mWorkerThreadChecker.isCurrent());
     source()->removeSink(sink);
 }
 

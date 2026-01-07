@@ -29,9 +29,9 @@
 #include <octk_core_config.hpp>
 
 #if OCTK_BUILD_CXX_STANDARD_17
-#   define nssv_CONFIG_SELECT_STRING_VIEW 0
+#    define nssv_CONFIG_SELECT_STRING_VIEW 0
 #else
-#   define nssv_CONFIG_SELECT_STRING_VIEW 1
+#    define nssv_CONFIG_SELECT_STRING_VIEW 1
 #endif
 #include <nonstd/string_view.hpp>
 
@@ -41,15 +41,28 @@ using StringView = nonstd::string_view;
 using WStringView = nonstd::wstring_view;
 using U16StringView = nonstd::u16string_view;
 using U32StringView = nonstd::u32string_view;
-template <typename CharT, typename Traits> using BaseStringView = nonstd::basic_string_view<CharT, Traits>;
+template <typename CharT, typename Traits>
+using BaseStringView = nonstd::basic_string_view<CharT, Traits>;
 
 using nonstd::to_string;
 using nonstd::to_string_view;
 
-constexpr bool operator<(StringView lhs, StringView rhs) noexcept { return lhs.compare(rhs) < 0; }
-constexpr bool operator>(StringView lhs, StringView rhs) noexcept { return rhs < lhs; }
-constexpr bool operator<=(StringView lhs, StringView rhs) noexcept { return !(rhs < lhs); }
-constexpr bool operator>=(StringView lhs, StringView rhs) noexcept { return !(lhs < rhs); }
+constexpr bool operator<(StringView lhs, StringView rhs) noexcept
+{
+    return lhs.compare(rhs) < 0;
+}
+constexpr bool operator>(StringView lhs, StringView rhs) noexcept
+{
+    return rhs < lhs;
+}
+constexpr bool operator<=(StringView lhs, StringView rhs) noexcept
+{
+    return !(rhs < lhs);
+}
+constexpr bool operator>=(StringView lhs, StringView rhs) noexcept
+{
+    return !(lhs < rhs);
+}
 
 struct StringViewCmp
 {

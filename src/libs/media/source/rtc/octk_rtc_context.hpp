@@ -17,7 +17,7 @@
 #include <octk_nullability.hpp>
 #include <octk_ref_count.hpp>
 #include <octk_clock.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 // These classes are forward declared to keep RtcContext dependencies
@@ -25,7 +25,7 @@ OCTK_BEGIN_NAMESPACE
 // header explicitely.
 class Clock;
 class RtcEventLog;
-class TaskQueueFactory;
+//class TaskQueueFactory;
 // class FieldTrialsView;
 
 // Contains references to WebRTC utilities. Object of this class should be
@@ -83,7 +83,7 @@ public:
 
     // Provides a factory for task queues, WebRTC threading primitives.
     // See ../../g3doc/implementation_basics.md#threads
-    TaskQueueFactory &taskQueueFactory() const;
+    //TaskQueueFactory &taskQueueFactory() const;
 
     // Provides an interface for collecting structured logs.
     // See ../../logging/g3doc/rtc_event_log.md
@@ -253,5 +253,5 @@ template <typename... Utilities> RtcContext CreateRtcContext(Utilities &&...util
 }
 
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_RTC_CONTEXT_HPP

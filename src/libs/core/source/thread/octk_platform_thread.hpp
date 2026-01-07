@@ -64,7 +64,8 @@ OCTK_BEGIN_NAMESPACE
 
 namespace detail
 {
-template <typename Function> struct Callable
+template <typename Function>
+struct Callable
 {
     explicit Callable(Function &&f)
         : mFunction(std::forward<Function>(f))
@@ -95,7 +96,7 @@ public:
     using SharedPtr = std::shared_ptr<PlatformThread>;
     using UniquePtr = std::unique_ptr<PlatformThread>;
 
-    using Handle = void *;
+    // using Handle = void *;
     using Id = size_t;
 
     enum class Priority : int
@@ -145,7 +146,7 @@ public:
     /**
      * @return Returns the maximum stack size for the thread (if set with setStackSize()); otherwise returns zero.
      */
-    uint stackSize() const;
+    uint_t stackSize() const;
     /**
      * Sets the maximum stack size for the thread to \a stackSize.
      * If \a stackSize is greater than zero, the maximum stack size is set to \a stackSize bytes,
@@ -158,13 +159,12 @@ public:
      * @param stackSize
      * @return
      */
-    Status setStackSize(uint stackSize);
+    Status setStackSize(uint_t stackSize);
 
     bool isFinished() const;
     bool isRunning() const;
     bool isAdopted() const;
 
-    Handle threadHandle() const;
     Id threadId() const;
     int retval() const;
 
@@ -174,12 +174,10 @@ public:
     OCTK_STATIC_CONSTANT_NUMBER(kWaitForeverMSecs, std::numeric_limits<unsigned int>::max())
     bool wait(unsigned int msecs = kWaitForeverMSecs);
 
-    static bool isThreadHandleEqual(const Handle &lhs, const Handle &rhs);
     static void setCurrentThreadName(const StringView name);
     static int idealConcurrencyThreadCount() noexcept;
 
     static PlatformThread *currentThread() noexcept;
-    static Handle currentThreadHandle() noexcept;
     static Id currentThreadId() noexcept;
 
     static void usleep(unsigned long usecs);
@@ -189,7 +187,8 @@ public:
 
     static UniquePtr create(std::future<void> &&future);
 #if OCTK_PLATFORM_THREAD_HAS_VARIADIC_CREATE
-    template <typename Func, typename... Args> static UniquePtr create(Func &&f, Args &&...args)
+    template <typename Func, typename... Args>
+    static UniquePtr create(Func &&f, Args &&...args)
     {
         using DecayedFunction = typename std::decay<Func>::type;
         auto threadFunction = [f = static_cast<DecayedFunction>(std::forward<Func>(f))](auto &&...largs) mutable -> void
@@ -198,7 +197,8 @@ public:
         return create(std::async(std::launch::deferred, std::move(threadFunction), std::forward<Args>(args)...));
     }
 #elif OCTK_PLATFORM_THREAD_HAS_INIT_CAPTURES
-    template <typename Func> static UniquePtr create(Func &&func)
+    template <typename Func>
+    static UniquePtr create(Func &&func)
     {
         using DecayedFunc = typename std::decay<Func>::type;
         auto threadFunc = [func = static_cast<DecayedFunc>(std::forward<Func>(func))]() mutable -> void
@@ -207,7 +207,8 @@ public:
         return create(std::async(std::launch::deferred, std::move(threadFunc)));
     }
 #else
-    template <typename Func> static UniquePtr create(Func &&func)
+    template <typename Func>
+    static UniquePtr create(Func &&func)
     {
         return create(std::async(std::launch::deferred, detail::Callable<Func>(std::forward<Func>(func))));
     }

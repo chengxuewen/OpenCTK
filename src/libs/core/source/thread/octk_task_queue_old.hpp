@@ -30,7 +30,7 @@
 #include <octk_invocable.hpp>
 
 #include <functional>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 enum class ThreadPriority
@@ -218,5 +218,5 @@ struct TaskQueueDeleter
 
 #endif
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_TASK_QUEUE_HPP

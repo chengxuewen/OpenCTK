@@ -44,7 +44,7 @@ OCTK_BEGIN_NAMESPACE
  *
  * @tparam Unit_T The subclass representing the specific unit.
  */
-template <class Unit_T>
+template <typename Unit_T>
 class UnitBase
 {
 public:
@@ -138,7 +138,6 @@ protected:
     template <typename T = int64_t>
     OCTK_CXX14_CONSTEXPR typename std::enable_if<std::is_integral<T>::value, T>::type ToValue() const
     {
-        OCTK_DCHECK(IsFinite());
         return utils::dchecked_cast<T>(mValue);
     }
     template <typename T>
@@ -149,9 +148,9 @@ protected:
                                    : mValue;
     }
     template <typename T>
-    constexpr T ToValueOr(T fallback_value) const
+    constexpr T ToValueOr(T fallbackValue) const
     {
-        return IsFinite() ? mValue : fallback_value;
+        return IsFinite() ? mValue : fallbackValue;
     }
 
     template <int64_t Denominator, typename T = int64_t>
@@ -167,9 +166,9 @@ protected:
     }
 
     template <int64_t Denominator>
-    constexpr int64_t ToFractionOr(int64_t fallback_value) const
+    constexpr int64_t ToFractionOr(int64_t fallbackValue) const
     {
-        return IsFinite() ? DivideRoundToNearest(mValue, Denominator) : fallback_value;
+        return IsFinite() ? DivideRoundToNearest(mValue, Denominator) : fallbackValue;
     }
 
     template <int64_t Factor, typename T = int64_t>

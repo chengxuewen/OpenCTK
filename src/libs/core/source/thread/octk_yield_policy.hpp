@@ -28,7 +28,7 @@
 #include <octk_global.hpp>
 
 #include <memory>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 class YieldInterface
@@ -55,5 +55,5 @@ private:
     YieldInterface *const previous_;
 };
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_YIELD_POLICY_HPP

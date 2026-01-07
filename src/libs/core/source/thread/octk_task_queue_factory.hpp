@@ -27,7 +27,7 @@
 
 #include <octk_task_queue_old.hpp>
 #include <octk_string_view.hpp>
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 // The implementation of this interface must be thread-safe.
 class TaskQueueFactory
@@ -57,5 +57,5 @@ static std::unique_ptr<TaskQueueFactory> createDefaultTaskQueueFactory()
 // static std::unique_ptr<TaskQueueFactory> createDefaultTaskQueueFactory();
 } // namespace utils
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_TASK_QUEUE_FACTORY_HPP

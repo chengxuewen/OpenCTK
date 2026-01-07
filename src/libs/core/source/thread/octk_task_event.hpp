@@ -36,7 +36,7 @@
 #else
 #   include <pthread.h>
 #endif
-
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 // OCTK_DISALLOW_WAIT() utility
@@ -149,5 +149,5 @@ private:
 
 #endif
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_TASK_EVENT_HPP

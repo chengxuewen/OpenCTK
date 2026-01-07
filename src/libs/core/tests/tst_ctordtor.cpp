@@ -34,14 +34,13 @@ namespace
 {
 static int test_flag = 0;
 
-OCTK_CONSTRUCTOR_FUNCTION(ctor_func)
 static void ctor_func(void)
 {
     fprintf(stdout, "tst_decl_ctor\n");
     test_flag = -1;
 }
+OCTK_CONSTRUCTOR_FUNCTION(ctor_func)
 
-OCTK_DESTRUCTOR_FUNCTION(dtor_func)
 static void dtor_func(void)
 {
     fprintf(stdout, "tst_decl_dtor\n");
@@ -50,6 +49,7 @@ static void dtor_func(void)
         abort();
     }
 }
+OCTK_DESTRUCTOR_FUNCTION(dtor_func)
 } // namespace
 
 TEST(CtorDtorTest, ToStringWithCause)

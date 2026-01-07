@@ -684,7 +684,6 @@ function(octk_add_library name)
     octk_install(EXPORT ${export_name}
         NAMESPACE ${OCTK_CMAKE_EXPORT_NAMESPACE}::
         DESTINATION ${config_install_dir})
-
     if(NOT arg_NO_ADDITIONAL_TARGET_INFO)
         octk_internal_export_additional_targets_file(
             TARGETS ${exported_targets}
