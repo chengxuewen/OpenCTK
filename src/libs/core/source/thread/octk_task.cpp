@@ -69,12 +69,12 @@ protected:
 };
 } // namespace detail
 
-Task::SharedPtr Task::create(std::function<void()> function)
+Task::SharedPtr Task::create(Func function)
 {
     return SharedPtr(new detail::FunctionTask(std::move(function)), detail::TaskDeleter{true});
 }
 
-Task::SharedPtr Task::create(UniqueFunction<void() &&> function)
+Task::SharedPtr Task::create(UniqueFunc function)
 {
     return SharedPtr(new detail::UniqueFunctionTask(std::move(function)), detail::TaskDeleter{true});
 }

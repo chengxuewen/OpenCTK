@@ -113,8 +113,6 @@ octk_add_library(core
 #	source/thread/octk_future.cpp
 #	source/thread/octk_future.hpp
 	source/thread/octk_mutex.hpp
-	source/thread/octk_pending_task_safety_flag.cpp
-	source/thread/octk_pending_task_safety_flag.hpp
 	source/thread/octk_platform_thread.cpp
 	source/thread/octk_platform_thread.hpp
 	source/thread/octk_platform_thread_p.hpp
@@ -122,31 +120,16 @@ octk_add_library(core
 	source/thread/octk_repeating_task.cpp
 	source/thread/octk_repeating_task.hpp
 	source/thread/octk_semaphore.hpp
-	source/thread/octk_sequence_checker.cpp
-	source/thread/octk_sequence_checker.hpp
-	source/thread/octk_sleep.hpp
-	source/thread/octk_socket.cpp
-	source/thread/octk_socket.hpp
 	source/thread/octk_spinlock.hpp
 	source/thread/octk_task.cpp
 	source/thread/octk_task.hpp
-	source/thread/octk_task_event.cpp
-	source/thread/octk_task_event.hpp
 	source/thread/octk_task_queue.cpp
 	source/thread/octk_task_queue.hpp
-	source/thread/octk_task_queue_old.cpp
-	source/thread/octk_task_queue_old.hpp
-	source/thread/octk_task_queue_factory.cpp
-	source/thread/octk_task_queue_factory.hpp
 	source/thread/octk_task_queue_thread.cpp
 	source/thread/octk_task_queue_thread.hpp
 	source/thread/octk_thread_pool.cpp
 	source/thread/octk_thread_pool.hpp
 	source/thread/octk_thread_pool_p.hpp
-	source/thread/octk_time_controller.cpp
-	source/thread/octk_time_controller.hpp
-	source/thread/octk_yield_policy.cpp
-	source/thread/octk_yield_policy.hpp
 	source/time/octk_date_time.cpp
 	source/time/octk_date_time.hpp
 	source/time/octk_elapsed_timer.cpp

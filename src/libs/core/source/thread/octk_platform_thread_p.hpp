@@ -29,31 +29,6 @@
 #include <octk_logging.hpp>
 
 OCTK_BEGIN_NAMESPACE
-//
-// namespace detail
-// {
-// /* Handle help functions */
-// template <typename T>
-// static typename std::enable_if<std::is_integral<T>::value, PlatformThread::Handle>::type toHandle(T ref)
-// {
-//     return reinterpret_cast<PlatformThread::Handle>(static_cast<intptr_t>(ref));
-// }
-// template <typename T>
-// static typename std::enable_if<std::is_pointer<T>::value, PlatformThread::Handle>::type toHandle(T ref)
-// {
-//     return ref;
-// }
-// template <typename T>
-// static typename std::enable_if<std::is_integral<T>::value, T>::type fromHandle(const PlatformThread::Handle &handle)
-// {
-//     return static_cast<T>(reinterpret_cast<intptr_t>(handle));
-// }
-// template <typename T>
-// static typename std::enable_if<std::is_pointer<T>::value, T>::type fromHandle(const PlatformThread::Handle &handle)
-// {
-//     return static_cast<T>(handle);
-// }
-// } // namespace detail
 
 class PlatformThreadData
 {

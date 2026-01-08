@@ -221,4 +221,241 @@ TEST(RepeatingTaskTest, Example)
     // task queue destruction and running the desctructor closure.
 }
 
+
+TEST(SafetyFlagTest, Basic)
+{
+    TaskQueueBase::SafetyFlag::SharedPtr safetyFlag;
+    {
+        // Scope for the `owner` instance.
+        class Owner
+        {
+        public:
+            Owner() = default;
+            ~Owner() { mFlag->setNotAlive(); }
+
+            TaskQueueBase::SafetyFlag::SharedPtr mFlag = TaskQueueBase::SafetyFlag::create();
+        } owner;
+        EXPECT_TRUE(owner.mFlag->isAlive());
+        safetyFlag = owner.mFlag;
+        EXPECT_TRUE(safetyFlag->isAlive());
+    }
+    // `owner` now out of scope.
+    EXPECT_FALSE(safetyFlag->isAlive());
+}
+
+TEST(SafetyFlagTest, BasicScoped)
+{
+    TaskQueueBase::SafetyFlag::SharedPtr safetyFlag;
+    {
+        struct Owner
+        {
+            TaskQueueBase::SafetyFlag::Scoped safety;
+        } owner;
+        safetyFlag = owner.safety.flag();
+        EXPECT_TRUE(safetyFlag->isAlive());
+    }
+    // `owner` now out of scope.
+    EXPECT_FALSE(safetyFlag->isAlive());
+}
+
+TEST(SafetyFlagTest, PendingTaskSuccess)
+{
+    auto tq1 = TaskQueueThread::makeShared();
+    auto tq2 = TaskQueueThread::makeShared();
+
+    class Owner
+    {
+    public:
+        Owner()
+            : mTaskQueue(TaskQueueBase::current())
+        {
+            OCTK_DCHECK(mTaskQueue);
+        }
+        ~Owner()
+        {
+            OCTK_DCHECK(mTaskQueue->isCurrent());
+            mFlag->setNotAlive();
+        }
+
+        void DoStuff()
+        {
+            OCTK_DCHECK(!mTaskQueue->isCurrent());
+            TaskQueueBase::SafetyFlag::SharedPtr safe = mFlag;
+            mTaskQueue->postTask(
+                [safe, this]()
+                {
+                    if (!safe->isAlive())
+                    {
+                        return;
+                    }
+                    mStuffDone = true;
+                });
+        }
+
+        bool stuff_done() const { return mStuffDone; }
+
+    private:
+        TaskQueueBase *const mTaskQueue;
+        bool mStuffDone = false;
+        TaskQueueBase::SafetyFlag::SharedPtr mFlag = TaskQueueBase::SafetyFlag::create();
+    };
+
+    Semaphore blocker;
+    std::unique_ptr<Owner> owner;
+    tq1->postTask(
+        [&owner, &blocker]()
+        {
+            owner = std::make_unique<Owner>();
+            EXPECT_FALSE(owner->stuff_done());
+            blocker.release();
+        });
+    blocker.acquire();
+    ASSERT_TRUE(owner);
+    ASSERT_EQ(blocker.available(), 0);
+    tq2->postTask(
+        [&owner, &blocker]()
+        {
+            owner->DoStuff();
+            blocker.release();
+        });
+    blocker.acquire(); // wait owner->DoStuff();
+    tq1->postTask(
+        [&owner, &blocker]()
+        {
+            EXPECT_TRUE(owner->stuff_done());
+            owner.reset();
+            blocker.release(2);
+        });
+    blocker.acquire(2);
+    ASSERT_FALSE(owner);
+}
+
+TEST(SafetyFlagTest, PendingTaskDropped)
+{
+    auto tq1 = TaskQueueThread::makeShared();
+    auto tq2 = TaskQueueThread::makeShared();
+
+    class Owner
+    {
+    public:
+        explicit Owner(bool *stuff_done)
+            : mTaskQueue(TaskQueueBase::current())
+            , mStuffDone(stuff_done)
+        {
+            OCTK_DCHECK(mTaskQueue);
+            *mStuffDone = false;
+        }
+        ~Owner() { OCTK_DCHECK(mTaskQueue->isCurrent()); }
+
+        void DoStuff()
+        {
+            OCTK_DCHECK(!mTaskQueue->isCurrent());
+            mTaskQueue->postTask(TaskQueueThread::createSafeTask(mSafety.flag(), [this]() { *mStuffDone = true; }));
+        }
+
+    private:
+        TaskQueueBase *const mTaskQueue;
+        bool *const mStuffDone;
+        TaskQueueBase::SafetyFlag::Scoped mSafety;
+    };
+
+    std::unique_ptr<Owner> owner;
+    bool stuff_done = false;
+    Semaphore blocker;
+    tq1->postTask(
+        [&owner, &stuff_done, &blocker]()
+        {
+            owner = std::make_unique<Owner>(&stuff_done);
+            blocker.release();
+        });
+    blocker.acquire();
+    ASSERT_TRUE(owner);
+    ASSERT_EQ(blocker.available(), 0);
+
+    // Queue up a task on tq1 that will execute before the 'DoStuff' task
+    // can, and delete the `owner` before the 'stuff' task can execute.
+    tq1->postTask(
+        [&blocker, &owner]()
+        {
+            blocker.acquire(); // wait owner->DoStuff();
+            owner.reset();
+            blocker.release(2);
+        });
+
+    // Queue up a DoStuff...
+    tq2->postTask(
+        [&owner, &blocker]()
+        {
+            owner->DoStuff();
+            blocker.release(); // notify owner.reset();
+        });
+
+    ASSERT_TRUE(owner);
+
+    // Run an empty task on tq1 to flush all the queued tasks.
+    blocker.acquire(2); // wait owner.reset();
+    ASSERT_FALSE(owner);
+    EXPECT_FALSE(stuff_done);
+}
+
+TEST(SafetyFlagTest, PendingTaskNotAliveInitialized)
+{
+    auto tq = TaskQueueThread::makeShared();
+
+    // Create a new flag that initially not `alive`.
+    auto flag = TaskQueueThread::SafetyFlag::createDetachedInactive();
+    tq->postTask([flag]() { EXPECT_FALSE(flag->isAlive()); });
+
+    bool task_1_ran = false;
+    bool task_2_ran = false;
+    Semaphore blocker;
+    tq->postTask(TaskQueueThread::createSafeTask(flag, [&task_1_ran]() { task_1_ran = true; }));
+    tq->postTask(
+        [&flag, &blocker]()
+        {
+            flag->setAlive();
+            blocker.release(); // notify post task_2_ran = true; task
+        });
+    blocker.acquire(); // wait flag->setAlive();
+    tq->postTask(TaskQueueThread::createSafeTask(flag,
+                                                 [&task_2_ran, &blocker]()
+                                                 {
+                                                     task_2_ran = true;
+                                                     blocker.release(); // notify EXPECT_TRUE(task_2_ran);
+                                                 }));
+    blocker.acquire(); // wait task_2_ran = true; task finish
+    EXPECT_FALSE(task_1_ran);
+    EXPECT_TRUE(task_2_ran);
+}
+
+TEST(SafetyFlagTest, PendingTaskInitializedForTaskQueue)
+{
+    auto tq = TaskQueueThread::makeShared();
+
+    // Create a new flag that initially `alive`, attached to a specific TQ.
+    auto flag = TaskQueueThread::SafetyFlag::createAttachedToTaskQueue(true, tq.get());
+    tq->postTask([flag]() { EXPECT_TRUE(flag->isAlive()); });
+    // Repeat the same steps but initialize as inactive.
+    flag = TaskQueueThread::SafetyFlag::createAttachedToTaskQueue(false, tq.get());
+    tq->postTask([flag]() { EXPECT_FALSE(flag->isAlive()); });
+}
+
+TEST(SafetyFlagTest, SafeTask)
+{
+    TaskQueueBase::SafetyFlag::SharedPtr flag = TaskQueueBase::SafetyFlag::create();
+
+    int count = 0;
+    // Create two identical tasks that increment the `count`.
+    auto task1 = TaskQueueBase::createSafeTask(flag, [&count] { ++count; });
+    auto task2 = TaskQueueBase::createSafeTask(flag, [&count] { ++count; });
+
+    EXPECT_EQ(count, 0);
+    task1->run();
+    EXPECT_EQ(count, 1);
+    flag->setNotAlive();
+    // Now task2 should actually not run.
+    task2->run();
+    EXPECT_EQ(count, 1);
+}
+
 OCTK_END_NAMESPACE

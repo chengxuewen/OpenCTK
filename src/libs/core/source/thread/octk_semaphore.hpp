@@ -72,7 +72,9 @@ public:
         ~Releaser()
         {
             if (mSem)
+            {
                 mSem->release(mCount);
+            }
         }
 
         void swap(Releaser &other) noexcept

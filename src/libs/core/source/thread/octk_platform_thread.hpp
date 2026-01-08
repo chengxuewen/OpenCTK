@@ -96,7 +96,6 @@ public:
     using SharedPtr = std::shared_ptr<PlatformThread>;
     using UniquePtr = std::unique_ptr<PlatformThread>;
 
-    // using Handle = void *;
     using Id = size_t;
 
     enum class Priority : int

@@ -105,8 +105,8 @@ std::string ContextChecker::expectationToString(const ContextChecker *checker)
     char msgbuf[OCTK_LINE_MAX] = {0};
     std::snprintf(msgbuf,
                   OCTK_LINE_MAX,
-                  "# Expected: TaskQueue: %p Thread: %llu\n"
-                  "# Actual:   TaskQueue: %p Thread: %llu\n",
+                  "# Expected: TaskQueue: %p Thread: %" OCTK_SIZE_FORMAT "\n"
+                  "# Actual:   TaskQueue: %p Thread: %" OCTK_SIZE_FORMAT "\n",
                   d->mValidQueue,
                   d->mValidThreadId,
                   currentQueue,
@@ -122,6 +122,8 @@ std::string ContextChecker::expectationToString(const ContextChecker *checker)
         message << "Threads don't match\n";
     }
     return message.str();
+#else
+    return "";
 #endif
 }
 

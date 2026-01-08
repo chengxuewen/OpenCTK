@@ -77,7 +77,7 @@ namespace thread
 static void finish(void *arg);
 } // namespace thread
 
-static_assert(sizeof(pthread_t) <= sizeof(PlatformThread::Handle), "PlatformThread::Handle size error");
+// static_assert(sizeof(pthread_t) <= sizeof(PlatformThread::Handle), "PlatformThread::Handle size error");
 OCTK_STATIC_CONSTANT_NUMBER(kThreadPriorityResetFlag, 0x80000000)
 
 /* tls */
@@ -111,7 +111,6 @@ static void createCurrentThreadDataKey()
     // create key
     pthread_key_create(&currentThreadDataKey, destroyCurrentThreadData);
 }
-OCTK_DESTRUCTOR_FUNCTION(destroyCurrentThreadDataKey)
 static void destroyCurrentThreadDataKey()
 {
     pthread_once(&currentThreadDataOnce, createCurrentThreadDataKey);
@@ -122,6 +121,7 @@ static void destroyCurrentThreadDataKey()
     pthread_once_t pthreadOnceInit = PTHREAD_ONCE_INIT;
     currentThreadDataOnce = pthreadOnceInit;
 }
+OCTK_DESTRUCTOR_FUNCTION(destroyCurrentThreadDataKey)
 } // namespace tls
 // Utility functions for getting, setting and clearing thread specific data.
 static PlatformThreadData *getThreadData()
@@ -294,7 +294,7 @@ static void finish(void *arg)
         threadPrivate->mInterruptionRequested = false;
 
         threadData->threadId.store(0);
-        threadData->threadHandle.store(nullptr);
+        threadPrivate->mThreadHandle = nullptr;
 
         threadPrivate->mInFinish = false;
         threadPrivate->mDoneCondition.notify_all();
@@ -304,9 +304,15 @@ static void finish(void *arg)
     // POSIX thread cancellation under glibc is implemented by throwing an exception
     // of this type. Do what libstdc++ is doing and handle it specially in order not to
     // abort the application if user's code calls a cancellation function.
-    OCTK_CATCH(const abi::__forced_unwind &) { throw; }
+    OCTK_CATCH(const abi::__forced_unwind &)
+    {
+        throw;
+    }
 #        endif // __GLIBCXX__
-    OCTK_CATCH(...) { OCTK_ASSERT(false); }
+    OCTK_CATCH(...)
+    {
+        OCTK_ASSERT(false);
+    }
 #    endif // OCTK_HAS_EXCEPTIONS
 }
 static void *start(void *arg)
@@ -331,7 +337,7 @@ static void *start(void *arg)
                     PlatformThread::Priority((int)threadPrivate->mPriority & ~kThreadPriorityResetFlag));
             }
             threadData->threadId.store(PlatformThread::currentThreadId());
-            threadData->threadHandle.store(detail::toHandle(pthread_self()));
+            threadPrivate->mThreadHandle = pthread_self();
             setThreadData(threadData);
 
             threadData->ref();
@@ -362,9 +368,15 @@ static void *start(void *arg)
     // POSIX thread cancellation under glibc is implemented by throwing an exception
     // of this type. Do what libstdc++ is doing and handle it specially in order not to
     // abort the application if user's code calls a cancellation function.
-    OCTK_CATCH(const abi::__forced_unwind &) { throw; }
+    OCTK_CATCH(const abi::__forced_unwind &)
+    {
+        throw;
+    }
 #        endif // __GLIBCXX__
-    OCTK_CATCH(...) { OCTK_ASSERT(false); }
+    OCTK_CATCH(...)
+    {
+        OCTK_ASSERT(false);
+    }
 #    endif // OCTK_HAS_EXCEPTIONS
 
     // This pop runs finish() below. It's outside the try/catch (and has its own try/catch) to prevent finish()
@@ -385,6 +397,8 @@ PlatformThreadData *PlatformThreadData::current(bool createIfNecessary)
         {
             detail::setThreadData(threadData);
             threadData->thread = new AdoptedPlatformThread(threadData);
+            auto threadPrivate = PlatformThreadPrivate::get(threadData->thread);
+            threadPrivate->mThreadHandle = pthread_self();
         }
         OCTK_CATCH(...)
         {
@@ -395,14 +409,16 @@ PlatformThreadData *PlatformThreadData::current(bool createIfNecessary)
         }
         threadData->isAdopted = true;
         threadData->threadId.store(PlatformThread::currentThreadId());
-        threadData->threadHandle.store(detail::toHandle(pthread_self()));
         // if (!CoreApplicationPrivate::theMainThread.loadAcquire())
         // CoreApplicationPrivate::theMainThread.storeRelease(data->thread.loadRelaxed());
     }
     return threadData;
 }
 
-void PlatformThreadData::clearCurrent() { detail::clearThreadData(); }
+void PlatformThreadData::clearCurrent()
+{
+    detail::clearThreadData();
+}
 
 void PlatformThreadPrivate::setPriority(Priority priority)
 {
@@ -413,7 +429,7 @@ void PlatformThreadPrivate::setPriority(Priority priority)
     int sched_policy;
     sched_param param;
 
-    if (pthread_getschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), &sched_policy, &param) != 0)
+    if (pthread_getschedparam(mThreadHandle, &sched_policy, &param) != 0)
     {
         // failed to get the scheduling policy, don't bother setting the priority
         OCTK_WARNING("PlatformThread::setPriority: Cannot get scheduler parameters");
@@ -429,16 +445,16 @@ void PlatformThreadPrivate::setPriority(Priority priority)
     }
 
     param.sched_priority = prio;
-    int status = pthread_setschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), sched_policy, &param);
+    int status = pthread_setschedparam(mThreadHandle, sched_policy, &param);
 
 #        ifdef SCHED_IDLE
     // were we trying to set to idle priority and failed?
     if (status == -1 && sched_policy == SCHED_IDLE && errno == EINVAL)
     {
         // reset to lowest priority possible
-        pthread_getschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), &sched_policy, &param);
+        pthread_getschedparam(mThreadHandle, &sched_policy, &param);
         param.sched_priority = sched_get_priority_min(sched_policy);
-        pthread_setschedparam(detail::fromHandle<pthread_t>(mData->threadHandle.load()), sched_policy, &param);
+        pthread_setschedparam(mThreadHandle, sched_policy, &param);
     }
 #        else
     OCTK_UNUSED(status);
@@ -508,40 +524,32 @@ bool PlatformThreadPrivate::start(Priority priority)
     }
     mPriority = priority;
 
-    pthread_t pthread;
-    int code = pthread_create(&pthread, &attr, detail::thread::start, this);
+    int code = pthread_create(&mThreadHandle, &attr, detail::thread::start, this);
     if (code == EPERM)
     {
         // caller does not have permission to set the scheduling parameters/policy
 #    if OCTK_HAS_THREAD_PRIORITY_SCHEDULING
         pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
 #    endif // OCTK_HAS_THREAD_PRIORITY_SCHEDULING
-        code = pthread_create(&pthread, &attr, detail::thread::start, this);
+        code = pthread_create(&mThreadHandle, &attr, detail::thread::start, this);
     }
-    mData->threadHandle = detail::toHandle(pthread);
     pthread_attr_destroy(&attr);
     return 0 == code;
 }
 
 Status PlatformThreadPrivate::terminate()
 {
-    const auto threadHandle = mData->threadHandle.load();
-    if (!threadHandle)
+    if (!mThreadHandle)
     {
         return "threadHandle empty";
     }
 
-    const int code = pthread_cancel(detail::fromHandle<pthread_t>(threadHandle));
+    const int code = pthread_cancel(mThreadHandle);
     if (code)
     {
         return "pthread_cancel error";
     }
     return okStatus;
-}
-
-bool PlatformThread::isThreadHandleEqual(const Handle &lhs, const Handle &rhs)
-{
-    return pthread_equal(detail::fromHandle<pthread_t>(lhs), detail::fromHandle<pthread_t>(rhs));
 }
 
 void PlatformThread::setCurrentThreadName(const StringView name)
@@ -639,8 +647,6 @@ int PlatformThread::idealConcurrencyThreadCount() noexcept
     return cores;
 }
 
-PlatformThread::Handle PlatformThread::currentThreadHandle() noexcept { return detail::toHandle(pthread_self()); }
-
 PlatformThread::Id PlatformThread::currentThreadId() noexcept
 {
 #    if defined(OCTK_OS_MAC) || defined(OCTK_OS_IOS)
@@ -676,7 +682,9 @@ void PlatformThread::setTerminationEnabled(bool enabled)
 #    endif
 }
 
-void AdoptedPlatformThread::init() { }
+void AdoptedPlatformThread::init()
+{
+}
 
 OCTK_END_NAMESPACE
 

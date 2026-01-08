@@ -22,8 +22,10 @@
 **
 ***********************************************************************************************************************/
 
+#include <octk_context_checker.hpp>
 #include <octk_task_queue.hpp>
 #include <octk_timestamp.hpp>
+#include <octk_utility.hpp>
 
 OCTK_DEFINE_LOGGER_WITH_LEVEL("octk::TaskQueue", OCTK_TASK_QUEUE_LOGGER, octk::LogLevel::Warning)
 
@@ -33,6 +35,119 @@ namespace detail
 {
 static thread_local TaskQueueBase *currentTaskQueue = nullptr;
 } // namespace detail
+
+class TaskQueueBase::SafetyFlagPrivate
+{
+    OCTK_DEFINE_PPTR(SafetyFlag)
+    OCTK_DECLARE_PUBLIC(SafetyFlag)
+    OCTK_DISABLE_COPY_MOVE(SafetyFlagPrivate)
+public:
+    SafetyFlagPrivate(SafetyFlag *p, bool alive);
+    SafetyFlagPrivate(SafetyFlag *p, bool alive, TaskQueueBase *taskQueue);
+    ~SafetyFlagPrivate() { }
+
+    std::atomic<bool> mAlive{true};
+    OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS ContextChecker mContextChecker;
+};
+
+TaskQueueBase::SafetyFlagPrivate::SafetyFlagPrivate(SafetyFlag *p, bool alive)
+    : mPPtr(p)
+    , mAlive(alive)
+{
+}
+
+TaskQueueBase::SafetyFlagPrivate::SafetyFlagPrivate(SafetyFlag *p, bool alive, TaskQueueBase *taskQueue)
+    : mPPtr(p)
+    , mAlive(alive)
+    , mContextChecker(taskQueue)
+{
+}
+
+TaskQueueBase::SafetyFlag::SafetyFlag(bool alive)
+    : mDPtr(new SafetyFlagPrivate(this, alive))
+{
+}
+
+TaskQueueBase::SafetyFlag::SafetyFlag(bool alive, Nonnull<TaskQueueBase *> attachedQueue)
+    : mDPtr(new SafetyFlagPrivate(this, alive, attachedQueue))
+{
+}
+
+TaskQueueBase::SafetyFlag::SharedPtr TaskQueueBase::SafetyFlag::create()
+{
+    return SharedPtr(new SafetyFlag(true));
+}
+
+TaskQueueBase::SafetyFlag::SharedPtr TaskQueueBase::SafetyFlag::createDetached()
+{
+    auto flag = SharedPtr(new SafetyFlag(true));
+    flag->dFunc()->mContextChecker.detach();
+    return flag;
+}
+
+TaskQueueBase::SafetyFlag::SharedPtr TaskQueueBase::SafetyFlag::createAttachedToTaskQueue(
+    bool alive,
+    Nonnull<TaskQueueBase *> attachedQueue)
+{
+    return SharedPtr(new SafetyFlag(alive, attachedQueue));
+}
+
+TaskQueueBase::SafetyFlag::SharedPtr TaskQueueBase::SafetyFlag::createDetachedInactive()
+{
+    auto flag = SharedPtr(new SafetyFlag(false));
+    flag->dFunc()->mContextChecker.detach();
+    return flag;
+}
+
+TaskQueueBase::SafetyFlag::~SafetyFlag()
+{
+}
+
+bool TaskQueueBase::SafetyFlag::isAlive() const
+{
+    OCTK_D(const SafetyFlag);
+    return d->mAlive.load(std::memory_order_acquire);
+}
+
+void TaskQueueBase::SafetyFlag::setNotAlive()
+{
+    OCTK_D(SafetyFlag);
+    d->mAlive.store(false, std::memory_order_release);
+}
+void TaskQueueBase::SafetyFlag::setAlive()
+{
+    OCTK_D(SafetyFlag);
+    d->mAlive.store(true, std::memory_order_release);
+}
+
+Task::SharedPtr TaskQueueBase::createSafeTask(const SafetyFlag::SharedPtr &flag, Task *task, bool autoDelete)
+{
+    return Task::create(std::move(Task::UniqueFunc(
+        [=]() mutable
+        {
+            if (flag->isAlive())
+            {
+                task->run();
+            }
+            if (autoDelete)
+            {
+                delete task;
+            }
+        })));
+}
+
+Task::SharedPtr TaskQueueBase::createSafeTask(const SafetyFlag::SharedPtr &flag, UniqueFunction<void() &&> function)
+{
+    auto movefunction = utils::makeMoveWrapper(std::move(function));
+    return Task::create(std::move(Task::UniqueFunc(
+        [flag, movefunction]() mutable
+        {
+            if (flag->isAlive())
+            {
+                movefunction.move()();
+            }
+        })));
+}
 
 TaskQueueBase::CurrentSetter::CurrentSetter(TaskQueueBase *taskQueue)
     : mPrevious(TaskQueueBase::current())

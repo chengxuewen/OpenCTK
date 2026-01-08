@@ -11,7 +11,6 @@
 #ifndef _OCTK_RTC_CONTEXT_HPP
 #define _OCTK_RTC_CONTEXT_HPP
 
-#include <octk_task_queue_factory.hpp>
 #include <octk_field_trials_view.hpp>
 #include <octk_shared_ref_ptr.hpp>
 #include <octk_nullability.hpp>

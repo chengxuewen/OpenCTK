@@ -34,14 +34,16 @@ class OCTK_CORE_API Task
 public:
     using Id = uint64_t;
     using SharedPtr = std::shared_ptr<Task>;
+    using Func = std::function<void()>;
+    using UniqueFunc = UniqueFunction<void() &&>;
 
     Task() = default;
     virtual ~Task() = default;
 
     virtual void run() = 0;
 
-    static SharedPtr create(std::function<void()> function);
-    static SharedPtr create(UniqueFunction<void() &&> function);
+    static SharedPtr create(Func function);
+    static SharedPtr create(UniqueFunc function);
     static SharedPtr makeShared(Task *task, bool autoDelete = false);
     template <typename T, typename... Args>
     static SharedPtr makeShared(Args &&...args)
