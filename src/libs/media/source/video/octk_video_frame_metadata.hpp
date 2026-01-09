@@ -113,7 +113,7 @@ private:
     VideoFrameType frame_type_ = VideoFrameType::Empty;
     int16_t width_ = 0;
     int16_t height_ = 0;
-    VideoRotation mRotation = VideoRotation::Angle0;
+    VideoRotation mRotation = VideoRotation::kAngle0;
     VideoContentType content_type_ = VideoContentType::Unspecified;
 
     // Corresponding to GenericDescriptorInfo.

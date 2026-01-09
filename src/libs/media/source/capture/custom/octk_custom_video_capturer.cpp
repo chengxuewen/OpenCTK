@@ -81,7 +81,7 @@ void CustomVideoCapturer::onFrame(const VideoFrame &original_frame)
         scaled_buffer->scaleFrom(*frame.videoFrameBuffer()->toI420());
         VideoFrame::Builder new_frame_builder = VideoFrame::Builder()
                                                     .setVideoFrameBuffer(scaled_buffer)
-                                                    .setRotation(VideoRotation::Angle0)
+                                                    .setRotation(VideoRotation::kAngle0)
                                                     .setTimestampUSecs(frame.timestampUSecs())
                                                     .setId(frame.id());
         if (frame.hasUpdateRect())

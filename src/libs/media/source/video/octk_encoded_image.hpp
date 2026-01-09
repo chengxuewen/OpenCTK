@@ -232,7 +232,7 @@ public:
     int64_t mNtpTimeMSecs = 0;
     int64_t capture_time_ms_ = 0;
     VideoFrameType _frameType = VideoFrameType::Delta;
-    VideoRotation mRotation = VideoRotation::Angle0;
+    VideoRotation mRotation = VideoRotation::kAngle0;
     VideoContentType content_type_ = VideoContentType::Unspecified;
     int qp_ = -1; // Quantizer value.
 

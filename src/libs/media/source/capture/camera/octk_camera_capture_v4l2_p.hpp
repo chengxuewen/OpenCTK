@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -22,41 +22,30 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_rtp_headers.hpp>
+#pragma once
+
+#include <octk_camera_capture.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-AudioLevel::AudioLevel() : voice_activity_(false), audio_level_(0) {}
-
-AudioLevel::AudioLevel(bool voice_activity, int audio_level)
-    : voice_activity_(voice_activity), audio_level_(audio_level)
+class CameraCaptureV4L2Private;
+class CameraCaptureV4L2 : public CameraCapture
 {
-    OCTK_CHECK_GE(audio_level, 0);
-    OCTK_CHECK_LE(audio_level, 127);
-}
+public:
+    CameraCaptureV4L2();
+    ~CameraCaptureV4L2() override;
 
-RTPHeaderExtension::RTPHeaderExtension()
-    : hasTransmissionTimeOffset(false)
-    , transmissionTimeOffset(0)
-    , hasAbsoluteSendTime(false)
-    , absoluteSendTime(0)
-    , hasTransportSequenceNumber(false)
-    , transportSequenceNumber(0)
-    , hasVideoRotation(false)
-    , videoRotation(VideoRotation::kAngle0)
-    , hasVideoContentType(false)
-    , videoContentType(VideoContentType::Unspecified)
-    , has_video_timing(false) {}
+    int32_t startCapture(const Capability& capability) override;
+    int32_t stopCapture() override;
 
-RTPHeaderExtension::RTPHeaderExtension(const RTPHeaderExtension &other) = default;
+    bool isCaptureStarted() override;
+    int32_t captureSettings(Capability& settings) override;
 
-RTPHeaderExtension &RTPHeaderExtension::operator=(const RTPHeaderExtension &other) = default;
+    bool init(const char* deviceUniqueIdUTF8) override;
 
-RTPHeader::RTPHeader()
-    : markerBit(false), payloadType(0), sequenceNumber(0), timestamp(0), ssrc(0), numCSRCs(0), arrOfCSRCs()
-    , paddingLength(0), headerLength(0), extension() {}
+private:
+    OCTK_DECLARE_PRIVATE(CameraCaptureV4L2)
+    OCTK_DISABLE_COPY_MOVE(CameraCaptureV4L2)
+};
 
-RTPHeader::RTPHeader(const RTPHeader &other) = default;
-
-RTPHeader &RTPHeader::operator=(const RTPHeader &other) = default;
 OCTK_END_NAMESPACE

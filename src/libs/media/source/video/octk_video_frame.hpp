@@ -170,7 +170,7 @@ public:
         Optional<Timestamp> mReferenceTime;
         uint32_t mRtpTimestamp = 0;
         int64_t mNtpTimeMSecs = 0;
-        VideoRotation mRotation = VideoRotation::Angle0;
+        VideoRotation mRotation = VideoRotation::kAngle0;
         Optional<ColorSpace> mColorSpace;
         RenderParameters mRenderParameters;
         Optional<UpdateRect> mUpdateRect;

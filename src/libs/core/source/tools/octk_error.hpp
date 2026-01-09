@@ -28,6 +28,7 @@
 #include <octk_shared_data.hpp>
 
 #include <map>
+#include <limits>
 #include <ostream>
 
 #define OCTK_DECLARE_ERROR_DOMAIN(Export, Name) Export const octk::Error::Domain &Name();
@@ -58,7 +59,7 @@ public:
         mutable std::atomic<bool> mCacheInitialized{false};
 
     public:
-        using Id = Error::Id;
+        using Id = Id;
 
         struct OCTK_CORE_API Registry
         {

@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <thread>
+#include <algorithm>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -268,7 +269,7 @@ void TaskQueueThread::processTasks()
                            "TaskQueueThread::processTasks() wait %d us",
                            nextTask.sleepTime.us());
         const auto deadline = std::chrono::steady_clock::now() +
-                              std::chrono::microseconds(std::min(nextTask.sleepTime.us(), 1'000'000LL));
+                              std::chrono::microseconds(std::min(nextTask.sleepTime.us(), (int64_t)1'000'000LL));
         d->mTaskReadyCondition.wait_until(lock, deadline);
         lock.unlock();
     }

@@ -34,7 +34,9 @@
 #    include <unistd.h>
 #    include <sys/types.h>
 #    include <sys/syscall.h>
-
+#    ifdef __GLIBCXX__
+#        include <cxxabi.h>
+#    endif
 #    if defined(OCTK_OS_LINUX)
 #        include <sys/prctl.h> // PR_SET_NAME
 #        if !defined(OCTK_LINUXBASE)
@@ -294,7 +296,7 @@ static void finish(void *arg)
         threadPrivate->mInterruptionRequested = false;
 
         threadData->threadId.store(0);
-        threadPrivate->mThreadHandle = nullptr;
+        threadPrivate->mThreadHandle = 0;
 
         threadPrivate->mInFinish = false;
         threadPrivate->mDoneCondition.notify_all();
@@ -326,7 +328,7 @@ static void *start(void *arg)
     {
         auto threadPrivate = reinterpret_cast<PlatformThreadPrivate *>(arg);
         auto threadData = PlatformThreadData::current(threadPrivate);
-        auto thread = PlatformThreadPrivate::get(threadPrivate);
+//        auto thread = PlatformThreadPrivate::get(threadPrivate);
         {
             PlatformThreadPrivate::ThreadMutex::UniqueLock lock(threadPrivate->mMutex);
 

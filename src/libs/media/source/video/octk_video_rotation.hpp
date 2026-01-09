@@ -22,25 +22,24 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_VIDEO_ROTATION_HPP
-#define _OCTK_VIDEO_ROTATION_HPP
+#pragma once
 
 #include <octk_media_global.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
 // enum for clockwise rotation.
 enum class VideoRotation : int
 {
-    Angle0 = 0,
-    Angle90 = 90,
-    Angle180 = 180,
-    Angle270 = 270
+    kAngle0 = 0,
+    kAngle90 = 90,
+    kAngle180 = 180,
+    kAngle270 = 270
 };
 
 static inline int videoRotationAngle(VideoRotation rotation)
 {
     return static_cast<int>(rotation);
 }
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_VIDEO_ROTATION_HPP
+OCTK_END_NAMESPACE

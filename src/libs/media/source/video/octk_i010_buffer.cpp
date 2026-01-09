@@ -110,7 +110,7 @@ std::shared_ptr<I010Buffer> I010Buffer::Copy(const I420BufferInterface &source)
 // static
 std::shared_ptr<I010Buffer> I010Buffer::Rotate(const I010BufferInterface &src, VideoRotation rotation)
 {
-    if (rotation == VideoRotation::Angle0)
+    if (rotation == VideoRotation::kAngle0)
     {
         return Copy(src);
     }
@@ -120,7 +120,7 @@ std::shared_ptr<I010Buffer> I010Buffer::Rotate(const I010BufferInterface &src, V
     OCTK_CHECK(src.dataV());
     int rotated_width = src.width();
     int rotated_height = src.height();
-    if (rotation == VideoRotation::Angle90 || rotation == VideoRotation::Angle270)
+    if (rotation == VideoRotation::kAngle90 || rotation == VideoRotation::kAngle270)
     {
         std::swap(rotated_width, rotated_height);
     }

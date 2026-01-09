@@ -794,6 +794,22 @@ auto octkArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 #endif
 
 /**
+ * Document the acquisition order between locks that can be held simultaneously by a thread. For any two locks that
+ * need to be annotated to establish an acquisition order, only one of them needs the annotation.
+ * (i.e. You don't have to annotate both locks with both acquired_after and acquired_before.)
+ */
+#if OCTK_CC_HAS_ATTRIBUTE(acquired_after)
+#    define OCTK_ATTRIBUTE_ACQUIRED_AFTER(x) __attribute__((acquired_after(x)))
+#else
+#    define OCTK_ATTRIBUTE_ACQUIRED_AFTER(x)
+#endif
+#if OCTK_CC_HAS_ATTRIBUTE(acquired_before)
+#    define OCTK_ATTRIBUTE_ACQUIRED_BEFORE(x) __attribute__((acquired_before(x)))
+#else
+#    define OCTK_ATTRIBUTE_ACQUIRED_BEFORE(x)
+#endif
+
+/**
  * @brief Document if the memory location pointed to by a pointer should be guarded by a lock when dereferencing the
  * pointer. Note that a pointer variable to a shared memory location could itself be a shared variable.
  * For example, if a shared global pointer q, which is guarded by mu1, points to a shared memory location that is

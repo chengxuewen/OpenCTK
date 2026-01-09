@@ -3,6 +3,7 @@
 #include <octk_memory.hpp>
 
 #include <utility>
+#include <functional>
 #include <type_traits>
 
 OCTK_BEGIN_NAMESPACE

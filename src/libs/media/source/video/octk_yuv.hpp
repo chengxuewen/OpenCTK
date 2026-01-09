@@ -36,15 +36,6 @@ namespace utils
 // This is the max PSNR value our algorithms can return.
 const double kPerfectPSNR = 48.0f;
 
-// Calculate the required buffer size.
-// Input:
-//   - type         :The type of the designated video frame.
-//   - width        :frame width in pixels.
-//   - height       :frame height in pixels.
-// Return value:    :The required size in bytes to accommodate the specified
-//                   video frame.
-size_t calcBufferSize(VideoType type, int width, int height);
-
 // Extract buffer from VideoFrame or I420BufferInterface (consecutive
 // planes, no stride)
 // Input:
@@ -147,41 +138,8 @@ private:
     std::vector<uint8_t> tmp_uv_planes_;
 };
 
-// Convert VideoType to libyuv FourCC type
-int ConvertVideoType(VideoType video_type);
-
 namespace yuv
 {
-enum class RotationMode
-{
-    kRotate0 = 0,     // No rotation.
-    kRotate90 = 90,   // Rotate 90 degrees clockwise.
-    kRotate180 = 180, // Rotate 180 degrees.
-    kRotate270 = 270, // Rotate 270 degrees clockwise.
-};
-
-enum class ImageFormat
-{
-    kI420 = 0,
-    kI422 = 1,
-    kI444 = 2,
-    kI400 = 3,
-    kNV21 = 4,
-    kNV12 = 5,
-    kYUY2 = 6,
-    kUYVY = 7,
-    kI010 = 8,
-    kI210 = 9,
-
-    kARGB = 10,
-    kBGRA = 11,
-    kABGR = 12,
-    kRGBA = 13,
-
-    kRAW = 14,
-    kMJPG = 15,
-};
-
 OCTK_MEDIA_API void scaleI420(const uint8_t *srcBuffer,
                               int srcWidth,
                               int srcHeight,
@@ -256,8 +214,8 @@ OCTK_MEDIA_API bool convertToI420(const uint8_t *sample,
                                   int srcHeight,
                                   int cropWidth,
                                   int cropHeight,
-                                  RotationMode rotation,
-                                  ImageFormat stcFormat);
+                                  VideoRotation rotation,
+                                  VideoType videoType);
 
 OCTK_MEDIA_API void convertI420ToARGB(const uint8_t *srcBuffer,
                                       uint8_t *dstBuffer,

@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include <octk_global.hpp>
-#include <octk_assert.hpp>
+#include <octk_platform_thread.hpp>
+#include <octk_checks.hpp>
 
 #include <mutex>
 #include <shared_mutex>
@@ -33,30 +33,46 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class Mutex : public std::mutex
+class OCTK_CORE_API OCTK_ATTRIBUTE_LOCKABLE RaceChecker final
 {
 public:
-    using Base = std::mutex;
-    using Lock = std::lock_guard<Base>;
-    using UniqueLock = std::unique_lock<Base>;
-    using Condition = std::condition_variable;
+    class OCTK_ATTRIBUTE_SCOPED_LOCKABLE Scope
+    {
+    public:
+        explicit Scope(const RaceChecker* raceChecker) OCTK_ATTRIBUTE_EXCLUSIVE_LOCK_FUNCTION(raceChecker);
+        ~Scope() OCTK_ATTRIBUTE_UNLOCK_FUNCTION();
 
-    using Base::Base;
-    Mutex() = default;
-    ~Mutex() = default;
-};
+        bool isDetected() const;
 
-class RecursiveMutex : public std::recursive_mutex
-{
-public:
-    using Base = std::recursive_mutex;
-    using Lock = std::lock_guard<Base>;
-    using UniqueLock = std::unique_lock<Base>;
-    using Condition = std::condition_variable_any;
+#if OCTK_DCHECK_IS_ON
+    private:
+        const RaceChecker* const mRaceChecker;
+        const bool mRacecheckOk;
+#endif
+    };
 
-    using Base::Base;
-    RecursiveMutex() = default;
-    ~RecursiveMutex() = default;
+    //    friend class internal::RaceCheckerScope;
+    RaceChecker() = default;
+    ~RaceChecker() = default;
+
+private:
+    bool acquire() const OCTK_ATTRIBUTE_EXCLUSIVE_LOCK_FUNCTION();
+    void release() const OCTK_ATTRIBUTE_UNLOCK_FUNCTION();
+
+    // Volatile to prevent code being optimized away in acquire()/release().
+    mutable volatile int mAccessCount{0};
+    mutable volatile PlatformThread::Id mAccessingThreadId{0};
 };
 
 OCTK_END_NAMESPACE
+
+#define OCTK_CHECK_RUNS_SERIALIZED_IMPL(x, suffix) \
+    octk::RaceChecker::Scope raceChecker##suffix(x); \
+    OCTK_CHECK(!raceChecker##suffix.isDetected())
+
+#define OCTK_CHECK_RUNS_SERIALIZED_NEXT(x, suffix) \
+    OCTK_CHECK_RUNS_SERIALIZED_IMPL(x, suffix)
+
+#define OCTK_DCHECK_RUNS_SERIALIZED(x) octk::RaceChecker::Scope raceChecker(x)
+
+#define OCTK_CHECK_RUNS_SERIALIZED(x) OCTK_CHECK_RUNS_SERIALIZED_NEXT(x, __LINE__)

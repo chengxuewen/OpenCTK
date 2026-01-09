@@ -27,6 +27,8 @@
 #include <octk_timestamp.hpp>
 #include <octk_utility.hpp>
 
+#include <atomic>
+
 OCTK_DEFINE_LOGGER_WITH_LEVEL("octk::TaskQueue", OCTK_TASK_QUEUE_LOGGER, octk::LogLevel::Warning)
 
 OCTK_BEGIN_NAMESPACE

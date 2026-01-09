@@ -95,7 +95,7 @@ struct RTPVideoHeader
     VideoFrameType frame_type = VideoFrameType::Empty;
     uint16_t width = 0;
     uint16_t height = 0;
-    VideoRotation rotation = VideoRotation::Angle0;
+    VideoRotation rotation = VideoRotation::kAngle0;
     VideoContentType content_type = VideoContentType::Unspecified;
     bool is_first_packet_in_frame = false;
     bool is_last_packet_in_frame = false;

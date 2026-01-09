@@ -30,9 +30,19 @@ octk_configure_feature("USE_LIBSRTP" PUBLIC
 octk_configure_feature("USE_ZLMEDIAKIT" PUBLIC
 	LABEL "Enable this to build use ZLMediaKit"
 	CONDITION OFF)
+octk_configure_feature("ENABLE_CAPTURE_CAMERA" PUBLIC
+    LABEL "Enable this to build enable capture camera function"
+    CONDITION OFF)
 octk_configure_feature("ENABLE_CAPTURE_DESKTOP" PUBLIC
-	LABEL "Enable this to build use capture desktop function"
+    LABEL "Enable this to build enable capture desktop function"
 	CONDITION OFF)
 octk_configure_feature("ENABLE_CAPTURE_VIDEO" PUBLIC
-	LABEL "Enable this to build use capture video function"
+    LABEL "Enable this to build enable capture video function"
 	CONDITION OFF)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(pipewire QUIET IMPORTED_TARGET libpipewire-0.3)
+octk_configure_feature("ENABLE_CAPTURE_CAMERA_PIPEWIRE" PUBLIC
+    LABEL "Enable this to build enable capture video libpipewire"
+    DISABLE NOT TARGET PkgConfig::pipewire
+    AUTODETECT ON)

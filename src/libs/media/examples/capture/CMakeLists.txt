@@ -50,6 +50,19 @@ if(OCTK_FEATURE_ENABLE_CAPTURE_DESKTOP)
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
 endif()
+if(OCTK_FEATURE_ENABLE_CAPTURE_CAMERA)
+    octk_add_executable(octk_media_exp_camera_capture
+        EXCEPTIONS
+        SOURCES
+        exp_camera_capture.cpp
+        video_renderer.hpp
+        INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        LIBRARIES
+        ${OCTK_EXAMPLE_LINK_LIBRARIES}
+        OUTPUT_DIRECTORY
+        ${OCTK_EXAMPLE_OUTPUT_DIR})
+endif()
 octk_add_executable(octk_media_exp_square_generator
 	EXCEPTIONS
 	SOURCES

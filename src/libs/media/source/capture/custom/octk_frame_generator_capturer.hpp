@@ -101,7 +101,7 @@ private:
 
     int mSourceFps OCTK_ATTRIBUTE_GUARDED_BY(&mMutex);
     int mTargetCaptureFps OCTK_ATTRIBUTE_GUARDED_BY(&mMutex);
-    VideoRotation mFakeRotation = VideoRotation::Angle0;
+    VideoRotation mFakeRotation = VideoRotation::kAngle0;
     Optional<ColorSpace> mFakeColorSpace OCTK_ATTRIBUTE_GUARDED_BY(&mMutex);
 
     TaskQueueBase::SharedPtr mTaskQueue;

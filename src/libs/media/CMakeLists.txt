@@ -197,6 +197,7 @@ octk_add_library(media
 	source/video/octk_video_track_source.cpp
 	source/video/octk_video_track_source.hpp
 	source/video/octk_video_track_source_constraints.hpp
+    source/video/octk_video_type.cpp
 	source/video/octk_video_type.hpp
 	source/video/octk_yuv.cpp
 	source/video/octk_yuv.hpp
@@ -222,6 +223,9 @@ octk_add_library(media
 add_subdirectory(source/capture/custom)
 if(OCTK_FEATURE_ENABLE_CAPTURE_DESKTOP)
 	add_subdirectory(source/capture/desktop)
+endif()
+if(OCTK_FEATURE_ENABLE_CAPTURE_CAMERA)
+    add_subdirectory(source/capture/camera)
 endif()
 if(OCTK_FEATURE_ENABLE_CAPTURE_VIDEO)
 	add_subdirectory(source/capture/video)

@@ -84,6 +84,7 @@ private:
     VideoBroadcaster mBroadcaster;
     VideoAdapter mVideoAdapter;
 };
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_CUSTOM_VIDEO_CAPTURER_HPP

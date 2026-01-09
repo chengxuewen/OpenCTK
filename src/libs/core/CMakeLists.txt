@@ -116,6 +116,8 @@ octk_add_library(core
 	source/thread/octk_platform_thread.cpp
 	source/thread/octk_platform_thread.hpp
 	source/thread/octk_platform_thread_p.hpp
+    source/thread/octk_race_checker.cpp
+    source/thread/octk_race_checker.hpp
 	source/thread/octk_reference_counter.hpp
 	source/thread/octk_repeating_task.cpp
 	source/thread/octk_repeating_task.hpp

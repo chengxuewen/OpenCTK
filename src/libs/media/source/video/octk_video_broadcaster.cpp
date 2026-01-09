@@ -87,7 +87,7 @@ void VideoBroadcaster::onFrame(const VideoFrame &frame)
     bool currentFrameWasDiscarded = false;
     for (auto &sinkPair : this->sinkPairs())
     {
-        if (sinkPair.wants.rotationApplied && frame.rotation() != VideoRotation::Angle0)
+        if (sinkPair.wants.rotationApplied && frame.rotation() != VideoRotation::kAngle0)
         {
             // Calls to OnFrame are not synchronized with changes to the sink wants.
             // When rotationApplied is set to true, one or a few frames may get here

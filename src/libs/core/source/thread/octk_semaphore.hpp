@@ -152,7 +152,7 @@ public:
     std::ptrdiff_t available() const
     {
         Lock lock{mMutex};
-        return mCount.load();
+        return mCount;
     }
 
 
@@ -172,7 +172,7 @@ protected:
 private:
     mutable Mutex mMutex;
     Condition mCondition;
-    std::atomic<std::ptrdiff_t> mCount{0};
+    std::ptrdiff_t mCount{0};
     OCTK_DISABLE_COPY_MOVE(CountingSemaphore)
 };
 using BinarySemaphore = CountingSemaphore<1>;

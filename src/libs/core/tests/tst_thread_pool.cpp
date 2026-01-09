@@ -763,8 +763,8 @@ TEST(ThreadPoolTest, TryStartCount)
 
 TEST(ThreadPoolTest, PriorityStart)
 {
-    // std::vector<int> priorities = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    std::vector<int> priorities = {2};
+     std::vector<int> priorities = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+//    std::vector<int> priorities = {2};
     for (auto otherCount : priorities)
     {
         class Holder : public Task
@@ -787,14 +787,14 @@ TEST(ThreadPoolTest, PriorityStart)
             }
             void run()
             {
-                // OCTK_DEBUG("run %p", this);
+//                 OCTK_DEBUG("run %p", this);
                 Task *expected = nullptr;
                 ptr.compare_exchange_strong(expected, this);
             }
         };
 
         Semaphore sem;
-        std::atomic<Task *> firstStarted;
+        std::atomic<Task *> firstStarted{nullptr};
         Task *expected{nullptr};
         ThreadPool threadPool;
         threadPool.setMaxThreadCount(1); // start only one thread at a time
@@ -805,7 +805,7 @@ TEST(ThreadPoolTest, PriorityStart)
         while (otherCount--)
         {
             auto task = new Runner(firstStarted);
-            // OCTK_DEBUG("Runner %p", task);
+//             OCTK_DEBUG("Runner %p", task);
             threadPool.start(task, true, ThreadPool::Priority::kNormal); // priority kNormal
         }
         threadPool.start(expected = new Runner(firstStarted),
@@ -813,7 +813,7 @@ TEST(ThreadPoolTest, PriorityStart)
                          ThreadPool::Priority::kHighest); // priority kHighest, expected
         threadPool.start(new Runner(firstStarted), true,
                          ThreadPool::Priority::kHighest); // priority kHighest
-        // OCTK_DEBUG("expected %p", expected);
+//         OCTK_DEBUG("expected %p", expected);
 
         sem.release();
         EXPECT_TRUE(threadPool.waitForDone());
