@@ -244,6 +244,7 @@ octk_internal_extend_target(octk_core
 	SOURCES
 	source/tools/octk_file_utils.mm
 	CONDITION OCTK_SYSTEM_MAC)
+add_subdirectory(source/reflection)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
