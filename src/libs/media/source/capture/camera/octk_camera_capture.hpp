@@ -25,7 +25,6 @@
 #pragma once
 
 #include <octk_video_sink_interface.hpp>
-#include <octk_video_rotation.hpp>
 #include <octk_video_frame.hpp>
 #include <octk_video_type.hpp>
 

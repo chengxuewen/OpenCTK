@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -22,41 +22,57 @@
 **
 ***********************************************************************************************************************/
 
-#pragma once
-
 #include <octk_event.hpp>
-
-#include <list>
 
 OCTK_BEGIN_NAMESPACE
 
-class ObjectPrivate;
-class Object
+Event::Event(Type type)
+    : mType(static_cast<ushort>(type))
+    , mPosted(false)
+    , mAccept(false)
 {
-public:
-    using Children = std::list<Object *>;
+}
 
-    explicit Object(Object *parent = nullptr);
-    Object(ObjectPrivate *d);
-    virtual ~Object();
+Event::Event(const Event &other)
+    : mType(static_cast<ushort>(other.mType))
+    , mPosted(other.mPosted)
+    , mAccept(other.mAccept)
+{
+}
 
-    Object *parent() const;
-    void setParent(Object *parent);
+Event::~Event()
+{
+}
 
-    const Children &children() const;
+Event &Event::operator=(const Event &other)
+{
+    if (this != &other)
+    {
+        mType = static_cast<ushort>(other.mType);
+        mPosted = other.mPosted;
+        mAccept = other.mAccept;
+    }
+    return *this;
+}
 
-    virtual bool event(Event *event);
-    virtual bool eventFilter(Object *watched, Event *event);
+TimerEvent::TimerEvent(int timerId)
+    : Event(Type::kTimer)
+    , mTimerId(timerId)
+{
+}
 
-protected:
-    virtual void timerEvent(TimerEvent *event);
-    virtual void childEvent(ChildEvent *event);
-    virtual void customEvent(Event *event);
+TimerEvent::~TimerEvent()
+{
+}
 
-protected:
-    OCTK_DEFINE_DPTR(Object)
-    OCTK_DECLARE_PRIVATE(Object)
-    OCTK_DISABLE_COPY_MOVE(Object)
-};
+ChildEvent::ChildEvent(Type type, Object *child)
+    : Event(type)
+    , mChild(child)
+{
+}
+
+ChildEvent::~ChildEvent()
+{
+}
 
 OCTK_END_NAMESPACE

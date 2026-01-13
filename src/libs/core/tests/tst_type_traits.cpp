@@ -93,14 +93,14 @@ struct FlipFlop
 };
 
 // CallMaybeWithArg(f) resolves either to invoke(f) or invoke(f, 42), depending on which one is valid.
-template <typename F> decltype(type_traits::invoke(std::declval<const F &>())) CallMaybeWithArg(const F &f)
+template <typename F> decltype(traits::invoke(std::declval<const F &>())) CallMaybeWithArg(const F &f)
 {
-    return type_traits::invoke(f);
+    return traits::invoke(f);
 }
 
-template <typename F> decltype(type_traits::invoke(std::declval<const F &>(), 42)) CallMaybeWithArg(const F &f)
+template <typename F> decltype(traits::invoke(std::declval<const F &>(), 42)) CallMaybeWithArg(const F &f)
 {
-    return type_traits::invoke(f, 42);
+    return traits::invoke(f, 42);
 }
 
 int Function(int a, int b) { return a - b; }
@@ -137,30 +137,30 @@ using StdFunction = std::function<int(int, double)>;
 
 TEST(InvokeTest, Function)
 {
-    EXPECT_EQ(1, type_traits::invoke(Function, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Function, 3, 2));
+    EXPECT_EQ(1, traits::invoke(Function, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Function, 3, 2));
 }
 
-TEST(InvokeTest, NonCopyableArgument) { EXPECT_EQ(42, type_traits::invoke(Sink, utils::make_unique<int>(42))); }
+TEST(InvokeTest, NonCopyableArgument) { EXPECT_EQ(42, traits::invoke(Sink, utils::make_unique<int>(42))); }
 
-TEST(InvokeTest, NonCopyableResult) { EXPECT_EQ(*type_traits::invoke(Factory, 42).get(), 42); }
+TEST(InvokeTest, NonCopyableResult) { EXPECT_EQ(*traits::invoke(Factory, 42).get(), 42); }
 
-TEST(InvokeTest, VoidResult) { type_traits::invoke(NoOp); }
+TEST(InvokeTest, VoidResult) { traits::invoke(NoOp); }
 
-TEST(InvokeTest, ConstFunctor) { EXPECT_EQ(1, type_traits::invoke(ConstFunctor(), 3, 2)); }
+TEST(InvokeTest, ConstFunctor) { EXPECT_EQ(1, traits::invoke(ConstFunctor(), 3, 2)); }
 
 TEST(InvokeTest, MutableFunctor)
 {
     MutableFunctor f;
-    EXPECT_EQ(1, type_traits::invoke(f, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(MutableFunctor(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(f, 3, 2));
+    EXPECT_EQ(1, traits::invoke(MutableFunctor(), 3, 2));
 }
 
 TEST(InvokeTest, EphemeralFunctor)
 {
     EphemeralFunctor f;
-    EXPECT_EQ(1, type_traits::invoke(std::move(f), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(EphemeralFunctor(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(std::move(f), 3, 2));
+    EXPECT_EQ(1, traits::invoke(EphemeralFunctor(), 3, 2));
 }
 
 TEST(InvokeTest, OverloadedFunctor)
@@ -168,25 +168,25 @@ TEST(InvokeTest, OverloadedFunctor)
     OverloadedFunctor f;
     const OverloadedFunctor &cf = f;
 
-    EXPECT_EQ("&", type_traits::invoke(f));
-    EXPECT_EQ("& 42", type_traits::invoke(f, " 42"));
+    EXPECT_EQ("&", traits::invoke(f));
+    EXPECT_EQ("& 42", traits::invoke(f, " 42"));
 
-    EXPECT_EQ("const&", type_traits::invoke(cf));
-    EXPECT_EQ("const& 42", type_traits::invoke(cf, " 42"));
+    EXPECT_EQ("const&", traits::invoke(cf));
+    EXPECT_EQ("const& 42", traits::invoke(cf, " 42"));
 
-    EXPECT_EQ("&&", type_traits::invoke(std::move(f)));
+    EXPECT_EQ("&&", traits::invoke(std::move(f)));
 
     OverloadedFunctor f2;
-    EXPECT_EQ("&& 42", type_traits::invoke(std::move(f2), " 42"));
+    EXPECT_EQ("&& 42", traits::invoke(std::move(f2), " 42"));
 }
 
 TEST(InvokeTest, ReferenceWrapper)
 {
     ConstFunctor cf;
     MutableFunctor mf;
-    EXPECT_EQ(1, type_traits::invoke(std::cref(cf), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(std::ref(cf), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(std::ref(mf), 3, 2));
+    EXPECT_EQ(1, traits::invoke(std::cref(cf), 3, 2));
+    EXPECT_EQ(1, traits::invoke(std::ref(cf), 3, 2));
+    EXPECT_EQ(1, traits::invoke(std::ref(mf), 3, 2));
 }
 
 TEST(InvokeTest, MemberFunction)
@@ -195,52 +195,52 @@ TEST(InvokeTest, MemberFunction)
     std::unique_ptr<const Class> cp(new Class);
     std::unique_ptr<volatile Class> vp(new Class);
 
-    EXPECT_EQ(1, type_traits::invoke(&Class::Method, p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::Method, p.get(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::Method, *p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::RefMethod, p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::RefMethod, p.get(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::RefMethod, *p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::RefRefMethod, std::move(*p), 3,
+    EXPECT_EQ(1, traits::invoke(&Class::Method, p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::Method, p.get(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::Method, *p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::RefMethod, p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::RefMethod, p.get(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::RefMethod, *p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::RefRefMethod, std::move(*p), 3,
                                      2)); // NOLINT
-    EXPECT_EQ(1, type_traits::invoke(&Class::NoExceptMethod, p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::NoExceptMethod, p.get(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::NoExceptMethod, *p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::NoExceptMethod, p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::NoExceptMethod, p.get(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::NoExceptMethod, *p, 3, 2));
 
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, p.get(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, *p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, p.get(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, *p, 3, 2));
 
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, cp, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, cp.get(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, *cp, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, cp, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, cp.get(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, *cp, 3, 2));
 
-    EXPECT_EQ(1, type_traits::invoke(&Class::VolatileMethod, p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::VolatileMethod, p.get(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::VolatileMethod, *p, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::VolatileMethod, vp, 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::VolatileMethod, vp.get(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::VolatileMethod, *vp, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::VolatileMethod, p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::VolatileMethod, p.get(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::VolatileMethod, *p, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::VolatileMethod, vp, 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::VolatileMethod, vp.get(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::VolatileMethod, *vp, 3, 2));
 
-    EXPECT_EQ(1, type_traits::invoke(&Class::Method, utils::make_unique<Class>(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, utils::make_unique<Class>(), 3, 2));
-    EXPECT_EQ(1, type_traits::invoke(&Class::ConstMethod, utils::make_unique<const Class>(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::Method, utils::make_unique<Class>(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, utils::make_unique<Class>(), 3, 2));
+    EXPECT_EQ(1, traits::invoke(&Class::ConstMethod, utils::make_unique<const Class>(), 3, 2));
 }
 
 TEST(InvokeTest, DataMember)
 {
     std::unique_ptr<Class> p(new Class{42});
     std::unique_ptr<const Class> cp(new Class{42});
-    EXPECT_EQ(42, type_traits::invoke(&Class::member, p));
-    EXPECT_EQ(42, type_traits::invoke(&Class::member, *p));
-    EXPECT_EQ(42, type_traits::invoke(&Class::member, p.get()));
+    EXPECT_EQ(42, traits::invoke(&Class::member, p));
+    EXPECT_EQ(42, traits::invoke(&Class::member, *p));
+    EXPECT_EQ(42, traits::invoke(&Class::member, p.get()));
 
-    type_traits::invoke(&Class::member, p) = 42;
-    type_traits::invoke(&Class::member, p.get()) = 42;
+    traits::invoke(&Class::member, p) = 42;
+    traits::invoke(&Class::member, p.get()) = 42;
 
-    EXPECT_EQ(42, type_traits::invoke(&Class::member, cp));
-    EXPECT_EQ(42, type_traits::invoke(&Class::member, *cp));
-    EXPECT_EQ(42, type_traits::invoke(&Class::member, cp.get()));
+    EXPECT_EQ(42, traits::invoke(&Class::member, cp));
+    EXPECT_EQ(42, traits::invoke(&Class::member, *cp));
+    EXPECT_EQ(42, traits::invoke(&Class::member, cp.get()));
 }
 
 TEST(InvokeTest, FlipFlop)
@@ -248,8 +248,8 @@ TEST(InvokeTest, FlipFlop)
     FlipFlop obj = {42};
     // This call could resolve to (obj.*&FlipFlop::ConstMethod)() or
     // ((*obj).*&FlipFlop::ConstMethod)(). We verify that it's the former.
-    EXPECT_EQ(42, type_traits::invoke(&FlipFlop::ConstMethod, obj));
-    EXPECT_EQ(42, type_traits::invoke(&FlipFlop::member, obj));
+    EXPECT_EQ(42, traits::invoke(&FlipFlop::ConstMethod, obj));
+    EXPECT_EQ(42, traits::invoke(&FlipFlop::member, obj));
 }
 
 TEST(InvokeTest, SfinaeFriendly)
@@ -261,389 +261,300 @@ TEST(InvokeTest, SfinaeFriendly)
 
 TEST(IsInvocableTest, FreeFunctionExactMatch)
 {
-    static_assert(type_traits::is_invocable<decltype(FreeFunction), int, double>::value,
+    static_assert(traits::is_invocable<decltype(FreeFunction), int, double>::value,
                   "Should be true for exact match on a free function");
 }
 
 TEST(IsInvocableTest, FreeFunctionArgumentConversion)
 {
-    static_assert(type_traits::is_invocable<decltype(FreeFunction), short, float>::value,
+    static_assert(traits::is_invocable<decltype(FreeFunction), short, float>::value,
                   "Should be true for convertible argument types");
 }
 
 TEST(IsInvocableTest, FreeFunctionVoidReturn)
 {
-    static_assert(type_traits::is_invocable<decltype(VoidFunction), int &, int &>::value,
+    static_assert(traits::is_invocable<decltype(VoidFunction), int &, int &>::value,
                   "Should be true for void return type");
 }
 
 TEST(IsInvocableTest, FreeFunctionArgumentTypeMismatch)
 {
-    static_assert(!type_traits::is_invocable<decltype(FreeFunction), std::string, double>::value,
+    static_assert(!traits::is_invocable<decltype(FreeFunction), std::string, double>::value,
                   "Should be false for first argument type mismatch");
-    static_assert(!type_traits::is_invocable<decltype(FreeFunction), int, std::string>::value,
+    static_assert(!traits::is_invocable<decltype(FreeFunction), int, std::string>::value,
                   "Should be false for second argument type mismatch");
 }
 
 TEST(IsInvocableTest, FreeFunctionArgumentCountMismatch)
 {
-    static_assert(!type_traits::is_invocable<decltype(FreeFunction), int>::value,
+    static_assert(!traits::is_invocable<decltype(FreeFunction), int>::value,
                   "Should be false for too few arguments");
-    static_assert(!type_traits::is_invocable<decltype(FreeFunction), int, double, char>::value,
+    static_assert(!traits::is_invocable<decltype(FreeFunction), int, double, char>::value,
                   "Should be false for too many arguments");
 }
 
 TEST(IsInvocableTest, FreeFunctionZeroArgs)
 {
-    static_assert(type_traits::is_invocable<decltype(ZeroArgFunction)>::value,
+    static_assert(traits::is_invocable<decltype(ZeroArgFunction)>::value,
                   "Should be true for zero-arg free function");
 }
 
 TEST(IsInvocableTest, FunctorExactMatch)
 {
-    static_assert(type_traits::is_invocable<Functor, int, double>::value,
+    static_assert(traits::is_invocable<Functor, int, double>::value,
                   "Should be true for exact match on a functor");
 }
 
 TEST(IsInvocableTest, ConstFunctorExactMatch)
 {
-    static_assert(type_traits::is_invocable<ConstFunctor, int, double>::value,
+    static_assert(traits::is_invocable<ConstFunctor, int, double>::value,
                   "Should be true for exact match on a const functor");
-    static_assert(type_traits::is_invocable<const ConstFunctor, int, double>::value,
+    static_assert(traits::is_invocable<const ConstFunctor, int, double>::value,
                   "Should be true for const object of const functor");
 }
 
 TEST(IsInvocableTest, FunctorArgumentConversion)
 {
-    static_assert(type_traits::is_invocable<Functor, short, float>::value,
+    static_assert(traits::is_invocable<Functor, short, float>::value,
                   "Should be true for convertible arguments to functor");
 }
 
 TEST(IsInvocableTest, LambdaExactMatch)
 {
-    static_assert(type_traits::is_invocable<decltype(Lambda), int, double>::value,
+    static_assert(traits::is_invocable<decltype(Lambda), int, double>::value,
                   "Should be true for exact match on a lambda");
 }
 
 TEST(IsInvocableTest, MutableLambdaExactMatch)
 {
-    static_assert(type_traits::is_invocable<decltype(MutableLambda), int, double>::value,
+    static_assert(traits::is_invocable<decltype(MutableLambda), int, double>::value,
                   "Should be true for exact match on a mutable lambda");
 }
 
 TEST(IsInvocableTest, LambdaArgumentConversion)
 {
-    static_assert(type_traits::is_invocable<decltype(Lambda), short, float>::value,
+    static_assert(traits::is_invocable<decltype(Lambda), short, float>::value,
                   "Should be true for convertible arguments to lambda");
 }
 
 TEST(IsInvocableTest, StdFunctionExactMatch)
 {
     StdFunction func = [](int, double) { return 0; };
-    static_assert(type_traits::is_invocable<StdFunction, int, double>::value,
+    static_assert(traits::is_invocable<StdFunction, int, double>::value,
                   "Should be true for exact match on std::function");
 }
 
 TEST(IsInvocableTest, StdFunctionArgumentConversion)
 {
-    static_assert(type_traits::is_invocable<StdFunction, short, float>::value,
+    static_assert(traits::is_invocable<StdFunction, short, float>::value,
                   "Should be true for convertible arguments to std::function");
 }
 
 TEST(IsInvocableTest, MemberFunctionWithReference)
 {
-    static_assert(type_traits::is_invocable<decltype(&Class::Method), Class &, int, double>::value,
+    static_assert(traits::is_invocable<decltype(&Class::Method), Class &, int, double>::value,
                   "Should be true for member function with class reference");
 }
 
 TEST(IsInvocableTest, MemberFunctionWithPointer)
 {
-    static_assert(type_traits::is_invocable<decltype(&Class::Method), Class *, int, double>::value,
+    static_assert(traits::is_invocable<decltype(&Class::Method), Class *, int, double>::value,
                   "Should be true for member function with class pointer");
 }
 
 TEST(IsInvocableTest, ConstMemberFunctionWithConstReference)
 {
-    static_assert(type_traits::is_invocable<decltype(&Class::ConstMethod), const Class &, int, double>::value,
+    static_assert(traits::is_invocable<decltype(&Class::ConstMethod), const Class &, int, double>::value,
                   "Should be true for const member function with const reference");
 }
 
 TEST(IsInvocableTest, MemberFunctionArgumentConversion)
 {
-    static_assert(type_traits::is_invocable<decltype(&Class::Method), Class &, short, float>::value,
+    static_assert(traits::is_invocable<decltype(&Class::Method), Class &, short, float>::value,
                   "Should be true for convertible arguments to member function");
 }
 
 TEST(IsInvocableTest, MemberFunctionObjectTypeMismatch)
 {
-    static_assert(!type_traits::is_invocable<decltype(&Class::Method), int, int, double>::value,
+    static_assert(!traits::is_invocable<decltype(&Class::Method), int, int, double>::value,
                   "Should be false for wrong object type");
-    static_assert(!type_traits::is_invocable<decltype(&Class::Method), const Class &, int, double>::value,
+    static_assert(!traits::is_invocable<decltype(&Class::Method), const Class &, int, double>::value,
                   "Should be false for const reference to non-const method");
 }
 
 TEST(IsInvocableTest, DataMemberWithReference)
 {
-    static_assert(type_traits::is_invocable<decltype(&Class::member), Class &>::value,
+    static_assert(traits::is_invocable<decltype(&Class::member), Class &>::value,
                   "Should be true for data member with class reference");
 }
 
 TEST(IsInvocableTest, DataMemberWithPointer)
 {
-    static_assert(type_traits::is_invocable<decltype(&Class::member), Class *>::value,
+    static_assert(traits::is_invocable<decltype(&Class::member), Class *>::value,
                   "Should be true for data member with class pointer");
 }
 
 TEST(IsInvocableTest, DataMemberReturnsReference)
 {
-    static_assert(type_traits::is_invocable<decltype(&Class::member), Class &>::value,
+    static_assert(traits::is_invocable<decltype(&Class::member), Class &>::value,
                   "Data member access should be invocable");
 }
 
 TEST(IsInvocableTest, NonCallableTypes)
 {
-    static_assert(!type_traits::is_invocable<int>::value, "Should be false for int");
-    static_assert(!type_traits::is_invocable<double, int>::value, "Should be false for double with argument");
-    static_assert(!type_traits::is_invocable<std::string, char>::value,
+    static_assert(!traits::is_invocable<int>::value, "Should be false for int");
+    static_assert(!traits::is_invocable<double, int>::value, "Should be false for double with argument");
+    static_assert(!traits::is_invocable<std::string, char>::value,
                   "Should be false for std::string with argument");
 }
 
 TEST(IsInvocableTest, PointerToNonCallable)
 {
-    static_assert(!type_traits::is_invocable<int *, int>::value, "Should be false for pointer to non-callable type");
+    static_assert(!traits::is_invocable<int *, int>::value, "Should be false for pointer to non-callable type");
 }
 
 TEST(IsInvocableTest, LvalueReferenceArguments)
 {
     auto takes_lvalue_ref = [](int &) { };
     int x = 0;
-    static_assert(type_traits::is_invocable<decltype(takes_lvalue_ref), int &>::value,
+    static_assert(traits::is_invocable<decltype(takes_lvalue_ref), int &>::value,
                   "Should be true for lvalue reference argument");
-    static_assert(!type_traits::is_invocable<decltype(takes_lvalue_ref), const int &>::value,
+    static_assert(!traits::is_invocable<decltype(takes_lvalue_ref), const int &>::value,
                   "Should be false for const lvalue ref to non-const param");
-    static_assert(!type_traits::is_invocable<decltype(takes_lvalue_ref), int>::value,
+    static_assert(!traits::is_invocable<decltype(takes_lvalue_ref), int>::value,
                   "Should be false for rvalue to lvalue ref param");
 }
 
 TEST(IsInvocableTest, ConstLvalueReferenceArguments)
 {
     auto takes_const_ref = [](const int &) { };
-    static_assert(type_traits::is_invocable<decltype(takes_const_ref), const int &>::value,
+    static_assert(traits::is_invocable<decltype(takes_const_ref), const int &>::value,
                   "Should be true for const lvalue ref to const param");
-    static_assert(type_traits::is_invocable<decltype(takes_const_ref), int &>::value,
+    static_assert(traits::is_invocable<decltype(takes_const_ref), int &>::value,
                   "Should be true for lvalue ref to const param");
-    static_assert(type_traits::is_invocable<decltype(takes_const_ref), int>::value,
+    static_assert(traits::is_invocable<decltype(takes_const_ref), int>::value,
                   "Should be true for rvalue to const param");
 }
 
 TEST(IsInvocableTest, RvalueReferenceArguments)
 {
     auto takes_rvalue_ref = [](int &&) { };
-    static_assert(type_traits::is_invocable<decltype(takes_rvalue_ref), int>::value,
+    static_assert(traits::is_invocable<decltype(takes_rvalue_ref), int>::value,
                   "Should be true for rvalue to rvalue ref param");
-    static_assert(!type_traits::is_invocable<decltype(takes_rvalue_ref), int &>::value,
+    static_assert(!traits::is_invocable<decltype(takes_rvalue_ref), int &>::value,
                   "Should be false for lvalue ref to rvalue ref param");
 }
 
 TEST(IsInvocableTest, VariadicFunction)
 {
     auto variadic_func = [](auto &&...) { };
-    static_assert(type_traits::is_invocable<decltype(variadic_func)>::value,
+    static_assert(traits::is_invocable<decltype(variadic_func)>::value,
                   "Should be true for variadic with zero args");
-    static_assert(type_traits::is_invocable<decltype(variadic_func), int>::value,
+    static_assert(traits::is_invocable<decltype(variadic_func), int>::value,
                   "Should be true for variadic with one arg");
-    static_assert(type_traits::is_invocable<decltype(variadic_func), int, double, std::string>::value,
+    static_assert(traits::is_invocable<decltype(variadic_func), int, double, std::string>::value,
                   "Should be true for variadic with multiple args");
 }
 
 TEST(IsInvocableTest, MoveOnlyArguments)
 {
     auto takes_unique_ptr = [](std::unique_ptr<int>) { };
-    static_assert(type_traits::is_invocable<decltype(takes_unique_ptr), std::unique_ptr<int>>::value,
+    static_assert(traits::is_invocable<decltype(takes_unique_ptr), std::unique_ptr<int>>::value,
                   "Should be true for move-only type argument");
-    static_assert(!type_traits::is_invocable<decltype(takes_unique_ptr), std::unique_ptr<int> &>::value,
+    static_assert(!traits::is_invocable<decltype(takes_unique_ptr), std::unique_ptr<int> &>::value,
                   "Should be false for lvalue ref to move-only param");
 }
 
 TEST(IsInvocableRTest, CallableExactMatch)
 {
-    static_assert(type_traits::is_invocable_r<int, decltype(Function), int, int>::value,
+    static_assert(traits::is_invocable_r<int, decltype(Function), int, int>::value,
                   "Should be true for exact match of types on a free function");
 }
 
 TEST(IsInvocableRTest, CallableArgumentConversionMatch)
 {
-    static_assert(type_traits::is_invocable_r<int, decltype(Function), char, int>::value,
+    static_assert(traits::is_invocable_r<int, decltype(Function), char, int>::value,
                   "Should be true for convertible argument type");
 }
 
 TEST(IsInvocableRTest, CallableReturnConversionMatch)
 {
-    static_assert(type_traits::is_invocable_r<double, decltype(Function), int, int>::value,
+    static_assert(traits::is_invocable_r<double, decltype(Function), int, int>::value,
                   "Should be true for convertible return type");
 }
 
 TEST(IsInvocableRTest, CallableReturnVoid)
 {
-    static_assert(type_traits::is_invocable_r<void, decltype(VoidFunction), int &, int &>::value,
+    static_assert(traits::is_invocable_r<void, decltype(VoidFunction), int &, int &>::value,
                   "Should be true for void expected and actual return types");
-    static_assert(type_traits::is_invocable_r<void, decltype(Function), int, int>::value,
+    static_assert(traits::is_invocable_r<void, decltype(Function), int, int>::value,
                   "Should be true for void expected and non-void actual return types");
 }
 
 TEST(IsInvocableRTest, CallableRefQualifierMismatch)
 {
-    static_assert(!type_traits::is_invocable_r<void, decltype(VoidFunction), int &, const int &>::value,
+    static_assert(!traits::is_invocable_r<void, decltype(VoidFunction), int &, const int &>::value,
                   "Should be false for reference constness mismatch");
-    static_assert(!type_traits::is_invocable_r<void, decltype(VoidFunction), int &&, int &>::value,
+    static_assert(!traits::is_invocable_r<void, decltype(VoidFunction), int &&, int &>::value,
                   "Should be false for reference value category mismatch");
 }
 
 TEST(IsInvocableRTest, CallableArgumentTypeMismatch)
 {
-    static_assert(!type_traits::is_invocable_r<int, decltype(Function), std::string, int>::value,
+    static_assert(!traits::is_invocable_r<int, decltype(Function), std::string, int>::value,
                   "Should be false for argument type mismatch");
 }
 
 TEST(IsInvocableRTest, CallableReturnTypeMismatch)
 {
-    static_assert(!type_traits::is_invocable_r<std::string, decltype(Function), int, int>::value,
+    static_assert(!traits::is_invocable_r<std::string, decltype(Function), int, int>::value,
                   "Should be false for return type mismatch");
 }
 
 TEST(IsInvocableRTest, CallableTooFewArgs)
 {
-    static_assert(!type_traits::is_invocable_r<int, decltype(Function), int>::value,
+    static_assert(!traits::is_invocable_r<int, decltype(Function), int>::value,
                   "Should be false for too few arguments");
 }
 
 TEST(IsInvocableRTest, CallableTooManyArgs)
 {
-    static_assert(!type_traits::is_invocable_r<int, decltype(Function), int, int, int>::value,
+    static_assert(!traits::is_invocable_r<int, decltype(Function), int, int, int>::value,
                   "Should be false for too many arguments");
 }
 
 TEST(IsInvocableRTest, MemberFunctionAndReference)
 {
-    static_assert(type_traits::is_invocable_r<int, decltype(&Class::Method), Class &, int, int>::value,
+    static_assert(traits::is_invocable_r<int, decltype(&Class::Method), Class &, int, int>::value,
                   "Should be true for exact match of types on a member function "
                   "and class reference");
 }
 
 TEST(IsInvocableRTest, MemberFunctionAndPointer)
 {
-    static_assert(type_traits::is_invocable_r<int, decltype(&Class::Method), Class *, int, int>::value,
+    static_assert(traits::is_invocable_r<int, decltype(&Class::Method), Class *, int, int>::value,
                   "Should be true for exact match of types on a member function "
                   "and class pointer");
 }
 
 TEST(IsInvocableRTest, DataMemberAndReference)
 {
-    static_assert(type_traits::is_invocable_r<int, decltype(&Class::member), Class &>::value,
+    static_assert(traits::is_invocable_r<int, decltype(&Class::member), Class &>::value,
                   "Should be true for exact match of types on a data member and "
                   "class reference");
 }
 
 TEST(IsInvocableRTest, DataMemberAndPointer)
 {
-    static_assert(type_traits::is_invocable_r<int, decltype(&Class::member), Class *>::value,
+    static_assert(traits::is_invocable_r<int, decltype(&Class::member), Class *>::value,
                   "Should be true for exact match of types on a data member and "
                   "class pointer");
 }
 
 TEST(IsInvocableRTest, CallableZeroArgs)
 {
-    static_assert(type_traits::is_invocable_r<int, decltype(ZeroArgFunction)>::value,
+    static_assert(traits::is_invocable_r<int, decltype(ZeroArgFunction)>::value,
                   "Should be true for exact match for a zero-arg free function");
-}
-
-namespace
-{
-
-void f1(int, char, float) { }
-void f2(int, char, float) noexcept { }
-
-void f(int) { }
-void f(int, char, float) { }
-
-struct oo
-{
-    void operator()(int) { }
-    void operator()(int, char, float) { }
-};
-
-struct s
-{
-    static void s1(int, char, float) { }
-    static void s2(int, char, float) noexcept { }
-
-    void f1(int, char, float) { }
-    void f2(int, char, float) const { }
-    void f3(int, char, float) volatile { }
-    void f4(int, char, float) const volatile { }
-    void f5(int, char, float) noexcept { }
-    void f6(int, char, float) const noexcept { }
-    void f7(int, char, float) volatile noexcept { }
-    void f8(int, char, float) const volatile noexcept { }
-};
-
-struct o1
-{
-    void operator()(int, char, float) { }
-};
-struct o2
-{
-    void operator()(int, char, float) const { }
-};
-struct o3
-{
-    void operator()(int, char, float) volatile { }
-};
-struct o4
-{
-    void operator()(int, char, float) const volatile { }
-};
-struct o5
-{
-    void operator()(int, char, float) noexcept { }
-};
-struct o6
-{
-    void operator()(int, char, float) const noexcept { }
-};
-struct o7
-{
-    void operator()(int, char, float) volatile noexcept { }
-};
-struct o8
-{
-    void operator()(int, char, float) const volatile noexcept { }
-};
-using tl = TypeList<int, char, float>;
-} // namespace
-TEST(IsCallableTest, Function)
-{
-    static_assert(type_traits::is_callable_v<decltype(f1), tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(f2), tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::s1), tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::s2), tl>, "");
-    static_assert(type_traits::is_callable_v<oo, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f1), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f2), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f3), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f4), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f5), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f6), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f7), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<decltype(&s::f8), s *, tl>, "");
-    static_assert(type_traits::is_callable_v<o1, tl>, "");
-    static_assert(type_traits::is_callable_v<o2, tl>, "");
-    static_assert(type_traits::is_callable_v<o3, tl>, "");
-    static_assert(type_traits::is_callable_v<o4, tl>, "");
-    static_assert(type_traits::is_callable_v<o5, tl>, "");
-    static_assert(type_traits::is_callable_v<o6, tl>, "");
-    static_assert(type_traits::is_callable_v<o7, tl>, "");
-    static_assert(type_traits::is_callable_v<o8, tl>, "");
 }
 
 OCTK_END_NAMESPACE

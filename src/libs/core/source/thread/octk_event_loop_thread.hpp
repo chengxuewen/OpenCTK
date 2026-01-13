@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -24,39 +24,24 @@
 
 #pragma once
 
-#include <octk_event.hpp>
-
-#include <list>
+#include <octk_object.hpp>
+#include <octk_platform_thread.hpp>
+#include <octk_task_queue_thread.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class ObjectPrivate;
-class Object
+#if 0
+class EventLoopPrivate;
+class OCTK_CORE_API EventLoopThread : public Qbject, public PlatformThread
 {
 public:
-    using Children = std::list<Object *>;
+    explicit EventLoopThread(Object *parent = nullptr);
+    ~EventLoopThread() override;
 
-    explicit Object(Object *parent = nullptr);
-    Object(ObjectPrivate *d);
-    virtual ~Object();
-
-    Object *parent() const;
-    void setParent(Object *parent);
-
-    const Children &children() const;
-
-    virtual bool event(Event *event);
-    virtual bool eventFilter(Object *watched, Event *event);
-
-protected:
-    virtual void timerEvent(TimerEvent *event);
-    virtual void childEvent(ChildEvent *event);
-    virtual void customEvent(Event *event);
-
-protected:
-    OCTK_DEFINE_DPTR(Object)
-    OCTK_DECLARE_PRIVATE(Object)
-    OCTK_DISABLE_COPY_MOVE(Object)
+private:
+    OCTK_DECLARE_PRIVATE(EventLoopThread)
+    OCTK_DISABLE_COPY_MOVE(EventLoopThread)
 };
+#endif
 
 OCTK_END_NAMESPACE

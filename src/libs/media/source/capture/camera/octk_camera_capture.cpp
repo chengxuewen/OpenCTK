@@ -23,7 +23,6 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_camera_capture_p.hpp>
-#include <octk_camera_capture.hpp>
 #include <octk_video_rotation.hpp>
 #include <octk_string_utils.hpp>
 #include <octk_i420_buffer.hpp>

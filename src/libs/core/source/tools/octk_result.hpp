@@ -84,7 +84,7 @@ public:
      * @tparam U The type of the other Result's value, which must be convertible to T.
      * @param other The Result to copy from.
      */
-    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
+    template <typename U, typename = traits::enable_if_t<traits::is_convertible_v<U, T>>>
     Result(const Result<U> &other)
     {
         if (other.ok())
@@ -103,7 +103,7 @@ public:
      * @tparam U The type of the other Result's value, which must be convertible to T.
      * @param other The Result to move from.
      */
-    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
+    template <typename U, typename = traits::enable_if_t<traits::is_convertible_v<U, T>>>
     Result(Result<U> &&other)
     {
         if (other.ok())
@@ -202,7 +202,7 @@ public:
      * @param other The Result to copy from.
      * @return Reference to this Result.
      */
-    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
+    template <typename U, typename = traits::enable_if_t<traits::is_convertible_v<U, T>>>
     Result &operator=(const Result<U> &other)
     {
         if (other.ok())
@@ -223,7 +223,7 @@ public:
      * @param other The Result to move from.
      * @return Reference to this Result.
      */
-    template <typename U, typename = type_traits::enable_if_t<type_traits::is_convertible_v<U, T>>>
+    template <typename U, typename = traits::enable_if_t<traits::is_convertible_v<U, T>>>
     Result &operator=(Result<U> &&other)
     {
         if (other.ok())

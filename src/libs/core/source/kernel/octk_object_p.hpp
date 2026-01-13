@@ -24,39 +24,27 @@
 
 #pragma once
 
-#include <octk_event.hpp>
+#include <octk_object.hpp>
 
 #include <list>
 
 OCTK_BEGIN_NAMESPACE
 
-class ObjectPrivate;
-class Object
+class ObjectPrivate
 {
 public:
-    using Children = std::list<Object *>;
+    using Children = Object::Children;
 
-    explicit Object(Object *parent = nullptr);
-    Object(ObjectPrivate *d);
-    virtual ~Object();
+    explicit ObjectPrivate(Object *p);
+    virtual ~ObjectPrivate();
 
-    Object *parent() const;
-    void setParent(Object *parent);
-
-    const Children &children() const;
-
-    virtual bool event(Event *event);
-    virtual bool eventFilter(Object *watched, Event *event);
+    Object *mParent{nullptr};
+    Children mChildren;
 
 protected:
-    virtual void timerEvent(TimerEvent *event);
-    virtual void childEvent(ChildEvent *event);
-    virtual void customEvent(Event *event);
-
-protected:
-    OCTK_DEFINE_DPTR(Object)
-    OCTK_DECLARE_PRIVATE(Object)
-    OCTK_DISABLE_COPY_MOVE(Object)
+    OCTK_DEFINE_PPTR(Object)
+    OCTK_DECLARE_PUBLIC(Object)
+    OCTK_DISABLE_COPY_MOVE(ObjectPrivate)
 };
 
 OCTK_END_NAMESPACE

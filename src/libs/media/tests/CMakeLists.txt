@@ -37,14 +37,16 @@ set(OCTK_TEST_LINK_LIBRARIES octk::media OCTK3rdparty::WrapGTest OCTK3rdparty::W
 #-----------------------------------------------------------------------------------------------------------------------
 # Add tests
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_test(octk_media_tst_camera_capture
-    SOURCES
-    tst_camera_capture.cpp
-    INCLUDE_DIRECTORIES
-    LIBRARIES
-    ${OCTK_TEST_LINK_LIBRARIES}
-    OUTPUT_DIRECTORY
-    ${OCTK_TEST_OUTPUT_DIR})
+if(OCTK_FEATURE_ENABLE_CAPTURE_CAMERA)
+	octk_add_test(octk_media_tst_camera_capture
+		SOURCES
+		tst_camera_capture.cpp
+		INCLUDE_DIRECTORIES
+		LIBRARIES
+		${OCTK_TEST_LINK_LIBRARIES}
+		OUTPUT_DIRECTORY
+		${OCTK_TEST_OUTPUT_DIR})
+endif()
 #octk_add_test(octk_media_tst_balanced_degradation_settings
 #	SOURCES
 #	tst_balanced_degradation_settings.cpp

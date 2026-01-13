@@ -74,6 +74,17 @@ octk_add_library(core
 	source/global/octk_processor.hpp
 	source/global/octk_system.hpp
 	source/global/octk_types.hpp
+	source/kernel/octk_application.cpp
+	source/kernel/octk_application.hpp
+	source/kernel/octk_application_p.hpp
+	source/kernel/octk_event.cpp
+	source/kernel/octk_event.hpp
+	source/kernel/octk_event_loop.cpp
+	source/kernel/octk_event_loop.hpp
+	source/kernel/octk_event_loop_p.hpp
+	source/kernel/octk_object.cpp
+	source/kernel/octk_object.hpp
+	source/kernel/octk_object_p.hpp
 	source/kernel/octk_signals.cpp
 	source/kernel/octk_signals.hpp
 	source/memory/octk_aligned_malloc.cpp
@@ -93,6 +104,7 @@ octk_add_library(core
 	source/numerics/octk_numeric.hpp
 	source/numerics/octk_safe_compare.hpp
 	source/numerics/octk_safe_conversions.hpp
+	source/patterns/octk_singleton.hpp
 	source/text/octk_ascii.cpp
 	source/text/octk_ascii.hpp
 	source/text/octk_base64.cpp
@@ -110,14 +122,16 @@ octk_add_library(core
 	source/thread/octk_concurrent.hpp
 	source/thread/octk_context_checker.cpp
 	source/thread/octk_context_checker.hpp
-#	source/thread/octk_future.cpp
-#	source/thread/octk_future.hpp
+	source/thread/octk_event_loop_thread.cpp
+	source/thread/octk_event_loop_thread.hpp
+	#	source/thread/octk_future.cpp
+	#	source/thread/octk_future.hpp
 	source/thread/octk_mutex.hpp
 	source/thread/octk_platform_thread.cpp
 	source/thread/octk_platform_thread.hpp
 	source/thread/octk_platform_thread_p.hpp
-    source/thread/octk_race_checker.cpp
-    source/thread/octk_race_checker.hpp
+	source/thread/octk_race_checker.cpp
+	source/thread/octk_race_checker.hpp
 	source/thread/octk_reference_counter.hpp
 	source/thread/octk_repeating_task.cpp
 	source/thread/octk_repeating_task.hpp
@@ -146,6 +160,7 @@ octk_add_library(core
 	source/tools/octk_clock.hpp
 	source/tools/octk_crypto_random.cpp
 	source/tools/octk_crypto_random.hpp
+	source/tools/octk_enum_flags.hpp
 	source/tools/octk_error.cpp
 	source/tools/octk_error.hpp
 	source/tools/octk_exception.hpp
@@ -177,6 +192,8 @@ octk_add_library(core
 	source/tools/octk_shared_buffer.hpp
 	source/tools/octk_source_location.hpp
 	source/tools/octk_tag_id.hpp
+	source/tools/octk_type_info.hpp
+	source/tools/octk_type_list.hpp
 	source/tools/octk_type_traits.hpp
 	source/tools/octk_utility.hpp
 	source/tools/octk_variant.hpp
@@ -203,9 +220,9 @@ octk_add_library(core
 	${OCTKWrapFilesystem_INSTALL_DIR}/include
 	${OCTKWrapStringviewLite_INSTALL_DIR}/include
 	LIBRARIES
-    OCTK3rdparty::WrapSpdlog
+	OCTK3rdparty::WrapSpdlog
 	PUBLIC_LIBRARIES
-    OCTK3rdparty::WrapJson
+	OCTK3rdparty::WrapJson
 	OCTK3rdparty::WrapFunction2
 	OCTK3rdparty::WrapVariant
 	OCTK3rdparty::WrapExpected

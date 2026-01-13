@@ -28,5 +28,17 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
+#include <set>
+#include <list>
+#include <limits>
+#include <sstream>
+#include <fstream>
+#include <iomanip>
+#include <tuple>
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <type_traits>
 
 #endif // _OCTKPCH_HPP

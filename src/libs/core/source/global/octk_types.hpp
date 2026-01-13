@@ -83,7 +83,8 @@ using Binary = std::vector<byte_t>;
 using TSBinary = std::pair<int64_t, Binary>;
 using BinarySharedPtr = std::shared_ptr<Binary>;
 
-template <typename T> Binary makeBinary(const std::vector<T> &data)
+template <typename T>
+Binary makeBinary(const std::vector<T> &data)
 {
     return {reinterpret_cast<const byte_t *>(data.data()), reinterpret_cast<const byte_t *>(data.data()) + data.size()};
 }
@@ -91,25 +92,6 @@ template <typename T> Binary makeBinary(const std::vector<T> &data)
 struct None
 {
 };
-
-template <typename HeadArg, typename... TailArgs> struct Types
-{
-    using Head = HeadArg;
-    using Tail = Types<TailArgs...>;
-};
-
-template <typename HeadArg> struct Types<HeadArg>
-{
-    using Head = HeadArg;
-    using Tail = None;
-};
-
-template <typename... Args> struct TypeList
-{
-    using type = Types<Args...>;
-    using Type = type;
-};
-template <typename... Args> using type_list = TypeList<Args...>;
 
 /***********************************************************************************************************************
  * Integer conversion macro define

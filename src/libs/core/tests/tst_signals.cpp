@@ -1719,4 +1719,93 @@ TEST(SlotsBenchTest, test_groups)
     EXPECT_TRUE(i == grps * slts * emissions * runs);
 }
 
+namespace
+{
+
+void f1(int, char, float) { }
+void f2(int, char, float) noexcept { }
+
+void f(int) { }
+void f(int, char, float) { }
+
+struct oo
+{
+    void operator()(int) { }
+    void operator()(int, char, float) { }
+};
+
+struct s
+{
+    static void s1(int, char, float) { }
+    static void s2(int, char, float) noexcept { }
+
+    void f1(int, char, float) { }
+    void f2(int, char, float) const { }
+    void f3(int, char, float) volatile { }
+    void f4(int, char, float) const volatile { }
+    void f5(int, char, float) noexcept { }
+    void f6(int, char, float) const noexcept { }
+    void f7(int, char, float) volatile noexcept { }
+    void f8(int, char, float) const volatile noexcept { }
+};
+
+struct o1
+{
+    void operator()(int, char, float) { }
+};
+struct o2
+{
+    void operator()(int, char, float) const { }
+};
+struct o3
+{
+    void operator()(int, char, float) volatile { }
+};
+struct o4
+{
+    void operator()(int, char, float) const volatile { }
+};
+struct o5
+{
+    void operator()(int, char, float) noexcept { }
+};
+struct o6
+{
+    void operator()(int, char, float) const noexcept { }
+};
+struct o7
+{
+    void operator()(int, char, float) volatile noexcept { }
+};
+struct o8
+{
+    void operator()(int, char, float) const volatile noexcept { }
+};
+using tl = TypeList<int, char, float>;
+} // namespace
+TEST(IsCallableTest, Function)
+{
+    static_assert(signals::detail::is_callable_v<decltype(f1), tl>, "");
+    static_assert(traits::is_callable_v<decltype(f2), tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::s1), tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::s2), tl>, "");
+    static_assert(traits::is_callable_v<oo, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f1), s *, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f2), s *, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f3), s *, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f4), s *, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f5), s *, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f6), s *, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f7), s *, tl>, "");
+    static_assert(traits::is_callable_v<decltype(&s::f8), s *, tl>, "");
+    static_assert(traits::is_callable_v<o1, tl>, "");
+    static_assert(traits::is_callable_v<o2, tl>, "");
+    static_assert(traits::is_callable_v<o3, tl>, "");
+    static_assert(traits::is_callable_v<o4, tl>, "");
+    static_assert(traits::is_callable_v<o5, tl>, "");
+    static_assert(traits::is_callable_v<o6, tl>, "");
+    static_assert(traits::is_callable_v<o7, tl>, "");
+    static_assert(traits::is_callable_v<o8, tl>, "");
+}
+
 OCTK_END_NAMESPACE

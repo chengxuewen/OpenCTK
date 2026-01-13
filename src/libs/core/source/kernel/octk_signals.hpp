@@ -26,6 +26,7 @@
 
 #include <octk_checks.hpp>
 #include <octk_memory.hpp>
+#include <octk_type_list.hpp>
 #include <octk_type_traits.hpp>
 
 #include <mutex>
@@ -53,7 +54,8 @@ OCTK_BEGIN_NAMESPACE
 namespace signals
 {
 
-template <typename, typename...> class SignalBase;
+template <typename, typename...>
+class SignalBase;
 
 /**
  * A group_id is used to identify a group of slots
@@ -70,8 +72,28 @@ struct ObserverType
 
 namespace trait
 {
+namespace detail
+{
+template <typename... Args>
+struct IsCallableImpl;
+// F, typelist<Args...>
+template <typename F, typename... Args>
+struct IsCallableImpl<F, TypeList<Args...>> : traits::is_invocable<F, Args...>
+{
+};
+// F, P, typelist<Args...>
+template <typename F, typename P, typename... Args>
+struct IsCallableImpl<F, P, TypeList<Args...>> : traits::is_invocable<F, P, Args...>
+{
+};
+template <typename... Args>
+using is_callable = IsCallableImpl<Args...>;
+template <typename... Args>
+constexpr bool is_callable_v = is_callable<Args...>::value;
+} // namespace detail
 
-template <typename... Args> using TypeList = TypeList<Args...>;
+template <typename... Args>
+using TypeList = TypeList<Args...>;
 
 static constexpr bool with_rtti =
 #    if OCTK_RTTI_ENABLED
@@ -80,23 +102,33 @@ static constexpr bool with_rtti =
     false;
 #    endif
 
-template <typename T> constexpr bool is_pointer_v = type_traits::is_pointer_v<T>;
-template <typename T> constexpr bool is_function_v = type_traits::is_function_v<T>;
-template <typename T> constexpr bool is_weak_ptr_v = type_traits::is_weak_ptr_v<T>;
-template <typename P> constexpr bool is_weak_ptr_compatible_v = type_traits::is_weak_ptr_compatible_v<std::decay_t<P>>;
+template <typename T>
+constexpr bool is_pointer_v = traits::is_pointer_v<T>;
+template <typename T>
+constexpr bool is_function_v = traits::is_function_v<T>;
+template <typename T>
+constexpr bool is_weak_ptr_v = traits::is_weak_ptr_v<T>;
+template <typename P>
+constexpr bool is_weak_ptr_compatible_v = traits::is_weak_ptr_compatible_v<std::decay_t<P>>;
 
-template <typename T> constexpr bool has_call_operator_v = type_traits::has_call_operator_v<T>;
-template <typename L, typename... Args> constexpr bool is_callable_v = type_traits::is_callable_v<Args..., L>;
-template <typename T> constexpr bool is_member_function_pointer_v = type_traits::is_member_function_pointer_v<T>;
+template <typename T>
+constexpr bool has_call_operator_v = traits::has_call_operator_v<T>;
+template <typename L, typename... Args>
+constexpr bool is_callable_v = detail::is_callable_v<Args..., L>;
+template <typename T>
+constexpr bool is_member_function_pointer_v = traits::is_member_function_pointer_v<T>;
 
 
-template <typename...> struct is_signal : std::false_type
+template <typename...>
+struct is_signal : std::false_type
 {
 };
-template <typename L, typename... T> struct is_signal<SignalBase<L, T...>> : std::true_type
+template <typename L, typename... T>
+struct is_signal<SignalBase<L, T...>> : std::true_type
 {
 };
-template <typename S> constexpr bool is_signal_v = is_signal<S>::value;
+template <typename S>
+constexpr bool is_signal_v = is_signal<S>::value;
 
 template <typename T>
 constexpr bool is_observer_v =
@@ -174,14 +206,16 @@ struct func_ptr
         std::uninitialized_fill(std::begin(data), std::end(data), '\0');
     }
 
-    template <typename T> void store(const T &t)
+    template <typename T>
+    void store(const T &t)
     {
         const auto *b = reinterpret_cast<const char *>(&t);
         sz = sizeof(T);
         std::memcpy(data, b, sz);
     }
 
-    template <typename T> const T *as() const
+    template <typename T>
+    const T *as() const
     {
         if (sizeof(T) != sz)
         {
@@ -196,7 +230,8 @@ private:
 };
 
 
-template <typename T, typename = void> struct function_traits
+template <typename T, typename = void>
+struct function_traits
 {
     static void ptr(const T & /*t*/, func_ptr & /*d*/) { }
 
@@ -206,7 +241,8 @@ template <typename T, typename = void> struct function_traits
     static constexpr bool must_check_object = true;
 };
 
-template <typename T> struct function_traits<T, std::enable_if_t<trait::is_function_v<T>>>
+template <typename T>
+struct function_traits<T, std::enable_if_t<trait::is_function_v<T>>>
 {
     static void ptr(T &t, func_ptr &d) { d.store(&t); }
 
@@ -220,7 +256,8 @@ template <typename T> struct function_traits<T, std::enable_if_t<trait::is_funct
     static constexpr bool must_check_object = false;
 };
 
-template <typename T> struct function_traits<T *, std::enable_if_t<trait::is_function_v<T>>>
+template <typename T>
+struct function_traits<T *, std::enable_if_t<trait::is_function_v<T>>>
 {
     static void ptr(T *t, func_ptr &d) { function_traits<T>::ptr(*t, d); }
 
@@ -230,7 +267,8 @@ template <typename T> struct function_traits<T *, std::enable_if_t<trait::is_fun
     static constexpr bool must_check_object = false;
 };
 
-template <typename T> struct function_traits<T, std::enable_if_t<trait::is_member_function_pointer_v<T>>>
+template <typename T>
+struct function_traits<T, std::enable_if_t<trait::is_member_function_pointer_v<T>>>
 {
     static void ptr(T t, func_ptr &d) { d.store(t); }
 
@@ -245,7 +283,8 @@ template <typename T> struct function_traits<T, std::enable_if_t<trait::is_membe
 };
 
 // for function objects, the assumption is that we are looking for the call operator
-template <typename T> struct function_traits<T, std::enable_if_t<trait::has_call_operator_v<T>>>
+template <typename T>
+struct function_traits<T, std::enable_if_t<trait::has_call_operator_v<T>>>
 {
     using call_type = decltype(&std::remove_reference<T>::type::operator());
 
@@ -257,14 +296,16 @@ template <typename T> struct function_traits<T, std::enable_if_t<trait::has_call
     static constexpr bool must_check_object = function_traits<call_type>::must_check_object;
 };
 
-template <typename T> func_ptr get_function_ptr(const T &t)
+template <typename T>
+func_ptr get_function_ptr(const T &t)
 {
     func_ptr d;
     function_traits<std::decay_t<T>>::ptr(t, d);
     return d;
 }
 
-template <typename T> bool eq_function_ptr(const T &t, const func_ptr &d)
+template <typename T>
+bool eq_function_ptr(const T &t, const func_ptr &d)
 {
     return function_traits<std::decay_t<T>>::eq(t, d);
 }
@@ -276,19 +317,23 @@ template <typename T> bool eq_function_ptr(const T &t, const func_ptr &d)
  */
 using obj_ptr = const void *;
 
-template <typename T> obj_ptr get_object_ptr(const T &t);
+template <typename T>
+obj_ptr get_object_ptr(const T &t);
 
-template <typename T, typename = void> struct object_pointer
+template <typename T, typename = void>
+struct object_pointer
 {
     static obj_ptr get(const T &) { return nullptr; }
 };
 
-template <typename T> struct object_pointer<T *, std::enable_if_t<trait::is_pointer_v<T *>>>
+template <typename T>
+struct object_pointer<T *, std::enable_if_t<trait::is_pointer_v<T *>>>
 {
     static obj_ptr get(const T *t) { return reinterpret_cast<obj_ptr>(t); }
 };
 
-template <typename T> struct object_pointer<T, std::enable_if_t<trait::is_weak_ptr_v<T>>>
+template <typename T>
+struct object_pointer<T, std::enable_if_t<trait::is_weak_ptr_v<T>>>
 {
     static obj_ptr get(const T &t)
     {
@@ -305,7 +350,11 @@ struct object_pointer<
     static obj_ptr get(const T &t) { return t ? reinterpret_cast<obj_ptr>(t.get()) : nullptr; }
 };
 
-template <typename T> obj_ptr get_object_ptr(const T &t) { return object_pointer<T>::get(t); }
+template <typename T>
+obj_ptr get_object_ptr(const T &t)
+{
+    return object_pointer<T>::get(t);
+}
 
 
 // noop mutex for thread-unsafe use
@@ -365,7 +414,8 @@ private:
  * A simple copy on write container that will be used to improve slot lists
  * access efficiency in a multithreaded context.
  */
-template <typename T> class copy_on_write
+template <typename T>
+class copy_on_write
 {
     struct payload
     {
@@ -458,13 +508,29 @@ private:
 /**
  * Specializations for thread-safe code path
  */
-template <typename T> const T &cow_read(const T &v) { return v; }
+template <typename T>
+const T &cow_read(const T &v)
+{
+    return v;
+}
 
-template <typename T> const T &cow_read(copy_on_write<T> &v) { return v.read(); }
+template <typename T>
+const T &cow_read(copy_on_write<T> &v)
+{
+    return v.read();
+}
 
-template <typename T> T &cow_write(T &v) { return v; }
+template <typename T>
+T &cow_write(T &v)
+{
+    return v;
+}
 
-template <typename T> T &cow_write(copy_on_write<T> &v) { return v.write(); }
+template <typename T>
+T &cow_write(copy_on_write<T> &v)
+{
+    return v.write();
+}
 
 /**
  * std::make_shared instantiates a lot a templates, and makes both compilation time
@@ -474,12 +540,14 @@ template <typename T> T &cow_write(copy_on_write<T> &v) { return v.write(); }
  * - Allocates a separate control block, and will thus make the code slower.
  */
 #    ifdef SIGSLOT_REDUCE_COMPILE_TIME
-template <typename B, typename D, typename... Arg> inline std::shared_ptr<B> make_shared(Arg &&...arg)
+template <typename B, typename D, typename... Arg>
+inline std::shared_ptr<B> make_shared(Arg &&...arg)
 {
     return std::shared_ptr<B>(static_cast<B *>(new D(std::forward<Arg>(arg)...)));
 }
 #    else
-template <typename B, typename D, typename... Arg> inline std::shared_ptr<B> make_shared(Arg &&...arg)
+template <typename B, typename D, typename... Arg>
+inline std::shared_ptr<B> make_shared(Arg &&...arg)
 {
     return std::static_pointer_cast<B>(std::make_shared<D>(std::forward<Arg>(arg)...));
 }
@@ -487,9 +555,14 @@ template <typename B, typename D, typename... Arg> inline std::shared_ptr<B> mak
 
 
 // Adapt a signal into a cheap function object, for easy signal chaining
-template <typename SigT> struct signal_wrapper
+template <typename SigT>
+struct signal_wrapper
 {
-    template <typename... U> void operator()(U &&...u) { (*m_sig)(std::forward<U>(u)...); }
+    template <typename... U>
+    void operator()(U &&...u)
+    {
+        (*m_sig)(std::forward<U>(u)...);
+    }
 
     SigT *m_sig{};
 };
@@ -537,7 +610,8 @@ protected:
     GroupId group() const { return mGroup; }
 
 private:
-    template <typename, typename...> friend class ::octk::signals::SignalBase;
+    template <typename, typename...>
+    friend class ::octk::signals::SignalBase;
 
     std::size_t mIndex;   // index into the array of slot pointers inside the signal
     const GroupId mGroup; // slot group this slot belongs to
@@ -652,7 +726,8 @@ public:
     ConnectionBlocker blocker() const noexcept { return ConnectionBlocker{mState}; }
 
 protected:
-    template <typename, typename...> friend class SignalBase;
+    template <typename, typename...>
+    friend class SignalBase;
     explicit Connection(std::weak_ptr<detail::SlotState> s) noexcept
         : mState{std::move(s)}
     {
@@ -697,7 +772,8 @@ public:
     }
 
 private:
-    template <typename, typename...> friend class SignalBase;
+    template <typename, typename...>
+    friend class SignalBase;
     explicit ScopedConnection(std::weak_ptr<detail::SlotState> s) noexcept
         : Connection{std::move(s)}
     {
@@ -712,7 +788,8 @@ private:
  * Deriving from this class allows automatic disconnection of all the slots
  * connected to any signal when an instance is destroyed.
  */
-template <typename Lockable> struct ObserverBase : private detail::ObserverType
+template <typename Lockable>
+struct ObserverBase : private detail::ObserverType
 {
     virtual ~ObserverBase() = default;
 
@@ -731,7 +808,8 @@ protected:
     }
 
 private:
-    template <typename, typename...> friend class SignalBase;
+    template <typename, typename...>
+    friend class SignalBase;
 
     void add_connection(Connection conn)
     {
@@ -764,16 +842,19 @@ struct Cleanable
     virtual void clean(SlotState *) = 0;
 };
 
-template <typename...> class SlotBase;
+template <typename...>
+class SlotBase;
 
-template <typename... T> using SlotSharedPtr = std::shared_ptr<SlotBase<T...>>;
+template <typename... T>
+using SlotSharedPtr = std::shared_ptr<SlotBase<T...>>;
 
 
 /* A base class for slot objects. This base type only depends on slot argument
  * types, it will be used as an element in an intrusive singly-linked list of
  * slots, hence the public next member.
  */
-template <typename... Args> class SlotBase : public SlotState
+template <typename... Args>
+class SlotBase : public SlotState
 {
 public:
     using ArgTypes = trait::TypeList<Args...>;
@@ -789,7 +870,8 @@ public:
     // supplied arguments whenever emission happens.
     virtual void callSlot(Args...) = 0;
 
-    template <typename... U> void operator()(U &&...u)
+    template <typename... U>
+    void operator()(U &&...u)
     {
         if (SlotState::connected() && !SlotState::blocked())
         {
@@ -798,7 +880,8 @@ public:
     }
 
     // check if we are storing callable c
-    template <typename C> bool hasCallable(const C &c) const
+    template <typename C>
+    bool hasCallable(const C &c) const
     {
         auto p = get_callable();
         return eq_function_ptr(c, p);
@@ -817,7 +900,11 @@ public:
     }
 
     // check if we are storing object o
-    template <typename O> bool has_object(const O &o) const { return get_object() == get_object_ptr(o); }
+    template <typename O>
+    bool has_object(const O &o) const
+    {
+        return get_object() == get_object_ptr(o);
+    }
 
 protected:
     void do_disconnect() final { mCleaner.clean(this); }
@@ -833,10 +920,18 @@ protected:
     virtual const std::type_info &get_callable_type() const noexcept { return typeid(nullptr); }
 
 private:
-    template <typename U> bool check_class_type() const { return typeid(U) == get_callable_type(); }
+    template <typename U>
+    bool check_class_type() const
+    {
+        return typeid(U) == get_callable_type();
+    }
 
 #    else
-    template <typename U> bool check_class_type() const { return false; }
+    template <typename U>
+    bool check_class_type() const
+    {
+        return false;
+    }
 #    endif
 
 private:
@@ -847,7 +942,8 @@ private:
  * A slot object holds state information, and a callable to to be called
  * whenever the function call operator of its slot_base base class is called.
  */
-template <typename Func, typename... Args> class Slot final : public SlotBase<Args...>
+template <typename Func, typename... Args>
+class Slot final : public SlotBase<Args...>
 {
 public:
     template <typename F, typename Gid>
@@ -873,7 +969,8 @@ private:
 /*
  * Variation of slot that prepends a connection object to the callable
  */
-template <typename Func, typename... Args> class SlotExtended final : public SlotBase<Args...>
+template <typename Func, typename... Args>
+class SlotExtended final : public SlotBase<Args...>
 {
 public:
     template <typename F>
@@ -903,7 +1000,8 @@ private:
  * function to be called whenever the function call operator of its slot_base
  * base class is called.
  */
-template <typename Pmf, typename Ptr, typename... Args> class slot_pmf final : public SlotBase<Args...>
+template <typename Pmf, typename Ptr, typename... Args>
+class slot_pmf final : public SlotBase<Args...>
 {
 public:
     template <typename F, typename P>
@@ -933,7 +1031,8 @@ private:
 /*
  * Variation of slot that prepends a connection object to the callable
  */
-template <typename Pmf, typename Ptr, typename... Args> class slot_pmf_extended final : public SlotBase<Args...>
+template <typename Pmf, typename Ptr, typename... Args>
+class slot_pmf_extended final : public SlotBase<Args...>
 {
 public:
     template <typename F, typename P>
@@ -966,7 +1065,8 @@ private:
  * through a weak pointer in order to automatically disconnect the slot
  * on said object destruction.
  */
-template <typename Func, typename WeakPtr, typename... Args> class slot_tracked final : public SlotBase<Args...>
+template <typename Func, typename WeakPtr, typename... Args>
+class slot_tracked final : public SlotBase<Args...>
 {
 public:
     template <typename F, typename P>
@@ -1057,7 +1157,8 @@ private:
  * the life of a supplied object through a weak pointer in order to automatically
  * disconnect the slot on said object destruction.
  */
-template <typename Pmf, typename WeakPtr, typename... Args> class slot_pmf_tracked final : public SlotBase<Args...>
+template <typename Pmf, typename WeakPtr, typename... Args>
+class slot_pmf_tracked final : public SlotBase<Args...>
 {
 public:
     template <typename F, typename P>
@@ -1166,7 +1267,8 @@ private:
  * @tparam Lockable a lock type to decide the lock policy
  * @tparam T... the argument types of the emitting and slots functions.
  */
-template <typename Lockable, typename... T> class SignalBase final : public detail::Cleanable
+template <typename Lockable, typename... T>
+class SignalBase final : public detail::Cleanable
 {
     template <typename L>
     using is_thread_safe = std::integral_constant<bool, !std::is_same<L, detail::NullMutex>::value>;
@@ -1233,7 +1335,8 @@ public:
      *
      * @param a... arguments to emit
      */
-    template <typename... U> void operator()(U &&...a) const
+    template <typename... U>
+    void operator()(U &&...a) const
     {
         if (m_block)
         {
@@ -1493,7 +1596,8 @@ public:
      * Creates a connection whose duration is tied to the return object.
      * Uses the same semantics as connect
      */
-    template <typename... CallArgs> ScopedConnection connect_scoped(CallArgs &&...args)
+    template <typename... CallArgs>
+    ScopedConnection connect_scoped(CallArgs &&...args)
     {
         return connect(std::forward<CallArgs>(args)...);
     }
@@ -1556,7 +1660,8 @@ public:
      * @param obj an object
      * @return the number of disconnected slots
      */
-    template <typename Callable, typename Obj> size_t disconnect(const Callable &c, const Obj &obj)
+    template <typename Callable, typename Obj>
+    size_t disconnect(const Callable &c, const Obj &obj)
     {
         return disconnect_if([&](const auto &s) { return s->has_object(obj) && s->hasCallable(c); });
     }
@@ -1666,7 +1771,8 @@ private:
     }
 
     // create a new slot
-    template <typename Slot, typename... A> inline auto make_slot(A &&...a)
+    template <typename Slot, typename... A>
+    inline auto make_slot(A &&...a)
     {
         return detail::make_shared<slot_base, Slot>(*this, std::forward<A>(a)...);
     }
@@ -1698,7 +1804,8 @@ private:
     }
 
     // disconnect a slot if a condition occurs
-    template <typename Cond> size_t disconnect_if(Cond &&cond)
+    template <typename Cond>
+    size_t disconnect_if(Cond &&cond)
     {
         lock_type lock(m_mutex);
         auto &groups = detail::cow_write(m_slots);
@@ -1766,7 +1873,8 @@ Connection connect(SignalBase<Lockable1, T1...> &sig1, SignalBase<Lockable2, T2.
  *
  * Recursive signal emission and emission cycles are supported too.
  */
-template <typename... T> using Signal = SignalBase<std::mutex, T...>;
+template <typename... T>
+using Signal = SignalBase<std::mutex, T...>;
 
 /**
  * Specialization of signal_base to be used in single threaded contexts.
@@ -1774,11 +1882,14 @@ template <typename... T> using Signal = SignalBase<std::mutex, T...>;
  * The performance improvement over the thread-safe variant is not impressive,
  * so this is not very useful.
  */
-template <typename... T> using SignalUnsafe = SignalBase<detail::NullMutex, T...>;
+template <typename... T>
+using SignalUnsafe = SignalBase<detail::NullMutex, T...>;
 } // namespace signals
 
-template <typename... Args> using Signal = signals::Signal<Args...>;
-template <typename... Args> using SignalUnsafe = signals::SignalUnsafe<Args...>;
+template <typename... Args>
+using Signal = signals::Signal<Args...>;
+template <typename... Args>
+using SignalUnsafe = signals::SignalUnsafe<Args...>;
 
 /**
  * @}

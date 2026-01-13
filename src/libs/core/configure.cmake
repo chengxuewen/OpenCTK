@@ -54,6 +54,10 @@ endif()
 string(TIMESTAMP COMPILE_TIME %Y%m%d_%H%M%S)
 octk_configure_definition("OCTK_COMPILE_TIME" PUBLIC VALUE "${COMPILE_TIME}")
 
+octk_configure_feature("ENABLE_KERNEL" PUBLIC
+	LABEL "Enable this to build enable kernel"
+	CONDITION OFF)
+
 octk_configure_feature("ENABLE_ASSERT" PUBLIC
 	LABEL "Enable this to build enable assert"
 	CONDITION ON)

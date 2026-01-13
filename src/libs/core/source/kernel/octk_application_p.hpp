@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -22,26 +22,11 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_ENUM_FLAGS_HPP
-#define _OCTK_ENUM_FLAGS_HPP
+#pragma once
 
-#include <octk_global.hpp>
+#include <octk_application.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-template<typename Enum>
-class EnumFlags
-{
-    static_assert(sizeof(Enum) <= sizeof(int32_t), "Cannot store enums value with the given type."
-                                                   "Please use an enum which fits into an 'int32_t'." );
-public:
-    using type = Enum;
-    using enum_type = detail::conditional_t<std::is_signed<typename std::underlying_type<Enum>::type>::value,
-                                            int32_t,
-                                            uint32_t>;
-    using zero = enum_type*;
-};
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_ENUM_FLAGS_HPP

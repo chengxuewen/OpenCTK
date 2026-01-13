@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -24,39 +24,46 @@
 
 #pragma once
 
-#include <octk_event.hpp>
-
-#include <list>
+#include <octk_object.hpp>
+#include <octk_enum_flags.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class ObjectPrivate;
-class Object
+class EventLoopPrivate;
+class OCTK_CORE_API EventLoop : public Object
 {
 public:
-    using Children = std::list<Object *>;
+    enum class ProcessFlag
+    {
+        kAllEvents = 0x00,
+        kExcludeUserInputEvents = 0x01,
+        kExcludeSocketNotifiers = 0x02,
+        kWaitForMoreEvents = 0x04,
+        kX11ExcludeTimers = 0x08,
+        kEventLoopExec = 0x20,
+        kDialogExec = 0x40
+    };
+    OCTK_DECLARE_ENUM_FLAGS(ProcessFlags, ProcessFlag)
 
-    explicit Object(Object *parent = nullptr);
-    Object(ObjectPrivate *d);
-    virtual ~Object();
+    explicit EventLoop(Object *parent = nullptr);
+    ~EventLoop() override;
 
-    Object *parent() const;
-    void setParent(Object *parent);
+    bool processEvents(ProcessFlags flags = ProcessFlag::kAllEvents);
+    void processEvents(ProcessFlags flags, int maximumTime);
 
-    const Children &children() const;
+    int exec(ProcessFlags flags = ProcessFlag::kAllEvents);
+    void wakeUp();
 
-    virtual bool event(Event *event);
-    virtual bool eventFilter(Object *watched, Event *event);
+    void exit(int retCode = 0);
+    void quit();
 
-protected:
-    virtual void timerEvent(TimerEvent *event);
-    virtual void childEvent(ChildEvent *event);
-    virtual void customEvent(Event *event);
+    bool isRunning() const;
 
-protected:
-    OCTK_DEFINE_DPTR(Object)
-    OCTK_DECLARE_PRIVATE(Object)
-    OCTK_DISABLE_COPY_MOVE(Object)
+    bool event(Event *event) override;
+
+private:
+    OCTK_DECLARE_PRIVATE(EventLoop)
+    OCTK_DISABLE_COPY_MOVE(EventLoop)
 };
 
 OCTK_END_NAMESPACE

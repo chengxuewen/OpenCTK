@@ -22,4 +22,109 @@
 **
 ***********************************************************************************************************************/
 
-#include "octk_object.hpp"
+#include <private/octk_object_p.hpp>
+
+OCTK_BEGIN_NAMESPACE
+
+ObjectPrivate::ObjectPrivate(Object *p)
+    : mPPtr(p)
+{
+}
+
+ObjectPrivate::~ObjectPrivate()
+{
+}
+
+Object::Object(Object *parent)
+    : Object(new ObjectPrivate(this))
+{
+}
+
+Object::Object(ObjectPrivate *d)
+    : mDPtr(d)
+{
+}
+
+Object::~Object()
+{
+}
+
+Object *Object::parent() const
+{
+    OCTK_D(const Object);
+    return d->mParent;
+}
+
+void Object::setParent(Object *parent)
+{
+    OCTK_D(Object);
+    d->mParent = parent;
+}
+
+const Object::Children &Object::children() const
+{
+    OCTK_D(const Object);
+    return d->mChildren;
+}
+
+bool Object::event(Event *event)
+{
+    switch (event->type())
+    {
+        case Event::Type::kTimer:
+        {
+            this->timerEvent(dynamic_cast<TimerEvent *>(event));
+            break;
+        }
+
+        case Event::Type::kChildAdded:
+        case Event::Type::kChildPolished:
+        case Event::Type::kChildRemoved:
+        {
+            this->childEvent(dynamic_cast<ChildEvent *>(event));
+            break;
+        }
+        case Event::Type::kDeferredDelete:
+        {
+            // DeleteInEventHandler(this);
+            break;
+        }
+        case Event::Type::kThreadChange:
+        {
+            OCTK_D(Object);
+            break;
+        }
+        default:
+            if (event->type() >= Event::Type::kUser)
+            {
+                this->customEvent(event);
+                break;
+            }
+            return false;
+    }
+    return true;
+}
+
+bool Object::eventFilter(Object *watched, Event *event)
+{
+    OCTK_UNUSED(watched);
+    OCTK_UNUSED(event);
+    return false;
+}
+
+void Object::timerEvent(TimerEvent *event)
+{
+    OCTK_UNUSED(event);
+}
+
+void Object::childEvent(ChildEvent *event)
+{
+    OCTK_UNUSED(event);
+}
+
+void Object::customEvent(Event *event)
+{
+    OCTK_UNUSED(event);
+}
+
+OCTK_END_NAMESPACE

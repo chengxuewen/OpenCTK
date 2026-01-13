@@ -95,14 +95,14 @@ TEST(ContextCheckerTest, DestructorAllowedOnDifferentThread)
         });
 }
 
-TEST(ContextCheckerTest, detach)
+TEST(ContextCheckerTest, Detach)
 {
     ContextChecker contextChecker;
     contextChecker.detach();
     RunOnDifferentThread([&] { EXPECT_TRUE(contextChecker.isCurrent()); });
 }
 
-TEST(ContextCheckerTest, detachFromThreadAndUseOnTaskQueue)
+TEST(ContextCheckerTest, DetachFromThreadAndUseOnTaskQueue)
 {
     ContextChecker contextChecker;
     contextChecker.detach();
@@ -118,7 +118,7 @@ TEST(ContextCheckerTest, InitializeForDifferentTaskQueue)
     queue->postTask([&] { EXPECT_TRUE(contextChecker.isCurrent()); });
 }
 
-TEST(ContextCheckerTest, detachFromTaskQueueAndUseOnThread)
+TEST(ContextCheckerTest, DetachFromTaskQueueAndUseOnThread)
 {
     auto queue = TaskQueueThread::makeShared();
     queue->postTask(
@@ -159,7 +159,7 @@ TEST(ContextCheckerTest, MethodNotAllowedOnDifferentTaskQueueInDebug)
     queue->postTask([&] { EXPECT_EQ(contextChecker.isCurrent(), !OCTK_DCHECK_IS_ON); });
 }
 
-TEST(ContextCheckerTest, detachFromTaskQueueInDebug)
+TEST(ContextCheckerTest, DetachFromTaskQueueInDebug)
 {
     ContextChecker contextChecker;
     contextChecker.detach();

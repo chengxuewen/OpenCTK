@@ -88,10 +88,10 @@ namespace OCTK_NAMESPACE
 
 #if OCTK_CC_FEATURE_CONSTEXPR
 #    define OCTK_CONSTEXPR         constexpr
-#    define OCTK_RELAXED_CONSTEXPR constexpr
+#    define OCTK_CONSTEXPR_OR_CONST constexpr
 #else
 #    define OCTK_CONSTEXPR
-#    define OCTK_RELAXED_CONSTEXPR const
+#    define OCTK_CONSTEXPR_OR_CONST const
 #endif
 #if OCTK_CC_CPP14_OR_GREATER
 #    define OCTK_CXX14_CONSTEXPR constexpr
@@ -556,7 +556,10 @@ auto octkArraySizeHelper(const T (&array)[N]) -> char (&)[N];
         {                                                                                                              \
         static const struct _func##_ctor_class_                                                                        \
         {                                                                                                              \
-            inline _func##_ctor_class_() { _func(); }                                                                  \
+            inline _func##_ctor_class_()                                                                               \
+            {                                                                                                          \
+                _func();                                                                                               \
+            }                                                                                                          \
         } _func##_ctor_instance_;                                                                                      \
         }
 #    define OCTK_CONSTRUCTOR_FUNCTION(_func) OCTK__CONSTRUCTOR_FUNCTION_WITH_ARGS(_func)
@@ -565,8 +568,13 @@ auto octkArraySizeHelper(const T (&array)[N]) -> char (&)[N];
         {                                                                                                              \
         static const struct _func##_dtor_class_                                                                        \
         {                                                                                                              \
-            inline _func##_dtor_class_() { }                                                                           \
-            inline ~_func##_dtor_class_() { _func(); }                                                                 \
+            inline _func##_dtor_class_()                                                                               \
+            {                                                                                                          \
+            }                                                                                                          \
+            inline ~_func##_dtor_class_()                                                                              \
+            {                                                                                                          \
+                _func();                                                                                               \
+            }                                                                                                          \
         } _func##_dtor_instance_;                                                                                      \
         }
 #    define OCTK_DESTRUCTOR_FUNCTION(_func) OCTK__DESTRUCTOR_FUNCTION_WITH_ARGS(_func)

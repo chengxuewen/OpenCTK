@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -24,39 +24,22 @@
 
 #pragma once
 
-#include <octk_event.hpp>
-
-#include <list>
+#include <octk_object.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class ObjectPrivate;
-class Object
-{
-public:
-    using Children = std::list<Object *>;
-
-    explicit Object(Object *parent = nullptr);
-    Object(ObjectPrivate *d);
-    virtual ~Object();
-
-    Object *parent() const;
-    void setParent(Object *parent);
-
-    const Children &children() const;
-
-    virtual bool event(Event *event);
-    virtual bool eventFilter(Object *watched, Event *event);
-
-protected:
-    virtual void timerEvent(TimerEvent *event);
-    virtual void childEvent(ChildEvent *event);
-    virtual void customEvent(Event *event);
-
-protected:
-    OCTK_DEFINE_DPTR(Object)
-    OCTK_DECLARE_PRIVATE(Object)
-    OCTK_DISABLE_COPY_MOVE(Object)
-};
+// class ApplicationPrivate;
+// class OCTK_CORE_API Application : public Object
+// {
+// public:
+//     Application(int &argc, char **argv, int flags = OCTK_VERSION);
+//     ~Application() override;
+//
+//     bool event(Event *event) override;
+//
+// private:
+//     OCTK_DECLARE_PRIVATE(Application)
+//     OCTK_DISABLE_COPY_MOVE(Application)
+// };
 
 OCTK_END_NAMESPACE

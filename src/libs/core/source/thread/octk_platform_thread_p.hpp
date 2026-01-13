@@ -75,8 +75,8 @@ public:
         }
     }
 
-    bool quitNow{false};
     bool canWait{true};
+    bool quitNow{false};
     bool isAdopted{false};
 
     int loopLevel{0};

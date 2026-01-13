@@ -24,39 +24,34 @@
 
 #pragma once
 
-#include <octk_event.hpp>
-
-#include <list>
+#include <octk_event_loop.hpp>
+#include <private/octk_object_p.hpp>
+#include <octk_reference_counter.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class ObjectPrivate;
-class Object
+class EventLoopPrivate : public ObjectPrivate
 {
+    OCTK_DECLARE_PUBLIC(EventLoop)
+    OCTK_DISABLE_COPY_MOVE(EventLoopPrivate)
 public:
-    using Children = std::list<Object *>;
+    explicit EventLoopPrivate(EventLoop *p);
+    ~EventLoopPrivate() override;
 
-    explicit Object(Object *parent = nullptr);
-    Object(ObjectPrivate *d);
-    virtual ~Object();
+    void ref() { mRefCounter.ref(); }
 
-    Object *parent() const;
-    void setParent(Object *parent);
+    void deref()
+    {
+        if (!mRefCounter.deref() && mInExec)
+        {
+            // qApp->postEvent(mPPtr, new Event(Event::Type::kQuit));
+        }
+    }
 
-    const Children &children() const;
-
-    virtual bool event(Event *event);
-    virtual bool eventFilter(Object *watched, Event *event);
-
-protected:
-    virtual void timerEvent(TimerEvent *event);
-    virtual void childEvent(ChildEvent *event);
-    virtual void customEvent(Event *event);
-
-protected:
-    OCTK_DEFINE_DPTR(Object)
-    OCTK_DECLARE_PRIVATE(Object)
-    OCTK_DISABLE_COPY_MOVE(Object)
+    bool mInExec{false};
+    std::atomic<bool> mExit{true};
+    std::atomic<int> mRetCode{-1};
+    ReferenceCounter mRefCounter;
 };
 
 OCTK_END_NAMESPACE

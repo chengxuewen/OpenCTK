@@ -62,7 +62,7 @@ struct SharedDataRefCounter final
     SharedDataRefCounter(T *data) noexcept
         : mRefCount(dynamic_cast<SharedData *>(const_cast<std::remove_const_t<T> *>(data))->mRefCount)
     {
-        static_assert(type_traits::is_base_of_v<SharedData, T>, "T must be derived from SharedData");
+        static_assert(traits::is_base_of_v<SharedData, T>, "T must be derived from SharedData");
     }
     ReferenceCounter::Value &mRefCount;
     inline bool ref() noexcept { return ReferenceCounter::ref(mRefCount); }
@@ -76,7 +76,7 @@ struct SharedDataRefCounter final
  * @brief Implicitly SharedDataPointer
  * @tparam T
  */
-template <typename T> class SharedDataPointer<T, false, type_traits::enable_if_t<true>>
+template <typename T> class SharedDataPointer<T, false, traits::enable_if_t<true>>
 {
 public:
     using DataType = T;
@@ -229,7 +229,7 @@ template <typename T> inline bool operator==(const ImplicitlySharedDataPointer<T
  * @brief Explicitly SharedDataPointer
  * @tparam T
  */
-template <typename T> class SharedDataPointer<T, true, type_traits::enable_if_t<true>>
+template <typename T> class SharedDataPointer<T, true, traits::enable_if_t<true>>
 {
 public:
     using DataType = T;

@@ -35,7 +35,7 @@ OCTK_BEGIN_NAMESPACE
 
 template <typename T, bool UseManualLifetime, typename = void> struct Singleton;
 
-template <typename T> class Singleton<T, false, type_traits::enable_if_t<true>>
+template <typename T> class Singleton<T, false, traits::enable_if_t<true>>
 {
 public:
     static constexpr bool UseManualLifetime = false;
@@ -53,7 +53,7 @@ protected:
 };
 template <typename T> using AutoSingleton = Singleton<T, false>;
 
-template <typename T> class Singleton<T, true, type_traits::enable_if_t<true>>
+template <typename T> class Singleton<T, true, traits::enable_if_t<true>>
 {
 public:
     static constexpr bool UseManualLifetime = true;
