@@ -87,7 +87,7 @@ namespace OCTK_NAMESPACE
 #endif
 
 #if OCTK_CC_FEATURE_CONSTEXPR
-#    define OCTK_CONSTEXPR         constexpr
+#    define OCTK_CONSTEXPR          constexpr
 #    define OCTK_CONSTEXPR_OR_CONST constexpr
 #else
 #    define OCTK_CONSTEXPR
@@ -187,7 +187,15 @@ namespace OCTK_NAMESPACE
 /***********************************************************************************************************************
   * static variable macro
 ***********************************************************************************************************************/
-#define OCTK_STATIC_CONSTANT_NUMBER(name, number) static constexpr decltype(number) name = number;
+#if OCTK_BUILD_CXX_STANDARD_11
+#    define OCTK_STATIC_CONSTANT_NUMBER(name, number)                                                                  \
+        enum                                                                                                           \
+        {                                                                                                              \
+            name = number                                                                                              \
+        };
+#else
+#    define OCTK_STATIC_CONSTANT_NUMBER(name, number) static constexpr decltype(number) name = number;
+#endif
 #define OCTK_STATIC_CONSTANT_STRING(name, string) static constexpr char name[] = string;
 
 

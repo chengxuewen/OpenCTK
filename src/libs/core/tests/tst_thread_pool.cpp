@@ -959,8 +959,8 @@ TEST(ThreadPoolTest, Cancel)
     BlockingTask *tasks[runs];
 
     count.store(0);
-    std::atomic<int> dtorCounter = 0;
-    std::atomic<int> runCounter = 0;
+    std::atomic<int> dtorCounter{0};
+    std::atomic<int> runCounter{0};
     for (int i = 0; i < runs; i++)
     {
         tasks[i] = new BlockingTask(sem, startedThreads, dtorCounter, runCounter);

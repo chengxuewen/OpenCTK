@@ -87,6 +87,7 @@ vcpkg*
 
 # Temp dirs
 # --------
+refsrc
 nodejs
 stash
 

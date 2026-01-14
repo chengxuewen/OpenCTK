@@ -126,12 +126,8 @@ static void finish(void *arg, bool lockAnyway = true) noexcept
     threadPrivate->mFinished = true;
     threadPrivate->mInterruptionRequested = false;
 
-    // if (!d->waiters)
-    // {
-    //     CloseHandle(d->handle);
-    //     d->handle = 0;
-    // }
     threadData->threadId.store(0);
+    threadPrivate->mThreadHandle = 0;
 
     threadPrivate->mInFinish = false;
     threadPrivate->mDoneCondition.notify_all();
