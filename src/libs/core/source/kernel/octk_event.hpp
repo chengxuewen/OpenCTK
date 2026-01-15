@@ -25,6 +25,9 @@
 #pragma once
 
 #include <octk_global.hpp>
+#include <octk_core_config.hpp>
+
+#if OCTK_FEATURE_ENABLE_KERNEL
 
 OCTK_BEGIN_NAMESPACE
 
@@ -104,3 +107,5 @@ protected:
 };
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL

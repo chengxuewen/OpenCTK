@@ -26,6 +26,8 @@
 
 #include <octk_object.hpp>
 
+#if OCTK_FEATURE_ENABLE_KERNEL
+
 OCTK_BEGIN_NAMESPACE
 
 // class ApplicationPrivate;
@@ -43,3 +45,5 @@ OCTK_BEGIN_NAMESPACE
 // };
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL

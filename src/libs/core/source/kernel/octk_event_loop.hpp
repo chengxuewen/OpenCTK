@@ -26,6 +26,9 @@
 
 #include <octk_object.hpp>
 #include <octk_enum_flags.hpp>
+#include <octk_core_config.hpp>
+
+#if OCTK_FEATURE_ENABLE_KERNEL
 
 OCTK_BEGIN_NAMESPACE
 
@@ -67,3 +70,5 @@ private:
 };
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL

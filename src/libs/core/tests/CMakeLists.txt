@@ -30,7 +30,7 @@ set(OCTK_TEST_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_TESTSDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Add tests link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
+#octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
 set(OCTK_TEST_LINK_LIBRARIES octk::core OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
 
 
@@ -523,7 +523,7 @@ octk_add_test(octk_core_tst_unique_function
 #	SOURCES
 #	tst_zero_memory.cpp
 #	INCLUDE_DIRECTORIES
-#	LIBRARIES
+#LIBRARIES
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})

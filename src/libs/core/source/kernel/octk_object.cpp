@@ -24,6 +24,8 @@
 
 #include <private/octk_object_p.hpp>
 
+#if OCTK_FEATURE_ENABLE_KERNEL
+
 OCTK_BEGIN_NAMESPACE
 
 ObjectPrivate::ObjectPrivate(Object *p)
@@ -128,3 +130,5 @@ void Object::customEvent(Event *event)
 }
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL

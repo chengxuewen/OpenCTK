@@ -28,6 +28,8 @@
 
 #include <list>
 
+#if OCTK_FEATURE_ENABLE_KERNEL
+
 OCTK_BEGIN_NAMESPACE
 
 class ObjectPrivate
@@ -48,3 +50,5 @@ protected:
 };
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL

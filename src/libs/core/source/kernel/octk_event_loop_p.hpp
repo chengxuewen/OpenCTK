@@ -28,6 +28,8 @@
 #include <private/octk_object_p.hpp>
 #include <octk_reference_counter.hpp>
 
+#if OCTK_FEATURE_ENABLE_KERNEL
+
 OCTK_BEGIN_NAMESPACE
 
 class EventLoopPrivate : public ObjectPrivate
@@ -55,3 +57,5 @@ public:
 };
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL

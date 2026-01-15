@@ -1,0 +1,1 @@
+[rules.md][rules.md](../docs/ai-guidelines/rules.md)(../.rules/rules.md)

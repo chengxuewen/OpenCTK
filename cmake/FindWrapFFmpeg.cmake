@@ -49,8 +49,8 @@ if(WIN32)
 elseif(NOT OCTK_SYSTEM_DARWIN)
 	list(APPEND OCTKWrapFFmpeg_COMPONENTS nvcodec amf)
 endif()
-if(NOT OCTK_VCPKG_TRIPLET_ARCH_ARM)
-	list(APPEND OCTKWrapFFmpeg_COMPONENTS qsv) # （mfx）only in intel cpu
+if(NOT OCTK_VCPKG_TRIPLET_ARCH_ARM AND NOT OCTK_SYSTEM_DARWIN)
+	list(APPEND OCTKWrapFFmpeg_COMPONENTS qsv) # ((x86 | x64) & (android | linux)) | (windows & !uwp)
 endif()
 octk_vcpkg_install_package(ffmpeg
 	NOT_IMPORT

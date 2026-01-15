@@ -24,6 +24,8 @@
 
 #include <octk_event.hpp>
 
+#if OCTK_FEATURE_ENABLE_KERNEL
+
 OCTK_BEGIN_NAMESPACE
 
 Event::Event(Type type)
@@ -76,3 +78,5 @@ ChildEvent::~ChildEvent()
 }
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL

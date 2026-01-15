@@ -25,6 +25,8 @@
 #include <private/octk_event_loop_p.hpp>
 #include <octk_logging.hpp>
 
+#if OCTK_FEATURE_ENABLE_KERNEL
+
 OCTK_BEGIN_NAMESPACE
 
 EventLoopPrivate::EventLoopPrivate(EventLoop *p)
@@ -111,3 +113,5 @@ bool EventLoop::event(Event *event)
 }
 
 OCTK_END_NAMESPACE
+
+#endif // #if OCTK_FEATURE_ENABLE_KERNEL
