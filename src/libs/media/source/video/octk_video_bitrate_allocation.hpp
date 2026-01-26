@@ -3,6 +3,7 @@
 ** Library: OpenCTK
 **
 ** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (c) 2018 The WebRTC project authors. All Rights Reserved.
 **
 ** License: MIT License
 **
@@ -22,8 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_VIDEO_BITRATE_ALLOCATION_HPP
-#define _OCTK_VIDEO_BITRATE_ALLOCATION_HPP
+#pragma once
 
 #include <octk_video_codec_constants.hpp>
 #include <octk_media_global.hpp>
@@ -32,7 +32,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -49,9 +48,7 @@ public:
     static constexpr uint32_t kMaxBitrateBps = std::numeric_limits<uint32_t>::max();
     VideoBitrateAllocation();
 
-    bool SetBitrate(size_t spatial_index,
-                    size_t temporal_index,
-                    uint32_t bitrate_bps);
+    bool SetBitrate(size_t spatial_index, size_t temporal_index, uint32_t bitrate_bps);
 
     bool HasBitrate(size_t spatial_index, size_t temporal_index) const;
 
@@ -67,8 +64,7 @@ public:
     // Sum of bitrates of temporal layers, from layer 0 to `temporal_index`
     // inclusive, of specified spatial layer `spatial_index`. Bitrates of lower
     // spatial layers are not included.
-    uint32_t GetTemporalLayerSum(size_t spatial_index,
-                                 size_t temporal_index) const;
+    uint32_t GetTemporalLayerSum(size_t spatial_index, size_t temporal_index) const;
 
     // Returns a vector of the temporal layer bitrates for the specific spatial
     // layer. Length of the returned vector is cropped to the highest temporal
@@ -80,7 +76,7 @@ public:
     // always kMaxSpatialLayers, the optional is unset for unused layers.
     std::vector<Optional<VideoBitrateAllocation>> GetSimulcastAllocations() const;
 
-    uint32_t get_sum_bps() const { return sum_; }  // Sum of all bitrates.
+    uint32_t get_sum_bps() const { return sum_; }         // Sum of all bitrates.
     uint32_t get_sum_kbps() const { return sum_ / 1000; } // Round down to not exceed the allocated bitrate.
 
     bool operator==(const VideoBitrateAllocation &other) const;
@@ -98,6 +94,5 @@ private:
     Optional<uint32_t> bitrates_[kMaxSpatialLayers][kMaxTemporalStreams];
     bool is_bw_limited_;
 };
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_VIDEO_BITRATE_ALLOCATION_HPP
+OCTK_END_NAMESPACE

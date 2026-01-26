@@ -103,12 +103,15 @@ private:
     static constexpr bool kOneSided = false;
 };
 
+namespace utils
+{
 OCTK_CORE_API std::string toString(TimeDelta value);
 
 template <typename Sink>
-void AbslStringify(Sink &sink, TimeDelta value)
+void stringify(Sink &sink, TimeDelta value)
 {
     sink.Append(toString(value));
 }
+} // namespace utils
 
 OCTK_END_NAMESPACE

@@ -28,9 +28,9 @@
 #include <octk_render_resolution.hpp>
 #include <octk_sdp_video_format.hpp>
 #include <octk_video_encoder.hpp>
-#include <octk_rtc_context.hpp>
+#include <octk_media_context.hpp>
 #include <octk_data_rate.hpp>
-#include <optional>
+#include "octk_optional.hpp"
 
 #include <memory>
 #include <string>
@@ -110,7 +110,7 @@ public:
     }
 
     // Creates a VideoEncoder for the specified format.
-    //virtual std::unique_ptr<VideoEncoder> Create(const RtcContext &env, const SdpVideoFormat &format) = 0;
+    virtual std::unique_ptr<VideoEncoder> Create(const MediaContext &env, const SdpVideoFormat &format) = 0;
 
     // This method creates a EncoderSelector to use for a VideoSendStream.
     // (and hence should probably been called CreateEncoderSelector()).

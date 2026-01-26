@@ -81,14 +81,8 @@ public:
     {
         return ToFraction<1000, T>();
     }
-    constexpr int64_t bps_or(int64_t fallback_value) const
-    {
-        return ToValueOr(fallback_value);
-    }
-    constexpr int64_t kbps_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000>(fallback_value);
-    }
+    constexpr int64_t bps_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
+    constexpr int64_t kbps_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
 
 private:
     // Bits per second used internally to simplify debugging by making the value
@@ -114,10 +108,9 @@ inline OCTK_CXX14_CONSTEXPR int64_t MillibytePerSec(const DataRate &size)
     OCTK_DCHECK_LE(size.bps(), kMaxBeforeConversion) << "rate is too large to be expressed in microbytes per second";
     return size.bps() * (1000 / 8);
 }
-}  // namespace data_rate_impl
+} // namespace data_rate_impl
 
-inline OCTK_CXX14_CONSTEXPR DataRate operator/(const DataSize size,
-                                               const TimeDelta duration)
+inline OCTK_CXX14_CONSTEXPR DataRate operator/(const DataSize size, const TimeDelta duration)
 {
     return DataRate::BitsPerSec(data_rate_impl::Microbits(size) / duration.us());
 }
@@ -125,20 +118,17 @@ inline OCTK_CXX14_CONSTEXPR TimeDelta operator/(const DataSize size, const DataR
 {
     return TimeDelta::Micros(data_rate_impl::Microbits(size) / rate.bps());
 }
-inline OCTK_CXX14_CONSTEXPR DataSize operator*(const DataRate rate,
-                                               const TimeDelta duration)
+inline OCTK_CXX14_CONSTEXPR DataSize operator*(const DataRate rate, const TimeDelta duration)
 {
     int64_t microbits = rate.bps() * duration.us();
     return DataSize::Bytes((microbits + 4000000) / 8000000);
 }
-inline constexpr DataSize operator*(const TimeDelta duration,
-                                    const DataRate rate)
+inline constexpr DataSize operator*(const TimeDelta duration, const DataRate rate)
 {
     return rate * duration;
 }
 
-inline OCTK_CXX14_CONSTEXPR DataSize operator/(const DataRate rate,
-                                               const Frequency frequency)
+inline OCTK_CXX14_CONSTEXPR DataSize operator/(const DataRate rate, const Frequency frequency)
 {
     int64_t millihertz = frequency.millihertz<int64_t>();
     // Note that the value is truncated here reather than rounded, potentially
@@ -149,27 +139,29 @@ inline OCTK_CXX14_CONSTEXPR Frequency operator/(const DataRate rate, const DataS
 {
     return Frequency::MilliHertz(data_rate_impl::MillibytePerSec(rate) / size.bytes());
 }
-inline OCTK_CXX14_CONSTEXPR DataRate operator*(const DataSize size,
-                                               const Frequency frequency)
+inline OCTK_CXX14_CONSTEXPR DataRate operator*(const DataSize size, const Frequency frequency)
 {
     OCTK_DCHECK(frequency.IsZero() ||
                 size.bytes() <= std::numeric_limits<int64_t>::max() / 8 / frequency.millihertz<int64_t>());
     int64_t millibits_per_second = size.bytes() * 8 * frequency.millihertz<int64_t>();
     return DataRate::BitsPerSec((millibits_per_second + 500) / 1000);
 }
-inline constexpr DataRate operator*(const Frequency frequency,
-                                    const DataSize size)
+inline constexpr DataRate operator*(const Frequency frequency, const DataSize size)
 {
     return size * frequency;
 }
 
+namespace utils
+{
 OCTK_CORE_API std::string toString(DataRate value);
 
 template <typename Sink>
-void AbslStringify(Sink &sink, DataRate value)
+void stringify(Sink &sink, DataRate value)
 {
     sink.Append(toString(value));
 }
+} // namespace utils
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_DATA_RATE_HPP

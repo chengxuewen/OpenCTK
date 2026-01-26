@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_BUFFER_HPP
-#define _OCTK_BUFFER_HPP
+#pragma once
 
 #include <octk_zero_memory.hpp>
 #include <octk_type_traits.hpp>
@@ -40,9 +39,9 @@
 #include <stdint.h>
 
 OCTK_BEGIN_NAMESPACE
+
 namespace detail
 {
-
 // (Internal; please don't use outside this file.) Determines if elements of
 // type U are compatible with a BufferT<T>. For most types, we just ignore
 // top-level const and forbid top-level volatile and require T and U to be
@@ -54,10 +53,10 @@ struct BufferCompat
 {
     static constexpr bool value = !std::is_volatile<U>::value &&
                                   ((std::is_integral<T>::value && sizeof(T) == 1)
-                                   ? (std::is_integral<U>::value && sizeof(U) == 1)
-                                   : (std::is_same<T, typename std::remove_const<U>::type>::value));
+                                       ? (std::is_integral<U>::value && sizeof(U) == 1)
+                                       : (std::is_same<T, typename std::remove_const<U>::type>::value));
 };
-}  // namespace detail
+} // namespace detail
 
 // Basic buffer class, can be grown and shrunk dynamically.
 // Unlike std::string/vector, does not initialize data when increasing size.
@@ -82,7 +81,10 @@ public:
     using const_iterator = const T *;
 
     // An empty BufferT.
-    BufferT() : mSize(0), mCapacity(0), mData(nullptr)
+    BufferT()
+        : mSize(0)
+        , mCapacity(0)
+        , mData(nullptr)
     {
         OCTK_DCHECK(IsConsistent());
     }
@@ -93,27 +95,38 @@ public:
     BufferT &operator=(const BufferT &) = delete;
 
     BufferT(BufferT &&buf)
-        : mSize(buf.size()), mCapacity(buf.capacity()), mData(std::move(buf.mData))
+        : mSize(buf.size())
+        , mCapacity(buf.capacity())
+        , mData(std::move(buf.mData))
     {
         OCTK_DCHECK(IsConsistent());
         buf.OnMovedFrom();
     }
 
     // Construct a buffer with the specified number of uninitialized elements.
-    explicit BufferT(size_t size) : BufferT(size, size) {}
+    explicit BufferT(size_t size)
+        : BufferT(size, size)
+    {
+    }
 
     BufferT(size_t size, size_t capacity)
-        : mSize(size), mCapacity(std::max(size, capacity)), mData(mCapacity > 0 ? new T[mCapacity] : nullptr)
+        : mSize(size)
+        , mCapacity(std::max(size, capacity))
+        , mData(mCapacity > 0 ? new T[mCapacity] : nullptr)
     {
         OCTK_DCHECK(IsConsistent());
     }
 
     // Construct a buffer and copy the specified number of elements into it.
     template <typename U, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
-    BufferT(const U *data, size_t size) : BufferT(data, size, size) {}
+    BufferT(const U *data, size_t size)
+        : BufferT(data, size, size)
+    {
+    }
 
     template <typename U, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
-    BufferT(U *data, size_t size, size_t capacity) : BufferT(size, capacity)
+    BufferT(U *data, size_t size, size_t capacity)
+        : BufferT(size, capacity)
     {
         static_assert(sizeof(T) == sizeof(U), "");
         if (size > 0)
@@ -125,14 +138,16 @@ public:
 
     // Construct a buffer from the contents of an array.
     template <typename U, size_t N, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
-    BufferT(U (&array)[N]) : BufferT(array, N) {}
+    BufferT(U (&array)[N])
+        : BufferT(array, N)
+    {
+    }
 
     ~BufferT() { MaybeZeroCompleteBuffer(); }
 
     // Implicit conversion to StringView if T is compatible with char.
     template <typename U = T>
-    operator typename std::enable_if<detail::BufferCompat<U, char>::value,
-                                     StringView>::type() const
+    operator typename std::enable_if<detail::BufferCompat<U, char>::value, StringView>::type() const
     {
         return StringView(data<char>(), size());
     }
@@ -264,8 +279,7 @@ public:
     // `max_elements` that describes the area where it should write the data; it
     // should return the number of elements actually written. (If it doesn't fill
     // the whole ArrayView, it should leave the unused space at the end.)
-    template <typename U = T, typename F, typename std::enable_if<detail::BufferCompat<T,
-                                                                                         U>::value>::type * = nullptr>
+    template <typename U = T, typename F, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     size_t SetData(size_t max_elements, F &&setter)
     {
         OCTK_DCHECK(IsConsistent());
@@ -325,9 +339,7 @@ public:
     // `max_elements` that describes the area where it should write the data; it
     // should return the number of elements actually written. (If it doesn't fill
     // the whole ArrayView, it should leave the unused space at the end.)
-    template <
-        typename U = T, typename F,
-        typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
+    template <typename U = T, typename F, typename std::enable_if<detail::BufferCompat<T, U>::value>::type * = nullptr>
     size_t AppendData(size_t max_elements, F &&setter)
     {
         OCTK_DCHECK(IsConsistent());
@@ -399,8 +411,7 @@ private:
         // quadratic behavior; as to why we pick 1.5 in particular, see
         // https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md and
         // http://www.gahcep.com/cpp-internals-stl-vector-part-1/.
-        const size_t new_capacity = extra_headroom ? std::max(capacity, mCapacity + mCapacity / 2)
-                                                   : capacity;
+        const size_t new_capacity = extra_headroom ? std::max(capacity, mCapacity + mCapacity / 2) : capacity;
 
         std::unique_ptr<T[]> new_data(new T[new_capacity]);
         if (mData != nullptr)
@@ -437,16 +448,13 @@ private:
     // Postcondition for all methods except move construction and move
     // assignment, which leave the moved-from object in a possibly inconsistent
     // state.
-    bool IsConsistent() const
-    {
-        return (mData || mCapacity == 0) && mCapacity >= mSize;
-    }
+    bool IsConsistent() const { return (mData || mCapacity == 0) && mCapacity >= mSize; }
 
     // Called when *this has been moved from. Conceptually it's a no-op, but we
     // can mutate the state slightly to help subsequent sanity checks catch bugs.
     void OnMovedFrom()
     {
-        OCTK_DCHECK(!mData);  // Our heap block should have been stolen.
+        OCTK_DCHECK(!mData); // Our heap block should have been stolen.
 #if OCTK_DCHECK_IS_ON
         // Ensure that *this is always inconsistent, to provoke bugs.
         mSize = 1;
@@ -470,6 +478,5 @@ using Buffer = BufferT<uint8_t>;
 // A buffer that zeros memory before releasing it.
 template <typename T>
 using ZeroOnFreeBuffer = BufferT<T, true>;
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_BUFFER_HPP
+OCTK_END_NAMESPACE

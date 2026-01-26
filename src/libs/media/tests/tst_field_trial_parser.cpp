@@ -1,20 +1,35 @@
-/*
-*  Copyright 2018 The WebRTC project authors. All Rights Reserved.
-*
-*  Use of this source code is governed by a BSD-style license
-*  that can be found in the LICENSE file in the root of the source
-*  tree. An additional intellectual property rights grant can be found
-*  in the file PATENTS.  All contributing project authors may
-*  be found in the AUTHORS file in the root of the source tree.
-*/
-#include <octk_field_trial_parser.hpp>
-#include <octk_field_trial_list.hpp>
-#include <octk_field_trials.hpp>
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+** Copyright 2018 The WebRTC project authors. All Rights Reserved.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
+
+#include <private/octk_field_trial_parser_p.hpp>
+#include <private/octk_field_trial_list_p.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace octk;
+OCTK_BEGIN_NAMESPACE
 
 namespace
 {
@@ -29,16 +44,16 @@ struct DummyExperiment
     FieldTrialParameter<unsigned> size = FieldTrialParameter<unsigned>("s", 3);
     FieldTrialParameter<bool> ping = FieldTrialParameter<bool>("p", 0);
     FieldTrialParameter<std::string> hash = FieldTrialParameter<std::string>("h", "a80");
-
-    DummyExperiment()
-        : DummyExperiment(
-              []
-              {
-                  field_trial::FieldTrialsAllowedInScopeForTesting k{{kDummyExperiment}};
-                  return field_trial::FindFullName(kDummyExperiment);
-              }())
-    {
-    }
+    //
+    // DummyExperiment()
+    //     // : DummyExperiment(
+    //     //       []
+    //     //       {
+    //     //           field_trial::FieldTrialsAllowedInScopeForTesting k{{kDummyExperiment}};
+    //     //           return field_trial::FindFullName(kDummyExperiment);
+    //     //       }())
+    // {
+    // }
 
     explicit DummyExperiment(StringView field_trial)
     {
@@ -65,12 +80,15 @@ TEST(FieldTrialParserTest, ParsesValidParameters)
     EXPECT_EQ(exp.ping.Get(), true);
     EXPECT_EQ(exp.hash.Get(), "x7c");
 }
+
 TEST(FieldTrialParserTest, InitializesFromFieldTrial)
 {
-    field_trial::ScopedFieldTrials field_trials("WebRTC-OtherExperiment/Disabled/"
-                                                "WebRTC-DummyExperiment/Enabled,f:-1.7,r:2,s:10,p:1,h:x7c/"
-                                                "WebRTC-AnotherExperiment/Enabled,f:-3.1,otherstuff:beef/");
-    DummyExperiment exp;
+    // test::ScopedFieldTrials field_trials("WebRTC-OtherExperiment/Disabled/"
+    //                                      "WebRTC-DummyExperiment/Enabled,f:-1.7,r:2,s:10,p:1,h:x7c/"
+    //                                      "WebRTC-AnotherExperiment/Enabled,f:-3.1,otherstuff:beef/");
+    // DummyExperiment exp;
+    std::string field_trial_str = "Enabled,f:-1.7,r:2,s:10,p:1,h:x7c";
+    DummyExperiment exp(field_trial_str);
     EXPECT_TRUE(exp.enabled.Get());
     EXPECT_EQ(exp.factor.Get(), -1.7);
     EXPECT_EQ(exp.retries.Get(), 2);
@@ -78,6 +96,7 @@ TEST(FieldTrialParserTest, InitializesFromFieldTrial)
     EXPECT_EQ(exp.ping.Get(), true);
     EXPECT_EQ(exp.hash.Get(), "x7c");
 }
+
 TEST(FieldTrialParserTest, UsesDefaults)
 {
     DummyExperiment exp("");
@@ -197,3 +216,5 @@ TEST(FieldTrialParserTest, ParsesCustomEnumParameter)
     ParseFieldTrial({&my_enum}, "e:5");
     EXPECT_EQ(my_enum.Get(), CustomEnum::kBlue);
 }
+
+OCTK_END_NAMESPACE

@@ -22,11 +22,12 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_GENERIC_FRAME_INFO_HPP
-#define _OCTK_GENERIC_FRAME_INFO_HPP
+#pragma once
 
+#include <octk_inlined_vector.hpp>
 #include <octk_video_codec_types.hpp>
 #include <octk_dependency_descriptor.hpp>
+#include <octk_video_codec_constants.hpp>
 
 #include <bitset>
 #include <vector>
@@ -44,7 +45,11 @@ OCTK_BEGIN_NAMESPACE
 struct CodecBufferUsage
 {
     constexpr CodecBufferUsage(int id, bool referenced, bool updated)
-        : id(id), referenced(referenced), updated(updated) {}
+        : id(id)
+        , referenced(referenced)
+        , updated(updated)
+    {
+    }
 
     int id = 0;
     bool referenced = false;
@@ -57,11 +62,10 @@ struct OCTK_MEDIA_API GenericFrameInfo : public FrameDependencyTemplate
 
     GenericFrameInfo();
     GenericFrameInfo(const GenericFrameInfo &);
-    ~
-    GenericFrameInfo();
+    ~GenericFrameInfo();
 
-//    absl::InlinedVector<CodecBufferUsage, kMaxEncoderBuffers> encoder_buffers;
-    std::vector<CodecBufferUsage> encoder_buffers;
+    //    absl::InlinedVector<CodecBufferUsage, kMaxEncoderBuffers> encoder_buffers;
+    InlinedVector<CodecBufferUsage, kMaxEncoderBuffers> encoder_buffers;
     std::vector<bool> part_of_chain;
     std::bitset<32> active_decode_targets = ~uint32_t{0};
 };
@@ -82,5 +86,3 @@ private:
 };
 
 OCTK_END_NAMESPACE
-
-#endif  // _OCTK_GENERIC_FRAME_INFO_HPP

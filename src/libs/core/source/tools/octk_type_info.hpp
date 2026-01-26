@@ -35,7 +35,7 @@ public:
     enum
     {
         isRelocatable = traits::is_relocatable<T>::value, // can copy/move
-        isSpecialized = std::is_enum<T>::value,                // don't require every enum to be marked manually
+        isSpecialized = std::is_enum<T>::value,           // don't require every enum to be marked manually
         isIntegral = std::is_integral<T>::value,
         isComplex = !std::is_trivial<T>::value, // not pod type
         isPointer = false,
@@ -149,16 +149,18 @@ struct TypeInfoFlags
     class octk::TypeInfo<TYPE>                                                                                         \
     {                                                                                                                  \
     public:                                                                                                            \
+        OCTK_WARNING_PUSH                                                                                              \
+        OCTK_WARNING_DISABLE_CLANG("-Wdeprecated-anon-enum-enum-conversion")                                           \
         enum                                                                                                           \
         {                                                                                                              \
             isSpecialized = true,                                                                                      \
             isComplex = (((FLAGS) & OCTK_PRIMITIVE_TYPE) == 0) && !std::is_trivial<TYPE>::value,                       \
             isStatic = (((FLAGS) & (OCTK_MOVABLE_TYPE | OCTK_PRIMITIVE_TYPE)) == 0),                                   \
-            isRelocatable = !isStatic || ((FLAGS) & OCTK_RELOCATABLE_TYPE) ||                                          \
-                            octk::traits::is_relocatable_v<TYPE>,                                                 \
+            isRelocatable = !isStatic || ((FLAGS) & OCTK_RELOCATABLE_TYPE) || octk::traits::is_relocatable_v<TYPE>,    \
             isPointer = false,                                                                                         \
             isIntegral = std::is_integral<TYPE>::value,                                                                \
         };                                                                                                             \
+        OCTK_WARNING_POP                                                                                               \
         static inline const char *name()                                                                               \
         {                                                                                                              \
             return #TYPE;                                                                                              \

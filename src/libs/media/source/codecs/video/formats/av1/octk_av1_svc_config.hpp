@@ -1,0 +1,26 @@
+/* Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
+#pragma once
+
+#include <octk_array_view.hpp>
+#include <octk_video_codec.hpp>
+
+#include <vector>
+
+OCTK_BEGIN_NAMESPACE
+
+std::vector<ScalabilityMode> LibaomAv1EncoderSupportedScalabilityModes();
+
+bool LibaomAv1EncoderSupportsScalabilityMode(ScalabilityMode scalability_mode);
+
+// Fills `video_codec.spatialLayers` using other members.
+bool SetAv1SvcConfig(VideoCodec &video_codec, int num_temporal_layers, int num_spatial_layers);
+
+OCTK_END_NAMESPACE

@@ -69,18 +69,27 @@ VideoCodecH264 VideoEncoder::getDefaultH264Settings()
 
 VideoEncoder::ScalingSettings::ScalingSettings() = default;
 
-VideoEncoder::ScalingSettings::ScalingSettings(KOff) : ScalingSettings() {}
+VideoEncoder::ScalingSettings::ScalingSettings(KOff)
+    : ScalingSettings()
+{
+}
 
-VideoEncoder::ScalingSettings::ScalingSettings(int low, int high) : thresholds(QpThresholds(low, high)) {}
+VideoEncoder::ScalingSettings::ScalingSettings(int low, int high)
+    : thresholds(QpThresholds(low, high))
+{
+}
 
-VideoEncoder::ScalingSettings::ScalingSettings(int low,
-                                               int high,
-                                               int min_pixels)
-    : thresholds(QpThresholds(low, high)), min_pixels_per_frame(min_pixels) {}
+VideoEncoder::ScalingSettings::ScalingSettings(int low, int high, int min_pixels)
+    : thresholds(QpThresholds(low, high))
+    , minPixelsPerFrame(min_pixels)
+{
+}
 
 VideoEncoder::ScalingSettings::ScalingSettings(const ScalingSettings &) = default;
 
-VideoEncoder::ScalingSettings::~ScalingSettings() {}
+VideoEncoder::ScalingSettings::~ScalingSettings()
+{
+}
 
 // static
 constexpr VideoEncoder::ScalingSettings::KOff VideoEncoder::ScalingSettings::kOff;
@@ -89,23 +98,21 @@ constexpr uint8_t VideoEncoder::EncoderInfo::kMaxFramerateFraction;
 
 bool VideoEncoder::ResolutionBitrateLimits::operator==(const ResolutionBitrateLimits &rhs) const
 {
-    return frame_size_pixels == rhs.frame_size_pixels &&
-           min_start_bitrate_bps == rhs.min_start_bitrate_bps &&
-           min_bitrate_bps == rhs.min_bitrate_bps &&
-           max_bitrate_bps == rhs.max_bitrate_bps;
+    return frameSizePixels == rhs.frameSizePixels && minStartBitrateBps == rhs.minStartBitrateBps &&
+           minBitrateBps == rhs.minBitrateBps && maxBitrateBps == rhs.maxBitrateBps;
 }
 
 VideoEncoder::EncoderInfo::EncoderInfo()
-    : scaling_settings(VideoEncoder::ScalingSettings::kOff)
-    , requested_resolution_alignment(1)
-    , apply_alignment_to_all_simulcast_layers(false)
-    , supports_native_handle(false)
-    , implementation_name("unknown")
-    , has_trusted_rate_controller(false)
-    , is_hardware_accelerated(true)
-    , fps_allocation{InlinedVector<uint8_t, kMaxTemporalStreams>(1, kMaxFramerateFraction)}
-    , supports_simulcast(false)
-    , preferred_pixel_formats{VideoFrameBuffer::Type::kI420}
+    : scalingSettings(VideoEncoder::ScalingSettings::kOff)
+    , requestedResolutionAlignment(1)
+    , applyAlignmentToAllSimulcastLayers(false)
+    , supportsNativeHandle(false)
+    , implementationName("unknown")
+    , hasTrustedRateController(false)
+    , isHardwareAccelerated(true)
+    , fpsAllocation{InlinedVector<uint8_t, kMaxTemporalStreams>(1, kMaxFramerateFraction)}
+    , supportsSimulcast(false)
+    , preferredPixelFormats{VideoFrameBuffer::Type::kI420}
 {
 }
 
@@ -119,29 +126,23 @@ std::string VideoEncoder::EncoderInfo::toString() const
 
     ss << "EncoderInfo { "
           "ScalingSettings { ";
-    if (scaling_settings.thresholds)
+    if (scalingSettings.thresholds)
     {
         ss << "Thresholds { "
               "low = "
-           << scaling_settings.thresholds->low
-           << ", high = " << scaling_settings.thresholds->high << "}, ";
+           << scalingSettings.thresholds->low << ", high = " << scalingSettings.thresholds->high << "}, ";
     }
-    ss << "min_pixels_per_frame = " << scaling_settings.min_pixels_per_frame
-       << " }";
-    ss << ", requested_resolution_alignment = " << requested_resolution_alignment
-       << ", apply_alignment_to_all_simulcast_layers = "
-       << apply_alignment_to_all_simulcast_layers
-       << ", supports_native_handle = " << supports_native_handle
-       << ", implementation_name = '" << implementation_name
+    ss << "min_pixels_per_frame = " << scalingSettings.minPixelsPerFrame << " }";
+    ss << ", requested_resolution_alignment = " << requestedResolutionAlignment
+       << ", apply_alignment_to_all_simulcast_layers = " << applyAlignmentToAllSimulcastLayers
+       << ", supports_native_handle = " << supportsNativeHandle << ", implementation_name = '" << implementationName
        << "'"
           ", has_trusted_rate_controller = "
-       << has_trusted_rate_controller
-       << ", is_hardware_accelerated = " << is_hardware_accelerated
-       << ", fps_allocation = [";
+       << hasTrustedRateController << ", is_hardware_accelerated = " << isHardwareAccelerated << ", fps_allocation = [";
     size_t num_spatial_layer_with_fps_allocation = 0;
     for (size_t i = 0; i < kMaxSpatialLayers; ++i)
     {
-        if (!fps_allocation[i].empty())
+        if (!fpsAllocation[i].empty())
         {
             num_spatial_layer_with_fps_allocation = i + 1;
         }
@@ -149,7 +150,7 @@ std::string VideoEncoder::EncoderInfo::toString() const
     bool first = true;
     for (size_t i = 0; i < num_spatial_layer_with_fps_allocation; ++i)
     {
-        if (fps_allocation[i].empty())
+        if (fpsAllocation[i].empty())
         {
             break;
         }
@@ -157,7 +158,7 @@ std::string VideoEncoder::EncoderInfo::toString() const
         {
             ss << ", ";
         }
-        const InlinedVector<uint8_t, kMaxTemporalStreams> &fractions = fps_allocation[i];
+        const InlinedVector<uint8_t, kMaxTemporalStreams> &fractions = fpsAllocation[i];
         if (!fractions.empty())
         {
             first = false;
@@ -175,36 +176,34 @@ std::string VideoEncoder::EncoderInfo::toString() const
     }
     ss << "]";
     ss << ", resolution_bitrate_limits = [";
-    for (size_t i = 0; i < resolution_bitrate_limits.size(); ++i)
+    for (size_t i = 0; i < resolutionBitrateLimits.size(); ++i)
     {
         if (i > 0)
         {
             ss << ", ";
         }
-        ResolutionBitrateLimits l = resolution_bitrate_limits[i];
+        ResolutionBitrateLimits l = resolutionBitrateLimits[i];
         ss << "Limits { "
               "frame_size_pixels = "
-           << l.frame_size_pixels
-           << ", min_start_bitrate_bps = " << l.min_start_bitrate_bps
-           << ", min_bitrate_bps = " << l.min_bitrate_bps
-           << ", max_bitrate_bps = " << l.max_bitrate_bps << "} ";
+           << l.frameSizePixels << ", min_start_bitrate_bps = " << l.minStartBitrateBps
+           << ", min_bitrate_bps = " << l.minBitrateBps << ", max_bitrate_bps = " << l.maxBitrateBps << "} ";
     }
     ss << "] "
           ", supports_simulcast = "
-       << supports_simulcast;
+       << supportsSimulcast;
     ss << ", preferred_pixel_formats = [";
-    for (size_t i = 0; i < preferred_pixel_formats.size(); ++i)
+    for (size_t i = 0; i < preferredPixelFormats.size(); ++i)
     {
         if (i > 0)
         {
             ss << ", ";
         }
-        ss << videoFrameBufferTypeToString(preferred_pixel_formats.at(i));
+        ss << videoFrameBufferTypeToString(preferredPixelFormats.at(i));
     }
     ss << "]";
-    if (is_qp_trusted.has_value())
+    if (isQPTrusted.has_value())
     {
-        ss << ", is_qp_trusted = " << is_qp_trusted.value();
+        ss << ", is_qp_trusted = " << isQPTrusted.value();
     }
     ss << "}";
     return ss.str();
@@ -212,43 +211,39 @@ std::string VideoEncoder::EncoderInfo::toString() const
 
 bool VideoEncoder::EncoderInfo::operator==(const EncoderInfo &rhs) const
 {
-    if (scaling_settings.thresholds.has_value() != rhs.scaling_settings.thresholds.has_value())
+    if (scalingSettings.thresholds.has_value() != rhs.scalingSettings.thresholds.has_value())
     {
         return false;
     }
-    if (scaling_settings.thresholds.has_value())
+    if (scalingSettings.thresholds.has_value())
     {
-        QpThresholds l = *scaling_settings.thresholds;
-        QpThresholds r = *rhs.scaling_settings.thresholds;
+        QpThresholds l = *scalingSettings.thresholds;
+        QpThresholds r = *rhs.scalingSettings.thresholds;
         if (l.low != r.low || l.high != r.high)
         {
             return false;
         }
     }
-    if (scaling_settings.min_pixels_per_frame !=
-        rhs.scaling_settings.min_pixels_per_frame)
+    if (scalingSettings.minPixelsPerFrame != rhs.scalingSettings.minPixelsPerFrame)
     {
         return false;
     }
 
-    if (supports_native_handle != rhs.supports_native_handle ||
-        implementation_name != rhs.implementation_name ||
-        has_trusted_rate_controller != rhs.has_trusted_rate_controller ||
-        is_hardware_accelerated != rhs.is_hardware_accelerated)
+    if (supportsNativeHandle != rhs.supportsNativeHandle || implementationName != rhs.implementationName ||
+        hasTrustedRateController != rhs.hasTrustedRateController || isHardwareAccelerated != rhs.isHardwareAccelerated)
     {
         return false;
     }
 
     for (size_t i = 0; i < kMaxSpatialLayers; ++i)
     {
-        if (fps_allocation[i] != rhs.fps_allocation[i])
+        if (fpsAllocation[i] != rhs.fpsAllocation[i])
         {
             return false;
         }
     }
 
-    if (resolution_bitrate_limits != rhs.resolution_bitrate_limits ||
-        supports_simulcast != rhs.supports_simulcast)
+    if (resolutionBitrateLimits != rhs.resolutionBitrateLimits || supportsSimulcast != rhs.supportsSimulcast)
     {
         return false;
     }
@@ -256,36 +251,31 @@ bool VideoEncoder::EncoderInfo::operator==(const EncoderInfo &rhs) const
     return true;
 }
 
-Optional<VideoEncoder::ResolutionBitrateLimits>
-VideoEncoder::EncoderInfo::GetEncoderBitrateLimitsForResolution(int frame_size_pixels) const
+Optional<VideoEncoder::ResolutionBitrateLimits> VideoEncoder::EncoderInfo::getEncoderBitrateLimitsForResolution(
+    int frameSizePixels) const
 {
-    std::vector<ResolutionBitrateLimits> bitrate_limits = resolution_bitrate_limits;
+    std::vector<ResolutionBitrateLimits> bitrate_limits = resolutionBitrateLimits;
 
     // Sort the list of bitrate limits by resolution.
-    sort(bitrate_limits.begin(), bitrate_limits.end(),
-         [](const ResolutionBitrateLimits &lhs,
-            const ResolutionBitrateLimits &rhs) {
-             return lhs.frame_size_pixels < rhs.frame_size_pixels;
-         });
+    sort(bitrate_limits.begin(),
+         bitrate_limits.end(),
+         [](const ResolutionBitrateLimits &lhs, const ResolutionBitrateLimits &rhs)
+         { return lhs.frameSizePixels < rhs.frameSizePixels; });
 
     for (size_t i = 0; i < bitrate_limits.size(); ++i)
     {
-        OCTK_DCHECK_GE(bitrate_limits[i].min_bitrate_bps, 0);
-        OCTK_DCHECK_GE(bitrate_limits[i].min_start_bitrate_bps, 0);
-        OCTK_DCHECK_GE(bitrate_limits[i].max_bitrate_bps,
-                       bitrate_limits[i].min_bitrate_bps);
+        OCTK_DCHECK_GE(bitrate_limits[i].minBitrateBps, 0);
+        OCTK_DCHECK_GE(bitrate_limits[i].minStartBitrateBps, 0);
+        OCTK_DCHECK_GE(bitrate_limits[i].maxBitrateBps, bitrate_limits[i].minBitrateBps);
         if (i > 0)
         {
             // The bitrate limits aren't expected to decrease with resolution.
-            OCTK_DCHECK_GE(bitrate_limits[i].min_bitrate_bps,
-                           bitrate_limits[i - 1].min_bitrate_bps);
-            OCTK_DCHECK_GE(bitrate_limits[i].min_start_bitrate_bps,
-                           bitrate_limits[i - 1].min_start_bitrate_bps);
-            OCTK_DCHECK_GE(bitrate_limits[i].max_bitrate_bps,
-                           bitrate_limits[i - 1].max_bitrate_bps);
+            OCTK_DCHECK_GE(bitrate_limits[i].minBitrateBps, bitrate_limits[i - 1].minBitrateBps);
+            OCTK_DCHECK_GE(bitrate_limits[i].minStartBitrateBps, bitrate_limits[i - 1].minStartBitrateBps);
+            OCTK_DCHECK_GE(bitrate_limits[i].maxBitrateBps, bitrate_limits[i - 1].maxBitrateBps);
         }
 
-        if (bitrate_limits[i].frame_size_pixels >= frame_size_pixels)
+        if (bitrate_limits[i].frameSizePixels >= frameSizePixels)
         {
             return utils::make_optional<ResolutionBitrateLimits>(bitrate_limits[i]);
         }
@@ -295,23 +285,32 @@ VideoEncoder::EncoderInfo::GetEncoderBitrateLimitsForResolution(int frame_size_p
 }
 
 VideoEncoder::RateControlParameters::RateControlParameters()
-    : bitrate(VideoBitrateAllocation()), framerate_fps(0.0), bandwidth_allocation(DataRate::Zero()) {}
+    : bitrate(VideoBitrateAllocation())
+    , framerateFps(0.0)
+    , bandwidthAllocation(DataRate::Zero())
+{
+}
 
-VideoEncoder::RateControlParameters::RateControlParameters(const VideoBitrateAllocation &bitrate,
-                                                           double framerate_fps)
+VideoEncoder::RateControlParameters::RateControlParameters(const VideoBitrateAllocation &bitrate, double framerate_fps)
     : bitrate(bitrate)
-    , framerate_fps(framerate_fps)
-    , bandwidth_allocation(DataRate::BitsPerSec(bitrate.get_sum_bps())) {}
+    , framerateFps(framerate_fps)
+    , bandwidthAllocation(DataRate::BitsPerSec(bitrate.get_sum_bps()))
+{
+}
 
 VideoEncoder::RateControlParameters::RateControlParameters(const VideoBitrateAllocation &bitrate,
                                                            double framerate_fps,
                                                            DataRate bandwidth_allocation)
-    : bitrate(bitrate), framerate_fps(framerate_fps), bandwidth_allocation(bandwidth_allocation) {}
+    : bitrate(bitrate)
+    , framerateFps(framerate_fps)
+    , bandwidthAllocation(bandwidth_allocation)
+{
+}
 
 bool VideoEncoder::RateControlParameters::operator==(const VideoEncoder::RateControlParameters &rhs) const
 {
-    return std::tie(bitrate, framerate_fps, bandwidth_allocation) ==
-           std::tie(rhs.bitrate, rhs.framerate_fps, rhs.bandwidth_allocation);
+    return std::tie(bitrate, framerateFps, bandwidthAllocation) ==
+           std::tie(rhs.bitrate, rhs.framerateFps, rhs.bandwidthAllocation);
 }
 
 bool VideoEncoder::RateControlParameters::operator!=(const VideoEncoder::RateControlParameters &rhs) const
@@ -323,13 +322,10 @@ VideoEncoder::RateControlParameters::~RateControlParameters() = default;
 
 // void VideoEncoder::SetFecControllerOverride(FecControllerOverride * /* fec_controller_override */) {}
 
-int32_t VideoEncoder::initEncode(const VideoCodec *codec_settings,
-                                 int32_t number_of_cores,
-                                 size_t max_payload_size)
+int32_t VideoEncoder::initEncode(const VideoCodec *codec_settings, int32_t number_of_cores, size_t max_payload_size)
 {
     const VideoEncoder::Capabilities capabilities(/* loss_notification= */ false);
-    const VideoEncoder::Settings settings(capabilities, number_of_cores,
-                                          max_payload_size);
+    const VideoEncoder::Settings settings(capabilities, number_of_cores, max_payload_size);
     // In theory, this and the other version of InitEncode() could end up calling
     // each other in a loop until we get a stack overflow.
     // In practice, any subclass of VideoEncoder would overload at least one
@@ -337,20 +333,25 @@ int32_t VideoEncoder::initEncode(const VideoCodec *codec_settings,
     return this->initEncode(codec_settings, settings);
 }
 
-int VideoEncoder::initEncode(const VideoCodec *codec_settings,
-                             const VideoEncoder::Settings &settings)
+int VideoEncoder::initEncode(const VideoCodec *codec_settings, const VideoEncoder::Settings &settings)
 {
     // In theory, this and the other version of InitEncode() could end up calling
     // each other in a loop until we get a stack overflow.
     // In practice, any subclass of VideoEncoder would overload at least one
     // of these, and we have a TODO in the header file to make this pure virtual.
-    return this->initEncode(codec_settings, settings.number_of_cores,
-                            settings.max_payload_size);
+    return this->initEncode(codec_settings, settings.numberOfCores, settings.maxPayloadSize);
 }
 
-void VideoEncoder::onPacketLossRateUpdate(float /* packet_loss_rate */) {}
+void VideoEncoder::onPacketLossRateUpdate(float /* packet_loss_rate */)
+{
+}
 
-void VideoEncoder::onRttUpdate(int64_t /* rtt_ms */) {}
+void VideoEncoder::onRttUpdate(int64_t /* rtt_ms */)
+{
+}
 
-void VideoEncoder::onLossNotification(const LossNotification & /* loss_notification */) {}
+void VideoEncoder::onLossNotification(const LossNotification & /* loss_notification */)
+{
+}
+
 OCTK_END_NAMESPACE

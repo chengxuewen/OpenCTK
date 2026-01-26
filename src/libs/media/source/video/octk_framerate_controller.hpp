@@ -28,7 +28,7 @@
 #include <octk_media_global.hpp>
 #include <octk_optional.hpp>
 
-#include <optional>
+#include <cstdint>
 
 OCTK_BEGIN_NAMESPACE
 

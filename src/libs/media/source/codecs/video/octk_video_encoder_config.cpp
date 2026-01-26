@@ -163,4 +163,5 @@ void VideoEncoderConfig::Av1EncoderSpecificSettings::FillVideoCodecAv1(VideoCode
 {
     *av1_settings = specifics_;
 }
+
 OCTK_END_NAMESPACE

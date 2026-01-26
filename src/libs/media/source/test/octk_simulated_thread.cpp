@@ -22,7 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#include "octk_simulated_thread.hpp"
+#include "octk_simulated_thread_p.hpp"
 #include <octk_memory.hpp>
 
 OCTK_BEGIN_NAMESPACE

@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_SDP_VIDEO_FORMAT_HPP
-#define _OCTK_SDP_VIDEO_FORMAT_HPP
+#pragma once
 
 #include <octk_scalability_mode.hpp>
 #include <octk_inlined_vector.hpp>
@@ -93,5 +92,3 @@ Optional<SdpVideoFormat> FuzzyMatchSdpVideoFormat(ArrayView<const SdpVideoFormat
                                                   const SdpVideoFormat &format);
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_SDP_VIDEO_FORMAT_HPP

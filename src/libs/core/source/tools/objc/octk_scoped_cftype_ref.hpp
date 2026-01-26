@@ -107,7 +107,7 @@ public:
     // created by pass-by-pointer initializers.
     T *InitializeInto()
     {
-        RTC_DCHECK(!ptr_);
+        OCTK_DCHECK(!ptr_);
         return &ptr_;
     }
 

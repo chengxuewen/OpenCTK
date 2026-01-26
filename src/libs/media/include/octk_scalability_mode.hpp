@@ -1,1 +1,1 @@
-#include "../source/codecs/video/octk_scalability_mode.hpp"
+#include "../source/codecs/video/svc/octk_scalability_mode.hpp"

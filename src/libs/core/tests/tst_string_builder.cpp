@@ -1,22 +1,36 @@
-/*
- *  Copyright 2018 The WebRTC Project Authors. All rights reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be found
- *  in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
- */
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2026~Present ChengXueWen.
+** Copyright 2018 The WebRTC Project Authors. All rights reserved.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
 
 #include <octk_string_builder.hpp>
+
+#include <string.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <cstring>
-
-namespace octk
-{
+OCTK_BEGIN_NAMESPACE
 
 TEST(SimpleStringBuilder, Limit)
 {
@@ -26,7 +40,7 @@ TEST(SimpleStringBuilder, Limit)
 
     // Test that for a SSB with a buffer size of 10, that we can write 9 chars
     // into it.
-    sb << "012345678";  // 9 characters + '\0'.
+    sb << "012345678"; // 9 characters + '\0'.
     EXPECT_EQ(0, strcmp(sb.str(), "012345678"));
 }
 
@@ -34,8 +48,7 @@ TEST(SimpleStringBuilder, NumbersAndChars)
 {
     char sb_buf[100];
     SimpleStringBuilder sb(sb_buf);
-    sb << 1 << ':' << 2.1 << ":" << 2.2f << ':' << 78187493520ll << ':'
-       << 78187493520ul;
+    sb << 1 << ':' << 2.1 << ":" << 2.2f << ':' << 78187493520ll << ':' << 78187493520ul;
     EXPECT_EQ(0, strcmp(sb.str(), "1:2.1:2.2:78187493520:78187493520"));
 }
 
@@ -45,9 +58,7 @@ TEST(SimpleStringBuilder, Format)
     SimpleStringBuilder sb(sb_buf);
     sb << "Here we go - ";
     sb.AppendFormat("This is a hex formatted value: 0x%08llx", 3735928559ULL);
-    EXPECT_EQ(0,
-              strcmp(sb.str(),
-                     "Here we go - This is a hex formatted value: 0xdeadbeef"));
+    EXPECT_EQ(0, strcmp(sb.str(), "Here we go - This is a hex formatted value: 0xdeadbeef"));
 }
 
 TEST(SimpleStringBuilder, StdString)
@@ -61,19 +72,19 @@ TEST(SimpleStringBuilder, StdString)
 
 // These tests are safe to run if we have death test support or if DCHECKs are
 // off.
-#if (GTEST_HAS_DEATH_TEST && !defined(OCTK_OS_ANDROID)) || !OCTK_DCHECK_IS_ON
+#if (GTEST_HAS_DEATH_TEST && !defined(WEBRTC_ANDROID)) || !OCTK_DCHECK_IS_ON
 
 TEST(SimpleStringBuilderDeathTest, BufferOverrunConstCharP)
 {
     char sb_buf[4];
     SimpleStringBuilder sb(sb_buf);
     const char *const msg = "This is just too much";
-#if OCTK_DCHECK_IS_ON
+#    if OCTK_DCHECK_IS_ON
     EXPECT_DEATH(sb << msg, "");
-#else
+#    else
     sb << msg;
     EXPECT_THAT(sb.str(), ::testing::StrEq("Thi"));
-#endif
+#    endif
 }
 
 TEST(SimpleStringBuilderDeathTest, BufferOverrunStdString)
@@ -82,12 +93,12 @@ TEST(SimpleStringBuilderDeathTest, BufferOverrunStdString)
     SimpleStringBuilder sb(sb_buf);
     sb << 12;
     const std::string msg = "Aw, come on!";
-#if OCTK_DCHECK_IS_ON
+#    if OCTK_DCHECK_IS_ON
     EXPECT_DEATH(sb << msg, "");
-#else
+#    else
     sb << msg;
     EXPECT_THAT(sb.str(), ::testing::StrEq("12A"));
-#endif
+#    endif
 }
 
 TEST(SimpleStringBuilderDeathTest, BufferOverrunInt)
@@ -95,16 +106,15 @@ TEST(SimpleStringBuilderDeathTest, BufferOverrunInt)
     char sb_buf[4];
     SimpleStringBuilder sb(sb_buf);
     constexpr int num = -12345;
-#if OCTK_DCHECK_IS_ON
+#    if OCTK_DCHECK_IS_ON
     EXPECT_DEATH(sb << num, "");
-#else
+#    else
     sb << num;
     // If we run into the end of the buffer, resonable results are either that
     // the append has no effect or that it's truncated at the point where the
     // buffer ends.
-    EXPECT_THAT(sb.str(),
-                ::testing::AnyOf(::testing::StrEq(""), ::testing::StrEq("-12")));
-#endif
+    EXPECT_THAT(sb.str(), ::testing::AnyOf(::testing::StrEq(""), ::testing::StrEq("-12")));
+#    endif
 }
 
 TEST(SimpleStringBuilderDeathTest, BufferOverrunDouble)
@@ -112,13 +122,12 @@ TEST(SimpleStringBuilderDeathTest, BufferOverrunDouble)
     char sb_buf[5];
     SimpleStringBuilder sb(sb_buf);
     constexpr double num = 123.456;
-#if OCTK_DCHECK_IS_ON
+#    if OCTK_DCHECK_IS_ON
     EXPECT_DEATH(sb << num, "");
-#else
+#    else
     sb << num;
-    EXPECT_THAT(sb.str(),
-                ::testing::AnyOf(::testing::StrEq(""), ::testing::StrEq("123.")));
-#endif
+    EXPECT_THAT(sb.str(), ::testing::AnyOf(::testing::StrEq(""), ::testing::StrEq("123.")));
+#    endif
 }
 
 TEST(SimpleStringBuilderDeathTest, BufferOverrunConstCharPAlreadyFull)
@@ -127,12 +136,12 @@ TEST(SimpleStringBuilderDeathTest, BufferOverrunConstCharPAlreadyFull)
     SimpleStringBuilder sb(sb_buf);
     sb << 123;
     const char *const msg = "This is just too much";
-#if OCTK_DCHECK_IS_ON
+#    if OCTK_DCHECK_IS_ON
     EXPECT_DEATH(sb << msg, "");
-#else
+#    else
     sb << msg;
     EXPECT_THAT(sb.str(), ::testing::StrEq("123"));
-#endif
+#    endif
 }
 
 TEST(SimpleStringBuilderDeathTest, BufferOverrunIntAlreadyFull)
@@ -141,12 +150,12 @@ TEST(SimpleStringBuilderDeathTest, BufferOverrunIntAlreadyFull)
     SimpleStringBuilder sb(sb_buf);
     sb << "xyz";
     constexpr int num = -12345;
-#if OCTK_DCHECK_IS_ON
+#    if OCTK_DCHECK_IS_ON
     EXPECT_DEATH(sb << num, "");
-#else
+#    else
     sb << num;
     EXPECT_THAT(sb.str(), ::testing::StrEq("xyz"));
-#endif
+#    endif
 }
 
 #endif
@@ -166,10 +175,8 @@ TEST(StringBuilder, Limit)
 TEST(StringBuilder, NumbersAndChars)
 {
     StringBuilder sb;
-    sb << 1 << ":" << 2.1 << ":" << 2.2f << ":" << 78187493520ll << ":"
-       << 78187493520ul;
-    EXPECT_THAT(sb.str(),
-                ::testing::MatchesRegex("1:2.10*:2.20*:78187493520:78187493520"));
+    sb << 1 << ":" << 2.1 << ":" << 2.2f << ":" << 78187493520ll << ":" << 78187493520ul;
+    EXPECT_THAT(sb.str(), ::testing::MatchesRegex("1:2.10*:2.20*:78187493520:78187493520"));
 }
 
 TEST(StringBuilder, Format)
@@ -191,9 +198,8 @@ TEST(StringBuilder, StdString)
 TEST(StringBuilder, Release)
 {
     StringBuilder sb;
-    std::string str =
-        "This string has to be of a moderate length, or we might "
-        "run into problems with small object optimizations.";
+    std::string str = "This string has to be of a moderate length, or we might "
+                      "run into problems with small object optimizations.";
     EXPECT_LT(sizeof(str), str.size());
     sb << str;
     EXPECT_EQ(str, sb.str());
@@ -215,4 +221,4 @@ TEST(StringBuilder, Reset)
     EXPECT_EQ("123!", sb.str());
 }
 
-}  // namespace rtc
+OCTK_END_NAMESPACE

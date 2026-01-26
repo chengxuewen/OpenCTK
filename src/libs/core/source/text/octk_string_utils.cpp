@@ -162,6 +162,22 @@ bool stringContainsIgnoreCase(StringView haystack, char needle) noexcept
     }
 }
 
+std::vector<StringView> stringSplit(StringView source, char delimiter)
+{
+    std::vector<StringView> fields;
+    size_t last = 0;
+    for (size_t i = 0; i < source.length(); ++i)
+    {
+        if (source[i] == delimiter)
+        {
+            fields.push_back(source.substr(last, i - last));
+            last = i + 1;
+        }
+    }
+    fields.push_back(source.substr(last));
+    return fields;
+}
+
 namespace
 {
 // This is an arbitrary limitation that can be changed if necessary, or removed if someone has the time and
@@ -169,7 +185,7 @@ namespace
 constexpr int kMaxSize = 512;
 } // namespace
 
-std::string StringFormat(const char *format, ...)
+std::string stringFormat(const char *format, ...)
 {
     char buffer[kMaxSize];
     va_list args;

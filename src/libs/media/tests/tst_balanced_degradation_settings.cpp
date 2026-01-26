@@ -8,16 +8,15 @@
 *  be found in the AUTHORS file in the root of the source tree.
 */
 
-#include <octk_balanced_degradation_settings.hpp>
+#include <private/octk_balanced_degradation_settings_p.hpp>
+#include <private/octk_field_trials_p.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <limits>
 
-// #include "test/scoped_key_value_config.h"
-
-using namespace octk;
+OCTK_BEGIN_NAMESPACE
 
 namespace
 {
@@ -589,3 +588,5 @@ TEST(BalancedDegradationSettings, GetsGenericQpThresholds)
     EXPECT_EQ(4, thresholds->low);
     EXPECT_EQ(24, thresholds->high);
 }
+
+OCTK_END_NAMESPACE

@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_STRING_ENCODE_HPP
-#define _OCTK_STRING_ENCODE_HPP
+#pragma once
 
 #include <octk_string_to_number.hpp>
 #include <octk_string_view.hpp>
@@ -47,11 +46,6 @@ size_t hex_decode(ArrayView<char> buffer, StringView source);
 // `delimiter` == 0 means no delimiter
 // If the buffer is too short or the data is invalid, we return 0.
 size_t hex_decode_with_delimiter(ArrayView<char> buffer, StringView source, char delimiter);
-
-// Splits the source string into multiple fields separated by delimiter,
-// with duplicates of delimiter creating empty fields. Empty input produces a
-// single, empty, field.
-OCTK_CORE_API std::vector<StringView> split(StringView source, char delimiter);
 
 // Splits the source string into multiple fields separated by delimiter,
 // with duplicates of delimiter ignored.  Trailing delimiter ignored.
@@ -116,7 +110,8 @@ static bool FromString(StringView s, T *t)
 
 OCTK_CORE_API bool FromString(StringView s, bool *b);
 
-template <typename T> static inline T FromString(StringView str)
+template <typename T>
+static inline T FromString(StringView str)
 {
     T val;
     FromString(str, &val);
@@ -125,5 +120,3 @@ template <typename T> static inline T FromString(StringView str)
 } // namespace utils
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_STRING_ENCODE_HPP

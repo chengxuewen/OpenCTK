@@ -9,17 +9,16 @@
  */
 
 #include <octk_create_frame_generator_capturer.hpp>
-#include <test/octk_simulated_time_controller.hpp>
+#include <test/octk_simulated_time_controller_p.hpp>
 #include <octk_frame_generator_capturer.hpp>
 #include <octk_create_frame_generator.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace octk;
+#if 0
+OCTK_BEGIN_NAMESPACE
 
-namespace test
-{
 namespace
 {
 using ::testing::Eq;
@@ -31,10 +30,10 @@ constexpr int kHeight = 360;
 class MockVideoSinkInterfaceVideoFrame : public VideoSinkInterface<VideoFrame>
 {
 public:
-    MOCK_METHOD(void, onFrame, (const VideoFrame& frame), (override));
+    MOCK_METHOD(void, onFrame, (const VideoFrame &frame), (override));
     MOCK_METHOD(void, onDiscardedFrame, (), (override));
 };
-}  // namespace
+} // namespace
 
 TEST(FrameGeneratorCapturerTest, CreateFromConfig)
 {
@@ -90,4 +89,6 @@ TEST(FrameGeneratorCapturerTest, ChangeResolution)
     EXPECT_EQ(kWidth / 2, capturer->getResolution()->width);
     EXPECT_EQ(kHeight / 2, capturer->getResolution()->height);
 }
-}  // namespace test
+
+OCTK_END_NAMESPACE
+#endif

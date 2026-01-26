@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_YUV_HPP
-#define _OCTK_YUV_HPP
+#pragma once
 
 #include <octk_video_frame_buffer.hpp>
 #include <octk_media_global.hpp>
@@ -31,6 +30,7 @@
 #include <octk_video_type.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
 namespace utils
 {
 // This is the max PSNR value our algorithms can return.
@@ -44,9 +44,7 @@ const double kPerfectPSNR = 48.0f;
 //                   insufficient, an error will be returned.
 //   - buffer      : Pointer to buffer
 // Return value: length of buffer if OK, < 0 otherwise.
-int ExtractBuffer(const std::shared_ptr<I420BufferInterface> &input_frame,
-                  size_t size,
-                  uint8_t *buffer);
+int ExtractBuffer(const std::shared_ptr<I420BufferInterface> &input_frame, size_t size, uint8_t *buffer);
 int ExtractBuffer(const VideoFrame &input_frame, size_t size, uint8_t *buffer);
 // Convert From I420
 // Input:
@@ -56,23 +54,18 @@ int ExtractBuffer(const VideoFrame &input_frame, size_t size, uint8_t *buffer);
 //   - dst_frame        : Pointer to a destination frame.
 // Return value: 0 if OK, < 0 otherwise.
 // It is assumed that source and destination have equal height.
-int ConvertFromI420(const VideoFrame &src_frame,
-                    VideoType dst_video_type,
-                    int dst_sample_size,
-                    uint8_t *dst_frame);
+int ConvertFromI420(const VideoFrame &src_frame, VideoType dst_video_type, int dst_sample_size, uint8_t *dst_frame);
 
 std::shared_ptr<I420BufferInterface> ScaleVideoFrameBuffer(const I420BufferInterface &source,
                                                            int dst_width,
                                                            int dst_height);
 
-double I420SSE(const I420BufferInterface &ref_buffer,
-               const I420BufferInterface &test_buffer);
+double I420SSE(const I420BufferInterface &ref_buffer, const I420BufferInterface &test_buffer);
 
 // Compute PSNR for an I420 frame (all planes).
 // Returns the PSNR in decibel, to a maximum of kPerfectPSNR.
 double I420PSNR(const VideoFrame *ref_frame, const VideoFrame *test_frame);
-double I420PSNR(const I420BufferInterface &ref_buffer,
-                const I420BufferInterface &test_buffer);
+double I420PSNR(const I420BufferInterface &ref_buffer, const I420BufferInterface &test_buffer);
 
 // Computes the weighted PSNR-YUV for an I420 buffer.
 //
@@ -84,13 +77,11 @@ double I420PSNR(const I420BufferInterface &ref_buffer,
 // doi: 10.1109/TCSVT.2012.2221192.
 //
 // Returns the PSNR-YUV in decibel, to a maximum of kPerfectPSNR.
-double I420WeightedPSNR(const I420BufferInterface &ref_buffer,
-                        const I420BufferInterface &test_buffer);
+double I420WeightedPSNR(const I420BufferInterface &ref_buffer, const I420BufferInterface &test_buffer);
 
 // Compute SSIM for an I420 frame (all planes).
 double I420SSIM(const VideoFrame *ref_frame, const VideoFrame *test_frame);
-double I420SSIM(const I420BufferInterface &ref_buffer,
-                const I420BufferInterface &test_buffer);
+double I420SSIM(const I420BufferInterface &ref_buffer, const I420BufferInterface &test_buffer);
 
 // Helper function for scaling NV12 to NV12.
 // If the `src_width` and `src_height` matches the `dst_width` and `dst_height`,
@@ -140,6 +131,32 @@ private:
 
 namespace yuv
 {
+enum class FilterMode
+{
+    kFilterNone = 0,     // Point sample; Fastest.
+    kFilterLinear = 1,   // Filter horizontally only.
+    kFilterBilinear = 2, // Faster than box, but lower quality scaling down.
+    kFilterBox = 3       // Highest quality.
+};
+
+OCTK_MEDIA_API void scaleI420(const uint8_t *srcY,
+                              int srcStrideY,
+                              const uint8_t *srcU,
+                              int srcStrideU,
+                              const uint8_t *srcV,
+                              int srcStrideV,
+                              int srcWidth,
+                              int srcHeight,
+                              uint8_t *dstY,
+                              int dstStrideY,
+                              uint8_t *dstU,
+                              int dstStrideU,
+                              uint8_t *dstV,
+                              int dstStrideV,
+                              int dstWidth,
+                              int dstHeight,
+                              FilterMode filtering);
+
 OCTK_MEDIA_API void scaleI420(const uint8_t *srcBuffer,
                               int srcWidth,
                               int srcHeight,
@@ -217,93 +234,42 @@ OCTK_MEDIA_API bool convertToI420(const uint8_t *sample,
                                   VideoRotation rotation,
                                   VideoType videoType);
 
-OCTK_MEDIA_API void convertI420ToARGB(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertI420ToARGB(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertI420ToABGR(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertI420ToABGR(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertI420ToBGRA(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertI420ToBGRA(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertI420ToRGBA(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertI420ToRGBA(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertI420ToRGB24(const uint8_t *srcBuffer,
-                                       uint8_t *dstBuffer,
-                                       int width,
-                                       int height);
+OCTK_MEDIA_API void convertI420ToRGB24(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertI420ToNV12(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertI420ToNV12(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
 // BGRA little endian (argb in memory) to ARGB.
-OCTK_MEDIA_API void convertBGRAToARGB(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertBGRAToARGB(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
 // ABGR little endian (rgba in memory) to ARGB.
-OCTK_MEDIA_API void convertABGRToARGB(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertABGRToARGB(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
 // RGBA little endian (abgr in memory) to ARGB.
-OCTK_MEDIA_API void convertRGBAToARGB(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertRGBAToARGB(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertI420ToNV21(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertI420ToNV21(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertARGBToI420(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertARGBToI420(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertABGRToI420(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertABGRToI420(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertBGRAToI420(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertBGRAToI420(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertRGBAToI420(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertRGBAToI420(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertNV21ToI420(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertNV21ToI420(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertNV12ToI420(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertNV12ToI420(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
-OCTK_MEDIA_API void convertNV12ToARGB(const uint8_t *srcBuffer,
-                                      uint8_t *dstBuffer,
-                                      int width,
-                                      int height);
+OCTK_MEDIA_API void convertNV12ToARGB(const uint8_t *srcBuffer, uint8_t *dstBuffer, int width, int height);
 
 OCTK_MEDIA_API void convertCenterInARGBToI420(const uint8_t *srcBuffer,
                                               int srcWidth,
@@ -329,5 +295,3 @@ OCTK_MEDIA_API void convertCenterInNV12ToI420(const uint8_t *srcBuffer,
 } // namespace utils
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_YUV_HPP

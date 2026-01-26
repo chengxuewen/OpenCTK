@@ -23,8 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_NUMERIC_HPP
-#define _OCTK_NUMERIC_HPP
+#pragma once
 
 #include <octk_type_traits.hpp>
 
@@ -33,15 +32,22 @@
 #include <numeric>
 
 OCTK_BEGIN_NAMESPACE
+
 namespace utils
 {
 /***********************************************************************************************************************
   * wrap std::abs for unsigned available
 ***********************************************************************************************************************/
 template <typename T>
-constexpr auto abs(T v) -> typename std::enable_if<!std::is_signed<T>::value, T>::type { return v; }
+constexpr auto abs(T v) -> typename std::enable_if<!std::is_signed<T>::value, T>::type
+{
+    return v;
+}
 template <typename T>
-constexpr auto abs(T v) -> typename std::enable_if<std::is_signed<T>::value, T>::type { return std::abs(v); }
+constexpr auto abs(T v) -> typename std::enable_if<std::is_signed<T>::value, T>::type
+{
+    return std::abs(v);
+}
 
 /***********************************************************************************************************************
   * like std::gcd, greatest common divisor
@@ -50,7 +56,10 @@ template <typename T>
 OCTK_CXX14_CONSTEXPR T gcd(T a, T b)
 {
     static_assert(std::is_integral<T>(), "");
-    if (b == 0) { return a; }
+    if (b == 0)
+    {
+        return a;
+    }
     return utils::abs(utils::gcd(b, a % b));
 }
 template <typename T>
@@ -75,12 +84,14 @@ OCTK_CXX14_CONSTEXPR auto lcm(M m, N n) -> typename std::common_type<M, N>::type
     static_assert(std::is_integral<M>(), "");
     static_assert(std::is_integral<N>(), "");
     using CommonType = typename std::common_type<M, N>::type;
-    if (m == 0 || n == 0) { return 0; }
+    if (m == 0 || n == 0)
+    {
+        return 0;
+    }
     CommonType a = utils::abs(static_cast<CommonType>(m));
     CommonType b = utils::abs(static_cast<CommonType>(n));
     return (a / utils::gcd(a, b)) * b;
 }
-
 
 /***********************************************************************************************************************
   * Given two numbers `x` and `y` such that x >= y, computes the difference
@@ -91,8 +102,7 @@ OCTK_CXX14_CONSTEXPR auto lcm(M m, N n) -> typename std::common_type<M, N>::type
 template <typename T>
 typename std::make_unsigned<T>::type unsigned_difference(T x, T y)
 {
-    static_assert(std::is_signed<T>::value,
-                  "Function unsigned_difference is only meaningful for signed types.");
+    static_assert(std::is_signed<T>::value, "Function unsigned_difference is only meaningful for signed types.");
     OCTK_DCHECK_GE(x, y);
     using unsigned_type = typename std::make_unsigned<T>::type;
     // int -> unsigned conversion repeatedly adds UINT_MAX + 1 until the number
@@ -101,7 +111,6 @@ typename std::make_unsigned<T>::type unsigned_difference(T x, T y)
     // compute the difference modulo UINT_MAX + 1, i.e using unsigned arithmetic.
     return static_cast<unsigned_type>(x) - static_cast<unsigned_type>(y);
 }
-};
-OCTK_END_NAMESPACE
+}; // namespace utils
 
-#endif // _OCTK_NUMERIC_HPP
+OCTK_END_NAMESPACE

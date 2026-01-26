@@ -2,8 +2,7 @@
 // Created by cxw on 25-8-15.
 //
 
-#ifndef _OCTK_VIDEO_STREAM_ENCODER_INTERFACE_HPP
-#define _OCTK_VIDEO_STREAM_ENCODER_INTERFACE_HPP
+#pragma once
 
 #include <octk_video_layers_allocation.hpp>
 #include <octk_fec_controller_override.hpp>
@@ -14,7 +13,7 @@
 #include <octk_rtp_parameters.hpp>
 #include <octk_encoded_image.hpp>
 #include <octk_video_encoder.hpp>
-#include <octk_scoped_refptr.hpp>
+// #include <octk_scoped_refptr.hpp>
 #include <octk_data_rate.hpp>
 #include <octk_resource.hpp>
 
@@ -126,7 +125,4 @@ public:
     virtual void Stop() = 0;
 };
 
-
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_VIDEO_STREAM_ENCODER_INTERFACE_HPP

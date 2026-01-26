@@ -33,7 +33,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <optional>
+#include <octk_optional.hpp>
 #include <string>
 #include <vector>
 
@@ -72,8 +72,8 @@ CreateFromNV12FileFrameGenerator(std::vector<std::string> filenames,
 
 // absl::Nonnull <std::unique_ptr<FrameGeneratorInterface>>
 // CreateFromIvfFileFrameGenerator(const RtcContext &env,
-//                                 absl::string_view filename,
-//                                 Optional<int> fps_hint = std::nullopt);
+//                                 StringView filename,
+//                                 Optional<int> fps_hint = utils::nullopt);
 
 // Creates a frame generator which takes a set of yuv files (wrapping a
 // frame generator created by CreateFromYuvFile() above), but outputs frames

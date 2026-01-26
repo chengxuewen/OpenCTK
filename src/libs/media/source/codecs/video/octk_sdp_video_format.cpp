@@ -22,6 +22,7 @@
 **
 ***********************************************************************************************************************/
 
+#include <private/octk_media_constants_p.hpp>
 #include <octk_video_codec_types.hpp>
 #include <octk_sdp_video_format.hpp>
 #include <octk_media_constants.hpp>
@@ -38,8 +39,9 @@ namespace
 
 // TODO(bugs.webrtc.org/15847): remove code duplication of IsSameCodecSpecific
 // in media/base/codec.cc
-std::string
-GetFmtpParameterOrDefault(const CodecParameterMap &params, const std::string &name, const std::string &default_value)
+std::string GetFmtpParameterOrDefault(const CodecParameterMap &params,
+                                      const std::string &name,
+                                      const std::string &default_value)
 {
     const auto it = params.find(name);
     if (it != params.end())
@@ -222,7 +224,10 @@ bool operator==(const SdpVideoFormat &a, const SdpVideoFormat &b)
     return a.name == b.name && a.parameters == b.parameters && a.scalability_modes == b.scalability_modes;
 }
 
-const SdpVideoFormat SdpVideoFormat::VP8() { return SdpVideoFormat(media::kVp8CodecName, {}); }
+const SdpVideoFormat SdpVideoFormat::VP8()
+{
+    return SdpVideoFormat(media::kVp8CodecName, {});
+}
 
 const SdpVideoFormat SdpVideoFormat::H264()
 {

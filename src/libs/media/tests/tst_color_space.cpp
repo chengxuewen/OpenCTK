@@ -10,12 +10,12 @@
 
 #include <octk_color_space.hpp>
 
+#include <cstdint>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <cstdint>
-
-using namespace octk;
+OCTK_BEGIN_NAMESPACE
 
 TEST(ColorSpace, TestSettingPrimariesFromUint8)
 {
@@ -60,27 +60,26 @@ TEST(ColorSpace, TestSettingChromaSitingHorizontalFromUint8)
     ColorSpace colorSpace;
     EXPECT_TRUE(colorSpace.set_chroma_siting_horizontal_from_uint8(
         static_cast<uint8_t>(ColorSpace::ChromaSiting::kCollocated)));
-    EXPECT_EQ(ColorSpace::ChromaSiting::kCollocated,
-              colorSpace.chroma_siting_horizontal());
+    EXPECT_EQ(ColorSpace::ChromaSiting::kCollocated, colorSpace.chroma_siting_horizontal());
     EXPECT_FALSE(colorSpace.set_chroma_siting_horizontal_from_uint8(3));
 }
 
 TEST(ColorSpace, TestSettingChromaSitingVerticalFromUint8)
 {
     ColorSpace colorSpace;
-    EXPECT_TRUE(colorSpace.set_chroma_siting_vertical_from_uint8(
-        static_cast<uint8_t>(ColorSpace::ChromaSiting::kHalf)));
-    EXPECT_EQ(ColorSpace::ChromaSiting::kHalf,
-              colorSpace.chroma_siting_vertical());
+    EXPECT_TRUE(
+        colorSpace.set_chroma_siting_vertical_from_uint8(static_cast<uint8_t>(ColorSpace::ChromaSiting::kHalf)));
+    EXPECT_EQ(ColorSpace::ChromaSiting::kHalf, colorSpace.chroma_siting_vertical());
     EXPECT_FALSE(colorSpace.set_chroma_siting_vertical_from_uint8(3));
 }
 
 TEST(ColorSpace, TestAsStringFunction)
 {
-    ColorSpace colorSpace(
-        ColorSpace::PrimaryID::kBT709, ColorSpace::TransferID::kBT709,
-        ColorSpace::MatrixID::kBT709, ColorSpace::RangeID::kLimited);
-    EXPECT_EQ(
-        colorSpace.AsString(),
-        "{primaries:kBT709, transfer:kBT709, matrix:kBT709, range:kLimited}");
+    ColorSpace colorSpace(ColorSpace::PrimaryID::kBT709,
+                          ColorSpace::TransferID::kBT709,
+                          ColorSpace::MatrixID::kBT709,
+                          ColorSpace::RangeID::kLimited);
+    EXPECT_EQ(colorSpace.AsString(), "{primaries:kBT709, transfer:kBT709, matrix:kBT709, range:kLimited}");
 }
+
+OCTK_END_NAMESPACE

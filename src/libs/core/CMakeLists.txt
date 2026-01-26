@@ -50,6 +50,7 @@ list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 octk_find_package(WrapJson PROVIDED_TARGETS OCTK3rdparty::WrapJson)
 octk_find_package(WrapSpdlog PROVIDED_TARGETS OCTK3rdparty::WrapSpdlog)
+octk_find_package(WrapAnyLite PROVIDED_TARGETS OCTK3rdparty::WrapAnyLite)
 octk_find_package(WrapVariant PROVIDED_TARGETS OCTK3rdparty::WrapVariant)
 octk_find_package(WrapExpected PROVIDED_TARGETS OCTK3rdparty::WrapExpected)
 octk_find_package(WrapOptional PROVIDED_TARGETS OCTK3rdparty::WrapOptional)
@@ -100,18 +101,24 @@ octk_add_library(core
 	source/memory/octk_shared_ref_ptr.hpp
 	source/memory/octk_zero_memory.cpp
 	source/memory/octk_zero_memory.hpp
+	source/numerics/octk_bits.hpp
 	source/numerics/octk_divide_round.hpp
 	source/numerics/octk_numeric.hpp
 	source/numerics/octk_safe_compare.hpp
 	source/numerics/octk_safe_conversions.hpp
+	source/numerics/octk_safe_minmax.hpp
 	source/patterns/octk_singleton.hpp
 	source/text/octk_ascii.cpp
 	source/text/octk_ascii.hpp
 	source/text/octk_base64.cpp
 	source/text/octk_base64.hpp
+	source/text/octk_bit_buffer.cpp
+	source/text/octk_bit_buffer.hpp
 	source/text/octk_json.hpp
 	source/text/octk_string.cpp
 	source/text/octk_string.hpp
+	source/text/octk_string_builder.cpp
+	source/text/octk_string_builder.hpp
 	source/text/octk_string_encode.cpp
 	source/text/octk_string_encode.hpp
 	source/text/octk_string_to_number.hpp
@@ -141,6 +148,8 @@ octk_add_library(core
 	source/thread/octk_task.hpp
 	source/thread/octk_task_queue.cpp
 	source/thread/octk_task_queue.hpp
+	source/thread/octk_task_queue_factory.cpp
+	source/thread/octk_task_queue_factory.hpp
 	source/thread/octk_task_queue_thread.cpp
 	source/thread/octk_task_queue_thread.hpp
 	source/thread/octk_thread_pool.cpp
@@ -215,6 +224,7 @@ octk_add_library(core
 	EXTERNAL_HEADERS_DIRS
 	${OCTKWrapJson_INSTALL_DIR}/include
 	${OCTKWrapVariant_INSTALL_DIR}/include
+	${OCTKWrapAnyLite_INSTALL_DIR}/include
 	${OCTKWrapOptional_INSTALL_DIR}/include
 	${OCTKWrapExpected_INSTALL_DIR}/include
 	${OCTKWrapFilesystem_INSTALL_DIR}/include
@@ -223,10 +233,11 @@ octk_add_library(core
 	OCTK3rdparty::WrapSpdlog
 	PUBLIC_LIBRARIES
 	OCTK3rdparty::WrapJson
-	OCTK3rdparty::WrapFunction2
 	OCTK3rdparty::WrapVariant
+	OCTK3rdparty::WrapAnyLite
 	OCTK3rdparty::WrapExpected
 	OCTK3rdparty::WrapOptional
+	OCTK3rdparty::WrapFunction2
 	OCTK3rdparty::WrapFilesystem
 	OCTK3rdparty::WrapStringViewLite
 	${OCTK_LIB_LINK_LIBRARIES})

@@ -2,8 +2,8 @@
 // Created by cxw on 25-8-15.
 //
 
-#include <octk_balanced_degradation_settings.hpp>
-#include <octk_field_trial_list.hpp>
+#include <private/octk_balanced_degradation_settings_p.hpp>
+#include <private/octk_field_trial_list_p.hpp>
 #include <octk_logging.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -124,8 +124,8 @@ bool IsValid(const std::vector<BalancedDegradationSettings::Config> &configs)
     return true;
 }
 
-std::vector<BalancedDegradationSettings::Config>
-GetValidOrDefault(const std::vector<BalancedDegradationSettings::Config> &configs)
+std::vector<BalancedDegradationSettings::Config> GetValidOrDefault(
+    const std::vector<BalancedDegradationSettings::Config> &configs)
 {
     if (IsValid(configs))
     {
@@ -340,9 +340,14 @@ BalancedDegradationSettings::BalancedDegradationSettings(const FieldTrialsView &
     OCTK_DCHECK_GT(configs_.size(), 1);
 }
 
-BalancedDegradationSettings::~BalancedDegradationSettings() { }
+BalancedDegradationSettings::~BalancedDegradationSettings()
+{
+}
 
-std::vector<BalancedDegradationSettings::Config> BalancedDegradationSettings::GetConfigs() const { return configs_; }
+std::vector<BalancedDegradationSettings::Config> BalancedDegradationSettings::GetConfigs() const
+{
+    return configs_;
+}
 
 int BalancedDegradationSettings::MinFps(VideoCodecType type, int pixels) const
 {

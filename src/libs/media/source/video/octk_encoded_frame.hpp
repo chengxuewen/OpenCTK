@@ -25,7 +25,7 @@
 #ifndef _OCTK_VIDEO_ENCODED_FRAME_HPP
 #define _OCTK_VIDEO_ENCODED_FRAME_HPP
 
-#include <octk_video_codec_interface.hpp>
+#include <octk_codec_specific_info.hpp>
 #include <octk_video_codec_types.hpp>
 #include <octk_rtp_video_header.hpp>
 #include <octk_encoded_image.hpp>

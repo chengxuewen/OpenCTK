@@ -1,14 +1,29 @@
-/*
-*  Copyright (c) 2022 The WebRTC project authors. All Rights Reserved.
-*
-*  Use of this source code is governed by a BSD-style license
-*  that can be found in the LICENSE file in the root of the source
-*  tree. An additional intellectual property rights grant can be found
-*  in the file PATENTS.  All contributing project authors may
-*  be found in the AUTHORS file in the root of the source tree.
-*/
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (c) 2022 The WebRTC project authors. All Rights Reserved.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
 
-#include <octk_scalability_mode_utils.hpp>
+#include <private/octk_scalability_mode_utils_p.hpp>
 #include <octk_scalability_mode.hpp>
 
 #include <gmock/gmock.h>
@@ -18,10 +33,7 @@
 #include <vector>
 #include <tuple>
 
-using namespace octk;
-
-namespace
-{
+OCTK_BEGIN_NAMESPACE
 
 TEST(ScalabilityModeUtil, ConvertsL1T2)
 {
@@ -41,12 +53,12 @@ TEST(ScalabilityModeUtil, MakeScalabilityModeRoundTrip)
     for (int numerical_enum = 0; numerical_enum <= static_cast<int>(kLastEnum); numerical_enum++)
     {
         ScalabilityMode scalability_mode = static_cast<ScalabilityMode>(numerical_enum);
-        Optional<ScalabilityMode> created_mode =
-            MakeScalabilityMode(ScalabilityModeToNumSpatialLayers(scalability_mode),
-                                ScalabilityModeToNumTemporalLayers(scalability_mode),
-                                ScalabilityModeToInterLayerPredMode(scalability_mode),
-                                ScalabilityModeToResolutionRatio(scalability_mode),
-                                ScalabilityModeIsShiftMode(scalability_mode));
+        Optional<ScalabilityMode> created_mode = MakeScalabilityMode(
+            ScalabilityModeToNumSpatialLayers(scalability_mode),
+            ScalabilityModeToNumTemporalLayers(scalability_mode),
+            ScalabilityModeToInterLayerPredMode(scalability_mode),
+            ScalabilityModeToResolutionRatio(scalability_mode),
+            ScalabilityModeIsShiftMode(scalability_mode));
         EXPECT_THAT(created_mode, ::testing::Optional(scalability_mode))
             << "Expected " << (created_mode.has_value() ? ScalabilityModeToString(*created_mode) : "(nullopt)")
             << " to equal " << ScalabilityModeToString(scalability_mode);
@@ -131,4 +143,4 @@ TEST_P(NumSpatialLayersTest, LimitsSpatialLayers)
     }
 }
 
-} // namespace
+OCTK_END_NAMESPACE

@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_ARRAY_VIEW_HPP
-#define _OCTK_ARRAY_VIEW_HPP
+#pragma once
 
 #include <octk_global.hpp>
 #include <octk_checks.hpp>
@@ -102,15 +101,22 @@ OCTK_BEGIN_NAMESPACE
 namespace detail
 {
 // Magic constant for indicating that the size of an ArrayView is variable instead of fixed.
-enum : ptrdiff_t { kArrayViewVarSize = -4711 };
+enum : ptrdiff_t
+{
+    kArrayViewVarSize = -4711
+};
 
 // Base class for ArrayViews of fixed nonzero size.
 template <typename T, ptrdiff_t Size>
 class ArrayViewBase
 {
     static_assert(Size > 0, "ArrayView size must be variable or non-negative");
+
 public:
-    ArrayViewBase(T *data, size_t /* size */) : mData(data) {}
+    ArrayViewBase(T *data, size_t /* size */)
+        : mData(data)
+    {
+    }
 
     static constexpr size_t size() { return Size; }
     static constexpr bool empty() { return false; }
@@ -128,7 +134,7 @@ template <typename T>
 class ArrayViewBase<T, 0>
 {
 public:
-    explicit ArrayViewBase(T * /* data */, size_t /* size */) {}
+    explicit ArrayViewBase(T * /* data */, size_t /* size */) { }
 
     static constexpr size_t size() { return 0; }
     static constexpr bool empty() { return true; }
@@ -143,7 +149,11 @@ template <typename T>
 class ArrayViewBase<T, detail::kArrayViewVarSize>
 {
 public:
-    ArrayViewBase(T *data, size_t size) : mData(size == 0 ? nullptr : data), mSize(size) {}
+    ArrayViewBase(T *data, size_t size)
+        : mData(size == 0 ? nullptr : data)
+        , mSize(size)
+    {
+    }
 
     size_t size() const { return mSize; }
     bool empty() const { return mSize == 0; }
@@ -156,7 +166,7 @@ private:
     T *mData;
     size_t mSize;
 };
-}  // namespace detail
+} // namespace detail
 
 template <typename T, std::ptrdiff_t Size = detail::kArrayViewVarSize>
 class ArrayView final : public detail::ArrayViewBase<T, Size>
@@ -178,17 +188,25 @@ public:
 
     // Construct an ArrayView from a Pointer and a length.
     template <typename U>
-    ArrayView(U *data, size_t size) : detail::ArrayViewBase<T, Size>::ArrayViewBase(data, size)
+    ArrayView(U *data, size_t size)
+        : detail::ArrayViewBase<T, Size>::ArrayViewBase(data, size)
     {
         OCTK_DCHECK_EQ(size == 0 ? nullptr : data, this->data());
         OCTK_DCHECK_EQ(size, this->size());
-        OCTK_DCHECK_EQ(!this->data(), this->size() == 0);  // data is null iff size == 0.
+        OCTK_DCHECK_EQ(!this->data(), this->size() == 0); // data is null iff size == 0.
     }
 
     // Construct an empty ArrayView. Note that fixed-size ArrayViews of size > 0 cannot be empty.
-    ArrayView() : ArrayView(nullptr, 0) {}
-    ArrayView(std::nullptr_t) : ArrayView() {} // NOLINT
-    ArrayView(std::nullptr_t, size_t size) : ArrayView(static_cast<T *>(nullptr), size)
+    ArrayView()
+        : ArrayView(nullptr, 0)
+    {
+    }
+    ArrayView(std::nullptr_t)
+        : ArrayView()
+    {
+    } // NOLINT
+    ArrayView(std::nullptr_t, size_t size)
+        : ArrayView(static_cast<T *>(nullptr), size)
     {
         static_assert(Size == 0 || Size == detail::kArrayViewVarSize, "");
         OCTK_DCHECK_EQ(0, size);
@@ -196,7 +214,8 @@ public:
 
     // Construct an ArrayView from a C-style array.
     template <typename U, size_t N>
-    ArrayView(U (&array)[N]) : ArrayView(array, N) // NOLINT
+    ArrayView(U (&array)[N])
+        : ArrayView(array, N) // NOLINT
     {
         static_assert(Size == N || Size == detail::kArrayViewVarSize, "Array size must match ArrayView size");
     }
@@ -205,14 +224,19 @@ public:
     // non-const std::array instance. For an ArrayView with variable size, the
     // used ctor is ArrayView(U& u) instead.
     template <typename U, size_t N, typename std::enable_if<Size == static_cast<std::ptrdiff_t>(N)>::type * = nullptr>
-    ArrayView(std::array<U, N> &u) : ArrayView(u.data(), u.size()) {} // NOLINT
+    ArrayView(std::array<U, N> &u)
+        : ArrayView(u.data(), u.size())
+    {
+    } // NOLINT
 
     // (Only if size is fixed.) Construct a fixed size ArrayView<T, N> where T is
     // const from a const(expr) std::array instance. For an ArrayView with
     // variable size, the used ctor is ArrayView(U& u) instead.
     template <typename U, size_t N, typename std::enable_if<Size == static_cast<std::ptrdiff_t>(N)>::type * = nullptr>
-    ArrayView(const std::array<U, N> &u)  // NOLINT
-        : ArrayView(u.data(), u.size()) {}
+    ArrayView(const std::array<U, N> &u) // NOLINT
+        : ArrayView(u.data(), u.size())
+    {
+    }
 
     // (Only if size is fixed.) Construct an ArrayView from any type U that has a
     // static constexpr size() method whose return value is equal to Size, and a
@@ -224,7 +248,7 @@ public:
     template <
         typename U,
         typename std::enable_if<Size != detail::kArrayViewVarSize && HasDataAndSize<U, T>::value>::type * = nullptr>
-    ArrayView(U &u)  // NOLINT
+    ArrayView(U &u) // NOLINT
         : ArrayView(u.data(), u.size())
     {
         static_assert(U::size() == Size, "Sizes must match exactly");
@@ -232,7 +256,7 @@ public:
     template <
         typename U,
         typename std::enable_if<Size != detail::kArrayViewVarSize && HasDataAndSize<U, T>::value>::type * = nullptr>
-    ArrayView(const U &u)  // NOLINT(runtime/explicit)
+    ArrayView(const U &u) // NOLINT(runtime/explicit)
         : ArrayView(u.data(), u.size())
     {
         static_assert(U::size() == Size, "Sizes must match exactly");
@@ -252,13 +276,17 @@ public:
     template <
         typename U,
         typename std::enable_if<Size == detail::kArrayViewVarSize && HasDataAndSize<U, T>::value>::type * = nullptr>
-    ArrayView(U &u)  // NOLINT
-        : ArrayView(u.data(), u.size()) {}
+    ArrayView(U &u) // NOLINT
+        : ArrayView(u.data(), u.size())
+    {
+    }
     template <
         typename U,
         typename std::enable_if<Size == detail::kArrayViewVarSize && HasDataAndSize<U, T>::value>::type * = nullptr>
-    ArrayView(const U &u)  // NOLINT(runtime/explicit)
-        : ArrayView(u.data(), u.size()) {}
+    ArrayView(const U &u) // NOLINT(runtime/explicit)
+        : ArrayView(u.data(), u.size())
+    {
+    }
 
     // Indexing and iteration. These allow mutation even if the ArrayView is
     // const, because the ArrayView doesn't own the array. (To prevent mutation,
@@ -273,32 +301,17 @@ public:
     T *end() const { return this->data() + this->size(); }
     const T *cbegin() const { return this->data(); }
     const T *cend() const { return this->data() + this->size(); }
-    std::reverse_iterator<T *> rbegin() const
-    {
-        return utils::makeReverseIterator(this->end());
-    }
-    std::reverse_iterator<T *> rend() const
-    {
-        return utils::makeReverseIterator(this->begin());
-    }
-    std::reverse_iterator<const T *> crbegin() const
-    {
-        return utils::makeReverseIterator(this->cend());
-    }
-    std::reverse_iterator<const T *> crend() const
-    {
-        return utils::makeReverseIterator(this->cbegin());
-    }
+    std::reverse_iterator<T *> rbegin() const { return utils::makeReverseIterator(this->end()); }
+    std::reverse_iterator<T *> rend() const { return utils::makeReverseIterator(this->begin()); }
+    std::reverse_iterator<const T *> crbegin() const { return utils::makeReverseIterator(this->cend()); }
+    std::reverse_iterator<const T *> crend() const { return utils::makeReverseIterator(this->cbegin()); }
 
     ArrayView<T> subview(size_t offset, size_t size) const
     {
         return offset < this->size() ? ArrayView<T>(this->data() + offset, utils::mathMin(size, this->size() - offset))
                                      : ArrayView<T>();
     }
-    ArrayView<T> subview(size_t offset) const
-    {
-        return subview(offset, this->size());
-    }
+    ArrayView<T> subview(size_t offset) const { return subview(offset, this->size()); }
 };
 
 // Comparing two ArrayViews compares their (Pointer,size) pairs; it does *not*
@@ -321,8 +334,10 @@ static_assert(sizeof(ArrayView<int>) == 2 * sizeof(int *), "");
 static_assert(sizeof(ArrayView<int, 17>) == sizeof(int *), "");
 static_assert(std::is_empty<ArrayView<int, 0>>::value, "");
 
+namespace utils
+{
 template <typename T>
-inline ArrayView<T> MakeArrayView(T *data, size_t size)
+inline ArrayView<T> makeArrayView(T *data, size_t size)
 {
     return ArrayView<T>(data, size);
 }
@@ -333,7 +348,7 @@ inline ArrayView<T> MakeArrayView(T *data, size_t size)
 // Template arguments order is (U, T, Size) to allow deduction of the template
 // arguments in client calls: reinterpret_array_view<target_type>(array_view).
 template <typename U, typename T, std::ptrdiff_t Size>
-inline ArrayView<U, Size> reinterpret_array_view(ArrayView<T, Size> view)
+inline ArrayView<U, Size> reinterpretArrayView(ArrayView<T, Size> view)
 {
     static_assert(sizeof(U) == sizeof(T) && alignof(U) == alignof(T),
                   "ArrayView reinterpret_cast is only supported for casting "
@@ -343,6 +358,6 @@ inline ArrayView<U, Size> reinterpret_array_view(ArrayView<T, Size> view)
                   "fundamental types.");
     return ArrayView<U, Size>(reinterpret_cast<U *>(view.data()), view.size());
 }
-OCTK_END_NAMESPACE
+} // namespace utils
 
-#endif // _OCTK_ARRAY_VIEW_HPP
+OCTK_END_NAMESPACE

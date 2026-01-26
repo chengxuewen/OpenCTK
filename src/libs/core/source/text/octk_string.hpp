@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_STRING_HPP
-#define _OCTK_STRING_HPP
+#pragma once
 
 #include <octk_global.hpp>
 
@@ -57,5 +56,3 @@ public:
 };
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_STRING_HPP

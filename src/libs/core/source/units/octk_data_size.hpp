@@ -56,10 +56,7 @@ public:
         return ToValue<T>();
     }
 
-    constexpr int64_t bytes_or(int64_t fallback_value) const
-    {
-        return ToValueOr(fallback_value);
-    }
+    constexpr int64_t bytes_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
 
 private:
     friend class UnitBase<DataSize>;
@@ -68,13 +65,17 @@ private:
     static constexpr bool kOneSided = true;
 };
 
+namespace utils
+{
 OCTK_CORE_API std::string toString(DataSize value);
 
 template <typename Sink>
-void AbslStringify(Sink &sink, DataSize value)
+void stringify(Sink &sink, DataSize value)
 {
     sink.Append(toString(value));
 }
+} // namespace utils
+
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_DATA_SIZE_HPP

@@ -22,7 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#include "octk_simulated_task_queue.hpp"
+#include "octk_simulated_task_queue_p.hpp"
 
 OCTK_BEGIN_NAMESPACE
 

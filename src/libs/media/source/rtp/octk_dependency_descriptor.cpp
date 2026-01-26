@@ -26,6 +26,7 @@
 #include <octk_checks.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
 constexpr int DependencyDescriptor::kMaxSpatialIds;
 constexpr int DependencyDescriptor::kMaxTemporalIds;
 constexpr int DependencyDescriptor::kMaxTemplates;
@@ -42,19 +43,11 @@ std::vector<DecodeTargetIndication> StringToDecodeTargetIndications(StringView s
         DecodeTargetIndication indication;
         switch (symbol)
         {
-        case '-':
-            indication = DecodeTargetIndication::kNotPresent;
-            break;
-        case 'D':
-            indication = DecodeTargetIndication::kDiscardable;
-            break;
-        case 'R':
-            indication = DecodeTargetIndication::kRequired;
-            break;
-        case 'S':
-            indication = DecodeTargetIndication::kSwitch;
-            break;
-        default: OCTK_DCHECK_NOTREACHED();
+            case '-': indication = DecodeTargetIndication::kNotPresent; break;
+            case 'D': indication = DecodeTargetIndication::kDiscardable; break;
+            case 'R': indication = DecodeTargetIndication::kRequired; break;
+            case 'S': indication = DecodeTargetIndication::kSwitch; break;
+            default: OCTK_DCHECK_NOTREACHED();
         }
         dtis.push_back(indication);
     }

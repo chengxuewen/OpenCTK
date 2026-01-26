@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_STRINGS_UTILS_HPP
-#define _OCTK_STRINGS_UTILS_HPP
+#pragma once
 
 #include <octk_string_view.hpp>
 #include <octk_global.hpp>
@@ -52,7 +51,8 @@ OCTK_BEGIN_NAMESPACE
 
 namespace utils
 {
-template <typename T> std::string pointerToString(T *ptr)
+template <typename T>
+std::string pointerToString(T *ptr)
 {
     std::stringstream ss;
     ss << ptr;
@@ -110,7 +110,7 @@ OCTK_CORE_API bool stringContainsIgnoreCase(StringView haystack, char needle) no
  */
 static OCTK_FORCE_INLINE bool stringContains(StringView haystack, StringView needle) noexcept
 {
-    return haystack.find(needle, 0) != haystack.npos;
+    return haystack.empty() && needle.empty() ? true : haystack.find(needle, 0) != haystack.npos;
 }
 
 static OCTK_FORCE_INLINE bool stringContains(StringView haystack, char needle) noexcept
@@ -166,8 +166,13 @@ static OCTK_FORCE_INLINE bool stringEndsWith(StringView text, StringView suffix)
  * @param ...
  * @return
  */
-OCTK_CORE_API std::string StringFormat(const char *format, ...) OCTK_ATTRIBUTE_FORMAT_PRINTF(1, 2);
+OCTK_CORE_API std::string stringFormat(const char *format, ...) OCTK_ATTRIBUTE_FORMAT_PRINTF(1, 2);
 
+
+// Splits the source string into multiple fields separated by delimiter,
+// with duplicates of delimiter creating empty fields. Empty input produces a
+// single, empty, field.
+OCTK_CORE_API std::vector<StringView> stringSplit(StringView source, char delimiter);
 
 ///////////////////////////////////////////////////////////////////////////////
 // UTF helpers (Windows only)
@@ -187,7 +192,10 @@ inline std::wstring toUtf16(const char *utf8, size_t len)
     return ws;
 }
 
-inline std::wstring toUtf16(StringView str) { return toUtf16(str.data(), str.length()); }
+inline std::wstring toUtf16(StringView str)
+{
+    return toUtf16(str.data(), str.length());
+}
 
 inline std::string toUtf8(const wchar_t *wide, size_t len)
 {
@@ -201,13 +209,17 @@ inline std::string toUtf8(const wchar_t *wide, size_t len)
     return ns;
 }
 
-inline std::string toUtf8(const wchar_t *wide) { return toUtf8(wide, wcslen(wide)); }
+inline std::string toUtf8(const wchar_t *wide)
+{
+    return toUtf8(wide, wcslen(wide));
+}
 
-inline std::string toUtf8(const std::wstring &wstr) { return toUtf8(wstr.data(), wstr.length()); }
+inline std::string toUtf8(const std::wstring &wstr)
+{
+    return toUtf8(wstr.data(), wstr.length());
+}
 
 #endif // defined(OCTK_OS_WIN)
 } // namespace utils
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_STRINGS_UTILS_HPP

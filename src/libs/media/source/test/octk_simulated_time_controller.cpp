@@ -22,9 +22,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <test/octk_simulated_time_controller.hpp>
-#include <test/octk_simulated_task_queue.hpp>
-#include <test/octk_simulated_thread.hpp>
+#include <test/octk_simulated_time_controller_p.hpp>
+#include <test/octk_simulated_task_queue_p.hpp>
+#include <test/octk_simulated_thread_p.hpp>
 #include <octk_memory.hpp>
 
 #include <algorithm>
@@ -35,6 +35,7 @@
 #include <deque>
 #include <list>
 
+#if 0
 OCTK_BEGIN_NAMESPACE
 
 namespace
@@ -274,3 +275,4 @@ void GlobalSimulatedTimeController::Unregister(sim_time_impl::SimulatedSequenceR
     impl_.Unregister(runner);
 }
 OCTK_END_NAMESPACE
+#endif

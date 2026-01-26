@@ -1,8 +1,29 @@
-//
-// Created by cxw on 25-8-15.
-//
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (c) 2022 The WebRTC project authors. All Rights Reserved.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
 
-#include <octk_field_trials.hpp>
+#include <private/octk_field_trials_p.hpp>
 #include <octk_string_encode.hpp>
 #include <octk_checks.hpp>
 
@@ -44,23 +65,12 @@ FieldTrials::Map<std::string, std::string> InsertIntoMap(const std::string &s)
 
     return key_value_map;
 }
-
-// Makes sure that only one instance is created, since the usage
-// of global string makes behaviour unpredicatable otherwise.
-// TODO(bugs.webrtc.org/10335): Remove once global string is gone.
-std::atomic<bool> instance_created_{false};
-
 } // namespace
 
 FieldTrials::FieldTrials(const std::string &s)
-    : uses_global_(true)
-    , field_trial_string_(s)
-    , previous_field_trial_string_(field_trial::GetFieldTrialString())
+    : field_trial_string_(s)
     , key_value_map_(InsertIntoMap(s))
 {
-    // TODO(bugs.webrtc.org/10335): Remove the global string!
-    field_trial::InitFieldTrialsFromString(field_trial_string_.c_str());
-    OCTK_CHECK(!instance_created_.exchange(true)) << "Only one instance may be instanciated at any given time!";
 }
 
 std::unique_ptr<FieldTrials> FieldTrials::CreateNoGlobal(const std::string &s)
@@ -69,20 +79,13 @@ std::unique_ptr<FieldTrials> FieldTrials::CreateNoGlobal(const std::string &s)
 }
 
 FieldTrials::FieldTrials(const std::string &s, bool)
-    : uses_global_(false)
-    , previous_field_trial_string_(nullptr)
-    , key_value_map_(InsertIntoMap(s))
+    : key_value_map_(InsertIntoMap(s))
 {
 }
 
 FieldTrials::~FieldTrials()
 {
-    // TODO(bugs.webrtc.org/10335): Remove the global string!
-    if (uses_global_)
-    {
-        field_trial::InitFieldTrialsFromString(previous_field_trial_string_);
-        OCTK_CHECK(instance_created_.exchange(false));
-    }
+    OCTK_WARNING("FieldTrials::~FieldTrials()");
 }
 
 std::string FieldTrials::GetValue(StringView key) const
@@ -91,186 +94,117 @@ std::string FieldTrials::GetValue(StringView key) const
     if (it != key_value_map_.end())
         return it->second;
 
-    // Check the global string so that programs using
-    // a mix between FieldTrials and the global string continue to work
-    // TODO(bugs.webrtc.org/10335): Remove the global string!
-    if (uses_global_)
-    {
-        return field_trial::FindFullName(std::string(key));
-    }
     return "";
 }
 
-
-namespace field_trial
+namespace test
 {
-
-static const char *trials_init_string = NULL;
-
 namespace
 {
-
-constexpr char kPersistentStringSeparator = '/';
-
-FieldTrials::Set<std::string> &TestKeys()
+// This part is copied from system_wrappers/field_trial.cc.
+void InsertIntoMap(std::map<std::string, std::string, std::less<>> &key_value_map, StringView s)
 {
-    static auto *test_keys = new FieldTrials::Set<std::string>();
-    return *test_keys;
-}
-
-// Validates the given field trial string.
-//  E.g.:
-//    "WebRTC-experimentFoo/Enabled/WebRTC-experimentBar/Enabled100kbps/"
-//    Assigns the process to group "Enabled" on WebRTCExperimentFoo trial
-//    and to group "Enabled100kbps" on WebRTCExperimentBar.
-//
-//  E.g. invalid config:
-//    "WebRTC-experiment1/Enabled"  (note missing / separator at the end).
-bool FieldTrialsStringIsValidInternal(const StringView trials)
-{
-    if (trials.empty())
-        return true;
-
-    size_t next_item = 0;
-    std::map<StringView, StringView> field_trials;
-    while (next_item < trials.length())
+    std::string::size_type field_start = 0;
+    while (field_start < s.size())
     {
-        size_t name_end = trials.find(kPersistentStringSeparator, next_item);
-        if (name_end == trials.npos || next_item == name_end)
-            return false;
-        size_t group_name_end = trials.find(kPersistentStringSeparator, name_end + 1);
-        if (group_name_end == trials.npos || name_end + 1 == group_name_end)
-            return false;
-        StringView name = trials.substr(next_item, name_end - next_item);
-        StringView group_name = trials.substr(name_end + 1, group_name_end - name_end - 1);
+        std::string::size_type separator_pos = s.find('/', field_start);
+        OCTK_CHECK_NE(separator_pos, std::string::npos) << "Missing separator '/' after field trial key.";
+        OCTK_CHECK_GT(separator_pos, field_start) << "Field trial key cannot be empty.";
+        std::string key(s.substr(field_start, separator_pos - field_start));
+        field_start = separator_pos + 1;
 
-        next_item = group_name_end + 1;
+        OCTK_CHECK_LT(field_start, s.size()) << "Missing value after field trial key. String ended.";
+        separator_pos = s.find('/', field_start);
+        OCTK_CHECK_NE(separator_pos, std::string::npos) << "Missing terminating '/' in field trial string.";
+        OCTK_CHECK_GT(separator_pos, field_start) << "Field trial value cannot be empty.";
+        std::string value(s.substr(field_start, separator_pos - field_start));
+        field_start = separator_pos + 1;
 
-        // Fail if duplicate with different group name.
-        if (field_trials.find(name) != field_trials.end() && field_trials.find(name)->second != group_name)
-        {
-            return false;
-        }
-
-        field_trials[name] = group_name;
+        key_value_map[key] = value;
     }
-
-    return true;
+    // This check is technically redundant due to earlier checks.
+    // We nevertheless keep the check to make it clear that the entire
+    // string has been processed, and without indexing past the end.
+    OCTK_CHECK_EQ(field_start, s.size());
 }
-
 } // namespace
 
-bool FieldTrialsStringIsValid(StringView trials_string) { return FieldTrialsStringIsValidInternal(trials_string); }
-
-void InsertOrReplaceFieldTrialStringsInMap(std::map<std::string, std::string> *fieldtrial_map,
-                                           const StringView trials_string)
+ScopedKeyValueConfig::ScopedKeyValueConfig()
+    : ScopedKeyValueConfig(nullptr, "")
 {
-    if (FieldTrialsStringIsValidInternal(trials_string))
+}
+
+ScopedKeyValueConfig::ScopedKeyValueConfig(StringView s)
+    : ScopedKeyValueConfig(nullptr, s)
+{
+}
+
+ScopedKeyValueConfig::ScopedKeyValueConfig(ScopedKeyValueConfig &parent, StringView s)
+    : ScopedKeyValueConfig(&parent, s)
+{
+}
+
+ScopedKeyValueConfig::ScopedKeyValueConfig(ScopedKeyValueConfig *parent, StringView s)
+    : parent_(parent)
+    , leaf_(nullptr)
+{
+    InsertIntoMap(key_value_map_, s);
+
+    if (parent == nullptr)
     {
-        std::vector<StringView> tokens = utils::split(trials_string, '/');
-        // Skip last token which is empty due to trailing '/'.
-        for (size_t idx = 0; idx < tokens.size() - 1; idx += 2)
-        {
-            (*fieldtrial_map)[std::string(tokens[idx])] = std::string(tokens[idx + 1]);
-        }
+        // We are root, set leaf_.
+        leaf_ = this;
     }
     else
     {
-        OCTK_DCHECK_NOTREACHED() << "Invalid field trials string:" << trials_string;
+        // Link root to new leaf.
+        GetRoot(parent)->leaf_ = this;
+        OCTK_DCHECK(leaf_ == nullptr);
     }
 }
 
-std::string MergeFieldTrialsStrings(StringView first, StringView second)
+ScopedKeyValueConfig::~ScopedKeyValueConfig()
 {
-    std::map<std::string, std::string> fieldtrial_map;
-    InsertOrReplaceFieldTrialStringsInMap(&fieldtrial_map, first);
-    InsertOrReplaceFieldTrialStringsInMap(&fieldtrial_map, second);
-
-    // Merge into fieldtrial string.
-    std::string merged = "";
-    for (auto const &fieldtrial : fieldtrial_map)
+    if (parent_)
     {
-        merged += fieldtrial.first + '/' + fieldtrial.second + '/';
+        GetRoot(parent_)->leaf_ = parent_;
     }
-    return merged;
 }
 
-#ifndef WEBOCTK_EXCLUDE_FIELD_TRIAL_DEFAULT
-std::string FindFullName(StringView name)
+ScopedKeyValueConfig *ScopedKeyValueConfig::GetRoot(ScopedKeyValueConfig *n)
 {
-#    if WEBOCTK_STRICT_FIELD_TRIALS == 1
-    OCTK_DCHECK(absl::c_linear_search(kRegisteredFieldTrials, name) || TestKeys().contains(name))
-        << name << " is not registered, see g3doc/field-trials.md.";
-#    elif WEBOCTK_STRICT_FIELD_TRIALS == 2
-    OCTK_LOG_IF(LS_WARNING, !(absl::c_linear_search(kRegisteredFieldTrials, name) || TestKeys().contains(name)))
-        << name << " is not registered, see g3doc/field-trials.md.";
-#    endif
-
-    if (trials_init_string == NULL)
-        return std::string();
-
-    StringView trials_string(trials_init_string);
-    if (trials_string.empty())
-        return std::string();
-
-    size_t next_item = 0;
-    while (next_item < trials_string.length())
+    while (n->parent_ != nullptr)
     {
-        // Find next name/value pair in field trial configuration string.
-        size_t field_name_end = trials_string.find(kPersistentStringSeparator, next_item);
-        if (field_name_end == trials_string.npos || field_name_end == next_item)
-            break;
-        size_t field_value_end = trials_string.find(kPersistentStringSeparator, field_name_end + 1);
-        if (field_value_end == trials_string.npos || field_value_end == field_name_end + 1)
-            break;
-        StringView field_name = trials_string.substr(next_item, field_name_end - next_item);
-        StringView field_value = trials_string.substr(field_name_end + 1, field_value_end - field_name_end - 1);
-        next_item = field_value_end + 1;
-
-        if (name == field_name)
-            return std::string(field_value);
+        n = n->parent_;
     }
-    return std::string();
+    return n;
 }
-#endif // WEBOCTK_EXCLUDE_FIELD_TRIAL_DEFAULT
 
-// Optionally initialize field trial from a string.
-void InitFieldTrialsFromString(const char *trials_string)
+std::string ScopedKeyValueConfig::GetValue(StringView key) const
 {
-    OCTK_INFO() << "Setting field trial string:" << trials_string;
-    if (trials_string)
+    if (parent_ == nullptr)
     {
-        OCTK_DCHECK(FieldTrialsStringIsValidInternal(trials_string)) << "Invalid field trials string:" << trials_string;
-    };
-    trials_init_string = trials_string;
+        return leaf_->LookupRecurse(key);
+    }
+    else
+    {
+        return LookupRecurse(key);
+    }
 }
 
-const char *GetFieldTrialString() { return trials_init_string; }
-
-FieldTrialsAllowedInScopeForTesting::FieldTrialsAllowedInScopeForTesting(FieldTrials::Set<std::string> keys)
+std::string ScopedKeyValueConfig::LookupRecurse(StringView key) const
 {
-    TestKeys() = std::move(keys);
+    auto it = key_value_map_.find(key);
+    if (it != key_value_map_.end())
+        return it->second;
+
+    if (parent_)
+    {
+        return parent_->LookupRecurse(key);
+    }
+
+    return "";
 }
-
-FieldTrialsAllowedInScopeForTesting::~FieldTrialsAllowedInScopeForTesting() { TestKeys().clear(); }
-
-
-ScopedFieldTrials::ScopedFieldTrials(StringView config)
-    : current_field_trials_(config)
-    , previous_field_trials_(field_trial::GetFieldTrialString())
-{
-    OCTK_CHECK(field_trial::FieldTrialsStringIsValid(current_field_trials_.c_str()))
-        << "Invalid field trials string: " << current_field_trials_;
-    field_trial::InitFieldTrialsFromString(current_field_trials_.c_str());
-}
-
-ScopedFieldTrials::~ScopedFieldTrials()
-{
-    OCTK_CHECK(field_trial::FieldTrialsStringIsValid(previous_field_trials_))
-        << "Invalid field trials string: " << previous_field_trials_;
-    field_trial::InitFieldTrialsFromString(previous_field_trials_);
-}
-
-} // namespace field_trial
+} // namespace test
 
 OCTK_END_NAMESPACE

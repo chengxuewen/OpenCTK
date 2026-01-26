@@ -22,13 +22,12 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_VIDEO_CODEC_HPP
-#define _OCTK_VIDEO_CODEC_HPP
+#pragma once
 
 #include <octk_video_layers_allocation.hpp>
 #include <octk_video_codec_constants.hpp>
 #include <octk_video_codec_types.hpp>
-#include <octk_scalability_mode.hpp>
+// #include <private/octk_scalability_mode_p.hpp>
 #include <octk_simulcast_stream.hpp>
 #include <octk_optional.hpp>
 
@@ -224,5 +223,3 @@ private:
 };
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_VIDEO_CODEC_HPP

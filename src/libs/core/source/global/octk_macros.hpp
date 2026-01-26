@@ -189,10 +189,14 @@ namespace OCTK_NAMESPACE
 ***********************************************************************************************************************/
 #if OCTK_BUILD_CXX_STANDARD_11
 #    define OCTK_STATIC_CONSTANT_NUMBER(name, number)                                                                  \
-        enum                                                                                                           \
+        OCTK_WARNING_PUSH                                                                                              \
+        OCTK_WARNING_DISABLE_CLANG("-Wdeprecated-anon-enum-enum-conversion")                                           \
+        enum : decltype(number)                                                                                        \
         {                                                                                                              \
-            name = number                                                                                              \
-        };
+            name = static_cast<decltype(number)>(number)                                                               \
+        };                                                                                                             \
+        OCTK_WARNING_POP
+// #    define OCTK_STATIC_CONSTANT_NUMBER(name, number) static const decltype(number) name = number;
 #else
 #    define OCTK_STATIC_CONSTANT_NUMBER(name, number) static constexpr decltype(number) name = number;
 #endif
@@ -949,6 +953,65 @@ auto octkArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 #    define OCTK_CPP_ATTRIBUTE_CLANG_ANNOTATE(x) [[clang::annotate(x)]]
 #else
 #    define OCTK_CPP_ATTRIBUTE_CLANG_ANNOTATE(x)
+#endif
+
+/**
+ * OCTK_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a function parameter or implicit object parameter
+ * is retained by the return value of the annotated function (or, for a parameter of a constructor, in the value of the
+ * constructed object). This attribute causes warnings to be produced if a temporary object does not live long enough.
+ *
+ * When applied to a reference parameter, the referenced object is assumed to be retained by the return value of the
+ * function. When applied to a non-reference parameter (for example, a pointer or a class type), all temporaries
+ * referenced by the parameter are assumed to be retained by the return value of the function.
+ *
+ * See also the upstream documentation:
+ * https://clang.llvm.org/docs/AttributeReference.html#lifetimebound
+ */
+#if OCTK_CC_HAS_CPP_ATTRIBUTE(clang::lifetimebound)
+#    define OCTK_ATTRIBUTE_LIFETIME_BOUND [[clang::lifetimebound]]
+#elif OCTK_CC_HAS_ATTRIBUTE(lifetimebound)
+#    define OCTK_ATTRIBUTE_LIFETIME_BOUND __attribute__((lifetimebound))
+#else
+#    define OCTK_ATTRIBUTE_LIFETIME_BOUND
+#endif
+
+/**
+ * Tells the compiler to warn about unused results.
+ *
+ * For code or headers that are assured to only build with C++17 and up, prefer just using the standard `[[nodiscard]]`
+ * directly over this macro.
+ *
+ * When annotating a function, it must appear as the first part of the declaration or definition.
+ * The compiler will warn if the return value from such a function is unused:
+ *
+ *      OCTK_ATTRIBUTE_MUST_USE_RESULT Sprocket* AllocateSprocket();
+ *      AllocateSprocket();  // Triggers a warning.
+ *
+ * When annotating a class, it is equivalent to annotating every function which returns an instance.
+ *
+ *      class OCTK_ATTRIBUTE_MUST_USE_RESULT Sprocket {};
+ *      Sprocket();  // Triggers a warning.
+ *
+ *      Sprocket MakeSprocket();
+ *      MakeSprocket();  // Triggers a warning.
+ *
+ * Note that references and pointers are not instances:
+ *
+ *      Sprocket* SprocketPointer();
+ *      SprocketPointer();  // Does *not* trigger a warning.
+ *
+ * OCTK_ATTRIBUTE_MUST_USE_RESULT allows using cast-to-void to suppress the unused result warning.
+ * For that, warn_unused_result is used only for clang but not for gcc.
+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425
+ *
+ *  Note: past advice was to place the macro after the argument list.
+ *
+ *   TODO(b/176172494): Use ABSL_HAVE_CPP_ATTRIBUTE(nodiscard) when all code is compliant with the stricter [[nodiscard]].
+ */
+#if defined(__clang__) && OCTK_CC_HAS_ATTRIBUTE(warn_unused_result)
+#    define OCTK_ATTRIBUTE_MUST_USE_RESULT __attribute__((warn_unused_result))
+#else
+#    define OCTK_ATTRIBUTE_MUST_USE_RESULT
 #endif
 
 #endif // _OCTK_MACROS_HPP

@@ -48,7 +48,7 @@ class IceControllerFactoryInterface;
 class IceTransportInternal;
 class FieldTrialsView;
 class PortAllocator;
-class RtcEventLog;
+class MediaEventLog;
 
 // An ICE transport, as represented to the outside world.
 // This object is refcounted, and is therefore alive until the
@@ -82,8 +82,8 @@ public:
         async_dns_resolver_factory_ = async_dns_resolver_factory;
     }
 
-    RtcEventLog *event_log() { return event_log_; }
-    void set_event_log(RtcEventLog *event_log) { event_log_ = event_log; }
+    MediaEventLog *event_log() { return event_log_; }
+    void set_event_log(MediaEventLog *event_log) { event_log_ = event_log; }
 
     void set_ice_controller_factory(IceControllerFactoryInterface *ice_controller_factory)
     {
@@ -114,7 +114,7 @@ public:
 private:
     PortAllocator *port_allocator_ = nullptr;
     AsyncDnsResolverFactoryInterface *async_dns_resolver_factory_ = nullptr;
-    RtcEventLog *event_log_ = nullptr;
+    MediaEventLog *event_log_ = nullptr;
     IceControllerFactoryInterface *ice_controller_factory_ = nullptr;
     ActiveIceControllerFactoryInterface *active_ice_controller_factory_ = nullptr;
     const FieldTrialsView *field_trials_ = nullptr;

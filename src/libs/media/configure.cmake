@@ -39,6 +39,9 @@ octk_configure_feature("ENABLE_CAPTURE_DESKTOP" PUBLIC
 octk_configure_feature("ENABLE_CAPTURE_VIDEO" PUBLIC
     LABEL "Enable this to build enable capture video function"
 	CONDITION OFF)
+octk_configure_feature("MEDIA_USE_H264" PUBLIC
+	LABEL "Enable this to build enable media use h264 codec"
+	CONDITION ON)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(pipewire QUIET IMPORTED_TARGET libpipewire-0.3)

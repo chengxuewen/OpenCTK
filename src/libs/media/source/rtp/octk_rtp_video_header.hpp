@@ -29,15 +29,15 @@
 #include <octk_dependency_descriptor.hpp>
 #include <octk_video_frame_metadata.hpp>
 #include <octk_video_content_type.hpp>
-#include <octk_codecs_h264_types.hpp>
 #include <octk_video_codec_types.hpp>
 #include <octk_video_frame_type.hpp>
-#include <octk_codecs_vp8_types.hpp>
-#include <octk_codecs_vp9_types.hpp>
+#include <octk_vp8_types.hpp>
+#include <octk_vp9_types.hpp>
 #include <octk_video_rotation.hpp>
 #include <octk_video_timing.hpp>
 #include <octk_rtp_headers.hpp>
 #include <octk_color_space.hpp>
+#include <octk_h264_types.hpp>
 #include <octk_optional.hpp>
 #include <octk_variant.hpp>
 
@@ -92,7 +92,7 @@ struct RTPVideoHeader
 
     Optional<GenericDescriptorInfo> generic;
 
-    VideoFrameType frame_type = VideoFrameType::Empty;
+    VideoFrameType frame_type = VideoFrameType::kEmpty;
     uint16_t width = 0;
     uint16_t height = 0;
     VideoRotation rotation = VideoRotation::kAngle0;

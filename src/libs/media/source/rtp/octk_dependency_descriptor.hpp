@@ -3,6 +3,7 @@
 ** Library: OpenCTK
 **
 ** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
 **
 ** License: MIT License
 **
@@ -22,19 +23,15 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_RTP_DEPENDENCY_DESCRIPTOR_HPP
-#define _OCTK_RTP_DEPENDENCY_DESCRIPTOR_HPP
+#pragma once
 
 #include <octk_render_resolution.hpp>
 #include <octk_string_view.hpp>
 #include <octk_optional.hpp>
 #include <octk_types.hpp>
 
-#include <stdint.h>
-
 #include <initializer_list>
 #include <memory>
-#include <optional>
 #include <vector>
 
 OCTK_BEGIN_NAMESPACE
@@ -44,26 +41,26 @@ OCTK_BEGIN_NAMESPACE
 // Relationship of a frame to a Decode target.
 enum class DecodeTargetIndication
 {
-    kNotPresent = 0, // DecodeTargetInfo symbol '-'
+    kNotPresent = 0,  // DecodeTargetInfo symbol '-'
     kDiscardable = 1, // DecodeTargetInfo symbol 'D'
-    kSwitch = 2, // DecodeTargetInfo symbol 'S'
-    kRequired = 3 // DecodeTargetInfo symbol 'R'
+    kSwitch = 2,      // DecodeTargetInfo symbol 'S'
+    kRequired = 3     // DecodeTargetInfo symbol 'R'
 };
 
 struct FrameDependencyTemplate
 {
     // Setters are named briefly to chain them when building the template.
-    FrameDependencyTemplate& S(int spatial_layer);
-    FrameDependencyTemplate& T(int temporal_layer);
-    FrameDependencyTemplate& Dtis(StringView dtis);
-    FrameDependencyTemplate& FrameDiffs(std::initializer_list<int> diffs);
-    FrameDependencyTemplate& ChainDiffs(std::initializer_list<int> diffs);
+    FrameDependencyTemplate &S(int spatial_layer);
+    FrameDependencyTemplate &T(int temporal_layer);
+    FrameDependencyTemplate &Dtis(StringView dtis);
+    FrameDependencyTemplate &FrameDiffs(::std::initializer_list<int> diffs);
+    FrameDependencyTemplate &ChainDiffs(::std::initializer_list<int> diffs);
 
-    friend bool operator==(const FrameDependencyTemplate& lhs, const FrameDependencyTemplate& rhs)
+    friend bool operator==(const FrameDependencyTemplate &lhs, const FrameDependencyTemplate &rhs)
     {
         return lhs.spatial_id == rhs.spatial_id && lhs.temporal_id == rhs.temporal_id &&
-            lhs.decode_target_indications == rhs.decode_target_indications && lhs.frame_diffs == rhs.frame_diffs &&
-            lhs.chain_diffs == rhs.chain_diffs;
+               lhs.decode_target_indications == rhs.decode_target_indications && lhs.frame_diffs == rhs.frame_diffs &&
+               lhs.chain_diffs == rhs.chain_diffs;
     }
 
     int spatial_id = 0;
@@ -78,11 +75,11 @@ struct FrameDependencyTemplate
 
 struct FrameDependencyStructure
 {
-    friend bool operator==(const FrameDependencyStructure& lhs, const FrameDependencyStructure& rhs)
+    friend bool operator==(const FrameDependencyStructure &lhs, const FrameDependencyStructure &rhs)
     {
         return lhs.num_decode_targets == rhs.num_decode_targets && lhs.num_chains == rhs.num_chains &&
-            lhs.decode_target_protected_by_chain == rhs.decode_target_protected_by_chain &&
-            lhs.resolutions == rhs.resolutions && lhs.templates == rhs.templates;
+               lhs.decode_target_protected_by_chain == rhs.decode_target_protected_by_chain &&
+               lhs.resolutions == rhs.resolutions && lhs.templates == rhs.templates;
     }
 
     int structure_id = 0;
@@ -141,32 +138,30 @@ namespace detail
 std::vector<DecodeTargetIndication> StringToDecodeTargetIndications(StringView indication_symbols);
 } // namespace detail
 
-inline FrameDependencyTemplate& FrameDependencyTemplate::S(int spatial_layer)
+inline FrameDependencyTemplate &FrameDependencyTemplate::S(int spatial_layer)
 {
     this->spatial_id = spatial_layer;
     return *this;
 }
-inline FrameDependencyTemplate& FrameDependencyTemplate::T(int temporal_layer)
+inline FrameDependencyTemplate &FrameDependencyTemplate::T(int temporal_layer)
 {
     this->temporal_id = temporal_layer;
     return *this;
 }
-inline FrameDependencyTemplate& FrameDependencyTemplate::Dtis(StringView dtis)
+inline FrameDependencyTemplate &FrameDependencyTemplate::Dtis(StringView dtis)
 {
     this->decode_target_indications = detail::StringToDecodeTargetIndications(dtis);
     return *this;
 }
-inline FrameDependencyTemplate& FrameDependencyTemplate::FrameDiffs(std::initializer_list<int> diffs)
+inline FrameDependencyTemplate &FrameDependencyTemplate::FrameDiffs(std::initializer_list<int> diffs)
 {
     this->frame_diffs.assign(diffs.begin(), diffs.end());
     return *this;
 }
-inline FrameDependencyTemplate& FrameDependencyTemplate::ChainDiffs(std::initializer_list<int> diffs)
+inline FrameDependencyTemplate &FrameDependencyTemplate::ChainDiffs(std::initializer_list<int> diffs)
 {
     this->chain_diffs.assign(diffs.begin(), diffs.end());
     return *this;
 }
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_RTP_DEPENDENCY_DESCRIPTOR_HPP

@@ -1,23 +1,38 @@
-/*
- *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be found
- *  in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
- */
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
 
 #include <octk_metrics.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+OCTK_BEGIN_NAMESPACE
+
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
-
-using namespace octk;
 
 #if OCTK_METRICS_ENABLED
 
@@ -33,12 +48,12 @@ void AddSampleWithVaryingName(int index, StringView name, int sample)
 {
     OCTK_HISTOGRAMS_COUNTS_100(index, name, sample);
 }
-}  // namespace
+} // namespace
 
 class MetricsTest : public ::testing::Test
 {
 public:
-    MetricsTest() {}
+    MetricsTest() { }
 
 protected:
     void SetUp() override { metrics::Reset(); }
@@ -128,7 +143,7 @@ TEST_F(MetricsTest, RtcHistogramsCounts_AddSample)
     EXPECT_THAT(metrics::Samples("Name3"), ElementsAre(Pair(kSample + 2, 1)));
 }
 
-#if OCTK_DCHECK_IS_ON && GTEST_HAS_DEATH_TEST && !defined(WEBOCTK_ANDROID)
+#    if OCTK_DCHECK_IS_ON && GTEST_HAS_DEATH_TEST && !defined(WEBOCTK_ANDROID)
 using MetricsDeathTest = MetricsTest;
 TEST_F(MetricsDeathTest, RtcHistogramsCounts_InvalidIndex)
 {
@@ -136,7 +151,7 @@ TEST_F(MetricsDeathTest, RtcHistogramsCounts_InvalidIndex)
     EXPECT_DEATH(OCTK_HISTOGRAMS_COUNTS_1000(3, "Name", kSample), "");
     EXPECT_DEATH(OCTK_HISTOGRAMS_COUNTS_1000(3u, "Name", kSample), "");
 }
-#endif
+#    endif
 
 TEST_F(MetricsTest, RtcHistogramSparse_NonConstantNameWorks)
 {
@@ -148,3 +163,5 @@ TEST_F(MetricsTest, RtcHistogramSparse_NonConstantNameWorks)
     EXPECT_THAT(metrics::Samples("Sparse2"), ElementsAre(Pair(kSample, 1)));
 }
 #endif
+
+OCTK_END_NAMESPACE

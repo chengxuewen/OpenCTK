@@ -29,6 +29,8 @@
 
 OCTK_BEGIN_NAMESPACE
 
+namespace utils
+{
 std::string toString(DataRate value)
 {
     char buf[64];
@@ -54,4 +56,6 @@ std::string toString(DataRate value)
     }
     return ss.str();
 }
+} // namespace utils
+
 OCTK_END_NAMESPACE

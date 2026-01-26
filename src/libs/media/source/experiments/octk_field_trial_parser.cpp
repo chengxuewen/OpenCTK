@@ -1,8 +1,29 @@
-//
-// Created by cxw on 25-8-15.
-//
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+** Copyright 2018 The WebRTC project authors. All Rights Reserved.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
 
-#include "octk_field_trial_parser.hpp"
+#include <private/octk_field_trial_parser_p.hpp>
 #include <octk_safe_conversions.hpp>
 #include <octk_checks.hpp>
 
@@ -125,7 +146,8 @@ void ParseFieldTrial(std::initializer_list<FieldTrialParameterInterface *> field
     }
 }
 
-template <> Optional<bool> ParseTypedParameter<bool>(StringView str)
+template <>
+Optional<bool> ParseTypedParameter<bool>(StringView str)
 {
     if (str == "true" || str == "1")
     {
@@ -138,7 +160,8 @@ template <> Optional<bool> ParseTypedParameter<bool>(StringView str)
     return utils::nullopt;
 }
 
-template <> Optional<double> ParseTypedParameter<double>(StringView str)
+template <>
+Optional<double> ParseTypedParameter<double>(StringView str)
 {
     double value;
     char unit[2]{0, 0};
@@ -154,7 +177,8 @@ template <> Optional<double> ParseTypedParameter<double>(StringView str)
     }
 }
 
-template <> Optional<int> ParseTypedParameter<int>(StringView str)
+template <>
+Optional<int> ParseTypedParameter<int>(StringView str)
 {
     int64_t value;
     if (sscanf(std::string(str).c_str(), "%" SCNd64, &value) == 1)
@@ -167,7 +191,8 @@ template <> Optional<int> ParseTypedParameter<int>(StringView str)
     return utils::nullopt;
 }
 
-template <> Optional<unsigned> ParseTypedParameter<unsigned>(StringView str)
+template <>
+Optional<unsigned> ParseTypedParameter<unsigned>(StringView str)
 {
     int64_t value;
     if (sscanf(std::string(str).c_str(), "%" SCNd64, &value) == 1)
@@ -180,21 +205,29 @@ template <> Optional<unsigned> ParseTypedParameter<unsigned>(StringView str)
     return utils::nullopt;
 }
 
-template <> Optional<std::string> ParseTypedParameter<std::string>(StringView str) { return std::string(str); }
+template <>
+Optional<std::string> ParseTypedParameter<std::string>(StringView str)
+{
+    return std::string(str);
+}
 
-template <> Optional<Optional<bool>> ParseTypedParameter<Optional<bool>>(StringView str)
+template <>
+Optional<Optional<bool>> ParseTypedParameter<Optional<bool>>(StringView str)
 {
     return ParseOptionalParameter<bool>(str);
 }
-template <> Optional<Optional<int>> ParseTypedParameter<Optional<int>>(StringView str)
+template <>
+Optional<Optional<int>> ParseTypedParameter<Optional<int>>(StringView str)
 {
     return ParseOptionalParameter<int>(str);
 }
-template <> Optional<Optional<unsigned>> ParseTypedParameter<Optional<unsigned>>(StringView str)
+template <>
+Optional<Optional<unsigned>> ParseTypedParameter<Optional<unsigned>>(StringView str)
 {
     return ParseOptionalParameter<unsigned>(str);
 }
-template <> Optional<Optional<double>> ParseTypedParameter<Optional<double>>(StringView str)
+template <>
+Optional<Optional<double>> ParseTypedParameter<Optional<double>>(StringView str)
 {
     return ParseOptionalParameter<double>(str);
 }
@@ -210,9 +243,15 @@ FieldTrialFlag::FieldTrialFlag(StringView key, bool default_value)
 {
 }
 
-bool FieldTrialFlag::Get() const { return value_; }
+bool FieldTrialFlag::Get() const
+{
+    return value_;
+}
 
-FieldTrialFlag::operator bool() const { return value_; }
+FieldTrialFlag::operator bool() const
+{
+    return value_;
+}
 
 bool FieldTrialFlag::Parse(Optional<std::string> str_value)
 {

@@ -14,7 +14,7 @@
 #include <octk_video_adaptation_counters.hpp>
 #include <octk_video_bitrate_allocation.hpp>
 #include <octk_video_adaptation_reason.hpp>
-#include <octk_video_codec_interface.hpp>
+#include <octk_video_codec.hpp>
 #include <octk_video_encoder_config.hpp>
 
 OCTK_BEGIN_NAMESPACE

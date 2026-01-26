@@ -22,7 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_media_constants.hpp>
+#include <private/octk_media_constants_p.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -162,6 +162,7 @@ const size_t kConferenceDefaultNumTemporalLayers = 3;
 // RFC 3556 and RFC 3890
 const char kApplicationSpecificBandwidth[] = "AS";
 const char kTransportSpecificBandwidth[] = "TIAS";
+
 } // namespace media
 
 OCTK_END_NAMESPACE

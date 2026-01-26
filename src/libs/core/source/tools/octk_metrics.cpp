@@ -44,7 +44,9 @@ class RtcHistogram
 {
 public:
     RtcHistogram(StringView name, int min, int max, int bucket_count)
-        : min_(min), max_(max), info_(name, min, max, bucket_count)
+        : min_(min)
+        , max_(max)
+        , info_(name, min, max, bucket_count)
     {
         OCTK_DCHECK_GT(bucket_count, 0);
     }
@@ -55,11 +57,10 @@ public:
     void Add(int sample)
     {
         sample = std::min(sample, max_);
-        sample = std::max(sample, min_ - 1);  // Underflow bucket.
+        sample = std::max(sample, min_ - 1); // Underflow bucket.
 
-        Mutex::UniqueLock locker(mutex_);
-        if (info_.samples.size() == kMaxSampleMapSize &&
-            info_.samples.find(sample) == info_.samples.end())
+        Mutex::Lock lock(mutex_);
+        if (info_.samples.size() == kMaxSampleMapSize && info_.samples.find(sample) == info_.samples.end())
         {
             return;
         }
@@ -69,7 +70,7 @@ public:
     // Returns a copy (or nullptr if there are no samples) and clears samples.
     std::unique_ptr<SampleInfo> GetAndReset()
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         if (info_.samples.empty())
         {
             return nullptr;
@@ -87,13 +88,13 @@ public:
     // Functions only for testing.
     void Reset()
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         info_.samples.clear();
     }
 
     int NumEvents(int sample) const
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         const auto it = info_.samples.find(sample);
         return (it == info_.samples.end()) ? 0 : it->second;
     }
@@ -101,8 +102,8 @@ public:
     int NumSamples() const
     {
         int num_samples = 0;
-        Mutex::UniqueLock locker(mutex_);
-        for (const auto &sample: info_.samples)
+        Mutex::Lock lock(mutex_);
+        for (const auto &sample : info_.samples)
         {
             num_samples += sample.second;
         }
@@ -111,13 +112,13 @@ public:
 
     int MinSample() const
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         return (info_.samples.empty()) ? -1 : info_.samples.begin()->first;
     }
 
     std::map<int, int> Samples() const
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         return info_.samples;
     }
 
@@ -131,18 +132,15 @@ private:
 class RtcHistogramMap
 {
 public:
-    RtcHistogramMap() {}
-    ~RtcHistogramMap() {}
+    RtcHistogramMap() { }
+    ~RtcHistogramMap() { }
 
     RtcHistogramMap(const RtcHistogramMap &) = delete;
     RtcHistogramMap &operator=(const RtcHistogramMap &) = delete;
 
-    Histogram *GetCountsHistogram(StringView name,
-                                  int min,
-                                  int max,
-                                  int bucket_count)
+    Histogram *GetCountsHistogram(StringView name, int min, int max, int bucket_count)
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         const auto &it = map_.find(name.data());
         if (it != map_.end())
         {
@@ -156,7 +154,7 @@ public:
 
     Histogram *GetEnumerationHistogram(StringView name, int boundary)
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         const auto &it = map_.find(name.data());
         if (it != map_.end())
         {
@@ -170,8 +168,8 @@ public:
 
     void GetAndReset(std::map<std::string, std::unique_ptr<SampleInfo>, StringViewCmp> *histograms)
     {
-        Mutex::UniqueLock locker(mutex_);
-        for (const auto &kv: map_)
+        Mutex::Lock lock(mutex_);
+        for (const auto &kv : map_)
         {
             std::unique_ptr<SampleInfo> info = kv.second->GetAndReset();
             if (info)
@@ -184,8 +182,8 @@ public:
     // Functions only for testing.
     void Reset()
     {
-        Mutex::UniqueLock locker(mutex_);
-        for (const auto &kv: map_)
+        Mutex::Lock lock(mutex_);
+        for (const auto &kv : map_)
         {
             kv.second->Reset();
         }
@@ -193,28 +191,28 @@ public:
 
     int NumEvents(StringView name, int sample) const
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? 0 : it->second->NumEvents(sample);
     }
 
     int NumSamples(StringView name) const
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? 0 : it->second->NumSamples();
     }
 
     int MinSample(StringView name) const
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? -1 : it->second->MinSample();
     }
 
     std::map<int, int> Samples(StringView name) const
     {
-        Mutex::UniqueLock locker(mutex_);
+        Mutex::Lock lock(mutex_);
         const auto &it = map_.find(name.data());
         return (it == map_.end()) ? std::map<int, int>() : it->second->Samples();
     }
@@ -257,9 +255,9 @@ RtcHistogramMap *GetMap()
 #endif
     return g_rtc_histogram_map.load();
 }
-}  // namespace
+} // namespace
 
-#ifndef WEBOCTK_EXCLUDE_METRICS_DEFAULT
+#ifndef OCTK_EXCLUDE_METRICS_DEFAULT
 // Implementation of histogram methods in
 // webrtc/system_wrappers/interface/metrics.h.
 
@@ -267,10 +265,7 @@ RtcHistogramMap *GetMap()
 // Creates (or finds) histogram.
 // The returned histogram pointer is cached (and used for adding samples in
 // subsequent calls).
-Histogram *HistogramFactoryGetCounts(StringView name,
-                                     int min,
-                                     int max,
-                                     int bucket_count)
+Histogram *HistogramFactoryGetCounts(StringView name, int min, int max, int bucket_count)
 {
     // TODO(asapersson): Alternative implementation will be needed if this
     // histogram type should be truly exponential.
@@ -281,10 +276,7 @@ Histogram *HistogramFactoryGetCounts(StringView name,
 // Creates (or finds) histogram.
 // The returned histogram pointer is cached (and used for adding samples in
 // subsequent calls).
-Histogram *HistogramFactoryGetCountsLinear(StringView name,
-                                           int min,
-                                           int max,
-                                           int bucket_count)
+Histogram *HistogramFactoryGetCountsLinear(StringView name, int min, int max, int bucket_count)
 {
     RtcHistogramMap *map = GetMap();
     if (!map)
@@ -299,8 +291,7 @@ Histogram *HistogramFactoryGetCountsLinear(StringView name,
 // Creates (or finds) histogram.
 // The returned histogram pointer is cached (and used for adding samples in
 // subsequent calls).
-Histogram *HistogramFactoryGetEnumeration(StringView name,
-                                          int boundary)
+Histogram *HistogramFactoryGetEnumeration(StringView name, int boundary)
 {
     RtcHistogramMap *map = GetMap();
     if (!map)
@@ -312,8 +303,7 @@ Histogram *HistogramFactoryGetEnumeration(StringView name,
 }
 
 // Our default implementation reuses the non-sparse histogram.
-Histogram *SparseHistogramFactoryGetEnumeration(StringView name,
-                                                int boundary)
+Histogram *SparseHistogramFactoryGetEnumeration(StringView name, int boundary)
 {
     return HistogramFactoryGetEnumeration(name, boundary);
 }
@@ -325,15 +315,19 @@ void HistogramAdd(Histogram *histogram_pointer, int sample)
     ptr->Add(sample);
 }
 
-#endif  // WEBOCTK_EXCLUDE_METRICS_DEFAULT
+#endif // OCTK_EXCLUDE_METRICS_DEFAULT
 
-SampleInfo::SampleInfo(StringView name,
-                       int min,
-                       int max,
-                       size_t bucket_count)
-    : name(name), min(min), max(max), bucket_count(bucket_count) {}
+SampleInfo::SampleInfo(StringView name, int min, int max, size_t bucket_count)
+    : name(name)
+    , min(min)
+    , max(max)
+    , bucket_count(bucket_count)
+{
+}
 
-SampleInfo::~SampleInfo() {}
+SampleInfo::~SampleInfo()
+{
+}
 
 // Implementation of global functions in metrics.h.
 void Enable()
@@ -387,6 +381,6 @@ std::map<int, int> Samples(StringView name)
     RtcHistogramMap *map = GetMap();
     return map ? map->Samples(name) : std::map<int, int>();
 }
-}  // namespace metrics
+} // namespace metrics
 
 OCTK_END_NAMESPACE

@@ -12,7 +12,7 @@
 #include <octk_video_encoder.hpp>
 #include <octk_data_rate.hpp>
 #include <octk_optional.hpp>
-#include <octk_task_event.hpp>
+//// #include <octk_task_event.hpp>
 #include <octk_task_queue.hpp>
 #include <octk_task_queue_factory.hpp>
 #include <octk_video_frame_buffer.hpp>
@@ -313,7 +313,7 @@ public:
         , restrictions_updated_event_()
     {
     }
-    ~FakeVideoSourceRestrictionsListener() override { RTC_DCHECK(was_restrictions_updated_); }
+    ~FakeVideoSourceRestrictionsListener() override { OCTK_DCHECK(was_restrictions_updated_); }
 
     Event *restrictions_updated_event() { return &restrictions_updated_event_; }
 
@@ -348,22 +348,40 @@ auto ResolutionMax()
                  Field("target_pixel_count", &VideoSinkWants::target_pixel_count, Eq(std::nullopt)));
 }
 
-auto FpsMax() { return WantsFps(Eq(kDefaultFramerate)); }
+auto FpsMax()
+{
+    return WantsFps(Eq(kDefaultFramerate));
+}
 
-auto FpsUnlimited() { return WantsFps(Eq(std::numeric_limits<int>::max())); }
+auto FpsUnlimited()
+{
+    return WantsFps(Eq(std::numeric_limits<int>::max()));
+}
 
-auto FpsMatchesResolutionMax(Matcher<int> fps_matcher) { return AllOf(WantsFps(fps_matcher), ResolutionMax()); }
+auto FpsMatchesResolutionMax(Matcher<int> fps_matcher)
+{
+    return AllOf(WantsFps(fps_matcher), ResolutionMax());
+}
 
-auto FpsMaxResolutionMatches(Matcher<int> pixel_matcher) { return AllOf(FpsMax(), WantsMaxPixels(pixel_matcher)); }
+auto FpsMaxResolutionMatches(Matcher<int> pixel_matcher)
+{
+    return AllOf(FpsMax(), WantsMaxPixels(pixel_matcher));
+}
 
 auto FpsUnlimitedResolutionMatches(Matcher<int> pixel_matcher)
 {
     return AllOf(FpsUnlimited(), WantsMaxPixels(pixel_matcher));
 }
 
-auto FpsMaxResolutionMax() { return AllOf(FpsMax(), ResolutionMax()); }
+auto FpsMaxResolutionMax()
+{
+    return AllOf(FpsMax(), ResolutionMax());
+}
 
-auto UnlimitedSinkWants() { return AllOf(FpsUnlimited(), ResolutionMax()); }
+auto UnlimitedSinkWants()
+{
+    return AllOf(FpsUnlimited(), ResolutionMax());
+}
 
 auto FpsInRangeForPixelsInBalanced(int last_frame_pixels)
 {
@@ -448,8 +466,8 @@ public:
                              num_cores,
                              stats_proxy,
                              settings,
-                             std::unique_ptr<OveruseFrameDetector>(overuse_detector_proxy_ =
-                                                                       new CpuOveruseDetectorProxy(env, stats_proxy)),
+                             std::unique_ptr<OveruseFrameDetector>(
+                                 overuse_detector_proxy_ = new CpuOveruseDetectorProxy(env, stats_proxy)),
                              std::move(cadence_adapter),
                              std::move(encoder_queue),
                              allocation_callback_type)
@@ -575,8 +593,9 @@ private:
                                                   int frame_height,
                                                   const VideoEncoderConfig &encoder_config) override
     {
-        std::vector<VideoStream> streams =
-            test::CreateVideoStreams(frame_width - frame_width % 4, frame_height - frame_height % 4, encoder_config);
+        std::vector<VideoStream> streams = test::CreateVideoStreams(frame_width - frame_width % 4,
+                                                                    frame_height - frame_height % 4,
+                                                                    encoder_config);
         return streams;
     }
 };
@@ -618,7 +637,7 @@ public:
 
     void IncomingCapturedFrame(const VideoFrame &video_frame) override
     {
-        RTC_DCHECK(time_controller_->GetMainThread()->IsCurrent());
+        OCTK_DCHECK(time_controller_->GetMainThread()->IsCurrent());
         time_controller_->AdvanceTime(TimeDelta::Zero());
 
         int cropped_width = 0;
@@ -637,13 +656,13 @@ public:
                                               &out_width,
                                               &out_height))
             {
-                VideoFrame adapted_frame =
-                    VideoFrame::Builder()
-                        .set_video_frame_buffer(rtc::make_ref_counted<TestBuffer>(nullptr, out_width, out_height))
-                        .set_ntp_time_ms(video_frame.ntp_time_ms())
-                        .set_timestamp_ms(video_frame.timestamp_us() * 1000)
-                        .set_rotation(kVideoRotation_0)
-                        .build();
+                VideoFrame adapted_frame = VideoFrame::Builder()
+                                               .set_video_frame_buffer(
+                                                   rtc::make_ref_counted<TestBuffer>(nullptr, out_width, out_height))
+                                               .set_ntp_time_ms(video_frame.ntp_time_ms())
+                                               .set_timestamp_ms(video_frame.timestamp_us() * 1000)
+                                               .set_rotation(kVideoRotation_0)
+                                               .build();
                 if (video_frame.has_update_rect())
                 {
                     adapted_frame.set_update_rect(video_frame.update_rect().ScaleWithFrame(video_frame.width(),
@@ -789,10 +808,10 @@ public:
         encoder_settings_.bitrate_allocator_factory = bitrate_allocator_factory_.get();
     }
 
-    std::unique_ptr<AdaptedVideoStreamEncoder>
-    CreateWithEncoderQueue(std::unique_ptr<FrameCadenceAdapterInterface> zero_hertz_adapter,
-                           std::unique_ptr<TaskQueue, TaskQueueDeleter> encoder_queue,
-                           const FieldTrialsView *field_trials = nullptr)
+    std::unique_ptr<AdaptedVideoStreamEncoder> CreateWithEncoderQueue(
+        std::unique_ptr<FrameCadenceAdapterInterface> zero_hertz_adapter,
+        std::unique_ptr<TaskQueue, TaskQueueDeleter> encoder_queue,
+        const FieldTrialsView *field_trials = nullptr)
     {
         RtcContext env = CreateRtcContext(&field_trials_, field_trials, time_controller_.GetClock());
         auto result = std::make_unique<AdaptedVideoStreamEncoder>(
@@ -812,8 +831,9 @@ public:
     std::unique_ptr<AdaptedVideoStreamEncoder> Create(std::unique_ptr<FrameCadenceAdapterInterface> zero_hertz_adapter,
                                                       TaskQueue **encoder_queue_ptr = nullptr)
     {
-        auto encoder_queue =
-            time_controller_.GetTaskQueueFactory()->CreateTaskQueue("EncoderQueue", TaskQueueFactory::Priority::NORMAL);
+        auto encoder_queue = time_controller_.GetTaskQueueFactory()->CreateTaskQueue(
+            "EncoderQueue",
+            TaskQueueFactory::Priority::NORMAL);
         if (encoder_queue_ptr)
             *encoder_queue_ptr = encoder_queue.get();
         return CreateWithEncoderQueue(std::move(zero_hertz_adapter), std::move(encoder_queue));
@@ -845,13 +865,14 @@ private:
 
     test::ScopedKeyValueConfig field_trials_;
     GlobalSimulatedTimeController time_controller_{Timestamp::Zero()};
-    RtcContext env_ =
-        CreateRtcContext(&field_trials_, time_controller_.GetClock(), time_controller_.CreateTaskQueueFactory());
-    std::unique_ptr<MockableSendStatisticsProxy> stats_proxy_ =
-        std::make_unique<MockableSendStatisticsProxy>(time_controller_.GetClock(),
-                                                      VideoSendStream::Config(nullptr),
-                                                      VideoEncoderConfig::ContentType::kRealtimeVideo,
-                                                      field_trials_);
+    RtcContext env_ = CreateRtcContext(&field_trials_,
+                                       time_controller_.GetClock(),
+                                       time_controller_.CreateTaskQueueFactory());
+    std::unique_ptr<MockableSendStatisticsProxy> stats_proxy_ = std::make_unique<MockableSendStatisticsProxy>(
+        time_controller_.GetClock(),
+        VideoSendStream::Config(nullptr),
+        VideoEncoderConfig::ContentType::kRealtimeVideo,
+        field_trials_);
     std::unique_ptr<VideoBitrateAllocatorFactory> bitrate_allocator_factory_ =
         CreateBuiltinVideoBitrateAllocatorFactory();
     VideoStreamEncoderSettings encoder_settings_{VideoEncoder::Capabilities(/*loss_notification=*/false)};
@@ -930,24 +951,24 @@ public:
         ConfigureEncoder(std::move(video_encoder_config));
     }
 
-    void
-    ConfigureEncoder(VideoEncoderConfig video_encoder_config,
-                     VideoStreamEncoder::BitrateAllocationCallbackType allocation_callback_type =
-                         VideoStreamEncoder::BitrateAllocationCallbackType::kVideoBitrateAllocationWhenScreenSharing,
-                     int num_cores = 1)
+    void ConfigureEncoder(
+        VideoEncoderConfig video_encoder_config,
+        VideoStreamEncoder::BitrateAllocationCallbackType allocation_callback_type =
+            VideoStreamEncoder::BitrateAllocationCallbackType::kVideoBitrateAllocationWhenScreenSharing,
+        int num_cores = 1)
     {
         if (video_stream_encoder_)
             video_stream_encoder_->Stop();
 
-        auto encoder_queue =
-            env_.taskQueueFactory().CreateTaskQueue("EncoderQueue", TaskQueueFactory::Priority::NORMAL);
+        auto encoder_queue = env_.taskQueueFactory().CreateTaskQueue("EncoderQueue",
+                                                                     TaskQueueFactory::Priority::NORMAL);
         TaskQueue *encoder_queue_ptr = encoder_queue.get();
-        std::unique_ptr<FrameCadenceAdapterInterface> cadence_adapter =
-            FrameCadenceAdapterInterface::Create(time_controller_.GetClock(),
-                                                 encoder_queue_ptr,
-                                                 /*metronome=*/nullptr,
-                                                 /*worker_queue=*/nullptr,
-                                                 field_trials_);
+        std::unique_ptr<FrameCadenceAdapterInterface> cadence_adapter = FrameCadenceAdapterInterface::Create(
+            time_controller_.GetClock(),
+            encoder_queue_ptr,
+            /*metronome=*/nullptr,
+            /*worker_queue=*/nullptr,
+            field_trials_);
         video_stream_encoder_ = std::make_unique<VideoStreamEncoderUnderTest>(env_,
                                                                               &time_controller_,
                                                                               std::move(cadence_adapter),
@@ -986,8 +1007,8 @@ public:
             }
         }
         video_encoder_config.max_bitrate_bps = num_streams == 1 ? kTargetBitrate.bps() : kSimulcastTargetBitrate.bps();
-        video_encoder_config.content_type =
-            screenshare ? VideoEncoderConfig::ContentType::kScreen : VideoEncoderConfig::ContentType::kRealtimeVideo;
+        video_encoder_config.content_type = screenshare ? VideoEncoderConfig::ContentType::kScreen
+                                                        : VideoEncoderConfig::ContentType::kRealtimeVideo;
         if (payload_name == "VP9")
         {
             VideoCodecVP9 vp9_settings = VideoEncoder::GetDefaultVp9Settings();
@@ -1193,7 +1214,7 @@ public:
 
         void SetTemporalLayersSupported(size_t spatial_idx, bool supported)
         {
-            RTC_DCHECK_LT(spatial_idx, kMaxSpatialLayers);
+            OCTK_DCHECK_LT(spatial_idx, kMaxSpatialLayers);
             MutexLock lock(&local_mutex_);
             temporal_layers_supported_[spatial_idx] = supported;
         }
@@ -1294,8 +1315,8 @@ public:
             return num_set_rates_;
         }
 
-        void
-        SetPreferredPixelFormats(absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats> pixel_formats)
+        void SetPreferredPixelFormats(
+            absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats> pixel_formats)
         {
             MutexLock lock(&local_mutex_);
             preferred_pixel_formats_ = std::move(pixel_formats);
@@ -1450,8 +1471,8 @@ public:
         std::vector<ResolutionBitrateLimits> resolution_bitrate_limits_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
         int num_set_rates_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_) = 0;
         std::optional<VideoFrameBuffer::Type> last_input_pixel_format_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
-        absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats>
-            preferred_pixel_formats_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
+        absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats> preferred_pixel_formats_
+            OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
         std::optional<bool> is_qp_trusted_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_);
         VideoCodecComplexity last_encoder_complexity_ OCTK_ATTRIBUTE_GUARDED_BY(local_mutex_){
             VideoCodecComplexity::kComplexityNormal};
@@ -1464,7 +1485,7 @@ public:
             : time_controller_(time_controller)
             , test_encoder_(test_encoder)
         {
-            RTC_DCHECK(time_controller_);
+            OCTK_DCHECK(time_controller_);
         }
 
         void WaitForEncodedFrame(int64_t expected_ntp_time)
@@ -1518,7 +1539,7 @@ public:
 
         bool WaitForFrame(TimeDelta timeout)
         {
-            RTC_DCHECK(time_controller_->GetMainThread()->IsCurrent());
+            OCTK_DCHECK(time_controller_->GetMainThread()->IsCurrent());
             time_controller_->AdvanceTime(TimeDelta::Zero());
             bool ret = encoded_frame_event_.Wait(timeout);
             time_controller_->AdvanceTime(TimeDelta::Zero());
@@ -1610,8 +1631,8 @@ public:
             MutexLock lock(&mutex_);
             EXPECT_TRUE(expect_frames_);
             last_encoded_image_ = EncodedImage(encoded_image);
-            last_encoded_image_data_ =
-                std::vector<uint8_t>(encoded_image.data(), encoded_image.data() + encoded_image.size());
+            last_encoded_image_data_ = std::vector<uint8_t>(encoded_image.data(),
+                                                            encoded_image.data() + encoded_image.size());
             uint32_t timestamp = encoded_image.RtpTimestamp();
             if (last_timestamp_ != timestamp)
             {
@@ -1735,8 +1756,9 @@ public:
 protected:
     test::ScopedKeyValueConfig field_trials_;
     GlobalSimulatedTimeController time_controller_{Timestamp::Micros(1234)};
-    const RtcContext env_ =
-        CreateRtcContext(&field_trials_, time_controller_.GetClock(), time_controller_.GetTaskQueueFactory());
+    const RtcContext env_ = CreateRtcContext(&field_trials_,
+                                             time_controller_.GetClock(),
+                                             time_controller_.GetTaskQueueFactory());
     VideoSendStream::Config video_send_config_;
     VideoEncoderConfig video_encoder_config_;
     int codec_width_;
@@ -4931,9 +4953,10 @@ TEST_F(VideoStreamEncoderTest, ReportsVideoBitrateAllocation)
                  VideoStreamEncoder::BitrateAllocationCallbackType::kVideoBitrateAllocation);
 
     const int kDefaultFps = 30;
-    const VideoBitrateAllocation expected_bitrate =
-        SimulcastRateAllocator(env_, fake_encoder_.config())
-            .Allocate(VideoBitrateAllocationParameters(kLowTargetBitrate.bps(), kDefaultFps));
+    const VideoBitrateAllocation expected_bitrate = SimulcastRateAllocator(env_, fake_encoder_.config())
+                                                        .Allocate(
+                                                            VideoBitrateAllocationParameters(kLowTargetBitrate.bps(),
+                                                                                             kDefaultFps));
 
     video_stream_encoder_
         ->OnBitrateUpdatedAndWaitForManagedResources(kLowTargetBitrate, kLowTargetBitrate, kLowTargetBitrate, 0, 0, 0);
@@ -6290,8 +6313,8 @@ public:
                 ASSERT_THAT(video_encoder_config_.simulcast_layers, SizeIs(1));
                 double scale_height = static_cast<double>(kHeight) / static_cast<double>(height);
                 double scale_width = static_cast<double>(kWidth) / static_cast<double>(width);
-                video_encoder_config_.simulcast_layers[0].scale_resolution_down_by =
-                    std::max(scale_width, scale_height);
+                video_encoder_config_.simulcast_layers[0].scale_resolution_down_by = std::max(scale_width,
+                                                                                              scale_height);
                 video_stream_encoder_->ConfigureEncoder(video_encoder_config_.Copy(), kMaxPayloadLength);
                 break;
         }
@@ -7960,8 +7983,8 @@ TEST_F(VideoStreamEncoderTest, SwitchEncoderOnInitFailureWithoutEncoderSelector)
     NiceMock<MockVideoEncoder> video_encoder;
     StrictMock<MockEncoderSwitchRequestCallback> switch_callback;
     video_send_config_.encoder_settings.encoder_switch_request_callback = &switch_callback;
-    auto encoder_factory =
-        std::make_unique<test::VideoEncoderProxyFactory>(&video_encoder, /*encoder_selector=*/nullptr);
+    auto encoder_factory = std::make_unique<test::VideoEncoderProxyFactory>(&video_encoder,
+                                                                            /*encoder_selector=*/nullptr);
     video_send_config_.encoder_settings.encoder_factory = encoder_factory.get();
 
     // Reset encoder for new configuration to take effect.
@@ -8928,7 +8951,7 @@ public:
             case kVideoCodecH265:
                 // TODO(bugs.webrtc.org/13485): Use a fake encoder
                 break;
-            default: RTC_DCHECK_NOTREACHED();
+            default: OCTK_DCHECK_NOTREACHED();
         }
         ConfigureEncoderAndBitrate(codec_type_, std::move(encoder));
     }
@@ -8969,8 +8992,10 @@ protected:
 
 TEST_P(VideoStreamEncoderWithRealEncoderTest, EncoderMapsNativeI420)
 {
-    auto native_i420_frame =
-        test::CreateMappableNativeFrame(1, VideoFrameBuffer::Type::kI420, codec_width_, codec_height_);
+    auto native_i420_frame = test::CreateMappableNativeFrame(1,
+                                                             VideoFrameBuffer::Type::kI420,
+                                                             codec_width_,
+                                                             codec_height_);
     video_source_.IncomingCapturedFrame(native_i420_frame);
     WaitForEncodedFrame(codec_width_, codec_height_);
 
@@ -8984,8 +9009,10 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, EncoderMapsNativeI420)
 
 TEST_P(VideoStreamEncoderWithRealEncoderTest, EncoderMapsNativeNV12)
 {
-    auto native_nv12_frame =
-        test::CreateMappableNativeFrame(1, VideoFrameBuffer::Type::kNV12, codec_width_, codec_height_);
+    auto native_nv12_frame = test::CreateMappableNativeFrame(1,
+                                                             VideoFrameBuffer::Type::kNV12,
+                                                             codec_width_,
+                                                             codec_height_);
     video_source_.IncomingCapturedFrame(native_nv12_frame);
     WaitForEncodedFrame(codec_width_, codec_height_);
 
@@ -9024,8 +9051,8 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, HandlesLayerToggling)
         vp9_settings.numberOfSpatialLayers = kNumSpatialLayers;
         vp9_settings.numberOfTemporalLayers = 3;
         vp9_settings.automaticResizeOn = false;
-        config.encoder_specific_settings =
-            rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(vp9_settings);
+        config.encoder_specific_settings = rtc::make_ref_counted<VideoEncoderConfig::Vp9EncoderSpecificSettings>(
+            vp9_settings);
         config.spatial_layers = GetSvcConfig(kFrameWidth,
                                              kFrameHeight,
                                              /*fps=*/30.0,
@@ -9130,8 +9157,8 @@ TEST_P(VideoStreamEncoderWithRealEncoderTest, HandlesLayerToggling)
     video_stream_encoder_->Stop();
 }
 
-std::string
-TestParametersVideoCodecAndAllowI420ConversionToString(testing::TestParamInfo<std::pair<VideoCodecType, bool>> info)
+std::string TestParametersVideoCodecAndAllowI420ConversionToString(
+    testing::TestParamInfo<std::pair<VideoCodecType, bool>> info)
 {
     VideoCodecType codec_type = std::get<0>(info.param);
     bool allow_i420_conversion = std::get<1>(info.param);
@@ -9139,15 +9166,15 @@ TestParametersVideoCodecAndAllowI420ConversionToString(testing::TestParamInfo<st
            (allow_i420_conversion ? "_AllowToI420" : "_DisallowToI420");
 }
 
-constexpr std::pair<VideoCodecType, bool> kVP8DisallowConversion =
-    std::make_pair(kVideoCodecVP8, /*allow_i420_conversion=*/false);
-constexpr std::pair<VideoCodecType, bool> kVP9DisallowConversion =
-    std::make_pair(kVideoCodecVP9, /*allow_i420_conversion=*/false);
-constexpr std::pair<VideoCodecType, bool> kAV1AllowConversion =
-    std::make_pair(kVideoCodecAV1, /*allow_i420_conversion=*/false);
+constexpr std::pair<VideoCodecType, bool> kVP8DisallowConversion = std::make_pair(kVideoCodecVP8,
+                                                                                  /*allow_i420_conversion=*/false);
+constexpr std::pair<VideoCodecType, bool> kVP9DisallowConversion = std::make_pair(kVideoCodecVP9,
+                                                                                  /*allow_i420_conversion=*/false);
+constexpr std::pair<VideoCodecType, bool> kAV1AllowConversion = std::make_pair(kVideoCodecAV1,
+                                                                               /*allow_i420_conversion=*/false);
 #if defined(WEBRTC_USE_H264)
-constexpr std::pair<VideoCodecType, bool> kH264AllowConversion =
-    std::make_pair(kVideoCodecH264, /*allow_i420_conversion=*/true);
+constexpr std::pair<VideoCodecType, bool> kH264AllowConversion = std::make_pair(kVideoCodecH264,
+                                                                                /*allow_i420_conversion=*/true);
 
 // The windows compiler does not tolerate #if statements inside the
 // INSTANTIATE_TEST_SUITE_P() macro, so we have to have two definitions (with
@@ -9195,9 +9222,9 @@ protected:
         test::FillEncoderConfiguration(kVideoCodecVP8,
                                        /*num_streams=*/streams.size(),
                                        &config);
-        auto highest_bitrate_stream =
-            absl::c_max_element(streams,
-                                [](const auto &a, const auto &b) { return a.max_bitrate_bps < b.max_bitrate_bps; });
+        auto highest_bitrate_stream = absl::c_max_element(streams,
+                                                          [](const auto &a, const auto &b)
+                                                          { return a.max_bitrate_bps < b.max_bitrate_bps; });
         config.max_bitrate_bps = highest_bitrate_stream->max_bitrate_bps;
         config.simulcast_layers = streams;
         config.number_of_streams = streams.size();
@@ -9668,9 +9695,9 @@ TEST(VideoStreamEncoderFrameCadenceTest, RequestsRefreshFramesWhenCadenceAdapter
 TEST(VideoStreamEncoderFrameCadenceTest, RequestsRefreshFrameForEarlyZeroHertzKeyFrameRequest)
 {
     SimpleVideoStreamEncoderFactory factory;
-    auto encoder_queue =
-        factory.GetTimeController()->GetTaskQueueFactory()->CreateTaskQueue("EncoderQueue",
-                                                                            TaskQueueFactory::Priority::NORMAL);
+    auto encoder_queue = factory.GetTimeController()->GetTaskQueueFactory()->CreateTaskQueue(
+        "EncoderQueue",
+        TaskQueueFactory::Priority::NORMAL);
 
     test::ScopedKeyValueConfig field_trials;
     auto adapter = FrameCadenceAdapterInterface::Create(factory.GetTimeController()->GetClock(),
@@ -9681,8 +9708,9 @@ TEST(VideoStreamEncoderFrameCadenceTest, RequestsRefreshFrameForEarlyZeroHertzKe
     FrameCadenceAdapterInterface *adapter_ptr = adapter.get();
 
     MockVideoSourceInterface mock_source;
-    auto video_stream_encoder =
-        factory.CreateWithEncoderQueue(std::move(adapter), std::move(encoder_queue), &field_trials);
+    auto video_stream_encoder = factory.CreateWithEncoderQueue(std::move(adapter),
+                                                               std::move(encoder_queue),
+                                                               &field_trials);
 
     video_stream_encoder->SetSource(&mock_source, webrtc::DegradationPreference::MAINTAIN_FRAMERATE);
     VideoEncoderConfig config;
@@ -9719,7 +9747,7 @@ public:
         encoder_queue_->PostTask(
             [this, restrictions]
             {
-                RTC_DCHECK_RUN_ON(encoder_queue_);
+                OCTK_DCHECK_RUN_ON(encoder_queue_);
                 video_stream_encoder_->OnVideoSourceRestrictionsUpdated(restrictions,
                                                                         VideoAdaptationCounters(),
                                                                         fake_resource_,

@@ -67,12 +67,4 @@ protected:
     OCTK_DISABLE_COPY_MOVE(TaskQueueThread)
 };
 
-
-// class TaskQueuePlatformThread : public TaskQueueBase
-// {
-// public:
-//     TaskQueuePlatformThread();
-//     ~TaskQueuePlatformThread() override = default;
-// };
-
 OCTK_END_NAMESPACE

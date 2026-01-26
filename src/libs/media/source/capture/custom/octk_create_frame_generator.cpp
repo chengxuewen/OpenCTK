@@ -78,7 +78,7 @@ std::unique_ptr<FrameGeneratorInterface> CreateFromNV12FileFrameGenerator(std::v
 //
 // absl::Nonnull <std::unique_ptr<FrameGeneratorInterface>>
 // CreateFromIvfFileFrameGenerator(const RtcContext &env,
-//                                 absl::string_view filename,
+//                                 StringView filename,
 //                                 Optional<int> fps_hint)
 // {
 //     return utils::make_unique<IvfVideoFrameGenerator>(env, filename, fps_hint);

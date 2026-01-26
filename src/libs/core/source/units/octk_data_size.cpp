@@ -29,6 +29,8 @@
 
 OCTK_BEGIN_NAMESPACE
 
+namespace utils
+{
 std::string toString(DataSize value)
 {
     std::stringstream ss;
@@ -46,4 +48,6 @@ std::string toString(DataSize value)
     }
     return ss.str();
 }
+} // namespace utils
+
 OCTK_END_NAMESPACE

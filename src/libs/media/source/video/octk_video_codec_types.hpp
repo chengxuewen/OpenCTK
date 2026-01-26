@@ -45,6 +45,7 @@ enum VideoCodecType
 // OCTK_STATIC_CONSTANT_NUMBER(kMaxSpatialLayers, int(5));
 // OCTK_STATIC_CONSTANT_NUMBER(kMaxTemporalStreams, int(4));
 // OCTK_STATIC_CONSTANT_NUMBER(kMaxPreferredPixelFormats, int(5));
+
 OCTK_END_NAMESPACE
 
 #endif  // _OCTK_VIDEO_CODEC_TYPES_HPP

@@ -33,10 +33,10 @@ OCTK_BEGIN_NAMESPACE
 
 enum class VideoFrameType : int
 {
-    Empty = 0,
+    kEmpty = 0,
     // Wire format for MultiplexEncodedImagePacker seems to depend on numerical values of these constants.
-    Delta = 3,
-    Key = 4
+    kDelta = 3,
+    kKey = 4
 };
 
 namespace utils
@@ -45,9 +45,9 @@ inline OCTK_CXX14_CONSTEXPR StringView videoFrameTypeToString(VideoFrameType typ
 {
     switch (type)
     {
-        case VideoFrameType::Empty: return "empty";
-        case VideoFrameType::Delta: return "delta";
-        case VideoFrameType::Key: return "key";
+        case VideoFrameType::kEmpty: return "empty";
+        case VideoFrameType::kDelta: return "delta";
+        case VideoFrameType::kKey: return "key";
     }
     OCTK_CHECK_NOTREACHED();
     return "";

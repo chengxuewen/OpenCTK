@@ -73,9 +73,7 @@ size_t hex_encode_output_length(size_t srclen, char delimiter)
 
 // hex_encode shows the hex representation of binary data in ascii, with
 // `delimiter` between bytes, or none if `delimiter` == 0.
-void hex_encode_with_delimiter(char *buffer,
-                               StringView source,
-                               char delimiter)
+void hex_encode_with_delimiter(char *buffer, StringView source, char delimiter)
 {
     OCTK_DCHECK(buffer);
 
@@ -99,24 +97,21 @@ void hex_encode_with_delimiter(char *buffer,
         }
     }
 }
-}  // namespace
+} // namespace
 
 std::string hex_encode(StringView str)
 {
     return hex_encode_with_delimiter(str, 0);
 }
 
-std::string hex_encode_with_delimiter(StringView source,
-                                      char delimiter)
+std::string hex_encode_with_delimiter(StringView source, char delimiter)
 {
     std::string s(hex_encode_output_length(source.length(), delimiter), 0);
     hex_encode_with_delimiter(&s[0], source, delimiter);
     return s;
 }
 
-size_t hex_decode_with_delimiter(ArrayView<char> cbuffer,
-                                 StringView source,
-                                 char delimiter)
+size_t hex_decode_with_delimiter(ArrayView<char> cbuffer, StringView source, char delimiter)
 {
     if (cbuffer.empty())
     {
@@ -143,8 +138,7 @@ size_t hex_decode_with_delimiter(ArrayView<char> cbuffer,
         }
 
         unsigned char h1, h2;
-        if (!hex_decode(source[srcpos], &h1) ||
-            !hex_decode(source[srcpos + 1], &h2))
+        if (!hex_decode(source[srcpos], &h1) || !hex_decode(source[srcpos + 1], &h2))
         {
             return 0;
         }
@@ -171,9 +165,7 @@ size_t hex_decode(ArrayView<char> buffer, StringView source)
     return hex_decode_with_delimiter(buffer, source, 0);
 }
 
-size_t tokenize(StringView source,
-                char delimiter,
-                std::vector<std::string> *fields)
+size_t tokenize(StringView source, char delimiter, std::vector<std::string> *fields)
 {
     fields->clear();
     size_t last = 0;
@@ -195,10 +187,7 @@ size_t tokenize(StringView source,
     return fields->size();
 }
 
-bool tokenize_first(StringView source,
-                    const char delimiter,
-                    std::string *token,
-                    std::string *rest)
+bool tokenize_first(StringView source, const char delimiter, std::string *token, std::string *rest)
 {
     // Find the first delimiter
     size_t left_pos = source.find(delimiter);
@@ -217,22 +206,6 @@ bool tokenize_first(StringView source,
     *token = std::string(source.substr(0, left_pos));
     *rest = std::string(source.substr(right_pos));
     return true;
-}
-
-std::vector<StringView> split(StringView source, char delimiter)
-{
-    std::vector<StringView> fields;
-    size_t last = 0;
-    for (size_t i = 0; i < source.length(); ++i)
-    {
-        if (source[i] == delimiter)
-        {
-            fields.push_back(source.substr(last, i - last));
-            last = i + 1;
-        }
-    }
-    fields.push_back(source.substr(last));
-    return fields;
 }
 
 bool FromString(StringView s, bool *b)

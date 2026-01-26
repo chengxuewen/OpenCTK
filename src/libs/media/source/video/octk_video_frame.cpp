@@ -27,7 +27,6 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <optional>
 #include <utility>
 
 OCTK_BEGIN_NAMESPACE

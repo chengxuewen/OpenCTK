@@ -31,7 +31,7 @@ set(OCTK_TEST_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_TESTSDIR})
 # Add tests link libraries
 #-----------------------------------------------------------------------------------------------------------------------
 #octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
-set(OCTK_TEST_LINK_LIBRARIES octk::core OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
+set(OCTK_TEST_LINK_LIBRARIES octk::core_private OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -61,6 +61,14 @@ set(OCTK_TEST_LINK_LIBRARIES octk::core OCTK3rdparty::WrapGTest OCTK3rdparty::Wr
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_bit_buffer
+	SOURCES
+	tst_bit_buffer.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_buffer
 #	SOURCES
 #	tst_buffer.cpp
@@ -239,14 +247,14 @@ octk_add_test(octk_core_tst_function_view
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
-#octk_add_test(octk_core_tst_metrics
-#	SOURCES
-#	tst_metrics.cpp
-#	INCLUDE_DIRECTORIES
-#	LIBRARIES
-#	${OCTK_TEST_LINK_LIBRARIES}
-#	OUTPUT_DIRECTORY
-#	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_metrics
+	SOURCES
+	tst_metrics.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_move_wrapper
 	SOURCES
 	tst_move_wrapper.cpp
@@ -335,6 +343,14 @@ octk_add_test(octk_core_tst_result
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_safe_minmax
+	SOURCES
+	tst_safe_minmax.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_scope_guard
 	SOURCES
 	tst_scope_guard.cpp
@@ -399,6 +415,14 @@ octk_add_test(octk_core_tst_status
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_string_builder
+	SOURCES
+	tst_string_builder.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_string_encode
 #	SOURCES
 #	tst_string_encode.cpp
@@ -415,14 +439,14 @@ octk_add_test(octk_core_tst_status
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
-#octk_add_test(octk_core_tst_string_utils
-#	SOURCES
-#	tst_string_utils.cpp
-#	INCLUDE_DIRECTORIES
-#	LIBRARIES
-#	${OCTK_TEST_LINK_LIBRARIES}
-#	OUTPUT_DIRECTORY
-#	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_string_utils
+	SOURCES
+	tst_string_utils.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_core_tst_strong_alias
 #	SOURCES
 #	tst_strong_alias.cpp

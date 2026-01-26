@@ -120,8 +120,8 @@ VideoPlayoutDelay::VideoPlayoutDelay(TimeDelta min, TimeDelta max)
 {
     if (!(TimeDelta::Zero() <= min && min <= max && max <= maxValue()))
     {
-        OCTK_ERROR() << "Invalid video playout delay: [" << toString(min) << "," << toString(max)
-                     << "]. Clamped to [" << toString(this->Min()) << "," << toString(this->Max())
+        OCTK_ERROR() << "Invalid video playout delay: [" << utils::toString(min) << "," << utils::toString(max)
+                     << "]. Clamped to [" << utils::toString(this->Min()) << "," << utils::toString(this->Max())
                      << "]";
     }
 }

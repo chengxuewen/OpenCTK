@@ -28,25 +28,22 @@
 #include <octk_dependency_descriptor.hpp>
 #include <octk_video_content_type.hpp>
 #include <octk_video_codec_types.hpp>
-#include <octk_codecs_h264_types.hpp>
 #include <octk_video_frame_type.hpp>
-#include <octk_codecs_vp8_types.hpp>
-#include <octk_codecs_vp9_types.hpp>
+#include <octk_vp8_types.hpp>
+#include <octk_vp9_types.hpp>
 #include <octk_video_rotation.hpp>
 #include <octk_array_view.hpp>
+#include <octk_h264_types.hpp>
 #include <octk_optional.hpp>
 #include <octk_variant.hpp>
 
 #include <vector>
 #include <cstdint>
-#include <optional>
 
 OCTK_BEGIN_NAMESPACE
 
-using RTPVideoHeaderCodecSpecifics = Variant<VariantMonostate,
-                                             RTPVideoHeaderVP8,
-                                             RTPVideoHeaderVP9,
-                                             RTPVideoHeaderH264>;
+using RTPVideoHeaderCodecSpecifics =
+    Variant<VariantMonostate, RTPVideoHeaderVP8, RTPVideoHeaderVP9, RTPVideoHeaderH264>;
 
 // A subset of metadata from the RTP video header, exposed in insertable streams API.
 class OCTK_MEDIA_API VideoFrameMetadata
@@ -104,13 +101,11 @@ public:
     std::vector<uint32_t> GetCsrcs() const;
     void SetCsrcs(std::vector<uint32_t> csrcs);
 
-    OCTK_MEDIA_API friend bool operator==(const VideoFrameMetadata &lhs,
-                                          const VideoFrameMetadata &rhs);
-    OCTK_MEDIA_API friend bool operator!=(const VideoFrameMetadata &lhs,
-                                          const VideoFrameMetadata &rhs);
+    OCTK_MEDIA_API friend bool operator==(const VideoFrameMetadata &lhs, const VideoFrameMetadata &rhs);
+    OCTK_MEDIA_API friend bool operator!=(const VideoFrameMetadata &lhs, const VideoFrameMetadata &rhs);
 
 private:
-    VideoFrameType frame_type_ = VideoFrameType::Empty;
+    VideoFrameType frame_type_ = VideoFrameType::kEmpty;
     int16_t width_ = 0;
     int16_t height_ = 0;
     VideoRotation mRotation = VideoRotation::kAngle0;
@@ -136,4 +131,4 @@ private:
 };
 OCTK_END_NAMESPACE
 
-#endif  // _OCTK_VIDEO_FRAME_METADATA_HPP
+#endif // _OCTK_VIDEO_FRAME_METADATA_HPP

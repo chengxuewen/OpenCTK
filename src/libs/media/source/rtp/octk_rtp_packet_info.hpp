@@ -29,7 +29,6 @@
 #include <octk_time_delta.hpp>
 
 #include <cstdint>
-#include <optional>
 #include <utility>
 #include <vector>
 

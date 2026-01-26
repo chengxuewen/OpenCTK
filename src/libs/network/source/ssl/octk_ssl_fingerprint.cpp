@@ -31,8 +31,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
-std::unique_ptr<SSLFingerprint> SSLFingerprint::Create(StringView algorithm,
-                                                       const SSLCertificate &cert)
+std::unique_ptr<SSLFingerprint> SSLFingerprint::Create(StringView algorithm, const SSLCertificate &cert)
 {
     uint8_t digest_val[64];
     size_t digest_len;
@@ -44,14 +43,12 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::Create(StringView algorithm,
     return utils::make_unique<SSLFingerprint>(algorithm, ArrayView<const uint8_t>(digest_val, digest_len));
 }
 
-SSLFingerprint *SSLFingerprint::Create(StringView algorithm,
-                                       const SSLIdentity *identity)
+SSLFingerprint *SSLFingerprint::Create(StringView algorithm, const SSLIdentity *identity)
 {
     return CreateUnique(algorithm, *identity).release();
 }
 
-std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateUnique(StringView algorithm,
-                                                             const SSLIdentity &identity)
+std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateUnique(StringView algorithm, const SSLIdentity &identity)
 {
     return Create(algorithm, identity.certificate());
 }
@@ -107,14 +104,16 @@ std::unique_ptr<SSLFingerprint> SSLFingerprint::CreateFromCertificate(const RTCC
 }
 #endif
 
-SSLFingerprint::SSLFingerprint(StringView algorithm,
-                               ArrayView<const uint8_t> digest_view)
-    : algorithm(algorithm), digest(digest_view.data(), digest_view.size()) {}
+SSLFingerprint::SSLFingerprint(StringView algorithm, ArrayView<const uint8_t> digest_view)
+    : algorithm(algorithm)
+    , digest(digest_view.data(), digest_view.size())
+{
+}
 
-SSLFingerprint::SSLFingerprint(StringView algorithm,
-                               const uint8_t *digest_in,
-                               size_t digest_len)
-    : SSLFingerprint(algorithm, MakeArrayView(digest_in, digest_len)) {}
+SSLFingerprint::SSLFingerprint(StringView algorithm, const uint8_t *digest_in, size_t digest_len)
+    : SSLFingerprint(algorithm, utils::makeArrayView(digest_in, digest_len))
+{
+}
 
 bool SSLFingerprint::operator==(const SSLFingerprint &other) const
 {
@@ -136,4 +135,5 @@ std::string SSLFingerprint::toString() const
     fp_str.append(GetRfc4572Fingerprint());
     return fp_str;
 }
+
 OCTK_END_NAMESPACE

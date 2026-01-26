@@ -2,14 +2,13 @@
 // Created by cxw on 25-8-15.
 //
 
-#ifndef _OCTK_VIDEO_ENCODER_CONFIG_HPP
-#define _OCTK_VIDEO_ENCODER_CONFIG_HPP
+#pragma once
 
 #include <octk_video_codec_types.hpp>
 #include <octk_field_trials_view.hpp>
 #include <octk_sdp_video_format.hpp>
 #include <octk_rtp_parameters.hpp>
-#include <octk_scoped_refptr.hpp>
+// #include <octk_scoped_refptr.hpp>
 #include <octk_video_codec.hpp>
 #include <octk_ref_count.hpp>
 #include <octk_optional.hpp>
@@ -171,11 +170,11 @@ public:
     // Note: This factory can be unset, and VideoStreamEncoder will
     // then use the EncoderStreamFactory. The factory is only set by
     // tests.
-    SharedRefPtr<VideoStreamFactoryInterface> video_stream_factory;
+    std::shared_ptr<VideoStreamFactoryInterface> video_stream_factory;
     std::vector<SpatialLayer> spatial_layers;
     ContentType content_type;
     bool frame_drop_enabled;
-    SharedRefPtr<const EncoderSpecificSettings> encoder_specific_settings;
+    std::shared_ptr<const EncoderSpecificSettings> encoder_specific_settings;
 
     // Padding will be used up to this bitrate regardless of the bitrate produced
     // by the encoder. Padding above what's actually produced by the encoder helps
@@ -220,5 +219,3 @@ private:
 };
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_VIDEO_ENCODER_CONFIG_HPP

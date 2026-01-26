@@ -59,12 +59,12 @@ void EncodedFrame::CopyCodecSpecific(const RTPVideoHeader *header)
                     _codecSpecificInfo.codecType = kVideoCodecVP8;
                 }
                 _codecSpecificInfo.codecSpecific.VP8.nonReference = vp8_header.nonReference;
-                if (vp8_header.temporalIdx != kNoTemporalIdx)
+                if (vp8_header.temporalIdx != media::codecs::kNoTemporalIdx)
                 {
                     _codecSpecificInfo.codecSpecific.VP8.temporalIdx = vp8_header.temporalIdx;
                     _codecSpecificInfo.codecSpecific.VP8.layerSync = vp8_header.layerSync;
                 }
-                if (vp8_header.keyIdx != kNoKeyIdx)
+                if (vp8_header.keyIdx != media::codecs::kNoKeyIdx)
                 {
                     _codecSpecificInfo.codecSpecific.VP8.keyIdx = vp8_header.keyIdx;
                 }
@@ -89,7 +89,7 @@ void EncodedFrame::CopyCodecSpecific(const RTPVideoHeader *header)
                     _codecSpecificInfo.codecSpecific.VP9.p_diff[r] = vp9_header.pid_diff[r];
                 }
                 _codecSpecificInfo.codecSpecific.VP9.ss_data_available = vp9_header.ss_data_available;
-                if (vp9_header.temporal_idx != kNoTemporalIdx)
+                if (vp9_header.temporal_idx != media::codecs::kNoTemporalIdx)
                 {
                     _codecSpecificInfo.codecSpecific.VP9.temporal_idx = vp9_header.temporal_idx;
                     _codecSpecificInfo.codecSpecific.VP9.temporal_up_switch = vp9_header.temporal_up_switch;

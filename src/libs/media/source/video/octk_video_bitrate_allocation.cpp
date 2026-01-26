@@ -28,23 +28,18 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <optional>
 #include <string>
 #include <vector>
-
-// #include "api/video/video_codec_constants.h"
-// #include "rtc_base/checks.h"
-// #include "rtc_base/numerics/safe_conversions.h"
-// #include "rtc_base/strings/string_builder.h"
 
 OCTK_BEGIN_NAMESPACE
 
 VideoBitrateAllocation::VideoBitrateAllocation()
-    : sum_(0), is_bw_limited_(false) {}
+    : sum_(0)
+    , is_bw_limited_(false)
+{
+}
 
-bool VideoBitrateAllocation::SetBitrate(size_t spatial_index,
-                                        size_t temporal_index,
-                                        uint32_t bitrate_bps)
+bool VideoBitrateAllocation::SetBitrate(size_t spatial_index, size_t temporal_index, uint32_t bitrate_bps)
 {
     OCTK_CHECK_LT(spatial_index, kMaxSpatialLayers);
     OCTK_CHECK_LT(temporal_index, kMaxTemporalStreams);
@@ -66,16 +61,14 @@ bool VideoBitrateAllocation::SetBitrate(size_t spatial_index,
     return true;
 }
 
-bool VideoBitrateAllocation::HasBitrate(size_t spatial_index,
-                                        size_t temporal_index) const
+bool VideoBitrateAllocation::HasBitrate(size_t spatial_index, size_t temporal_index) const
 {
     OCTK_CHECK_LT(spatial_index, kMaxSpatialLayers);
     OCTK_CHECK_LT(temporal_index, kMaxTemporalStreams);
     return bitrates_[spatial_index][temporal_index].has_value();
 }
 
-uint32_t VideoBitrateAllocation::GetBitrate(size_t spatial_index,
-                                            size_t temporal_index) const
+uint32_t VideoBitrateAllocation::GetBitrate(size_t spatial_index, size_t temporal_index) const
 {
     OCTK_CHECK_LT(spatial_index, kMaxSpatialLayers);
     OCTK_CHECK_LT(temporal_index, kMaxTemporalStreams);
@@ -103,8 +96,7 @@ uint32_t VideoBitrateAllocation::GetSpatialLayerSum(size_t spatial_index) const
     return GetTemporalLayerSum(spatial_index, kMaxTemporalStreams - 1);
 }
 
-uint32_t VideoBitrateAllocation::GetTemporalLayerSum(size_t spatial_index,
-                                                     size_t temporal_index) const
+uint32_t VideoBitrateAllocation::GetTemporalLayerSum(size_t spatial_index, size_t temporal_index) const
 {
     OCTK_CHECK_LT(spatial_index, kMaxSpatialLayers);
     OCTK_CHECK_LT(temporal_index, kMaxTemporalStreams);
@@ -116,8 +108,7 @@ uint32_t VideoBitrateAllocation::GetTemporalLayerSum(size_t spatial_index,
     return sum;
 }
 
-std::vector<uint32_t> VideoBitrateAllocation::GetTemporalLayerAllocation(
-    size_t spatial_index) const
+std::vector<uint32_t> VideoBitrateAllocation::GetTemporalLayerAllocation(size_t spatial_index) const
 {
     OCTK_CHECK_LT(spatial_index, kMaxSpatialLayers);
     std::vector<uint32_t> temporal_rates;
@@ -241,4 +232,5 @@ std::string VideoBitrateAllocation::toString() const
     ss << " ]";
     return ss.str();
 }
+
 OCTK_END_NAMESPACE

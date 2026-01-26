@@ -22,17 +22,16 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_VIDEO_CODEC_CONSTANTS_HPP
-#define _OCTK_VIDEO_CODEC_CONSTANTS_HPP
+#pragma once
 
 #include <octk_media_global.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
 OCTK_STATIC_CONSTANT_NUMBER(kMaxEncoderBuffers, int(8))
 OCTK_STATIC_CONSTANT_NUMBER(kMaxSimulcastStreams, int(3))
 OCTK_STATIC_CONSTANT_NUMBER(kMaxSpatialLayers, int(5))
 OCTK_STATIC_CONSTANT_NUMBER(kMaxTemporalStreams, int(4))
 OCTK_STATIC_CONSTANT_NUMBER(kMaxPreferredPixelFormats, int(5))
-OCTK_END_NAMESPACE
 
-#endif // _OCTK_VIDEO_CODEC_CONSTANTS_HPP
+OCTK_END_NAMESPACE

@@ -23,7 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <octk_rtp_parameters.hpp>
-#include <octk_media_constants.hpp>
+#include <private/octk_media_constants_p.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
