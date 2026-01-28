@@ -27,6 +27,7 @@
 #include <octk_elapsed_timer.hpp>
 #include <octk_semaphore.hpp>
 #include <octk_logging.hpp>
+#include <octk_memory.hpp>
 #include <octk_utility.hpp>
 
 #include <gmock/gmock.h>

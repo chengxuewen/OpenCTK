@@ -198,6 +198,27 @@ public:
     virtual void destroy() = 0;
     virtual bool cancelTask(const Task *task) = 0;
 
+    void sendTask(Task *task, bool autoDelete, const SourceLocation &location = SourceLocation::current())
+    {
+        this->sendTask(Task::makeShared(task, autoDelete), location);
+    }
+    void sendTask(UniqueFunction<void() &&> function, const SourceLocation &location = SourceLocation::current())
+    {
+        this->sendTask(Task::create(std::move(function)), location);
+    }
+    void sendTask(const Task::SharedPtr &task, const SourceLocation &location = SourceLocation::current());
+
+
+    template <typename Functor,
+              typename ReturnT = traits::invoke_result_t<Functor>,
+              typename = typename std::enable_if_t<!traits::is_void_v<ReturnT>>>
+    ReturnT sendTask(Functor &&functor, const SourceLocation &location = SourceLocation::current())
+    {
+        ReturnT result;
+        this->sendTask([&] { result = std::forward<Functor>(functor)(); }, location);
+        return result;
+    }
+
     void postTask(Task *task, bool autoDelete, const SourceLocation &location = SourceLocation::current())
     {
         this->postTask(Task::makeShared(task, autoDelete), location);

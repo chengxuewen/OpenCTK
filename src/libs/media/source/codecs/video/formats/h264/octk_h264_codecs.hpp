@@ -32,6 +32,7 @@
 #include <octk_scalability_mode.hpp>
 #include <octk_sdp_video_format.hpp>
 #include <octk_video_encoder.hpp>
+#include <octk_video_decoder.hpp>
 
 #include <memory>
 #include <string>
@@ -88,13 +89,13 @@ struct H264EncoderSettings
 };
 Nonnull<std::unique_ptr<VideoEncoder>> CreateH264Encoder(const MediaContext &env, H264EncoderSettings settings = {});
 
-// class OCTK_MEDIA_API H264Decoder : public VideoDecoder
-// {
-// public:
-//     static std::unique_ptr<H264Decoder> Create();
-//     static bool IsSupported();
-//
-//     ~H264Decoder() override { }
-// };
+class OCTK_MEDIA_API H264Decoder : public VideoDecoder
+{
+public:
+    static std::unique_ptr<H264Decoder> Create();
+    static bool IsSupported();
+
+    ~H264Decoder() override { }
+};
 
 OCTK_END_NAMESPACE

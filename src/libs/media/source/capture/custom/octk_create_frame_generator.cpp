@@ -30,53 +30,52 @@ OCTK_BEGIN_NAMESPACE
 
 namespace utils
 {
-std::unique_ptr<FrameGeneratorInterface> CreateSquareFrameGenerator(int width,
-                                                                    int height,
-                                                                    Optional<FrameGeneratorInterface::OutputType> type,
-                                                                    Optional<int> num_squares)
+UniquePointer<FrameGeneratorInterface> CreateSquareFrameGenerator(int width,
+                                                                  int height,
+                                                                  Optional<FrameGeneratorInterface::OutputType> type,
+                                                                  Optional<int> num_squares)
 {
-    return utils::make_unique<SquareGenerator>(width, height,
-                                             type.value_or(FrameGeneratorInterface::OutputType::kI420),
-                                             num_squares.value_or(10));
+    return utils::make_unique<SquareGenerator>(width,
+                                               height,
+                                               type.value_or(FrameGeneratorInterface::OutputType::kI420),
+                                               num_squares.value_or(10));
 }
 
-std::unique_ptr<FrameGeneratorInterface> CreateFromYuvFileFrameGenerator(std::vector<std::string> filenames,
-                                                                         size_t width,
-                                                                         size_t height,
-                                                                         int frame_repeat_count)
+UniquePointer<FrameGeneratorInterface> CreateFromYuvFileFrameGenerator(std::vector<std::string> filenames,
+                                                                       size_t width,
+                                                                       size_t height,
+                                                                       int frame_repeat_count)
 {
     OCTK_DCHECK(!filenames.empty());
     std::vector<FILE *> files;
-    for (const std::string &filename: filenames)
+    for (const std::string &filename : filenames)
     {
         FILE *file = fopen(filename.c_str(), "rb");
         OCTK_DCHECK(file != nullptr) << "Failed to open: '" << filename << "'\n";
         files.push_back(file);
     }
 
-    return utils::make_unique<YuvFileGenerator>(files, width, height,
-                                              frame_repeat_count);
+    return utils::make_unique<YuvFileGenerator>(files, width, height, frame_repeat_count);
 }
 
-std::unique_ptr<FrameGeneratorInterface> CreateFromNV12FileFrameGenerator(std::vector<std::string> filenames,
-                                                                          size_t width,
-                                                                          size_t height,
-                                                                          int frame_repeat_count)
+UniquePointer<FrameGeneratorInterface> CreateFromNV12FileFrameGenerator(std::vector<std::string> filenames,
+                                                                        size_t width,
+                                                                        size_t height,
+                                                                        int frame_repeat_count)
 {
     OCTK_DCHECK(!filenames.empty());
     std::vector<FILE *> files;
-    for (const std::string &filename: filenames)
+    for (const std::string &filename : filenames)
     {
         FILE *file = fopen(filename.c_str(), "rb");
         OCTK_DCHECK(file != nullptr) << "Failed to open: '" << filename << "'\n";
         files.push_back(file);
     }
 
-    return utils::make_unique<NV12FileGenerator>(files, width, height,
-                                               frame_repeat_count);
+    return utils::make_unique<NV12FileGenerator>(files, width, height, frame_repeat_count);
 }
 //
-// absl::Nonnull <std::unique_ptr<FrameGeneratorInterface>>
+// absl::Nonnull <UniquePointer<FrameGeneratorInterface>>
 // CreateFromIvfFileFrameGenerator(const RtcContext &env,
 //                                 StringView filename,
 //                                 Optional<int> fps_hint)
@@ -84,32 +83,36 @@ std::unique_ptr<FrameGeneratorInterface> CreateFromNV12FileFrameGenerator(std::v
 //     return utils::make_unique<IvfVideoFrameGenerator>(env, filename, fps_hint);
 // }
 
-std::unique_ptr<FrameGeneratorInterface>
-CreateScrollingInputFromYuvFilesFrameGenerator(Clock *clock,
-                                               std::vector<std::string> filenames,
-                                               size_t source_width,
-                                               size_t source_height,
-                                               size_t target_width,
-                                               size_t target_height,
-                                               int64_t scroll_time_ms,
-                                               int64_t pause_time_ms)
+UniquePointer<FrameGeneratorInterface> CreateScrollingInputFromYuvFilesFrameGenerator(
+    Clock *clock,
+    std::vector<std::string> filenames,
+    size_t source_width,
+    size_t source_height,
+    size_t target_width,
+    size_t target_height,
+    int64_t scroll_time_ms,
+    int64_t pause_time_ms)
 {
     OCTK_DCHECK(!filenames.empty());
     std::vector<FILE *> files;
-    for (const std::string &filename: filenames)
+    for (const std::string &filename : filenames)
     {
         FILE *file = fopen(filename.c_str(), "rb");
         OCTK_DCHECK(file != nullptr);
         files.push_back(file);
     }
 
-    return utils::make_unique<ScrollingImageFrameGenerator>(clock, files,
-                                                          source_width, source_height,
-                                                          target_width, target_height,
-                                                          scroll_time_ms, pause_time_ms);
+    return utils::make_unique<ScrollingImageFrameGenerator>(clock,
+                                                            files,
+                                                            source_width,
+                                                            source_height,
+                                                            target_width,
+                                                            target_height,
+                                                            scroll_time_ms,
+                                                            pause_time_ms);
 }
 
-std::unique_ptr<FrameGeneratorInterface> CreateSlideFrameGenerator(int width, int height, int frame_repeat_count)
+UniquePointer<FrameGeneratorInterface> CreateSlideFrameGenerator(int width, int height, int frame_repeat_count)
 {
     return utils::make_unique<SlideGenerator>(width, height, frame_repeat_count);
 }

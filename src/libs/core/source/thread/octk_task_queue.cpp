@@ -22,9 +22,14 @@
 **
 ***********************************************************************************************************************/
 
+#include "octk_semaphore.hpp"
+
+
 #include <octk_context_checker.hpp>
+#include <octk_scope_guard.hpp>
 #include <octk_task_queue.hpp>
 #include <octk_timestamp.hpp>
+#include <octk_semaphore.hpp>
 #include <octk_utility.hpp>
 
 #include <atomic>
@@ -165,6 +170,24 @@ TaskQueueBase::CurrentSetter::~CurrentSetter()
 TaskQueueBase *TaskQueueBase::current()
 {
     return detail::currentTaskQueue;
+}
+
+void TaskQueueBase::sendTask(const Task::SharedPtr &task, const SourceLocation &location)
+{
+    if (this->isCurrent())
+    {
+        task->run();
+        return;
+    }
+
+    Semaphore semaphore;
+    auto cleanup = utils::makeScopeGuard([&semaphore] { semaphore.release(); });
+    this->postTask([task, cleanup = std::move(cleanup)] { task->run(); });
+    if (!semaphore.tryAcquire(1, TimeDelta::Seconds(10).ms()))
+    {
+        OCTK_WARNING("TaskQueueBase::sendTask: timeout waiting 10s for task to complete");
+        semaphore.acquire();
+    }
 }
 
 OCTK_END_NAMESPACE

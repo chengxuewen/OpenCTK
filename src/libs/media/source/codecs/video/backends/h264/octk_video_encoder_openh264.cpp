@@ -30,14 +30,13 @@
 #include <private/octk_simulcast_utility_p.hpp>
 #include <private/octk_media_constants_p.hpp>
 #include <octk_simulcast_rate_allocator.hpp>
-#include <octk_video_type.hpp>
 #include <octk_metrics.hpp>
 #include <octk_yuv.hpp>
 
-#include <wels/codec_app_def.h>
-#include <wels/codec_api.h>
-#include <wels/codec_def.h>
-#include <wels/codec_ver.h>
+#include <openh264/wels/codec_app_def.h>
+#include <openh264/wels/codec_api.h>
+#include <openh264/wels/codec_def.h>
+#include <openh264/wels/codec_ver.h>
 
 #if OCTK_FEATURE_MEDIA_USE_H264
 
@@ -201,7 +200,7 @@ public:
     std::vector<std::unique_ptr<ScalableVideoController>> svc_controllers_;
     InlinedVector<Optional<ScalabilityMode>, kMaxSimulcastStreams> scalability_modes_;
 
-    const MediaContext &mediaContext_;
+    const MediaContext mediaContext_;
     VideoCodec codec_;
     H264PacketizationMode packetization_mode_;
     size_t max_payload_size_{0};
@@ -749,6 +748,11 @@ int32_t VideoEncoderOpenh264::encode(const VideoFrame &input_frame, const std::v
             OCTK_ERROR() << "OpenH264 frame encoding failed, EncodeFrame returned " << enc_ret << ".";
             d->reportError();
             return WEBRTC_VIDEO_CODEC_ERROR;
+        }
+        else if (videoFrameTypeInvalid == info.eFrameType)
+        {
+            OCTK_WARNING() << "OpenH264 frame encoding failed, Invalid EncodeFrame returned.";
+            continue;
         }
 
         d->encoded_images_[i]._encodedWidth = d->configurations_[i].width;

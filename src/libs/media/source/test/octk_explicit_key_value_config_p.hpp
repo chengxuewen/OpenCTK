@@ -10,22 +10,53 @@
 
 #pragma once
 
-#include <octk_string_view.hpp>
 #include <private/octk_field_trials_registry_p.hpp>
+#include <octk_string_view.hpp>
+#include <octk_checks.hpp>
 
 #include <functional>
-#include <map>
 #include <string>
+#include <map>
 
 OCTK_BEGIN_NAMESPACE
 
 class OCTK_MEDIA_API ExplicitKeyValueConfig : public FieldTrialsRegistry
 {
 public:
-    explicit ExplicitKeyValueConfig(StringView s);
+    explicit ExplicitKeyValueConfig(StringView s)
+    {
+        std::string::size_type field_start = 0;
+        while (field_start < s.size())
+        {
+            std::string::size_type separator_pos = s.find('/', field_start);
+            OCTK_CHECK_NE(separator_pos, std::string::npos) << "Missing separator '/' after field trial key.";
+            OCTK_CHECK_GT(separator_pos, field_start) << "Field trial key cannot be empty.";
+            std::string key(s.substr(field_start, separator_pos - field_start));
+            field_start = separator_pos + 1;
+
+            OCTK_CHECK_LT(field_start, s.size()) << "Missing value after field trial key. String ended.";
+            separator_pos = s.find('/', field_start);
+            OCTK_CHECK_NE(separator_pos, std::string::npos) << "Missing terminating '/' in field trial string.";
+            OCTK_CHECK_GT(separator_pos, field_start) << "Field trial value cannot be empty.";
+            std::string value(s.substr(field_start, separator_pos - field_start));
+            field_start = separator_pos + 1;
+
+            key_value_map_[key] = value;
+        }
+        // This check is technically redundant due to earlier checks.
+        // We nevertheless keep the check to make it clear that the entire
+        // string has been processed, and without indexing past the end.
+        OCTK_CHECK_EQ(field_start, s.size());
+    }
 
 private:
-    std::string GetValue(StringView key) const override;
+    std::string GetValue(StringView key) const override
+    {
+        auto it = key_value_map_.find(key);
+        if (it != key_value_map_.end())
+            return it->second;
+        return "";
+    }
 
     // Unlike std::less<std::string>, std::less<> is transparent and allows
     // heterogeneous lookup directly with StringView.

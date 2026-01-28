@@ -37,8 +37,11 @@
 #include <octk_variant.hpp>
 
 #include <vector>
+#include <map>
 
 OCTK_BEGIN_NAMESPACE
+
+using CodecParameterMap = std::map<std::string, std::string>;
 
 // Note: If any pointers are added to this struct, it must be fitted with a copy-constructor.
 // See below.

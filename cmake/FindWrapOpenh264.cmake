@@ -87,8 +87,13 @@ if(NOT EXISTS "${OCTKWrapOpenh264_STAMP_FILE_PATH}")
     octk_make_stamp_file("${OCTKWrapOpenh264_STAMP_FILE_PATH}")
 endif()
 # wrap lib
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapOpenh264_INSTALL_DIR}/include/wels"
+	"${OCTKWrapOpenh264_INSTALL_DIR}/include/openh264/wels"
+	WORKING_DIRECTORY "${OCTKWrapOpenh264_INSTALL_DIR}"
+	ERROR_QUIET)
 add_library(OCTK3rdparty::WrapOpenh264 INTERFACE IMPORTED)
-target_link_directories(OCTK3rdparty::WrapOpenh264 INTERFACE ${OCTKWrapOpenh264_INSTALL_DIR}/include)
+target_include_directories(OCTK3rdparty::WrapOpenh264 INTERFACE "${OCTKWrapOpenh264_INSTALL_DIR}/include")
 if(WIN32)
 	target_link_libraries(OCTK3rdparty::WrapOpenh264 INTERFACE ${OCTKWrapOpenh264_INSTALL_DIR}/lib/openh264.lib)
 else()

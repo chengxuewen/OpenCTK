@@ -30,7 +30,7 @@
 
 #include <octk_optional.hpp>
 #include <octk_string_view.hpp>
-#include <octk_dependency_descriptor.hpp>
+#include <private/octk_dependency_descriptor_p.hpp>
 #include <private/octk_scalable_video_controller_p.hpp>
 #include <octk_checks.hpp>
 #include <octk_logging.hpp>

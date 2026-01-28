@@ -23,18 +23,15 @@
 **
 ***********************************************************************************************************************/
 
+#include <test/octk_video_codec_test_p.hpp>
 #include <octk_color_space.hpp>
 #include <octk_encoded_image.hpp>
 #include <octk_video_frame.hpp>
 #include <octk_video_codec.hpp>
 #include <octk_video_encoder.hpp>
 #include <octk_video_decoder.hpp>
+#include <octk_h264_codecs.hpp>
 #include <octk_yuv.hpp>
-#include <octk_media_constants.hpp>
-#include <private/octk_h264_common_p.hpp>
-#include <test/octk_video_codec_test_p.hpp>
-#include <octk_video_codec_interface.hpp>
-#include <octk_video_codec_settings.hpp>
 
 #include <stdint.h>
 #include <memory>
@@ -49,15 +46,15 @@ class TestH264Impl : public VideoCodecUnitTest
 protected:
     std::unique_ptr<VideoEncoder> CreateEncoder() override { return CreateH264Encoder(env_); }
 
-    // std::unique_ptr<VideoDecoder> CreateDecoder() override { return H264Decoder::Create(); }
+    std::unique_ptr<VideoDecoder> CreateDecoder() override { return H264Decoder::Create(); }
 
     void ModifyCodecSettings(VideoCodec *codec_settings) override
     {
-        webrtc::test::CodecSettings(kVideoCodecH264, codec_settings);
+        test::CodecSettings(kVideoCodecH264, codec_settings);
     }
 };
 
-#ifdef WEBRTC_USE_H264
+#if OCTK_FEATURE_MEDIA_USE_H264
 #    define MAYBE_EncodeDecode             EncodeDecode
 #    define MAYBE_DecodedQpEqualsEncodedQp DecodedQpEqualsEncodedQp
 #else
@@ -68,20 +65,20 @@ protected:
 TEST_F(TestH264Impl, MAYBE_EncodeDecode)
 {
     VideoFrame input_frame = NextInputFrame();
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, encoder_->Encode(input_frame, nullptr));
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, encoder_->encode(input_frame, nullptr));
     EncodedImage encoded_frame;
     CodecSpecificInfo codec_specific_info;
     ASSERT_TRUE(WaitForEncodedFrame(&encoded_frame, &codec_specific_info));
     // First frame should be a key frame.
-    encoded_frame._frameType = VideoFrameType::kVideoFrameKey;
+    encoded_frame._frameType = VideoFrameType::kKey;
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, decoder_->Decode(encoded_frame, 0));
     std::unique_ptr<VideoFrame> decoded_frame;
-    std::optional<uint8_t> decoded_qp;
+    Optional<uint8_t> decoded_qp;
     ASSERT_TRUE(WaitForDecodedFrame(&decoded_frame, &decoded_qp));
     ASSERT_TRUE(decoded_frame);
-    EXPECT_GT(I420PSNR(&input_frame, decoded_frame.get()), 36);
+    EXPECT_GT(utils::I420PSNR(&input_frame, decoded_frame.get()), 36);
 
-    const ColorSpace color_space = *decoded_frame->color_space();
+    const ColorSpace color_space = *decoded_frame->colorSpace();
     EXPECT_EQ(ColorSpace::PrimaryID::kUnspecified, color_space.primaries());
     EXPECT_EQ(ColorSpace::TransferID::kUnspecified, color_space.transfer());
     EXPECT_EQ(ColorSpace::MatrixID::kUnspecified, color_space.matrix());
@@ -92,19 +89,19 @@ TEST_F(TestH264Impl, MAYBE_EncodeDecode)
 
 TEST_F(TestH264Impl, MAYBE_DecodedQpEqualsEncodedQp)
 {
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, encoder_->Encode(NextInputFrame(), nullptr));
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, encoder_->encode(NextInputFrame(), nullptr));
     EncodedImage encoded_frame;
     CodecSpecificInfo codec_specific_info;
     ASSERT_TRUE(WaitForEncodedFrame(&encoded_frame, &codec_specific_info));
     // First frame should be a key frame.
-    encoded_frame._frameType = VideoFrameType::kVideoFrameKey;
+    encoded_frame._frameType = VideoFrameType::kKey;
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, decoder_->Decode(encoded_frame, 0));
     std::unique_ptr<VideoFrame> decoded_frame;
-    std::optional<uint8_t> decoded_qp;
+    Optional<uint8_t> decoded_qp;
     ASSERT_TRUE(WaitForDecodedFrame(&decoded_frame, &decoded_qp));
     ASSERT_TRUE(decoded_frame);
     ASSERT_TRUE(decoded_qp);
     EXPECT_EQ(encoded_frame.qp_, *decoded_qp);
 }
 
-} // namespace webrtc
+OCTK_END_NAMESPACE

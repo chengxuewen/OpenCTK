@@ -26,13 +26,13 @@
 #pragma once
 
 #include <private/octk_h264_bitstream_parser_p.hpp>
-#include <private/octk_h264_common_p.hpp>
+#include <octk_video_frame_buffer_pool.hpp>
 #include <octk_media_config.hpp>
+#include <octk_h264_codecs.hpp>
 
 #if OCTK_FEATURE_MEDIA_USE_H264
-//#include "common_video/include/video_frame_buffer_pool.h"
 
-#    if defined(WEBRTC_WIN) && !defined(__clang__)
+#    if defined(OCTK_OS_WIN) && !defined(__clang__)
 #        error "See: bugs.webrtc.org/9213#c13."
 #    endif
 
@@ -108,7 +108,7 @@ private:
     bool has_reported_init_;
     bool has_reported_error_;
 
-    webrtc::H264BitstreamParser h264_bitstream_parser_;
+    H264BitStreamParser h264_bitstream_parser_;
 };
 
 OCTK_END_NAMESPACE

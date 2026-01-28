@@ -34,8 +34,8 @@ octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 octk_add_library(media
 	EXCEPTIONS
 	SOURCES
-#	source/codecs/video/backends/h264/octk_video_decoder_openh264.cpp
-#	source/codecs/video/backends/h264/octk_video_decoder_openh264_p.hpp
+	source/codecs/video/backends/h264/octk_video_decoder_openh264.cpp
+	source/codecs/video/backends/h264/octk_video_decoder_openh264_p.hpp
 	source/codecs/video/backends/h264/octk_video_encoder_openh264.cpp
 	source/codecs/video/backends/h264/octk_video_encoder_openh264_p.hpp
 	source/codecs/video/formats/av1/octk_av1_profile.cpp
@@ -92,6 +92,11 @@ octk_add_library(media
 	source/codecs/video/svc/octk_simulcast_to_svc_converter_p.hpp
 	source/codecs/video/svc/octk_svc_rate_allocator.cpp
 	source/codecs/video/svc/octk_svc_rate_allocator_p.hpp
+#	source/codecs/video/utility/octk_ivf_defines_p.hpp
+#	source/codecs/video/utility/octk_ivf_file_reader.cpp
+#	source/codecs/video/utility/octk_ivf_file_reader_p.hpp
+#	source/codecs/video/utility/octk_ivf_file_writer.cpp
+#	source/codecs/video/utility/octk_ivf_file_writer_p.hpp
 	source/codecs/video/utility/octk_simulcast_rate_allocator.cpp
 	source/codecs/video/utility/octk_simulcast_rate_allocator.hpp
 	source/codecs/video/utility/octk_simulcast_stream.cpp
@@ -110,12 +115,17 @@ octk_add_library(media
 	source/codecs/video/octk_video_codec_constants.hpp
 	source/codecs/video/octk_video_codes_error.cpp
 	source/codecs/video/octk_video_codes_error.hpp
+	source/codecs/video/octk_video_decoder.cpp
+	source/codecs/video/octk_video_decoder.hpp
+	source/codecs/video/octk_video_decoder_factory.hpp
 	source/codecs/video/octk_video_encoder.cpp
 	source/codecs/video/octk_video_encoder.hpp
 	source/codecs/video/octk_video_encoder_factory.hpp
 	source/codecs/octk_codec_specific_info.cpp
 	source/codecs/octk_codec_specific_info.hpp
 	source/codecs/octk_codecs_constants.hpp
+	source/codecs/octk_dependency_descriptor.cpp
+	source/codecs/octk_dependency_descriptor_p.hpp
 	source/event_log/octk_media_event.cpp
 	source/event_log/octk_media_event.hpp
 	source/event_log/octk_media_event_log.cpp
@@ -145,51 +155,88 @@ octk_add_library(media
 	source/media_context/octk_media_context_factory.cpp
 	source/media_context/octk_media_context_factory.hpp
 	source/media_context/octk_media_context.hpp
-	source/rtc/adaptation/octk_adaptation_constraint.cpp
-	source/rtc/adaptation/octk_adaptation_constraint.hpp
-	source/rtc/adaptation/octk_broadcast_resource_listener.cpp
-	source/rtc/adaptation/octk_broadcast_resource_listener.hpp
-	source/rtc/adaptation/octk_resource.cpp
-	source/rtc/adaptation/octk_resource.hpp
-	source/rtc/adaptation/octk_video_source_restrictions.cpp
-	source/rtc/adaptation/octk_video_source_restrictions.hpp
-	source/rtc/adaptation/octk_video_stream_input_state.cpp
-	source/rtc/adaptation/octk_video_stream_input_state.hpp
-	source/rtc/octk_dtls_transport_interface.cpp
-	source/rtc/octk_dtls_transport_interface.hpp
-	source/rtc/stats/octk_rtc_stats.cpp
-	source/rtc/stats/octk_rtc_stats.hpp
-	source/rtc/stats/octk_rtc_stats_collector.hpp
-	source/rtc/stats/octk_rtc_stats_objects.cpp
-	source/rtc/stats/octk_rtc_stats_objects.hpp
-	source/rtc/stats/octk_rtc_stats_report.cpp
-	source/rtc/stats/octk_rtc_stats_report.hpp
-	source/rtc/octk_rtc_error.cpp
-	source/rtc/octk_rtc_error.hpp
-	source/rtc/octk_rtc_offer_answer_options.hpp
-	source/rtc/octk_rtc_peer_connection.cpp
-	source/rtc/octk_rtc_peer_connection.hpp
-	source/rtc/octk_rtc_rtp_transceiver.cpp
-	source/rtc/octk_rtc_rtp_transceiver.hpp
-	source/rtp/octk_dependency_descriptor.cpp
-	source/rtp/octk_dependency_descriptor.cpp
-	source/rtp/octk_rtp_headers.cpp
-	source/rtp/octk_rtp_headers.hpp
-	source/rtp/octk_rtp_packet_info.cpp
-	source/rtp/octk_rtp_packet_info.hpp
-	source/rtp/octk_rtp_packet_infos.hpp
-	source/rtp/octk_rtp_parameters.cpp
-	source/rtp/octk_rtp_parameters.hpp
-	source/rtp/octk_rtp_receiver_interface.cpp
-	source/rtp/octk_rtp_receiver_interface.hpp
-	source/rtp/octk_rtp_sender_interface.cpp
-	source/rtp/octk_rtp_sender_interface.hpp
-	source/rtp/octk_rtp_source.hpp
-	source/rtp/octk_rtp_transceiver_direction.hpp
-	source/rtp/octk_rtp_transceiver_interface.cpp
-	source/rtp/octk_rtp_transceiver_interface.hpp
-	source/rtp/octk_rtp_video_header.cpp
-	source/rtp/octk_rtp_video_header.hpp
+	source/protocols/rtc/octk_rtc_audio_device.hpp
+	source/protocols/rtc/octk_rtc_audio_frame.hpp
+	source/protocols/rtc/octk_rtc_audio_source.hpp
+	source/protocols/rtc/octk_rtc_audio_track.hpp
+	source/protocols/rtc/octk_rtc_data_channel.hpp
+	source/protocols/rtc/octk_rtc_dtls_transport.hpp
+	source/protocols/rtc/octk_rtc_dtmf_sender.hpp
+	source/protocols/rtc/octk_rtc_ice_candidate.hpp
+	source/protocols/rtc/octk_rtc_ice_transport.hpp
+	source/protocols/rtc/octk_rtc_media_constraints.cpp
+	source/protocols/rtc/octk_rtc_media_constraints.hpp
+	source/protocols/rtc/octk_rtc_media_stream.hpp
+	source/protocols/rtc/octk_rtc_media_track.hpp
+	source/protocols/rtc/octk_rtc_peerconnection.hpp
+	source/protocols/rtc/octk_rtc_peerconnection_factory.hpp
+	source/protocols/rtc/octk_rtc_rtp_capabilities.hpp
+	source/protocols/rtc/octk_rtc_rtp_parameters.hpp
+	source/protocols/rtc/octk_rtc_rtp_receiver.hpp
+	source/protocols/rtc/octk_rtc_rtp_sender.hpp
+	source/protocols/rtc/octk_rtc_rtp_transceiver.hpp
+	source/protocols/rtc/octk_rtc_session_description.hpp
+	source/protocols/rtc/octk_rtc_stats.hpp
+	source/protocols/rtc/octk_rtc_stats_report.cpp
+	source/protocols/rtc/octk_rtc_stats_report.hpp
+	source/protocols/rtc/octk_rtc_types.hpp
+	source/protocols/rtc/octk_rtc_video_device.hpp
+	source/protocols/rtc/octk_rtc_video_frame.hpp
+	source/protocols/rtc/octk_rtc_video_sink.hpp
+	source/protocols/rtc/octk_rtc_video_source.hpp
+	source/protocols/rtc/octk_rtc_video_track.hpp
+	source/protocols/rtp/octk_rtp_headers.cpp
+	source/protocols/rtp/octk_rtp_headers.hpp
+	source/protocols/rtp/octk_rtp_packet_info.cpp
+	source/protocols/rtp/octk_rtp_packet_info.hpp
+	source/protocols/rtp/octk_rtp_packet_infos.hpp
+	source/protocols/rtp/octk_rtp_video_header.cpp
+	source/protocols/rtp/octk_rtp_video_header.hpp
+	#	source/rtc/adaptation/octk_adaptation_constraint.cpp
+#	source/rtc/adaptation/octk_adaptation_constraint.hpp
+#	source/rtc/adaptation/octk_broadcast_resource_listener.cpp
+#	source/rtc/adaptation/octk_broadcast_resource_listener.hpp
+#	source/rtc/adaptation/octk_resource.cpp
+#	source/rtc/adaptation/octk_resource.hpp
+#	source/rtc/adaptation/octk_video_source_restrictions.cpp
+#	source/rtc/adaptation/octk_video_source_restrictions.hpp
+#	source/rtc/adaptation/octk_video_stream_input_state.cpp
+#	source/rtc/adaptation/octk_video_stream_input_state.hpp
+#	source/rtc/octk_dtls_transport_interface.cpp
+#	source/rtc/octk_dtls_transport_interface.hpp
+#	source/rtc/stats/octk_rtc_stats.cpp
+#	source/rtc/stats/octk_rtc_stats.hpp
+#	source/rtc/stats/octk_rtc_stats_collector.hpp
+#	source/rtc/stats/octk_rtc_stats_objects.cpp
+#	source/rtc/stats/octk_rtc_stats_objects.hpp
+#	source/rtc/stats/octk_rtc_stats_report.cpp
+#	source/rtc/stats/octk_rtc_stats_report.hpp
+#	source/rtc/octk_rtc_error.cpp
+#	source/rtc/octk_rtc_error.hpp
+#	source/rtc/octk_rtc_offer_answer_options.hpp
+#	source/rtc/octk_rtc_peer_connection.cpp
+#	source/rtc/octk_rtc_peer_connection.hpp
+#	source/rtc/octk_rtc_rtp_transceiver.cpp
+#	source/rtc/octk_rtc_rtp_transceiver.hpp
+#	source/rtp/octk_dependency_descriptor.cpp
+#	source/rtp/octk_dependency_descriptor.cpp
+#	source/rtp/octk_rtp_headers.cpp
+#	source/rtp/octk_rtp_headers.hpp
+#	source/rtp/octk_rtp_packet_info.cpp
+#	source/rtp/octk_rtp_packet_info.hpp
+#	source/rtp/octk_rtp_packet_infos.hpp
+#	source/rtp/octk_rtp_parameters.cpp
+#	source/rtp/octk_rtp_parameters.hpp
+#	source/rtp/octk_rtp_receiver_interface.cpp
+#	source/rtp/octk_rtp_receiver_interface.hpp
+#	source/rtp/octk_rtp_sender_interface.cpp
+#	source/rtp/octk_rtp_sender_interface.hpp
+#	source/rtp/octk_rtp_source.hpp
+#	source/rtp/octk_rtp_transceiver_direction.hpp
+#	source/rtp/octk_rtp_transceiver_interface.cpp
+#	source/rtp/octk_rtp_transceiver_interface.hpp
+#	source/rtp/octk_rtp_video_header.cpp
+#	source/rtp/octk_rtp_video_header.hpp
 	source/stream/octk_media_stream_interface.cpp
 	source/stream/octk_media_stream_interface.hpp
 	source/stream/octk_media_stream_track.hpp
@@ -251,7 +298,6 @@ octk_add_library(media
 	source/video/octk_video_frame_metadata.cpp
 	source/video/octk_video_frame_metadata.hpp
 	source/video/octk_video_frame_type.hpp
-	source/video/octk_video_resolution.hpp
 	source/video/octk_video_rotation.hpp
 	source/video/octk_video_sink_interface.hpp
 	source/video/octk_video_source_base.cpp
@@ -288,6 +334,7 @@ octk_add_library(media
 add_subdirectory(source/capture/custom)
 if(OCTK_BUILD_TESTS)
 	add_subdirectory(source/test)
+	add_subdirectory(source/codecs/video/test)
 endif()
 if(OCTK_FEATURE_ENABLE_CAPTURE_DESKTOP)
 	add_subdirectory(source/capture/desktop)

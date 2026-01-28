@@ -1,6 +1,30 @@
+/***********************************************************************************************************************
+**
+** Library: OpenCTK
+**
+** Copyright (C) 2025~Present ChengXueWen.
+**
+** License: MIT License
+**
+** Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+** documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+** the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+** and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all copies or substantial portions
+** of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+** TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+** THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+** CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+** IN THE SOFTWARE.
+**
+***********************************************************************************************************************/
+
 #pragma once
 
-#include <octk_memory.hpp>
+#include <octk_macros.hpp>
 
 #include <utility>
 #include <functional>
@@ -59,6 +83,26 @@ using enable_if_t = typename std::enable_if<B, T>::type;
 ***********************************************************************************************************************/
 template <typename T>
 using is_nullptr_t = std::is_same<T, std::nullptr_t>;
+
+/***********************************************************************************************************************
+* like cxx17 std::is_void_v
+***********************************************************************************************************************/
+#if OCTK_CC_CPP17_OR_GREATER
+using std::is_void_v;
+#else
+template <typename T>
+constexpr bool is_void_v = std::is_void<T>::value;
+#endif
+
+/***********************************************************************************************************************
+* like cxx17 std::is_same_v
+***********************************************************************************************************************/
+#if OCTK_CC_CPP17_OR_GREATER
+using std::is_same_v;
+#else
+template <typename T, typename U>
+constexpr bool is_same_v = std::is_same<T, U>::value;
+#endif
 
 /***********************************************************************************************************************
 * like cxx17 std::is_trivially_copyable_v std::is_trivially_destructible
@@ -396,6 +440,19 @@ constexpr bool is_invocable_r_v = is_invocable_r<R, F, Args...>::value;
 /***********************************************************************************************************************
   * is_weak_ptr is_weak_ptr_compatible
 ***********************************************************************************************************************/
+namespace detail
+{
+template <typename T>
+std::weak_ptr<T> toWeakPtr(const std::shared_ptr<T> &ptr)
+{
+    return ptr;
+}
+template <typename T>
+std::weak_ptr<T> toWeakPtr(const std::weak_ptr<T> &ptr)
+{
+    return ptr;
+}
+} // namespace detail
 template <typename T, typename = void>
 struct is_weak_ptr : std::false_type
 {
@@ -414,10 +471,9 @@ template <typename T, typename = void>
 struct is_weak_ptr_compatible : std::false_type
 {
 };
-
 template <typename T>
-struct is_weak_ptr_compatible<T, void_t<decltype(utils::toWeakPtr(std::declval<T>()))>>
-    : is_weak_ptr<decltype(utils::toWeakPtr(std::declval<T>()))>
+struct is_weak_ptr_compatible<T, void_t<decltype(detail::toWeakPtr(std::declval<T>()))>>
+    : is_weak_ptr<decltype(detail::toWeakPtr(std::declval<T>()))>
 {
 };
 template <typename T>

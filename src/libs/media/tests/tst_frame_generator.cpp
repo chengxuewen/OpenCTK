@@ -8,11 +8,11 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <test/octk_file_utils_p.hpp>
 #include <octk_create_frame_generator.hpp>
 #include <octk_video_frame_buffer.hpp>
 #include <octk_frame_generator.hpp>
 #include <octk_shared_ref_ptr.hpp>
-#include <octk_file_utils.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 
-using namespace octk;
+OCTK_BEGIN_NAMESPACE
 
 namespace test
 {
@@ -36,15 +36,11 @@ class FrameGeneratorTest : public ::testing::Test
 public:
     void SetUp() override
     {
-        const std::string &string = utils::TempFilename(utils::OutputPath(), "2_frame_yuv_file");
-        two_frame_yuv_filename_ =
-            string;
-        one_frame_yuv_filename_ =
-            utils::TempFilename(utils::OutputPath(), "1_frame_yuv_file");
-        two_frame_nv12_filename_ =
-            utils::TempFilename(utils::OutputPath(), "2_frame_nv12_file");
-        one_frame_nv12_filename_ =
-            utils::TempFilename(utils::OutputPath(), "1_frame_nv12_file");
+        auto string = test::TempFilename(test::OutputPath(), "2_frame_yuv_file");
+        two_frame_yuv_filename_ = string;
+        one_frame_yuv_filename_ = test::TempFilename(test::OutputPath(), "1_frame_yuv_file");
+        two_frame_nv12_filename_ = test::TempFilename(test::OutputPath(), "2_frame_nv12_file");
+        one_frame_nv12_filename_ = test::TempFilename(test::OutputPath(), "1_frame_nv12_file");
 
         FILE *file = fopen(two_frame_yuv_filename_.c_str(), "wb");
         WriteYuvFile(file, 0, 0, 0);
@@ -98,10 +94,7 @@ protected:
         fwrite(&plane_buffer, 1, 2 * uv_size, file);
     }
 
-    void CheckFrameAndMutate(const FrameGeneratorInterface::VideoFrameData &frame,
-                             uint8_t y,
-                             uint8_t u,
-                             uint8_t v)
+    void CheckFrameAndMutate(const FrameGeneratorInterface::VideoFrameData &frame, uint8_t y, uint8_t u, uint8_t v)
     {
         // Check that frame is valid, has the correct color and timestamp are clean.
         auto i420_buffer = frame.buffer->toI420();
@@ -148,18 +141,22 @@ protected:
 
 TEST_F(FrameGeneratorTest, SingleFrameYuvFile)
 {
-    std::unique_ptr<FrameGeneratorInterface> generator(utils::CreateFromYuvFileFrameGenerator(
-        std::vector<std::string>(1, one_frame_yuv_filename_), kFrameWidth,
-        kFrameHeight, 1));
+    std::unique_ptr<FrameGeneratorInterface> generator(
+        utils::CreateFromYuvFileFrameGenerator(std::vector<std::string>(1, one_frame_yuv_filename_),
+                                               kFrameWidth,
+                                               kFrameHeight,
+                                               1));
     CheckFrameAndMutate(generator->nextFrame(), 255, 255, 255);
     CheckFrameAndMutate(generator->nextFrame(), 255, 255, 255);
 }
 
 TEST_F(FrameGeneratorTest, TwoFrameYuvFile)
 {
-    std::unique_ptr<FrameGeneratorInterface> generator(utils::CreateFromYuvFileFrameGenerator(
-        std::vector<std::string>(1, two_frame_yuv_filename_), kFrameWidth,
-        kFrameHeight, 1));
+    std::unique_ptr<FrameGeneratorInterface> generator(
+        utils::CreateFromYuvFileFrameGenerator(std::vector<std::string>(1, two_frame_yuv_filename_),
+                                               kFrameWidth,
+                                               kFrameHeight,
+                                               1));
     CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
     CheckFrameAndMutate(generator->nextFrame(), 127, 128, 129);
     CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
@@ -183,9 +180,10 @@ TEST_F(FrameGeneratorTest, TwoFrameYuvFileWithRepeat)
 {
     const int kRepeatCount = 3;
     std::unique_ptr<FrameGeneratorInterface> generator(
-        utils::CreateFromYuvFileFrameGenerator(
-            std::vector<std::string>(1, two_frame_yuv_filename_), kFrameWidth,
-            kFrameHeight, kRepeatCount));
+        utils::CreateFromYuvFileFrameGenerator(std::vector<std::string>(1, two_frame_yuv_filename_),
+                                               kFrameWidth,
+                                               kFrameHeight,
+                                               kRepeatCount));
     for (int i = 0; i < kRepeatCount; ++i)
     {
         CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
@@ -204,8 +202,7 @@ TEST_F(FrameGeneratorTest, MultipleFrameYuvFilesWithRepeat)
     files.push_back(two_frame_yuv_filename_);
     files.push_back(one_frame_yuv_filename_);
     std::unique_ptr<FrameGeneratorInterface> generator(
-        utils::CreateFromYuvFileFrameGenerator(files, kFrameWidth, kFrameHeight,
-                                               kRepeatCount));
+        utils::CreateFromYuvFileFrameGenerator(files, kFrameWidth, kFrameHeight, kRepeatCount));
     for (int i = 0; i < kRepeatCount; ++i)
     {
         CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
@@ -224,9 +221,10 @@ TEST_F(FrameGeneratorTest, MultipleFrameYuvFilesWithRepeat)
 TEST_F(FrameGeneratorTest, SingleFrameNV12File)
 {
     std::unique_ptr<FrameGeneratorInterface> generator(
-        utils::CreateFromNV12FileFrameGenerator(
-            std::vector<std::string>(1, one_frame_nv12_filename_), kFrameWidth,
-            kFrameHeight, 1));
+        utils::CreateFromNV12FileFrameGenerator(std::vector<std::string>(1, one_frame_nv12_filename_),
+                                                kFrameWidth,
+                                                kFrameHeight,
+                                                1));
     CheckFrameAndMutate(generator->nextFrame(), 255, 255, 255);
     CheckFrameAndMutate(generator->nextFrame(), 255, 255, 255);
 }
@@ -234,9 +232,10 @@ TEST_F(FrameGeneratorTest, SingleFrameNV12File)
 TEST_F(FrameGeneratorTest, TwoFrameNV12File)
 {
     std::unique_ptr<FrameGeneratorInterface> generator(
-        utils::CreateFromNV12FileFrameGenerator(
-            std::vector<std::string>(1, two_frame_nv12_filename_), kFrameWidth,
-            kFrameHeight, 1));
+        utils::CreateFromNV12FileFrameGenerator(std::vector<std::string>(1, two_frame_nv12_filename_),
+                                                kFrameWidth,
+                                                kFrameHeight,
+                                                1));
     CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
     CheckFrameAndMutate(generator->nextFrame(), 127, 128, 129);
     CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
@@ -260,9 +259,10 @@ TEST_F(FrameGeneratorTest, TwoFrameNV12FileWithRepeat)
 {
     const int kRepeatCount = 3;
     std::unique_ptr<FrameGeneratorInterface> generator(
-        utils::CreateFromNV12FileFrameGenerator(
-            std::vector<std::string>(1, two_frame_nv12_filename_), kFrameWidth,
-            kFrameHeight, kRepeatCount));
+        utils::CreateFromNV12FileFrameGenerator(std::vector<std::string>(1, two_frame_nv12_filename_),
+                                                kFrameWidth,
+                                                kFrameHeight,
+                                                kRepeatCount));
     for (int i = 0; i < kRepeatCount; ++i)
     {
         CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
@@ -281,8 +281,7 @@ TEST_F(FrameGeneratorTest, MultipleFrameNV12FilesWithRepeat)
     files.push_back(two_frame_nv12_filename_);
     files.push_back(one_frame_nv12_filename_);
     std::unique_ptr<FrameGeneratorInterface> generator(
-        utils::CreateFromNV12FileFrameGenerator(files, kFrameWidth, kFrameHeight,
-                                                kRepeatCount));
+        utils::CreateFromNV12FileFrameGenerator(files, kFrameWidth, kFrameHeight, kRepeatCount));
     for (int i = 0; i < kRepeatCount; ++i)
     {
         CheckFrameAndMutate(generator->nextFrame(), 0, 0, 0);
@@ -309,7 +308,7 @@ TEST_F(FrameGeneratorTest, SlideGenerator)
     {
         hashes[i] = Hash(generator->nextFrame());
     }
-// Check that the buffer changes only every `kRepeatCount` frames.
+    // Check that the buffer changes only every `kRepeatCount` frames.
     for (int i = 1; i < kGenCount; ++i)
     {
         if (i % kRepeatCount == 0)
@@ -322,4 +321,6 @@ TEST_F(FrameGeneratorTest, SlideGenerator)
         }
     }
 }
-}  // namespace test
+} // namespace test
+
+OCTK_END_NAMESPACE

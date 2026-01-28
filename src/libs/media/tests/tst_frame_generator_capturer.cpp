@@ -9,7 +9,7 @@
  */
 
 #include <octk_create_frame_generator_capturer.hpp>
-#include <test/octk_simulated_time_controller_p.hpp>
+//#include <test/octk_simulated_time_controller_p.hpp>
 #include <octk_frame_generator_capturer.hpp>
 #include <octk_create_frame_generator.hpp>
 

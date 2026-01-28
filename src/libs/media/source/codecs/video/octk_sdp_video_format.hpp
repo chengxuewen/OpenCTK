@@ -24,9 +24,9 @@
 
 #pragma once
 
+#include <octk_codec_specific_info.hpp>
 #include <octk_scalability_mode.hpp>
 #include <octk_inlined_vector.hpp>
-#include <octk_rtp_parameters.hpp>
 #include <octk_array_view.hpp>
 #include <octk_optional.hpp>
 

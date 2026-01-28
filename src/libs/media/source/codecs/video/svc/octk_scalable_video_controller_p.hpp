@@ -27,7 +27,7 @@
 
 #include <octk_inlined_vector.hpp>
 #include <octk_video_bitrate_allocation.hpp>
-#include <octk_dependency_descriptor.hpp>
+#include <private/octk_dependency_descriptor_p.hpp>
 #include <octk_generic_frame_info.hpp>
 
 #include <vector>

@@ -26,14 +26,6 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
 octk_internal_extend_target(octk_media
-    SOURCES
-    ${ROOT_DIR}/octk_explicit_key_value_config.cpp
+	SOURCES
     ${ROOT_DIR}/octk_explicit_key_value_config_p.hpp
-	${ROOT_DIR}/octk_scalability_structure_test_helpers_p.hpp
-#    ${ROOT_DIR}/octk_simulated_task_queue.cpp
-#	${ROOT_DIR}/octk_simulated_task_queue.hpp
-#	${ROOT_DIR}/octk_simulated_thread.cpp
-#	${ROOT_DIR}/octk_simulated_thread.hpp
-#	${ROOT_DIR}/octk_simulated_time_controller.cpp
-#	${ROOT_DIR}/octk_simulated_time_controller.hpp
-)
+	${ROOT_DIR}/octk_scalability_structure_test_helpers_p.hpp)

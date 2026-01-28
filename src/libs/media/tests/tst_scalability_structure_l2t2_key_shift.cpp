@@ -25,7 +25,7 @@
 
 #include <private/octk_scalability_structure_l2t2_key_shift_p.hpp>
 #include <test/octk_scalability_structure_test_helpers_p.hpp>
-#include <octk_dependency_descriptor.hpp>
+#include <private/octk_dependency_descriptor_p.hpp>
 #include <octk_generic_frame_info.hpp>
 #include <octk_array_view.hpp>
 

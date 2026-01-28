@@ -22,12 +22,11 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_VIDEO_ADAPTER_HPP
-#define _OCTK_VIDEO_ADAPTER_HPP
+#pragma once
 
 #include <octk_video_source_interface.hpp>
 #include <octk_framerate_controller.hpp>
-#include <octk_video_resolution.hpp>
+#include <octk_size_base.hpp>
 #include <octk_optional.hpp>
 
 #include <utility>
@@ -180,5 +179,3 @@ private:
 };
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_VIDEO_ADAPTER_HPP

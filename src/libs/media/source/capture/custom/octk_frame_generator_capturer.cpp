@@ -226,7 +226,7 @@ public:
     virtual ~FrameGeneratorCapturerVideoTrackSourcePrivate() { }
 
     TaskQueueBase::SharedPtr mTaskQueue{TaskQueueThread::makeShared()};
-    std::unique_ptr<FrameGeneratorCapturer> mFrameGeneratorCapturer;
+    UniquePointer<FrameGeneratorCapturer> mFrameGeneratorCapturer;
     std::atomic_bool mStarted{false};
     const bool mIsScreenCast;
     OnceFlag mInitOnceFlag;

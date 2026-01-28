@@ -36,6 +36,7 @@
 #include <string>
 
 #if OCTK_FEATURE_MEDIA_USE_H264
+#    include <private/octk_video_decoder_openh264_p.hpp>
 #    include <private/octk_video_encoder_openh264_p.hpp>
 #endif
 
@@ -181,23 +182,23 @@ bool H264Encoder::SupportsScalabilityMode(ScalabilityMode scalability_mode)
     }
     return false;
 }
-//
-// std::unique_ptr<H264Decoder> H264Decoder::Create()
-// {
-//     OCTK_DCHECK(H264Decoder::IsSupported());
-// #if OCTK_FEATURE_MEDIA_USE_H264
-//     OCTK_CHECK(g_rtc_use_h264);
-//     OCTK_INFO() << "Creating H264DecoderImpl.";
-//     return std::make_unique<H264DecoderImpl>();
-// #else
-//     OCTK_DCHECK_NOTREACHED();
-//     return nullptr;
-// #endif
-// }
-//
-// bool H264Decoder::IsSupported()
-// {
-//     return IsH264CodecSupported();
-// }
+
+std::unique_ptr<H264Decoder> H264Decoder::Create()
+{
+    OCTK_DCHECK(H264Decoder::IsSupported());
+#if OCTK_FEATURE_MEDIA_USE_H264
+    OCTK_CHECK(g_rtc_use_h264);
+    OCTK_INFO() << "Creating H264DecoderImpl.";
+    return std::make_unique<H264DecoderImpl>();
+#else
+    OCTK_DCHECK_NOTREACHED();
+    return nullptr;
+#endif
+}
+
+bool H264Decoder::IsSupported()
+{
+    return IsH264CodecSupported();
+}
 
 OCTK_END_NAMESPACE

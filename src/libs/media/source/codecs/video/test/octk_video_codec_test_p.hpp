@@ -25,27 +25,22 @@
 
 #pragma once
 
+#include <test/octk_video_codec_settings_p.hpp>
+#include <octk_create_frame_generator.hpp>
+#include <octk_media_context_factory.hpp>
+#include <octk_video_codec_types.hpp>
 #include <octk_media_context.hpp>
-#include <private/octk_media_context_factory_p.hpp>
-#include <octk_frame_generator_interface.hpp>
 #include <octk_video_encoder.hpp>
-#include <octk_mutex.hpp>
+#include <octk_video_decoder.hpp>
 #include <octk_time_delta.hpp>
+#include <octk_semaphore.hpp>
+#include <octk_mutex.hpp>
 
 #include <memory>
 #include <vector>
 
-#if 0
-#    include "api/video_codecs/video_decoder.h"
-#    include "api/video_codecs/video_encoder.h"
-#    include "modules/video_coding/include/video_codec_interface.h"
-#    include "modules/video_coding/utility/vp8_header_parser.h"
-#    include "modules/video_coding/utility/vp9_uncompressed_header_parser.h"
-#    include "rtc_base/event.h"
-#    include "rtc_base/synchronization/mutex.h"
-#    include "rtc_base/thread_annotations.h"
-#    include "test/gtest.h"
-#endif
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -60,23 +55,26 @@ static const int kWidth = 176;       // Width of the input image.
 static const int kHeight = 144;      // Height of the input image.
 static const int kMaxFramerate = 30; // Arbitrary value.
 
+const int kVideoPayloadTypeFrequency = 90000;
+
 const VideoEncoder::Capabilities kCapabilities(false);
-}
+} // namespace
 
 class VideoCodecUnitTest : public ::testing::Test
 {
 public:
     VideoCodecUnitTest()
-        : env_(CreateEnvironment())
+        : env_(CreateMediaContext())
         , encode_complete_callback_(this)
         , decode_complete_callback_(this)
         , wait_for_encoded_frames_threshold_(1)
         , last_input_frame_timestamp_(0)
     {
     }
+    ~VideoCodecUnitTest() override { }
 
 protected:
-    class FakeEncodeCompleteCallback : public webrtc::EncodedImageCallback
+    class FakeEncodeCompleteCallback : public EncodedImageCallback
     {
     public:
         explicit FakeEncodeCompleteCallback(VideoCodecUnitTest *test)
@@ -84,22 +82,24 @@ protected:
         {
         }
 
-        Result OnEncodedImage(const EncodedImage &frame, const CodecSpecificInfo *codec_specific_info)
+        Result OnEncodedImage(const EncodedImage &frame, const CodecSpecificInfo *codec_specific_info) override
         {
-            MutexLock lock(&test_->encoded_frame_section_);
+            Mutex::Lock lock(test_->encoded_frame_section_);
             test_->encoded_frames_.push_back(frame);
-            RTC_DCHECK(codec_specific_info);
+            OCTK_DCHECK(codec_specific_info);
             test_->codec_specific_infos_.push_back(*codec_specific_info);
             if (!test_->wait_for_encoded_frames_threshold_)
             {
-                test_->encoded_frame_event_.Set();
+                // test_->encoded_frame_event_.Set();
+                test_->encoded_frame_event_.release();
                 return Result(Result::OK);
             }
 
             if (test_->encoded_frames_.size() == test_->wait_for_encoded_frames_threshold_)
             {
                 test_->wait_for_encoded_frames_threshold_ = 1;
-                test_->encoded_frame_event_.Set();
+                // test_->encoded_frame_event_.Set();
+                test_->encoded_frame_event_.release();
             }
             return Result(Result::OK);
         }
@@ -108,7 +108,7 @@ protected:
         VideoCodecUnitTest *const test_;
     };
 
-    class FakeDecodeCompleteCallback : public webrtc::DecodedImageCallback
+    class FakeDecodeCompleteCallback : public DecodedImageCallback
     {
     public:
         explicit FakeDecodeCompleteCallback(VideoCodecUnitTest *test)
@@ -118,20 +118,21 @@ protected:
 
         int32_t Decoded(VideoFrame & /* frame */) override
         {
-            RTC_DCHECK_NOTREACHED();
+            OCTK_DCHECK_NOTREACHED();
             return -1;
         }
         int32_t Decoded(VideoFrame & /* frame */, int64_t /* decode_time_ms */) override
         {
-            RTC_DCHECK_NOTREACHED();
+            OCTK_DCHECK_NOTREACHED();
             return -1;
         }
-        void Decoded(VideoFrame &frame, std::optional<int32_t> decode_time_ms, std::optional<uint8_t> qp) override
+        void Decoded(VideoFrame &frame, Optional<int32_t> decode_time_ms, Optional<uint8_t> qp) override
         {
-            MutexLock lock(&test_->decoded_frame_section_);
+            Mutex::Lock lock(test_->decoded_frame_section_);
             test_->decoded_frame_.emplace(frame);
             test_->decoded_qp_ = qp;
-            test_->decoded_frame_event_.Set();
+            // test_->decoded_frame_event_.Set();
+            test_->decoded_frame_event_.release();
         }
 
     private:
@@ -143,7 +144,8 @@ protected:
 
     void SetUp() override
     {
-        webrtc::test::CodecSettings(kVideoCodecVP8, &codec_settings_);
+        test::CodecSettings(kVideoCodecVP8, &codec_settings_);
+
         codec_settings_.startBitrate = kStartBitrate;
         codec_settings_.maxBitrate = kMaxBitrate;
         codec_settings_.maxFramerate = kMaxFramerate;
@@ -152,19 +154,19 @@ protected:
 
         ModifyCodecSettings(&codec_settings_);
 
-        input_frame_generator_ = test::CreateSquareFrameGenerator(codec_settings_.width,
-                                                                  codec_settings_.height,
-                                                                  test::FrameGeneratorInterface::OutputType::kI420,
-                                                                  std::optional<int>());
+        input_frame_generator_ = utils::CreateSquareFrameGenerator(codec_settings_.width,
+                                                                   codec_settings_.height,
+                                                                   FrameGeneratorInterface::OutputType::kI420,
+                                                                   Optional<int>());
 
         encoder_ = CreateEncoder();
         decoder_ = CreateDecoder();
-        encoder_->RegisterEncodeCompleteCallback(&encode_complete_callback_);
+        encoder_->registerEncodeCompleteCallback(&encode_complete_callback_);
         decoder_->RegisterDecodeCompleteCallback(&decode_complete_callback_);
 
         EXPECT_EQ(
             WEBRTC_VIDEO_CODEC_OK,
-            encoder_->InitEncode(
+            encoder_->initEncode(
                 &codec_settings_,
                 VideoEncoder::Settings(kCapabilities, 1 /* number of cores */, 0 /* max payload size (unused) */)));
 
@@ -174,20 +176,18 @@ protected:
         EXPECT_TRUE(decoder_->Configure(decoder_settings));
     }
 
-    virtual void ModifyCodecSettings(VideoCodec *codec_settings);
+    virtual void ModifyCodecSettings(VideoCodec *codec_settings) { }
 
     VideoFrame NextInputFrame()
     {
-        test::FrameGeneratorInterface::VideoFrameData frame_data = input_frame_generator_->NextFrame();
-        VideoFrame input_frame = VideoFrame::Builder()
-                                     .set_video_frame_buffer(frame_data.buffer)
-                                     .set_update_rect(frame_data.update_rect)
-                                     .build();
+        FrameGeneratorInterface::VideoFrameData frame_data = input_frame_generator_->nextFrame();
+        VideoFrame input_frame =
+            VideoFrame::Builder().setVideoFrameBuffer(frame_data.buffer).setUpdateRect(frame_data.updateRect).build();
 
         const uint32_t timestamp = last_input_frame_timestamp_ +
                                    kVideoPayloadTypeFrequency / codec_settings_.maxFramerate;
-        input_frame.set_rtp_timestamp(timestamp);
-        input_frame.set_timestamp_us(timestamp * (1000 / 90));
+        input_frame.setRtpTimestamp(timestamp);
+        input_frame.setTimestampUSecs(timestamp * (1000 / 90));
 
         last_input_frame_timestamp_ = timestamp;
         return input_frame;
@@ -199,7 +199,9 @@ protected:
         std::vector<EncodedImage> frames;
         std::vector<CodecSpecificInfo> codec_specific_infos;
         if (!WaitForEncodedFrames(&frames, &codec_specific_infos))
+        {
             return false;
+        }
         EXPECT_EQ(frames.size(), static_cast<size_t>(1));
         EXPECT_EQ(frames.size(), codec_specific_infos.size());
         *frame = frames[0];
@@ -212,14 +214,16 @@ protected:
     // Encode(). Then, they can expect to retrive them via WaitForEncodedFrames().
     void SetWaitForEncodedFramesThreshold(size_t num_frames)
     {
-        MutexLock lock(&encoded_frame_section_);
+        Mutex::Lock lock(encoded_frame_section_);
         wait_for_encoded_frames_threshold_ = num_frames;
     }
     bool WaitForEncodedFrames(std::vector<EncodedImage> *frames, std::vector<CodecSpecificInfo> *codec_specific_info)
     {
-        EXPECT_TRUE(encoded_frame_event_.Wait(kEncodeTimeout)) << "Timed out while waiting for encoded frame.";
+        // EXPECT_TRUE(encoded_frame_event_.Wait(kEncodeTimeout)) << "Timed out while waiting for encoded frame.";
+        EXPECT_TRUE(encoded_frame_event_.tryAcquire(1, kEncodeTimeout.ms()))
+            << "Timed out while waiting for encoded frame.";
         // This becomes unsafe if there are multiple threads waiting for frames.
-        MutexLock lock(&encoded_frame_section_);
+        Mutex::Lock lock(encoded_frame_section_);
         EXPECT_FALSE(encoded_frames_.empty());
         EXPECT_FALSE(codec_specific_infos_.empty());
         EXPECT_EQ(encoded_frames_.size(), codec_specific_infos_.size());
@@ -227,7 +231,7 @@ protected:
         {
             *frames = encoded_frames_;
             encoded_frames_.clear();
-            RTC_DCHECK(!codec_specific_infos_.empty());
+            OCTK_DCHECK(!codec_specific_infos_.empty());
             *codec_specific_info = codec_specific_infos_;
             codec_specific_infos_.clear();
             return true;
@@ -239,12 +243,12 @@ protected:
     }
 
     // Helper method for waiting a single decoded frame.
-    bool WaitForDecodedFrame(std::unique_ptr<VideoFrame> *frame, std::optional<uint8_t> *qp)
+    bool WaitForDecodedFrame(std::unique_ptr<VideoFrame> *frame, Optional<uint8_t> *qp)
     {
-        bool ret = decoded_frame_event_.Wait(kDecodeTimeout);
+        bool ret = decoded_frame_event_.tryAcquire(1, kDecodeTimeout.ms());
         EXPECT_TRUE(ret) << "Timed out while waiting for a decoded frame.";
         // This becomes unsafe if there are multiple threads waiting for frames.
-        MutexLock lock(&decoded_frame_section_);
+        Mutex::Lock lock(decoded_frame_section_);
         EXPECT_TRUE(decoded_frame_);
         if (decoded_frame_)
         {
@@ -261,33 +265,35 @@ protected:
 
     size_t GetNumEncodedFrames()
     {
-        MutexLock lock(&encoded_frame_section_);
+        Mutex::Lock lock(encoded_frame_section_);
         return encoded_frames_.size();
     }
 
-    const Environment env_;
+    const MediaContext env_;
     VideoCodec codec_settings_;
 
     std::unique_ptr<VideoEncoder> encoder_;
     std::unique_ptr<VideoDecoder> decoder_;
-    std::unique_ptr<test::FrameGeneratorInterface> input_frame_generator_;
+    std::unique_ptr<FrameGeneratorInterface> input_frame_generator_;
 
 private:
     FakeEncodeCompleteCallback encode_complete_callback_;
     FakeDecodeCompleteCallback decode_complete_callback_;
 
-    rtc::Event encoded_frame_event_;
+    // MediaEvent encoded_frame_event_;
+    Semaphore encoded_frame_event_;
     Mutex encoded_frame_section_;
     size_t wait_for_encoded_frames_threshold_;
-    std::vector<EncodedImage> encoded_frames_ RTC_GUARDED_BY(encoded_frame_section_);
-    std::vector<CodecSpecificInfo> codec_specific_infos_ RTC_GUARDED_BY(encoded_frame_section_);
+    std::vector<EncodedImage> encoded_frames_ OCTK_ATTRIBUTE_GUARDED_BY(encoded_frame_section_);
+    std::vector<CodecSpecificInfo> codec_specific_infos_ OCTK_ATTRIBUTE_GUARDED_BY(encoded_frame_section_);
 
-    rtc::Event decoded_frame_event_;
+    // MediaEvent decoded_frame_event_;
+    Semaphore decoded_frame_event_;
     Mutex decoded_frame_section_;
-    std::optional<VideoFrame> decoded_frame_ RTC_GUARDED_BY(decoded_frame_section_);
-    std::optional<uint8_t> decoded_qp_ RTC_GUARDED_BY(decoded_frame_section_);
+    Optional<VideoFrame> decoded_frame_ OCTK_ATTRIBUTE_GUARDED_BY(decoded_frame_section_);
+    Optional<uint8_t> decoded_qp_ OCTK_ATTRIBUTE_GUARDED_BY(decoded_frame_section_);
 
     uint32_t last_input_frame_timestamp_;
 };
 
-} // namespace webrtc
+OCTK_END_NAMESPACE

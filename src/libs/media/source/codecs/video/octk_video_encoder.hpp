@@ -361,8 +361,8 @@ public:
         Optional<int> encoderThreadLimit;
     };
 
-    // static VideoCodecVP8 GetDefaultVp8Settings();
-    // static VideoCodecVP9 GetDefaultVp9Settings();
+    static VideoCodecVP8 GetDefaultVp8Settings();
+    static VideoCodecVP9 GetDefaultVp9Settings();
     static VideoCodecH264 getDefaultH264Settings();
 
     virtual ~VideoEncoder() { }

@@ -27,8 +27,6 @@
 #include <octk_media_context_factory.hpp>
 #include <octk_string_view.hpp>
 #include <octk_field_trials_view.hpp>
-#include <octk_string_view.hpp>
-#include <octk_timestamp.hpp>
 #include <octk_invocable.hpp>
 #include <octk_clock.hpp>
 #include <octk_optional.hpp>

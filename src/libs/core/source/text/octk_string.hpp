@@ -26,33 +26,96 @@
 
 #include <octk_global.hpp>
 
+#include <cstring>
+
 OCTK_BEGIN_NAMESPACE
 
+class StringPrivate;
 class OCTK_CORE_API String
 {
 public:
-    // static String vasprintf(const char *format, va_list ap) OCTK_ATTRIBUTE_FORMAT_PRINTF(1, 0);
-    // static String asprintf(const char *format, ...) OCTK_ATTRIBUTE_FORMAT_PRINTF(1, 2);
+    explicit String(StringPrivate *d = nullptr);
+    String(const char *str, int len = -1)
+        : String()
+    {
+        this->init(str, len < 0 ? strlen(str) : len);
+    }
+    String(const std::string &str)
+        : String()
+    {
+        this->init(str.c_str(), str.length());
+    }
+    String(const String &other)
+        : String()
+    {
+        this->init(other.c_str(), other.size());
+    }
+    String(String &&other)
+        : String()
+    {
+        std::swap(mDPtr, other.mDPtr);
+    }
+    virtual ~String();
+
+    String &operator=(const std::string &str)
+    {
+        this->destroy();
+        this->init(str.c_str(), str.length());
+        return *this;
+    }
+    String &operator=(const String &other)
+    {
+        this->destroy();
+        this->init(other.c_str(), other.size());
+        return *this;
+    }
+    String &operator=(String &&other)
+    {
+        std::swap(mDPtr, other.mDPtr);
+        return *this;
+    }
+
+    size_t size() const;
+    size_t length() const { return this->size(); }
+
+    bool isDynamic() const;
+
+    const char *c_str() const;
+    const char *c_string() const { return this->c_str(); }
+
+    static std::string to_std_string(const String &str) { return str.std_string(); }
+    std::string std_string() const { return std::string(this->c_str(), this->size()); }
 
     /**
-     * @brief Duplicates the first @n bytes of a string, returning a newly-allocated buffer @n + 1 bytes long which
+     * @brief Duplicates the first @n bytes of a String, returning a newly-allocated buffer @n + 1 bytes long which
      * will always be nul-terminated.
      * If @a str is less than @n bytes long the buffer is padded with nuls.
      * If @a str is %NULL it returns %NULL. The returned value should be freed when no longer needed.
      *
-     * @param str   the string to duplicate
+     * @param str   the String to duplicate
      * @param n     the maximum number of bytes to copy from @a str
      * @return a newly-allocated buffer containing the first @n bytes of @a str, nul-terminated
      */
     static char *strndup(const char *str, size_t n);
 
     /**
-     * @brief Duplicates a string. If @a str is %NULL it returns %NULL.
-     * The returned string should be freed with free() when no longer needed.
-     * @param str The string to duplicate
+     * @brief Duplicates a String. If @a str is %NULL it returns %NULL.
+     * The returned String should be freed with free() when no longer needed.
+     * @param str The String to duplicate
      * @return A newly-allocated copy of @a str
      */
     static char *strdup(const char *str) { return str ? String::strndup(str, strlen(str) + 1) : nullptr; }
+
+
+    static int strncpy_s(char *dst, size_t nElements, const char *src, size_t count);
+
+protected:
+    void init(const char *str, size_t len);
+    void destroy();
+
+protected:
+    OCTK_DEFINE_DPTR(String)
+    OCTK_DECLARE_PRIVATE(String)
 };
 
 OCTK_END_NAMESPACE

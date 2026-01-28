@@ -23,13 +23,10 @@
 **
 ***********************************************************************************************************************/
 
-#include <memory>
+#include <test/octk_simulcast_test_fixture_p.hpp>
+#include <octk_h264_codecs.hpp>
 
-#include "api/test/create_simulcast_test_fixture.h"
-#include "api/test/simulcast_test_fixture.h"
-#include "api/test/video/function_video_decoder_factory.h"
-#include "api/test/video/function_video_encoder_factory.h"
-#include "modules/video_coding/codecs/h264/include/h264.h"
+#include <memory>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -136,4 +133,4 @@ TEST(TestH264Simulcast, TestSpatioTemporalLayers333PatternEncoder)
 
 } // namespace test
 
-OCTK_END
+OCTK_END_NAMESPACE

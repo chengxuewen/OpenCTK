@@ -85,14 +85,15 @@ FieldTrials::FieldTrials(const std::string &s, bool)
 
 FieldTrials::~FieldTrials()
 {
-    OCTK_WARNING("FieldTrials::~FieldTrials()");
 }
 
 std::string FieldTrials::GetValue(StringView key) const
 {
     auto it = key_value_map_.find(std::string(key));
     if (it != key_value_map_.end())
+    {
         return it->second;
+    }
 
     return "";
 }

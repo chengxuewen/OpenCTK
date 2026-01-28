@@ -205,6 +205,14 @@ octk_add_test(octk_core_tst_exception
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_file_wrapper
+	SOURCES
+	tst_file_wrapper.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_core_tst_filesystem
 	SOURCES
 	tst_filesystem.cpp
@@ -386,6 +394,14 @@ octk_add_test(octk_core_tst_semaphore
 octk_add_test(octk_core_tst_shared_data
 	SOURCES
 	tst_shared_data.cpp
+	INCLUDE_DIRECTORIES
+	LIBRARIES
+	${OCTK_TEST_LINK_LIBRARIES}
+	OUTPUT_DIRECTORY
+	${OCTK_TEST_OUTPUT_DIR})
+octk_add_test(octk_core_tst_shared_pointer
+	SOURCES
+	tst_shared_pointer.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
 	${OCTK_TEST_LINK_LIBRARIES}

@@ -75,6 +75,8 @@ octk_add_library(core
 	source/global/octk_processor.hpp
 	source/global/octk_system.hpp
 	source/global/octk_types.hpp
+	source/io/octk_file_wrapper.cpp
+	source/io/octk_file_wrapper.hpp
 	source/kernel/octk_application.cpp
 	source/kernel/octk_application.hpp
 	source/kernel/octk_application_p.hpp
@@ -98,7 +100,9 @@ octk_add_library(core
 	source/memory/octk_shared_data.hpp
 	source/memory/octk_shared_memory.cpp
 	source/memory/octk_shared_memory.hpp
+	source/memory/octk_shared_pointer.hpp
 	source/memory/octk_shared_ref_ptr.hpp
+	source/memory/octk_unique_pointer.hpp
 	source/memory/octk_zero_memory.cpp
 	source/memory/octk_zero_memory.hpp
 	source/numerics/octk_bits.hpp
@@ -108,6 +112,7 @@ octk_add_library(core
 	source/numerics/octk_safe_conversions.hpp
 	source/numerics/octk_safe_minmax.hpp
 	source/patterns/octk_singleton.hpp
+	source/test/octk_file_utils_p.hpp
 	source/text/octk_ascii.cpp
 	source/text/octk_ascii.hpp
 	source/text/octk_base64.cpp
@@ -167,8 +172,6 @@ octk_add_library(core
 	source/tools/octk_checks.hpp
 	source/tools/octk_clock.cpp
 	source/tools/octk_clock.hpp
-	source/tools/octk_crypto_random.cpp
-	source/tools/octk_crypto_random.hpp
 	source/tools/octk_enum_flags.hpp
 	source/tools/octk_error.cpp
 	source/tools/octk_error.hpp
@@ -176,8 +179,6 @@ octk_add_library(core
 	source/tools/octk_expected.hpp
 	source/tools/octk_fake_clock.cpp
 	source/tools/octk_fake_clock.hpp
-	source/tools/octk_file_utils.cpp
-	source/tools/octk_file_utils.hpp
 	source/tools/octk_id_registry.cpp
 	source/tools/octk_id_registry.hpp
 	source/tools/octk_inlined_vector.hpp
@@ -206,6 +207,8 @@ octk_add_library(core
 	source/tools/octk_type_traits.hpp
 	source/tools/octk_utility.hpp
 	source/tools/octk_variant.hpp
+	source/tools/octk_vector.hpp
+	source/tools/octk_vector_map.hpp
 	source/units/octk_data_rate.cpp
 	source/units/octk_data_rate.hpp
 	source/units/octk_data_size.cpp
@@ -251,10 +254,6 @@ octk_internal_extend_target(octk_core
 	SOURCES
 	source/thread/octk_platform_thread_posix.cpp
 	CONDITION NOT OCTK_SYSTEM_WIN)
-octk_internal_extend_target(octk_core
-	SOURCES
-	source/tools/octk_file_utils.mm
-	CONDITION OCTK_SYSTEM_MAC)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

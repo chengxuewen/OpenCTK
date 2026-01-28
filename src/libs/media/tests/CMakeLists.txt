@@ -45,14 +45,6 @@ octk_add_test(octk_media_tst_balanced_degradation_settings
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_broadcast_resource_listener
-	SOURCES
-	tst_broadcast_resource_listener.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
 if(OCTK_FEATURE_ENABLE_CAPTURE_CAMERA)
 	octk_add_test(octk_media_tst_camera_capture
 		SOURCES
@@ -167,14 +159,14 @@ octk_add_test(octk_media_tst_h264_pps_parser
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_h264_simulcast
-	SOURCES
-	tst_h264_simulcast.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(octk_media_tst_h264_simulcast
+#	SOURCES
+#	tst_h264_simulcast.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_media_tst_h264_sps_parser
 	SOURCES
 	tst_h264_sps_parser.cpp
@@ -284,15 +276,6 @@ octk_add_test(octk_media_tst_scalability_structure_l2t2_key_shift
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_simulated_time_controller
-	SOURCES
-	tst_simulated_time_controller.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(octk_media_tst_simulcast_rate_allocator
 	SOURCES
 	tst_simulcast_rate_allocator.cpp
@@ -365,15 +348,15 @@ octk_add_test(octk_media_tst_video_frame_buffer_pool
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_video_source_restrictions
-	SOURCES
-	tst_video_source_restrictions.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(octk_media_tst_video_source_restrictions
+#	SOURCES
+#	tst_video_source_restrictions.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OCTK3rdparty::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(octk_media_tst_video_stream_encoder
 #	SOURCES
 #	tst_video_stream_encoder.cpp

@@ -24,14 +24,15 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_video_decoder_openh264_p.hpp>
+#include <octk_video_frame_buffer.hpp>
+#include <octk_unique_pointer.hpp>
+#include <octk_video_frame.hpp>
 #include <octk_color_space.hpp>
 #include <octk_i010_buffer.hpp>
 #include <octk_i420_buffer.hpp>
-#include <octk_video_frame_buffer.hpp>
-// #include <octk_h264_color_space.hpp>
-#include <octk_checks.hpp>
+#include <octk_metrics.hpp>
 #include <octk_logging.hpp>
-#include <octk_meta_type.hpp>
+#include <octk_checks.hpp>
 
 #include <algorithm>
 #include <limits>
@@ -54,6 +55,86 @@ OCTK_BEGIN_NAMESPACE
 
 namespace
 {
+
+ColorSpace ExtractH264ColorSpace(AVCodecContext *codec)
+{
+    ColorSpace::PrimaryID primaries = ColorSpace::PrimaryID::kUnspecified;
+    switch (codec->color_primaries)
+    {
+        case AVCOL_PRI_BT709: primaries = ColorSpace::PrimaryID::kBT709; break;
+        case AVCOL_PRI_BT470M: primaries = ColorSpace::PrimaryID::kBT470M; break;
+        case AVCOL_PRI_BT470BG: primaries = ColorSpace::PrimaryID::kBT470BG; break;
+        case AVCOL_PRI_SMPTE170M: primaries = ColorSpace::PrimaryID::kSMPTE170M; break;
+        case AVCOL_PRI_SMPTE240M: primaries = ColorSpace::PrimaryID::kSMPTE240M; break;
+        case AVCOL_PRI_FILM: primaries = ColorSpace::PrimaryID::kFILM; break;
+        case AVCOL_PRI_BT2020: primaries = ColorSpace::PrimaryID::kBT2020; break;
+        case AVCOL_PRI_SMPTE428: primaries = ColorSpace::PrimaryID::kSMPTEST428; break;
+        case AVCOL_PRI_SMPTE431: primaries = ColorSpace::PrimaryID::kSMPTEST431; break;
+        case AVCOL_PRI_SMPTE432: primaries = ColorSpace::PrimaryID::kSMPTEST432; break;
+        case AVCOL_PRI_JEDEC_P22: primaries = ColorSpace::PrimaryID::kJEDECP22; break;
+        case AVCOL_PRI_RESERVED0:
+        case AVCOL_PRI_UNSPECIFIED:
+        case AVCOL_PRI_RESERVED:
+        default: break;
+    }
+
+    ColorSpace::TransferID transfer = ColorSpace::TransferID::kUnspecified;
+    switch (codec->color_trc)
+    {
+        case AVCOL_TRC_BT709: transfer = ColorSpace::TransferID::kBT709; break;
+        case AVCOL_TRC_GAMMA22: transfer = ColorSpace::TransferID::kGAMMA22; break;
+        case AVCOL_TRC_GAMMA28: transfer = ColorSpace::TransferID::kGAMMA28; break;
+        case AVCOL_TRC_SMPTE170M: transfer = ColorSpace::TransferID::kSMPTE170M; break;
+        case AVCOL_TRC_SMPTE240M: transfer = ColorSpace::TransferID::kSMPTE240M; break;
+        case AVCOL_TRC_LINEAR: transfer = ColorSpace::TransferID::kLINEAR; break;
+        case AVCOL_TRC_LOG: transfer = ColorSpace::TransferID::kLOG; break;
+        case AVCOL_TRC_LOG_SQRT: transfer = ColorSpace::TransferID::kLOG_SQRT; break;
+        case AVCOL_TRC_IEC61966_2_4: transfer = ColorSpace::TransferID::kIEC61966_2_4; break;
+        case AVCOL_TRC_BT1361_ECG: transfer = ColorSpace::TransferID::kBT1361_ECG; break;
+        case AVCOL_TRC_IEC61966_2_1: transfer = ColorSpace::TransferID::kIEC61966_2_1; break;
+        case AVCOL_TRC_BT2020_10: transfer = ColorSpace::TransferID::kBT2020_10; break;
+        case AVCOL_TRC_BT2020_12: transfer = ColorSpace::TransferID::kBT2020_12; break;
+        case AVCOL_TRC_SMPTE2084: transfer = ColorSpace::TransferID::kSMPTEST2084; break;
+        case AVCOL_TRC_SMPTE428: transfer = ColorSpace::TransferID::kSMPTEST428; break;
+        case AVCOL_TRC_ARIB_STD_B67: transfer = ColorSpace::TransferID::kARIB_STD_B67; break;
+        case AVCOL_TRC_RESERVED0:
+        case AVCOL_TRC_UNSPECIFIED:
+        case AVCOL_TRC_RESERVED:
+        default: break;
+    }
+
+    ColorSpace::MatrixID matrix = ColorSpace::MatrixID::kUnspecified;
+    switch (codec->colorspace)
+    {
+        case AVCOL_SPC_RGB: matrix = ColorSpace::MatrixID::kRGB; break;
+        case AVCOL_SPC_BT709: matrix = ColorSpace::MatrixID::kBT709; break;
+        case AVCOL_SPC_FCC: matrix = ColorSpace::MatrixID::kFCC; break;
+        case AVCOL_SPC_BT470BG: matrix = ColorSpace::MatrixID::kBT470BG; break;
+        case AVCOL_SPC_SMPTE170M: matrix = ColorSpace::MatrixID::kSMPTE170M; break;
+        case AVCOL_SPC_SMPTE240M: matrix = ColorSpace::MatrixID::kSMPTE240M; break;
+        case AVCOL_SPC_YCGCO: matrix = ColorSpace::MatrixID::kYCOCG; break;
+        case AVCOL_SPC_BT2020_NCL: matrix = ColorSpace::MatrixID::kBT2020_NCL; break;
+        case AVCOL_SPC_BT2020_CL: matrix = ColorSpace::MatrixID::kBT2020_CL; break;
+        case AVCOL_SPC_SMPTE2085: matrix = ColorSpace::MatrixID::kSMPTE2085; break;
+        case AVCOL_SPC_CHROMA_DERIVED_NCL:
+        case AVCOL_SPC_CHROMA_DERIVED_CL:
+        case AVCOL_SPC_ICTCP:
+        case AVCOL_SPC_UNSPECIFIED:
+        case AVCOL_SPC_RESERVED:
+        default: break;
+    }
+
+    ColorSpace::RangeID range = ColorSpace::RangeID::kInvalid;
+    switch (codec->color_range)
+    {
+        case AVCOL_RANGE_MPEG: range = ColorSpace::RangeID::kLimited; break;
+        case AVCOL_RANGE_JPEG: range = ColorSpace::RangeID::kFull; break;
+        case AVCOL_RANGE_UNSPECIFIED:
+        default: break;
+    }
+    return ColorSpace(primaries, transfer, matrix, range);
+}
+
 
 constexpr std::array<AVPixelFormat, 9> kPixelFormatsSupported = {AV_PIX_FMT_YUV420P,
                                                                  AV_PIX_FMT_YUV422P,
@@ -142,13 +223,13 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
     // http://crbug.com/390941. Our pool is set up to zero-initialize new buffers.
     // TODO(https://crbug.com/390941): Delete that feature from the video pool,
     // instead add an explicit call to InitializeData here.
-    rtc::scoped_refptr<PlanarYuvBuffer> frame_buffer;
-    rtc::scoped_refptr<I444Buffer> i444_buffer;
-    rtc::scoped_refptr<I420Buffer> i420_buffer;
-    rtc::scoped_refptr<I422Buffer> i422_buffer;
-    rtc::scoped_refptr<I010Buffer> i010_buffer;
-    rtc::scoped_refptr<I210Buffer> i210_buffer;
-    rtc::scoped_refptr<I410Buffer> i410_buffer;
+    std::shared_ptr<PlanarYuvBuffer> frame_buffer;
+    std::shared_ptr<I444Buffer> i444_buffer;
+    std::shared_ptr<I420Buffer> i420_buffer;
+    std::shared_ptr<I422Buffer> i422_buffer;
+    std::shared_ptr<I010Buffer> i010_buffer;
+    std::shared_ptr<I210Buffer> i210_buffer;
+    std::shared_ptr<I410Buffer> i410_buffer;
     int bytes_per_pixel = 1;
     switch (context->pix_fmt)
     {
@@ -157,11 +238,11 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
             i420_buffer = decoder->ffmpeg_buffer_pool_.CreateI420Buffer(width, height);
             // Set `av_frame` members as required by FFmpeg.
             av_frame->data[kYPlaneIndex] = i420_buffer->MutableDataY();
-            av_frame->linesize[kYPlaneIndex] = i420_buffer->StrideY();
+            av_frame->linesize[kYPlaneIndex] = i420_buffer->strideY();
             av_frame->data[kUPlaneIndex] = i420_buffer->MutableDataU();
-            av_frame->linesize[kUPlaneIndex] = i420_buffer->StrideU();
+            av_frame->linesize[kUPlaneIndex] = i420_buffer->strideU();
             av_frame->data[kVPlaneIndex] = i420_buffer->MutableDataV();
-            av_frame->linesize[kVPlaneIndex] = i420_buffer->StrideV();
+            av_frame->linesize[kVPlaneIndex] = i420_buffer->strideV();
             OCTK_DCHECK_EQ(av_frame->extended_data, av_frame->data);
             frame_buffer = i420_buffer;
             break;
@@ -170,11 +251,11 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
             i444_buffer = decoder->ffmpeg_buffer_pool_.CreateI444Buffer(width, height);
             // Set `av_frame` members as required by FFmpeg.
             av_frame->data[kYPlaneIndex] = i444_buffer->MutableDataY();
-            av_frame->linesize[kYPlaneIndex] = i444_buffer->StrideY();
+            av_frame->linesize[kYPlaneIndex] = i444_buffer->strideY();
             av_frame->data[kUPlaneIndex] = i444_buffer->MutableDataU();
-            av_frame->linesize[kUPlaneIndex] = i444_buffer->StrideU();
+            av_frame->linesize[kUPlaneIndex] = i444_buffer->strideU();
             av_frame->data[kVPlaneIndex] = i444_buffer->MutableDataV();
-            av_frame->linesize[kVPlaneIndex] = i444_buffer->StrideV();
+            av_frame->linesize[kVPlaneIndex] = i444_buffer->strideV();
             frame_buffer = i444_buffer;
             break;
         case AV_PIX_FMT_YUV422P:
@@ -182,22 +263,22 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
             i422_buffer = decoder->ffmpeg_buffer_pool_.CreateI422Buffer(width, height);
             // Set `av_frame` members as required by FFmpeg.
             av_frame->data[kYPlaneIndex] = i422_buffer->MutableDataY();
-            av_frame->linesize[kYPlaneIndex] = i422_buffer->StrideY();
+            av_frame->linesize[kYPlaneIndex] = i422_buffer->strideY();
             av_frame->data[kUPlaneIndex] = i422_buffer->MutableDataU();
-            av_frame->linesize[kUPlaneIndex] = i422_buffer->StrideU();
+            av_frame->linesize[kUPlaneIndex] = i422_buffer->strideU();
             av_frame->data[kVPlaneIndex] = i422_buffer->MutableDataV();
-            av_frame->linesize[kVPlaneIndex] = i422_buffer->StrideV();
+            av_frame->linesize[kVPlaneIndex] = i422_buffer->strideV();
             frame_buffer = i422_buffer;
             break;
         case AV_PIX_FMT_YUV420P10LE:
             i010_buffer = decoder->ffmpeg_buffer_pool_.CreateI010Buffer(width, height);
             // Set `av_frame` members as required by FFmpeg.
             av_frame->data[kYPlaneIndex] = reinterpret_cast<uint8_t *>(i010_buffer->MutableDataY());
-            av_frame->linesize[kYPlaneIndex] = i010_buffer->StrideY() * 2;
+            av_frame->linesize[kYPlaneIndex] = i010_buffer->strideY() * 2;
             av_frame->data[kUPlaneIndex] = reinterpret_cast<uint8_t *>(i010_buffer->MutableDataU());
-            av_frame->linesize[kUPlaneIndex] = i010_buffer->StrideU() * 2;
+            av_frame->linesize[kUPlaneIndex] = i010_buffer->strideU() * 2;
             av_frame->data[kVPlaneIndex] = reinterpret_cast<uint8_t *>(i010_buffer->MutableDataV());
-            av_frame->linesize[kVPlaneIndex] = i010_buffer->StrideV() * 2;
+            av_frame->linesize[kVPlaneIndex] = i010_buffer->strideV() * 2;
             frame_buffer = i010_buffer;
             bytes_per_pixel = 2;
             break;
@@ -205,11 +286,11 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
             i210_buffer = decoder->ffmpeg_buffer_pool_.CreateI210Buffer(width, height);
             // Set `av_frame` members as required by FFmpeg.
             av_frame->data[kYPlaneIndex] = reinterpret_cast<uint8_t *>(i210_buffer->MutableDataY());
-            av_frame->linesize[kYPlaneIndex] = i210_buffer->StrideY() * 2;
+            av_frame->linesize[kYPlaneIndex] = i210_buffer->strideY() * 2;
             av_frame->data[kUPlaneIndex] = reinterpret_cast<uint8_t *>(i210_buffer->MutableDataU());
-            av_frame->linesize[kUPlaneIndex] = i210_buffer->StrideU() * 2;
+            av_frame->linesize[kUPlaneIndex] = i210_buffer->strideU() * 2;
             av_frame->data[kVPlaneIndex] = reinterpret_cast<uint8_t *>(i210_buffer->MutableDataV());
-            av_frame->linesize[kVPlaneIndex] = i210_buffer->StrideV() * 2;
+            av_frame->linesize[kVPlaneIndex] = i210_buffer->strideV() * 2;
             frame_buffer = i210_buffer;
             bytes_per_pixel = 2;
             break;
@@ -217,11 +298,11 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
             i410_buffer = decoder->ffmpeg_buffer_pool_.CreateI410Buffer(width, height);
             // Set `av_frame` members as required by FFmpeg.
             av_frame->data[kYPlaneIndex] = reinterpret_cast<uint8_t *>(i410_buffer->MutableDataY());
-            av_frame->linesize[kYPlaneIndex] = i410_buffer->StrideY() * 2;
+            av_frame->linesize[kYPlaneIndex] = i410_buffer->strideY() * 2;
             av_frame->data[kUPlaneIndex] = reinterpret_cast<uint8_t *>(i410_buffer->MutableDataU());
-            av_frame->linesize[kUPlaneIndex] = i410_buffer->StrideU() * 2;
+            av_frame->linesize[kUPlaneIndex] = i410_buffer->strideU() * 2;
             av_frame->data[kVPlaneIndex] = reinterpret_cast<uint8_t *>(i410_buffer->MutableDataV());
-            av_frame->linesize[kVPlaneIndex] = i410_buffer->StrideV() * 2;
+            av_frame->linesize[kVPlaneIndex] = i410_buffer->strideV() * 2;
             frame_buffer = i410_buffer;
             bytes_per_pixel = 2;
             break;
@@ -233,7 +314,7 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
     }
 
     int y_size = width * height * bytes_per_pixel;
-    int uv_size = frame_buffer->ChromaWidth() * frame_buffer->ChromaHeight() * bytes_per_pixel;
+    int uv_size = frame_buffer->chromaWidth() * frame_buffer->chromaHeight() * bytes_per_pixel;
     // DCHECK that we have a continuous buffer as is required.
     OCTK_DCHECK_EQ(av_frame->data[kUPlaneIndex], av_frame->data[kYPlaneIndex] + y_size);
     OCTK_DCHECK_EQ(av_frame->data[kVPlaneIndex], av_frame->data[kUPlaneIndex] + uv_size);
@@ -248,14 +329,14 @@ int H264DecoderImpl::AVGetBuffer2(AVCodecContext *context, AVFrame *av_frame, in
         av_frame->data[kYPlaneIndex],
         total_size,
         AVFreeBuffer2,
-        static_cast<void *>(std::make_unique<VideoFrame>(VideoFrame::Builder()
-                                                             .set_video_frame_buffer(frame_buffer)
-                                                             .set_rotation(kVideoRotation_0)
-                                                             .set_timestamp_us(0)
-                                                             .build())
+        static_cast<void *>(utils::make_unique<VideoFrame>(VideoFrame::Builder()
+                                                               .setVideoFrameBuffer(frame_buffer)
+                                                               .setRotation(VideoRotation::kAngle0)
+                                                               .setTimestampUSecs(0)
+                                                               .build())
                                 .release()),
         0);
-    RTC_CHECK(av_frame->buf[0]);
+    OCTK_CHECK(av_frame->buf[0]);
     return 0;
 }
 
@@ -304,11 +385,11 @@ bool H264DecoderImpl::Configure(const Settings &settings)
 
     av_context_->codec_type = AVMEDIA_TYPE_VIDEO;
     av_context_->codec_id = AV_CODEC_ID_H264;
-    const RenderResolution &resolution = settings.max_render_resolution();
-    if (resolution.Valid())
+    const Resolution &resolution = settings.max_render_resolution();
+    if (resolution.isValid())
     {
-        av_context_->coded_width = resolution.Width();
-        av_context_->coded_height = resolution.Height();
+        av_context_->coded_width = resolution.width();
+        av_context_->coded_height = resolution.height();
     }
     av_context_->extradata = nullptr;
     av_context_->extradata_size = 0;
@@ -345,7 +426,7 @@ bool H264DecoderImpl::Configure(const Settings &settings)
 
     av_frame_.reset(av_frame_alloc());
 
-    if (std::optional<int> buffer_pool_size = settings.buffer_pool_size())
+    if (Optional<int> buffer_pool_size = settings.buffer_pool_size())
     {
         if (!ffmpeg_buffer_pool_.Resize(*buffer_pool_size))
         {
@@ -377,8 +458,8 @@ int32_t H264DecoderImpl::Decode(const EncodedImage &input_image, bool /*missing_
     }
     if (!decoded_image_callback_)
     {
-        RTC_LOG(LS_WARNING) << "Configure() has been called, but a callback function "
-                               "has not been set with RegisterDecodeCompleteCallback()";
+        OCTK_WARNING() << "Configure() has been called, but a callback function "
+                          "has not been set with RegisterDecodeCompleteCallback()";
         ReportError();
         return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
     }
@@ -423,43 +504,43 @@ int32_t H264DecoderImpl::Decode(const EncodedImage &input_image, bool /*missing_
 
     // TODO(sakal): Maybe it is possible to get QP directly from FFmpeg.
     h264_bitstream_parser_.ParseBitstream(input_image);
-    std::optional<int> qp = h264_bitstream_parser_.GetLastSliceQp();
+    Optional<int> qp = h264_bitstream_parser_.GetLastSliceQp();
 
     // Obtain the `video_frame` containing the decoded image.
     VideoFrame *input_frame = static_cast<VideoFrame *>(av_buffer_get_opaque(av_frame_->buf[0]));
     OCTK_DCHECK(input_frame);
-    rtc::scoped_refptr<VideoFrameBuffer> frame_buffer = input_frame->video_frame_buffer();
+    std::shared_ptr<VideoFrameBuffer> frame_buffer = input_frame->videoFrameBuffer();
 
     // Instantiate Planar YUV buffer according to video frame buffer type
-    const webrtc::PlanarYuvBuffer *planar_yuv_buffer = nullptr;
-    const webrtc::PlanarYuv8Buffer *planar_yuv8_buffer = nullptr;
-    const webrtc::PlanarYuv16BBuffer *planar_yuv16_buffer = nullptr;
+    const PlanarYuvBuffer *planar_yuv_buffer = nullptr;
+    const PlanarYuv8Buffer *planar_yuv8_buffer = nullptr;
+    const PlanarYuv16BBuffer *planar_yuv16_buffer = nullptr;
     VideoFrameBuffer::Type video_frame_buffer_type = frame_buffer->type();
     switch (video_frame_buffer_type)
     {
         case VideoFrameBuffer::Type::kI420:
-            planar_yuv_buffer = frame_buffer->GetI420();
-            planar_yuv8_buffer = reinterpret_cast<const webrtc::PlanarYuv8Buffer *>(planar_yuv_buffer);
+            planar_yuv_buffer = frame_buffer->getI420();
+            planar_yuv8_buffer = reinterpret_cast<const PlanarYuv8Buffer *>(planar_yuv_buffer);
             break;
         case VideoFrameBuffer::Type::kI444:
-            planar_yuv_buffer = frame_buffer->GetI444();
-            planar_yuv8_buffer = reinterpret_cast<const webrtc::PlanarYuv8Buffer *>(planar_yuv_buffer);
+            planar_yuv_buffer = frame_buffer->getI444();
+            planar_yuv8_buffer = reinterpret_cast<const PlanarYuv8Buffer *>(planar_yuv_buffer);
             break;
         case VideoFrameBuffer::Type::kI422:
-            planar_yuv_buffer = frame_buffer->GetI422();
-            planar_yuv8_buffer = reinterpret_cast<const webrtc::PlanarYuv8Buffer *>(planar_yuv_buffer);
+            planar_yuv_buffer = frame_buffer->getI422();
+            planar_yuv8_buffer = reinterpret_cast<const PlanarYuv8Buffer *>(planar_yuv_buffer);
             break;
         case VideoFrameBuffer::Type::kI010:
-            planar_yuv_buffer = frame_buffer->GetI010();
-            planar_yuv16_buffer = reinterpret_cast<const webrtc::PlanarYuv16BBuffer *>(planar_yuv_buffer);
+            planar_yuv_buffer = frame_buffer->getI010();
+            planar_yuv16_buffer = reinterpret_cast<const PlanarYuv16BBuffer *>(planar_yuv_buffer);
             break;
         case VideoFrameBuffer::Type::kI210:
-            planar_yuv_buffer = frame_buffer->GetI210();
-            planar_yuv16_buffer = reinterpret_cast<const webrtc::PlanarYuv16BBuffer *>(planar_yuv_buffer);
+            planar_yuv_buffer = frame_buffer->getI210();
+            planar_yuv16_buffer = reinterpret_cast<const PlanarYuv16BBuffer *>(planar_yuv_buffer);
             break;
         case VideoFrameBuffer::Type::kI410:
-            planar_yuv_buffer = frame_buffer->GetI410();
-            planar_yuv16_buffer = reinterpret_cast<const webrtc::PlanarYuv16BBuffer *>(planar_yuv_buffer);
+            planar_yuv_buffer = frame_buffer->getI410();
+            planar_yuv16_buffer = reinterpret_cast<const PlanarYuv16BBuffer *>(planar_yuv_buffer);
             break;
         default:
             // If this code is changed to allow other video frame buffer type,
@@ -484,17 +565,17 @@ int32_t H264DecoderImpl::Decode(const EncodedImage &input_image, bool /*missing_
         case VideoFrameBuffer::Type::kI444:
         case VideoFrameBuffer::Type::kI422:
         {
-            OCTK_DCHECK_GE(av_frame_->data[kYPlaneIndex], planar_yuv8_buffer->DataY());
+            OCTK_DCHECK_GE(av_frame_->data[kYPlaneIndex], planar_yuv8_buffer->dataY());
             OCTK_DCHECK_LE(av_frame_->data[kYPlaneIndex] + av_frame_->linesize[kYPlaneIndex] * av_frame_->height,
-                           planar_yuv8_buffer->DataY() + planar_yuv8_buffer->StrideY() * planar_yuv8_buffer->height());
-            OCTK_DCHECK_GE(av_frame_->data[kUPlaneIndex], planar_yuv8_buffer->DataU());
+                           planar_yuv8_buffer->dataY() + planar_yuv8_buffer->strideY() * planar_yuv8_buffer->height());
+            OCTK_DCHECK_GE(av_frame_->data[kUPlaneIndex], planar_yuv8_buffer->dataU());
             OCTK_DCHECK_LE(
-                av_frame_->data[kUPlaneIndex] + av_frame_->linesize[kUPlaneIndex] * planar_yuv8_buffer->ChromaHeight(),
-                planar_yuv8_buffer->DataU() + planar_yuv8_buffer->StrideU() * planar_yuv8_buffer->ChromaHeight());
-            OCTK_DCHECK_GE(av_frame_->data[kVPlaneIndex], planar_yuv8_buffer->DataV());
+                av_frame_->data[kUPlaneIndex] + av_frame_->linesize[kUPlaneIndex] * planar_yuv8_buffer->chromaHeight(),
+                planar_yuv8_buffer->dataU() + planar_yuv8_buffer->strideU() * planar_yuv8_buffer->chromaHeight());
+            OCTK_DCHECK_GE(av_frame_->data[kVPlaneIndex], planar_yuv8_buffer->dataV());
             OCTK_DCHECK_LE(
-                av_frame_->data[kVPlaneIndex] + av_frame_->linesize[kVPlaneIndex] * planar_yuv8_buffer->ChromaHeight(),
-                planar_yuv8_buffer->DataV() + planar_yuv8_buffer->StrideV() * planar_yuv8_buffer->ChromaHeight());
+                av_frame_->data[kVPlaneIndex] + av_frame_->linesize[kVPlaneIndex] * planar_yuv8_buffer->chromaHeight(),
+                planar_yuv8_buffer->dataV() + planar_yuv8_buffer->strideV() * planar_yuv8_buffer->chromaHeight());
             break;
         }
         case VideoFrameBuffer::Type::kI010:
@@ -502,22 +583,22 @@ int32_t H264DecoderImpl::Decode(const EncodedImage &input_image, bool /*missing_
         case VideoFrameBuffer::Type::kI410:
         {
             OCTK_DCHECK_GE(av_frame_->data[kYPlaneIndex],
-                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->DataY()));
+                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->dataY()));
             OCTK_DCHECK_LE(av_frame_->data[kYPlaneIndex] + av_frame_->linesize[kYPlaneIndex] * av_frame_->height,
-                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->DataY()) +
-                               planar_yuv16_buffer->StrideY() * 2 * planar_yuv16_buffer->height());
+                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->dataY()) +
+                               planar_yuv16_buffer->strideY() * 2 * planar_yuv16_buffer->height());
             OCTK_DCHECK_GE(av_frame_->data[kUPlaneIndex],
-                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->DataU()));
+                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->dataU()));
             OCTK_DCHECK_LE(av_frame_->data[kUPlaneIndex] +
-                               av_frame_->linesize[kUPlaneIndex] * planar_yuv16_buffer->ChromaHeight(),
-                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->DataU()) +
-                               planar_yuv16_buffer->StrideU() * 2 * planar_yuv16_buffer->ChromaHeight());
+                               av_frame_->linesize[kUPlaneIndex] * planar_yuv16_buffer->chromaHeight(),
+                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->dataU()) +
+                               planar_yuv16_buffer->strideU() * 2 * planar_yuv16_buffer->chromaHeight());
             OCTK_DCHECK_GE(av_frame_->data[kVPlaneIndex],
-                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->DataV()));
+                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->dataV()));
             OCTK_DCHECK_LE(av_frame_->data[kVPlaneIndex] +
-                               av_frame_->linesize[kVPlaneIndex] * planar_yuv16_buffer->ChromaHeight(),
-                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->DataV()) +
-                               planar_yuv16_buffer->StrideV() * 2 * planar_yuv16_buffer->ChromaHeight());
+                               av_frame_->linesize[kVPlaneIndex] * planar_yuv16_buffer->chromaHeight(),
+                           reinterpret_cast<const uint8_t *>(planar_yuv16_buffer->dataV()) +
+                               planar_yuv16_buffer->strideV() * 2 * planar_yuv16_buffer->chromaHeight());
             break;
         }
         default:
@@ -527,80 +608,80 @@ int32_t H264DecoderImpl::Decode(const EncodedImage &input_image, bool /*missing_
             return WEBRTC_VIDEO_CODEC_ERROR;
     }
 
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> cropped_buffer;
+    std::shared_ptr<VideoFrameBuffer> cropped_buffer;
     switch (video_frame_buffer_type)
     {
         case VideoFrameBuffer::Type::kI420:
-            cropped_buffer = WrapI420Buffer(av_frame_->width,
-                                            av_frame_->height,
-                                            av_frame_->data[kYPlaneIndex],
-                                            av_frame_->linesize[kYPlaneIndex],
-                                            av_frame_->data[kUPlaneIndex],
-                                            av_frame_->linesize[kUPlaneIndex],
-                                            av_frame_->data[kVPlaneIndex],
-                                            av_frame_->linesize[kVPlaneIndex],
-                                            // To keep reference alive.
-                                            [frame_buffer] { });
+            cropped_buffer = utils::wrapI420Buffer(av_frame_->width,
+                                                   av_frame_->height,
+                                                   av_frame_->data[kYPlaneIndex],
+                                                   av_frame_->linesize[kYPlaneIndex],
+                                                   av_frame_->data[kUPlaneIndex],
+                                                   av_frame_->linesize[kUPlaneIndex],
+                                                   av_frame_->data[kVPlaneIndex],
+                                                   av_frame_->linesize[kVPlaneIndex],
+                                                   // To keep reference alive.
+                                                   [frame_buffer] { });
             break;
         case VideoFrameBuffer::Type::kI444:
-            cropped_buffer = WrapI444Buffer(av_frame_->width,
-                                            av_frame_->height,
-                                            av_frame_->data[kYPlaneIndex],
-                                            av_frame_->linesize[kYPlaneIndex],
-                                            av_frame_->data[kUPlaneIndex],
-                                            av_frame_->linesize[kUPlaneIndex],
-                                            av_frame_->data[kVPlaneIndex],
-                                            av_frame_->linesize[kVPlaneIndex],
-                                            // To keep reference alive.
-                                            [frame_buffer] { });
+            cropped_buffer = utils::wrapI444Buffer(av_frame_->width,
+                                                   av_frame_->height,
+                                                   av_frame_->data[kYPlaneIndex],
+                                                   av_frame_->linesize[kYPlaneIndex],
+                                                   av_frame_->data[kUPlaneIndex],
+                                                   av_frame_->linesize[kUPlaneIndex],
+                                                   av_frame_->data[kVPlaneIndex],
+                                                   av_frame_->linesize[kVPlaneIndex],
+                                                   // To keep reference alive.
+                                                   [frame_buffer] { });
             break;
         case VideoFrameBuffer::Type::kI422:
-            cropped_buffer = WrapI422Buffer(av_frame_->width,
-                                            av_frame_->height,
-                                            av_frame_->data[kYPlaneIndex],
-                                            av_frame_->linesize[kYPlaneIndex],
-                                            av_frame_->data[kUPlaneIndex],
-                                            av_frame_->linesize[kUPlaneIndex],
-                                            av_frame_->data[kVPlaneIndex],
-                                            av_frame_->linesize[kVPlaneIndex],
-                                            // To keep reference alive.
-                                            [frame_buffer] { });
+            cropped_buffer = utils::wrapI422Buffer(av_frame_->width,
+                                                   av_frame_->height,
+                                                   av_frame_->data[kYPlaneIndex],
+                                                   av_frame_->linesize[kYPlaneIndex],
+                                                   av_frame_->data[kUPlaneIndex],
+                                                   av_frame_->linesize[kUPlaneIndex],
+                                                   av_frame_->data[kVPlaneIndex],
+                                                   av_frame_->linesize[kVPlaneIndex],
+                                                   // To keep reference alive.
+                                                   [frame_buffer] { });
             break;
         case VideoFrameBuffer::Type::kI010:
-            cropped_buffer = WrapI010Buffer(av_frame_->width,
-                                            av_frame_->height,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kYPlaneIndex]),
-                                            av_frame_->linesize[kYPlaneIndex] / 2,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kUPlaneIndex]),
-                                            av_frame_->linesize[kUPlaneIndex] / 2,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kVPlaneIndex]),
-                                            av_frame_->linesize[kVPlaneIndex] / 2,
-                                            // To keep reference alive.
-                                            [frame_buffer] { });
+            cropped_buffer = utils::wrapI010Buffer(av_frame_->width,
+                                                   av_frame_->height,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kYPlaneIndex]),
+                                                   av_frame_->linesize[kYPlaneIndex] / 2,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kUPlaneIndex]),
+                                                   av_frame_->linesize[kUPlaneIndex] / 2,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kVPlaneIndex]),
+                                                   av_frame_->linesize[kVPlaneIndex] / 2,
+                                                   // To keep reference alive.
+                                                   [frame_buffer] { });
             break;
         case VideoFrameBuffer::Type::kI210:
-            cropped_buffer = WrapI210Buffer(av_frame_->width,
-                                            av_frame_->height,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kYPlaneIndex]),
-                                            av_frame_->linesize[kYPlaneIndex] / 2,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kUPlaneIndex]),
-                                            av_frame_->linesize[kUPlaneIndex] / 2,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kVPlaneIndex]),
-                                            av_frame_->linesize[kVPlaneIndex] / 2,
-                                            // To keep reference alive.
-                                            [frame_buffer] { });
+            cropped_buffer = utils::wrapI210Buffer(av_frame_->width,
+                                                   av_frame_->height,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kYPlaneIndex]),
+                                                   av_frame_->linesize[kYPlaneIndex] / 2,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kUPlaneIndex]),
+                                                   av_frame_->linesize[kUPlaneIndex] / 2,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kVPlaneIndex]),
+                                                   av_frame_->linesize[kVPlaneIndex] / 2,
+                                                   // To keep reference alive.
+                                                   [frame_buffer] { });
             break;
         case VideoFrameBuffer::Type::kI410:
-            cropped_buffer = WrapI410Buffer(av_frame_->width,
-                                            av_frame_->height,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kYPlaneIndex]),
-                                            av_frame_->linesize[kYPlaneIndex] / 2,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kUPlaneIndex]),
-                                            av_frame_->linesize[kUPlaneIndex] / 2,
-                                            reinterpret_cast<const uint16_t *>(av_frame_->data[kVPlaneIndex]),
-                                            av_frame_->linesize[kVPlaneIndex] / 2,
-                                            // To keep reference alive.
-                                            [frame_buffer] { });
+            cropped_buffer = utils::wrapI410Buffer(av_frame_->width,
+                                                   av_frame_->height,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kYPlaneIndex]),
+                                                   av_frame_->linesize[kYPlaneIndex] / 2,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kUPlaneIndex]),
+                                                   av_frame_->linesize[kUPlaneIndex] / 2,
+                                                   reinterpret_cast<const uint16_t *>(av_frame_->data[kVPlaneIndex]),
+                                                   av_frame_->linesize[kVPlaneIndex] / 2,
+                                                   // To keep reference alive.
+                                                   [frame_buffer] { });
             break;
         default:
             OCTK_ERROR() << "frame_buffer type: " << static_cast<int32_t>(video_frame_buffer_type)
@@ -610,19 +691,19 @@ int32_t H264DecoderImpl::Decode(const EncodedImage &input_image, bool /*missing_
     }
 
     // Pass on color space from input frame if explicitly specified.
-    const ColorSpace &color_space = input_image.ColorSpace() ? *input_image.ColorSpace()
+    const ColorSpace &color_space = input_image.colorSpace() ? *input_image.colorSpace()
                                                              : ExtractH264ColorSpace(av_context_.get());
 
     VideoFrame decoded_frame = VideoFrame::Builder()
-                                   .set_video_frame_buffer(cropped_buffer)
-                                   .set_rtp_timestamp(input_image.RtpTimestamp())
-                                   .set_color_space(color_space)
+                                   .setVideoFrameBuffer(cropped_buffer)
+                                   .setRtpTimestamp(input_image.rtpTimestamp())
+                                   .setColorSpace(color_space)
                                    .build();
 
     // Return decoded frame.
     // TODO(nisse): Timestamp and rotation are all zero here. Change decoder
     // interface to pass a VideoFrameBuffer instead of a VideoFrame?
-    decoded_image_callback_->Decoded(decoded_frame, std::nullopt, qp);
+    decoded_image_callback_->Decoded(decoded_frame, utils::nullopt, qp);
 
     // Stop referencing it, possibly freeing `input_frame`.
     av_frame_unref(av_frame_.get());

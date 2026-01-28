@@ -22,18 +22,18 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_CREATE_FRAME_GENERATOR_HPP
-#define _OCTK_CREATE_FRAME_GENERATOR_HPP
+#pragma once
 
 #include <octk_frame_generator.hpp>
+#include <octk_unique_pointer.hpp>
 #include <octk_string_view.hpp>
 #include <octk_nullability.hpp>
+#include <octk_optional.hpp>
 #include <octk_clock.hpp>
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <octk_optional.hpp>
 #include <string>
 #include <vector>
 
@@ -46,31 +46,31 @@ namespace utils
 // move randomly towards the lower right corner.
 // `type` has the default value FrameGeneratorInterface::OutputType::I420.
 // `num_squares` has the default value 10.
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorInterface>
-CreateSquareFrameGenerator(int width,
-                           int height,
-                           Optional<FrameGeneratorInterface::OutputType> type,
-                           Optional<int> num_squares);
+OCTK_MEDIA_API UniquePointer<FrameGeneratorInterface> CreateSquareFrameGenerator(
+    int width,
+    int height,
+    Optional<FrameGeneratorInterface::OutputType> type,
+    Optional<int> num_squares);
 
 // Creates a frame generator that repeatedly plays a set of yuv files.
 // The frame_repeat_count determines how many times each frame is shown,
 // with 1 = show each frame once, etc.
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorInterface>
-CreateFromYuvFileFrameGenerator(std::vector<std::string> filenames,
-                                size_t width,
-                                size_t height,
-                                int frame_repeat_count);
+OCTK_MEDIA_API UniquePointer<FrameGeneratorInterface> CreateFromYuvFileFrameGenerator(
+    std::vector<std::string> filenames,
+    size_t width,
+    size_t height,
+    int frame_repeat_count);
 
 // Creates a frame generator that repeatedly plays a set of nv12 files.
 // The frame_repeat_count determines how many times each frame is shown,
 // with 1 = show each frame once, etc.
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorInterface>
-CreateFromNV12FileFrameGenerator(std::vector<std::string> filenames,
-                                 size_t width,
-                                 size_t height,
-                                 int frame_repeat_count = 1);
+OCTK_MEDIA_API UniquePointer<FrameGeneratorInterface> CreateFromNV12FileFrameGenerator(
+    std::vector<std::string> filenames,
+    size_t width,
+    size_t height,
+    int frame_repeat_count = 1);
 
-// absl::Nonnull <std::unique_ptr<FrameGeneratorInterface>>
+// absl::Nonnull <UniquePointer<FrameGeneratorInterface>>
 // CreateFromIvfFileFrameGenerator(const RtcContext &env,
 //                                 StringView filename,
 //                                 Optional<int> fps_hint = utils::nullopt);
@@ -83,23 +83,22 @@ CreateFromNV12FileFrameGenerator(std::vector<std::string> filenames,
 // be scrolled top to bottom/left to right for scroll_tim_ms milliseconds.
 // After that the image will stay in place for pause_time_ms milliseconds,
 // and then this will be repeated with the next file from the input set.
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorInterface>
-CreateScrollingInputFromYuvFilesFrameGenerator(Clock *clock,
-                                               std::vector<std::string> filenames,
-                                               size_t source_width,
-                                               size_t source_height,
-                                               size_t target_width,
-                                               size_t target_height,
-                                               int64_t scroll_time_ms,
-                                               int64_t pause_time_ms);
+OCTK_MEDIA_API UniquePointer<FrameGeneratorInterface> CreateScrollingInputFromYuvFilesFrameGenerator(
+    Clock *clock,
+    std::vector<std::string> filenames,
+    size_t source_width,
+    size_t source_height,
+    size_t target_width,
+    size_t target_height,
+    int64_t scroll_time_ms,
+    int64_t pause_time_ms);
 
 // Creates a frame generator that produces randomly generated slides. It fills
 // the frames with randomly sized and colored squares.
 // `frame_repeat_count` determines how many times each slide is shown.
-OCTK_MEDIA_API std::unique_ptr<FrameGeneratorInterface>
-CreateSlideFrameGenerator(int width, int height, int frame_repeat_count);
+OCTK_MEDIA_API UniquePointer<FrameGeneratorInterface> CreateSlideFrameGenerator(int width,
+                                                                                  int height,
+                                                                                  int frame_repeat_count);
 } // namespace utils
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_CREATE_FRAME_GENERATOR_HPP

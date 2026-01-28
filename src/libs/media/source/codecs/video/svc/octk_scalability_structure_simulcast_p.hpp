@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <octk_dependency_descriptor.hpp>
+#include <private/octk_dependency_descriptor_p.hpp>
 #include <octk_video_bitrate_allocation.hpp>
 #include <octk_generic_frame_info.hpp>
 #include <private/octk_scalable_video_controller_p.hpp>

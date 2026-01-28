@@ -117,8 +117,12 @@ public:
     // especially for kNative.
     // First, the image is cropped to `cropWidth` and `cropHeight` and then
     // scaled to `scaledWidth` and `scaledHeight`.
-    virtual std::shared_ptr<VideoFrameBuffer>
-    cropAndScale(int offsetX, int offsetY, int cropWidth, int cropHeight, int scaledWidth, int scaledHeight);
+    virtual std::shared_ptr<VideoFrameBuffer> cropAndScale(int offsetX,
+                                                           int offsetY,
+                                                           int cropWidth,
+                                                           int cropHeight,
+                                                           int scaledWidth,
+                                                           int scaledHeight);
 
     // Alias for common use case.
     std::shared_ptr<VideoFrameBuffer> scale(int scaledWidth, int scaledHeight)
@@ -220,8 +224,12 @@ public:
     int chromaWidth() const final;
     int chromaHeight() const final;
 
-    std::shared_ptr<VideoFrameBuffer>
-    cropAndScale(int offsetX, int offsetY, int cropWidth, int cropHeight, int scaledWidth, int scaledHeight) override;
+    std::shared_ptr<VideoFrameBuffer> cropAndScale(int offsetX,
+                                                   int offsetY,
+                                                   int cropWidth,
+                                                   int cropHeight,
+                                                   int scaledWidth,
+                                                   int scaledHeight) override;
 
 protected:
     ~I422BufferInterface() override { }
@@ -236,8 +244,12 @@ public:
     int chromaWidth() const final;
     int chromaHeight() const final;
 
-    std::shared_ptr<VideoFrameBuffer>
-    cropAndScale(int offsetX, int offsetY, int cropWidth, int cropHeight, int scaledWidth, int scaledHeight) override;
+    std::shared_ptr<VideoFrameBuffer> cropAndScale(int offsetX,
+                                                   int offsetY,
+                                                   int cropWidth,
+                                                   int cropHeight,
+                                                   int scaledWidth,
+                                                   int scaledHeight) override;
 
 protected:
     ~I444BufferInterface() override { }
@@ -336,8 +348,12 @@ public:
     int chromaWidth() const final;
     int chromaHeight() const final;
 
-    std::shared_ptr<VideoFrameBuffer>
-    cropAndScale(int offsetX, int offsetY, int cropWidth, int cropHeight, int scaledWidth, int scaledHeight) override;
+    std::shared_ptr<VideoFrameBuffer> cropAndScale(int offsetX,
+                                                   int offsetY,
+                                                   int cropWidth,
+                                                   int cropHeight,
+                                                   int scaledWidth,
+                                                   int scaledHeight) override;
 
 protected:
     ~NV12BufferInterface() override { }
@@ -345,8 +361,11 @@ protected:
 
 namespace utils
 {
-std::shared_ptr<RGBABufferInterface>
-wrapRGBABuffer(int width, int height, const uint8_t *data, int stride, std::function<void()> noLongerUsed);
+std::shared_ptr<RGBABufferInterface> wrapRGBABuffer(int width,
+                                                    int height,
+                                                    const uint8_t *data,
+                                                    int stride,
+                                                    std::function<void()> noLongerUsed);
 
 std::shared_ptr<I420BufferInterface> wrapI420Buffer(int width,
                                                     int height,

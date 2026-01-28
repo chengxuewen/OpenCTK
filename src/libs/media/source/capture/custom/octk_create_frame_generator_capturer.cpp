@@ -26,7 +26,6 @@
 #include <octk_create_frame_generator.hpp>
 #include <octk_string_utils.hpp>
 #include <octk_time_delta.hpp>
-#include <octk_file_utils.hpp>
 #include <octk_checks.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -39,13 +38,13 @@ std::string TransformFilePath(std::string path)
     int ext_pos = path.rfind('.');
     if (ext_pos < 0)
     {
-        return utils::ResourcePath(path, "yuv");
+        // return utils::ResourcePath(path, "yuv");
     }
     else if (utils::stringStartsWith(path, resource_prefix))
     {
         std::string name = path.substr(resource_prefix.length(), ext_pos);
         std::string ext = path.substr(ext_pos, path.size());
-        return utils::ResourcePath(name, ext);
+        // return utils::ResourcePath(name, ext);
     }
     return path;
 }

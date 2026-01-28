@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <octk_rtp_parameters.hpp>
+#include <octk_codec_specific_info.hpp>
 #include <octk_string_view.hpp>
 #include <octk_optional.hpp>
 

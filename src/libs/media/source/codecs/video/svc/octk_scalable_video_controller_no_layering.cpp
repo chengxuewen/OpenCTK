@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-#include <octk_dependency_descriptor.hpp>
+#include <private/octk_dependency_descriptor_p.hpp>
 #include <octk_checks.hpp>
 
 OCTK_BEGIN_NAMESPACE

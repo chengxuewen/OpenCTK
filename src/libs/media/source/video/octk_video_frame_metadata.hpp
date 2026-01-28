@@ -25,7 +25,7 @@
 #ifndef _OCTK_VIDEO_FRAME_METADATA_HPP
 #define _OCTK_VIDEO_FRAME_METADATA_HPP
 
-#include <octk_dependency_descriptor.hpp>
+#include <private/octk_dependency_descriptor_p.hpp>
 #include <octk_video_content_type.hpp>
 #include <octk_video_codec_types.hpp>
 #include <octk_video_frame_type.hpp>

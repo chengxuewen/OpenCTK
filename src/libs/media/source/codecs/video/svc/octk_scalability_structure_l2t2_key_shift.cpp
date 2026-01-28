@@ -24,17 +24,17 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_scalability_structure_l2t2_key_shift_p.hpp>
+#include <private/octk_scalable_video_controller_p.hpp>
+#include <private/octk_dependency_descriptor_p.hpp>
+#include <octk_generic_frame_info.hpp>
+#include <octk_logging.hpp>
+#include <octk_checks.hpp>
 
 #include <utility>
 #include <vector>
 
-#include <octk_dependency_descriptor.hpp>
-#include <octk_generic_frame_info.hpp>
-#include <private/octk_scalable_video_controller_p.hpp>
-#include <octk_checks.hpp>
-#include <octk_logging.hpp>
-
 OCTK_BEGIN_NAMESPACE
+
 namespace
 {
 

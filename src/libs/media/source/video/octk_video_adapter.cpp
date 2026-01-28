@@ -185,7 +185,9 @@ VideoAdapter::VideoAdapter()
 {
 }
 
-VideoAdapter::~VideoAdapter() { }
+VideoAdapter::~VideoAdapter()
+{
+}
 
 bool VideoAdapter::isDropFrame(int64_t inTimestampNSecs)
 {
@@ -285,20 +287,22 @@ bool VideoAdapter::adaptFrameResolution(int inWidth,
     {
         // Make frame and "scale to" have matching orientation.
         Resolution scale_resolution_down_to = mScaleResolutionDownTo.value();
-        if ((*outWidth < *outHeight) != (mScaleResolutionDownTo->width < mScaleResolutionDownTo->height))
+        if ((*outWidth < *outHeight) != (mScaleResolutionDownTo->width() < mScaleResolutionDownTo->height()))
         {
-            scale_resolution_down_to = {mScaleResolutionDownTo->height, mScaleResolutionDownTo->width};
+            scale_resolution_down_to = {mScaleResolutionDownTo->height(), mScaleResolutionDownTo->width()};
         }
         // Downscale by smallest scaling factor, if necessary.
         if (*outWidth > 0 && *outHeight > 0 &&
-            (scale_resolution_down_to.width < *outWidth || scale_resolution_down_to.height < *outHeight))
+            (scale_resolution_down_to.width() < *outWidth || scale_resolution_down_to.height() < *outHeight))
         {
-            double scale_factor = utils::mathMin(scale_resolution_down_to.width / static_cast<double>(*outWidth),
-                                                 scale_resolution_down_to.height / static_cast<double>(*outHeight));
-            *outWidth =
-                roundUp(std::round(*outWidth * scale_factor), mResolutionAlignment, scale_resolution_down_to.width);
-            *outHeight =
-                roundUp(std::round(*outHeight * scale_factor), mResolutionAlignment, scale_resolution_down_to.height);
+            double scale_factor = utils::mathMin(scale_resolution_down_to.width() / static_cast<double>(*outWidth),
+                                                 scale_resolution_down_to.height() / static_cast<double>(*outHeight));
+            *outWidth = roundUp(std::round(*outWidth * scale_factor),
+                                mResolutionAlignment,
+                                scale_resolution_down_to.width());
+            *outHeight = roundUp(std::round(*outHeight * scale_factor),
+                                 mResolutionAlignment,
+                                 scale_resolution_down_to.height());
             OCTK_DCHECK_EQ(0, *outWidth % mResolutionAlignment);
             OCTK_DCHECK_EQ(0, *outHeight % mResolutionAlignment);
         }

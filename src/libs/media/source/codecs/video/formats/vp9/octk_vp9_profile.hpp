@@ -11,7 +11,7 @@
 #ifndef _OCTK_VP9_PROFILE_HPP
 #define _OCTK_VP9_PROFILE_HPP
 
-#include <octk_rtp_parameters.hpp>
+#include <octk_codec_specific_info.hpp>
 #include <octk_optional.hpp>
 
 OCTK_BEGIN_NAMESPACE
