@@ -360,7 +360,7 @@ int SimulcastRateAllocator::NumTemporalStreams(size_t simulcast_id) const
 {
     return std::max<uint8_t>(1,
                              codec_.codecType == kVideoCodecVP8 && codec_.numberOfSimulcastStreams == 0
-                                 ? codec_.VP8().numberOfTemporalLayers
+                                 ? codec_.vp8().numberOfTemporalLayers
                                  : codec_.simulcastStream[simulcast_id].numberOfTemporalLayers);
 }
 

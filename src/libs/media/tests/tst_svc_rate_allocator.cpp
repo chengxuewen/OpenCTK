@@ -75,8 +75,8 @@ static VideoCodec Configure(VideoCodecType codecType,
                                       is_screen_sharing);
         OCTK_CHECK_LE(spatial_layers.size(), kMaxSpatialLayers);
 
-        codec.VP9()->numberOfSpatialLayers = std::min<unsigned char>(num_spatial_layers, spatial_layers.size());
-        codec.VP9()->numberOfTemporalLayers = std::min<unsigned char>(num_temporal_layers,
+        codec.vp9()->numberOfSpatialLayers = std::min<unsigned char>(num_spatial_layers, spatial_layers.size());
+        codec.vp9()->numberOfTemporalLayers = std::min<unsigned char>(num_temporal_layers,
                                                                       spatial_layers.back().numberOfTemporalLayers);
 
         for (size_t sl_idx = 0; sl_idx < spatial_layers.size(); ++sl_idx)
@@ -218,7 +218,7 @@ TEST(SvcRateAllocatorTest, MinBitrateToGetQualityLayer)
 
     const SpatialLayer *layers = codec.spatialLayers;
 
-    EXPECT_LE(codec.VP9()->numberOfSpatialLayers, 3U);
+    EXPECT_LE(codec.vp9()->numberOfSpatialLayers, 3U);
 
     VideoBitrateAllocation allocation = allocator.Allocate(
         VideoBitrateAllocationParameters(layers[0].minBitrate * 1000, 30));
@@ -237,7 +237,7 @@ TEST(SvcRateAllocatorTest, DeactivateHigherLayers)
     for (int deactivated_idx = 2; deactivated_idx >= 0; --deactivated_idx)
     {
         VideoCodec codec = Configure(kVideoCodecVP9, 1280, 720, 3, 1, false);
-        EXPECT_LE(codec.VP9()->numberOfSpatialLayers, 3U);
+        EXPECT_LE(codec.vp9()->numberOfSpatialLayers, 3U);
 
         for (int i = deactivated_idx; i < 3; ++i)
             codec.spatialLayers[i].active = false;
@@ -266,7 +266,7 @@ TEST(SvcRateAllocatorTest, DeactivateLowerLayers)
     for (int deactivated_idx = 0; deactivated_idx < 3; ++deactivated_idx)
     {
         VideoCodec codec = Configure(kVideoCodecVP9, 1280, 720, 3, 1, false);
-        EXPECT_LE(codec.VP9()->numberOfSpatialLayers, 3U);
+        EXPECT_LE(codec.vp9()->numberOfSpatialLayers, 3U);
 
         for (int i = deactivated_idx; i >= 0; --i)
             codec.spatialLayers[i].active = false;
@@ -306,7 +306,7 @@ TEST(SvcRateAllocatorTest, SignalsBwLimited)
 TEST(SvcRateAllocatorTest, NoPaddingIfAllLayersAreDeactivated)
 {
     VideoCodec codec = Configure(kVideoCodecVP9, 1280, 720, 3, 1, false);
-    EXPECT_EQ(codec.VP9()->numberOfSpatialLayers, 3U);
+    EXPECT_EQ(codec.vp9()->numberOfSpatialLayers, 3U);
     // Deactivation of base layer deactivates all layers.
     codec.spatialLayers[0].active = false;
     codec.spatialLayers[1].active = false;

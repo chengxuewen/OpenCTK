@@ -118,49 +118,49 @@ std::string VideoCodec::toString() const
     return ss.str();
 }
 
-VideoCodecVP8 *VideoCodec::VP8()
+VideoCodecVP8 *VideoCodec::vp8()
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecVP8);
     return &codec_specific_.VP8;
 }
 
-const VideoCodecVP8 &VideoCodec::VP8() const
+const VideoCodecVP8 &VideoCodec::vp8() const
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecVP8);
     return codec_specific_.VP8;
 }
 
-VideoCodecVP9 *VideoCodec::VP9()
+VideoCodecVP9 *VideoCodec::vp9()
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecVP9);
     return &codec_specific_.VP9;
 }
 
-const VideoCodecVP9 &VideoCodec::VP9() const
+const VideoCodecVP9 &VideoCodec::vp9() const
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecVP9);
     return codec_specific_.VP9;
 }
 
-VideoCodecH264 *VideoCodec::H264()
+VideoCodecH264 *VideoCodec::h264()
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecH264);
     return &codec_specific_.H264;
 }
 
-const VideoCodecH264 &VideoCodec::H264() const
+const VideoCodecH264 &VideoCodec::h264() const
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecH264);
     return codec_specific_.H264;
 }
 
-VideoCodecAV1 *VideoCodec::AV1()
+VideoCodecAV1 *VideoCodec::aV1()
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecAV1);
     return &codec_specific_.AV1;
 }
 
-const VideoCodecAV1 &VideoCodec::AV1() const
+const VideoCodecAV1 &VideoCodec::aV1() const
 {
     OCTK_DCHECK_EQ(codecType, kVideoCodecAV1);
     return codec_specific_.AV1;

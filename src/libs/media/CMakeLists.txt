@@ -180,7 +180,11 @@ octk_add_library(media
 	source/protocols/rtc/octk_rtc_stats_report.cpp
 	source/protocols/rtc/octk_rtc_stats_report.hpp
 	source/protocols/rtc/octk_rtc_types.hpp
+	source/protocols/rtc/octk_rtc_video_codec_factory.hpp
+	source/protocols/rtc/octk_rtc_video_decoder.hpp
 	source/protocols/rtc/octk_rtc_video_device.hpp
+	source/protocols/rtc/octk_rtc_video_encoder.cpp
+	source/protocols/rtc/octk_rtc_video_encoder.hpp
 	source/protocols/rtc/octk_rtc_video_frame.hpp
 	source/protocols/rtc/octk_rtc_video_sink.hpp
 	source/protocols/rtc/octk_rtc_video_source.hpp

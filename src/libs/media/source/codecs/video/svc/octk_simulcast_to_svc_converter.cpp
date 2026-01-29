@@ -52,9 +52,9 @@ SimulcastToSvcConverter::SimulcastToSvcConverter(const VideoCodec &codec)
         config_.spatialLayers[i] = config_.simulcastStream[i];
     }
     config_.simulcastStream[0] = config_.simulcastStream[config_.numberOfSimulcastStreams - 1];
-    config_.VP9()->numberOfSpatialLayers = config_.numberOfSimulcastStreams;
-    config_.VP9()->numberOfTemporalLayers = config_.spatialLayers[0].numberOfTemporalLayers;
-    config_.VP9()->interLayerPred = InterLayerPredMode::kOff;
+    config_.vp9()->numberOfSpatialLayers = config_.numberOfSimulcastStreams;
+    config_.vp9()->numberOfTemporalLayers = config_.spatialLayers[0].numberOfTemporalLayers;
+    config_.vp9()->interLayerPred = InterLayerPredMode::kOff;
     config_.numberOfSimulcastStreams = 1;
     config_.UnsetScalabilityMode();
 

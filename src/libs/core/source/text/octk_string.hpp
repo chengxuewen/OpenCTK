@@ -75,6 +75,7 @@ public:
         return *this;
     }
 
+
     size_t size() const;
     size_t length() const { return this->size(); }
 

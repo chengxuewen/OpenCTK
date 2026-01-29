@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -24,29 +24,53 @@
 
 #pragma once
 
-#include <octk_global.hpp>
-#include <octk_core_config.hpp>
-
-#if OCTK_BUILD_CXX_STANDARD_17
-#    define optional_CONFIG_SELECT_OPTIONAL 0
-#else
-#    define optional_CONFIG_SELECT_OPTIONAL 1
-#endif
-#include <tl/optional.hpp>
+#include <octk_rtc_types.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-template <typename T>
-using Optional = tl::optional<T>;
-
-using in_place_t = tl::in_place_t;
-using nullopt_t = tl::nullopt_t;
-
-namespace utils
+class RtcVideoDecoder
 {
-using tl::in_place;
-using tl::nullopt;
-using tl::make_optional;
-} // namespace utils
+public:
+    using SharedPtr = std::shared_ptr<RtcVideoDecoder>;
+
+    struct Info
+    {
+        // Descriptive name of the decoder implementation.
+        String implementationName;
+        // True if the decoder is backed by hardware acceleration.
+        bool isHardwareAccelerated{false};
+    };
+
+    struct Settings
+    {
+        int bufferPoolSize{-1};
+        struct RenderResolution
+        {
+            int width{0};
+            int height{0};
+        } maxResolution;
+        int numberOfCores{1};
+        RtcVideoCodec::Type codecType{RtcVideoCodec::Type::kGeneric};
+    };
+
+    virtual int32_t release() = 0;
+
+    virtual Info getDecoderInfo() = 0;
+
+    /**
+     * Prepares decoder to handle incoming encoded frames. Can be called multiple times,
+     * in such case only latest `settings` are in effect.
+     * @param settings
+     * @return
+     */
+    virtual bool configure(const Settings &settings) = 0;
+
+    virtual int32_t decode(const RtcEncodedImage::SharedPtr &inputImage, int64_t renderTimeMSecs) = 0;
+
+    //int32_t RegisterDecodeCompleteCallback(webrtc::DecodedImageCallback *callback) override;
+
+protected:
+    virtual ~RtcVideoDecoder() { }
+};
 
 OCTK_END_NAMESPACE

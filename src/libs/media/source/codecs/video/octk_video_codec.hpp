@@ -27,7 +27,6 @@
 #include <octk_video_layers_allocation.hpp>
 #include <octk_video_codec_constants.hpp>
 #include <octk_video_codec_types.hpp>
-// #include <private/octk_scalability_mode_p.hpp>
 #include <octk_simulcast_stream.hpp>
 #include <octk_optional.hpp>
 
@@ -146,9 +145,8 @@ public:
     // Public variables. TODO(hta): Make them private with accessors.
     VideoCodecType codecType;
 
-    // TODO(nisse): Change to int, for consistency.
-    uint16_t width;
-    uint16_t height;
+    int width;
+    int height;
 
     unsigned int startBitrate; // kilobits/sec.
     unsigned int maxBitrate;   // kilobits/sec.
@@ -161,6 +159,7 @@ public:
     bool active;
 
     unsigned int qpMax;
+
     // The actual number of simulcast streams. This is <= 1 in singlecast (it can
     // be 0 in old code paths), but it is also 1 in the {active,inactive,inactive}
     // "single RTP simulcast" use case and the legacy kSVC use case. In all other
@@ -202,14 +201,14 @@ public:
     // There is a const version of each that returns a reference,
     // and a non-const version that returns a pointer, in order
     // to allow modification of the parameters.
-    VideoCodecVP8 *VP8();
-    const VideoCodecVP8 &VP8() const;
-    VideoCodecVP9 *VP9();
-    const VideoCodecVP9 &VP9() const;
-    VideoCodecH264 *H264();
-    const VideoCodecH264 &H264() const;
-    VideoCodecAV1 *AV1();
-    const VideoCodecAV1 &AV1() const;
+    VideoCodecVP8 *vp8();
+    const VideoCodecVP8 &vp8() const;
+    VideoCodecVP9 *vp9();
+    const VideoCodecVP9 &vp9() const;
+    VideoCodecAV1 *aV1();
+    const VideoCodecAV1 &aV1() const;
+    VideoCodecH264 *h264();
+    const VideoCodecH264 &h264() const;
 
 private:
     // TODO(hta): Consider replacing the union with a pointer type.

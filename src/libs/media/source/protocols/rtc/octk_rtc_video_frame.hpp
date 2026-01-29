@@ -33,15 +33,13 @@ class RtcVideoFrame
 public:
     using SharedPtr = SharedPointer<RtcVideoFrame>;
 
-    enum class VideoType
+    enum class BufferType
     {
-        kARGB,
-        kBGRA,
-        kABGR,
-        kRGBA
+        kI420,
+        kNV12
     };
 
-    enum class VideoRotation
+    enum class Rotation
     {
         kAngle0 = 0,
         kAngle90 = 90,
@@ -60,27 +58,27 @@ public:
     //                             const uint8_t *data_v,
     //                             int stride_v);
 
-    virtual SharedPtr Copy() = 0;
+    virtual SharedPtr copy() = 0;
 
     // The resolution of the frame in pixels. For formats where some planes are
     // subsampled, this is the highest-resolution plane.
     virtual int width() const = 0;
     virtual int height() const = 0;
 
-    virtual VideoRotation rotation() = 0;
+    //virtual Rotation rotation() = 0;
 
     // Returns pointer to the pixel data for a given plane. The memory is owned by
     // the VideoFrameBuffer object and must not be freed by the caller.
-    virtual const uint8_t *DataY() const = 0;
-    virtual const uint8_t *DataU() const = 0;
-    virtual const uint8_t *DataV() const = 0;
+    virtual const uint8_t *dataY() const = 0;
+    virtual const uint8_t *dataU() const = 0;
+    virtual const uint8_t *dataV() const = 0;
 
     // Returns the number of bytes between successive rows for a given plane.
-    virtual int StrideY() const = 0;
-    virtual int StrideU() const = 0;
-    virtual int StrideV() const = 0;
+    virtual int strideY() const = 0;
+    virtual int strideU() const = 0;
+    virtual int strideV() const = 0;
 
-    virtual int ConvertToARGB(VideoType type, uint8_t *dstArgb, int dstStrideArgb, int dstWidth, int dstHeight) = 0;
+    //virtual int convertToARGB(BufferType type, uint8_t *dstArgb, int dstStrideArgb, int dstWidth, int dstHeight) = 0;
 
 protected:
     virtual ~RtcVideoFrame() { }

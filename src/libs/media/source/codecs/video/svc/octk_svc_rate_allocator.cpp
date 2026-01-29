@@ -269,8 +269,8 @@ SvcRateAllocator::NumLayers SvcRateAllocator::GetNumLayers(const VideoCodec &cod
     }
     if (codec.codecType == kVideoCodecVP9)
     {
-        layers.spatial = codec.VP9().numberOfSpatialLayers;
-        layers.temporal = codec.VP9().numberOfTemporalLayers;
+        layers.spatial = codec.vp9().numberOfSpatialLayers;
+        layers.temporal = codec.vp9().numberOfTemporalLayers;
         return layers;
     }
     layers.spatial = 1;

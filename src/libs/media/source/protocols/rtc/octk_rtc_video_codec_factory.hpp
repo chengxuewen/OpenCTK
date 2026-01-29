@@ -2,7 +2,7 @@
 **
 ** Library: OpenCTK
 **
-** Copyright (C) 2025~Present ChengXueWen.
+** Copyright (C) 2026~Present ChengXueWen.
 **
 ** License: MIT License
 **
@@ -24,29 +24,25 @@
 
 #pragma once
 
-#include <octk_global.hpp>
-#include <octk_core_config.hpp>
-
-#if OCTK_BUILD_CXX_STANDARD_17
-#    define optional_CONFIG_SELECT_OPTIONAL 0
-#else
-#    define optional_CONFIG_SELECT_OPTIONAL 1
-#endif
-#include <tl/optional.hpp>
+#include <octk_rtc_video_decoder.hpp>
+#include <octk_rtc_video_encoder.hpp>
+#include <octk_rtc_types.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-template <typename T>
-using Optional = tl::optional<T>;
-
-using in_place_t = tl::in_place_t;
-using nullopt_t = tl::nullopt_t;
-
-namespace utils
+class RtcVideoCodecFactory
 {
-using tl::in_place;
-using tl::nullopt;
-using tl::make_optional;
-} // namespace utils
+public:
+    using SharedPtr = SharedPointer<RtcVideoCodecFactory>;
+
+    virtual Vector<RtcSdpVideoFormat::SharedPtr> getSupportedEncoderFormats() const = 0;
+    virtual Vector<RtcSdpVideoFormat::SharedPtr> getSupportedDecoderFormats() const = 0;
+
+    virtual RtcVideoEncoder::SharedPtr createVideoEncoder(const RtcSdpVideoFormat::SharedPtr &format) = 0;
+    virtual RtcVideoDecoder::SharedPtr createVideoDecoder(const RtcSdpVideoFormat::SharedPtr &format) = 0;
+
+protected:
+    virtual ~RtcVideoCodecFactory() = default;
+};
 
 OCTK_END_NAMESPACE

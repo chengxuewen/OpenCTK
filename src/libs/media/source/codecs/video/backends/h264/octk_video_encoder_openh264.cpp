@@ -467,8 +467,8 @@ int32_t VideoEncoderOpenh264::initEncode(const VideoCodec *inst, const VideoEnco
         d->configurations_[i].height = d->codec_.simulcastStream[idx].height;
         d->configurations_[i].max_frame_rate = static_cast<float>(d->codec_.maxFramerate);
         d->configurations_[i].frame_dropping_on = d->codec_.GetFrameDropEnabled();
-        d->configurations_[i].key_frame_interval = d->codec_.H264()->keyFrameInterval;
-        d->configurations_[i].num_temporal_layers = std::max(d->codec_.H264()->numberOfTemporalLayers,
+        d->configurations_[i].key_frame_interval = d->codec_.h264()->keyFrameInterval;
+        d->configurations_[i].num_temporal_layers = std::max(d->codec_.h264()->numberOfTemporalLayers,
                                                              d->codec_.simulcastStream[idx].numberOfTemporalLayers);
 
         // Create downscaled image buffers.

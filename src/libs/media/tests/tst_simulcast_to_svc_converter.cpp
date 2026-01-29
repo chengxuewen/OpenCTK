@@ -35,8 +35,8 @@ TEST(SimulcastToSvc, ConvertsConfig)
     codec.minBitrate = 10;
     codec.maxBitrate = 2500;
     codec.numberOfSimulcastStreams = 3;
-    codec.VP9()->numberOfSpatialLayers = 1;
-    codec.VP9()->interLayerPred = InterLayerPredMode::kOff;
+    codec.vp9()->numberOfSpatialLayers = 1;
+    codec.vp9()->interLayerPred = InterLayerPredMode::kOff;
     codec.simulcastStream[0] = {.width = 320,
                                 .height = 180,
                                 .maxFramerate = 30,
@@ -73,9 +73,9 @@ TEST(SimulcastToSvc, ConvertsConfig)
     EXPECT_EQ(result.spatialLayers[0], codec.simulcastStream[0]);
     EXPECT_EQ(result.spatialLayers[1], codec.simulcastStream[1]);
     EXPECT_EQ(result.spatialLayers[2], codec.simulcastStream[2]);
-    EXPECT_EQ(result.VP9()->numberOfTemporalLayers, 3);
-    EXPECT_EQ(result.VP9()->numberOfSpatialLayers, 3);
-    EXPECT_EQ(result.VP9()->interLayerPred, InterLayerPredMode::kOff);
+    EXPECT_EQ(result.vp9()->numberOfTemporalLayers, 3);
+    EXPECT_EQ(result.vp9()->numberOfSpatialLayers, 3);
+    EXPECT_EQ(result.vp9()->interLayerPred, InterLayerPredMode::kOff);
 }
 
 TEST(SimulcastToSvc, ConvertsEncodedImage)
@@ -88,8 +88,8 @@ TEST(SimulcastToSvc, ConvertsEncodedImage)
     codec.minBitrate = 10;
     codec.maxBitrate = 2500;
     codec.numberOfSimulcastStreams = 3;
-    codec.VP9()->numberOfSpatialLayers = 1;
-    codec.VP9()->interLayerPred = InterLayerPredMode::kOff;
+    codec.vp9()->numberOfSpatialLayers = 1;
+    codec.vp9()->interLayerPred = InterLayerPredMode::kOff;
     codec.simulcastStream[0] = {.width = 320,
                                 .height = 180,
                                 .maxFramerate = 30,
@@ -157,8 +157,8 @@ TEST(SimulcastToSvc, PredictsInternalStateCorrectlyOnFrameDrops)
     codec.minBitrate = 10;
     codec.maxBitrate = 2500;
     codec.numberOfSimulcastStreams = 3;
-    codec.VP9()->numberOfSpatialLayers = 1;
-    codec.VP9()->interLayerPred = InterLayerPredMode::kOff;
+    codec.vp9()->numberOfSpatialLayers = 1;
+    codec.vp9()->interLayerPred = InterLayerPredMode::kOff;
 
     codec.simulcastStream[0] = {.width = 320,
                                 .height = 180,
@@ -257,8 +257,8 @@ TEST(SimulcastToSvc, SupportsOnlyContinuousActiveStreams)
     codec.minBitrate = 10;
     codec.maxBitrate = 2500;
     codec.numberOfSimulcastStreams = 3;
-    codec.VP9()->numberOfSpatialLayers = 1;
-    codec.VP9()->interLayerPred = InterLayerPredMode::kOff;
+    codec.vp9()->numberOfSpatialLayers = 1;
+    codec.vp9()->interLayerPred = InterLayerPredMode::kOff;
 
     codec.simulcastStream[0] = {.width = 320,
                                 .height = 180,
@@ -314,8 +314,8 @@ TEST(SimulcastToSvc, SupportsOnlySameTemporalStructure)
     codec.minBitrate = 10;
     codec.maxBitrate = 2500;
     codec.numberOfSimulcastStreams = 3;
-    codec.VP9()->numberOfSpatialLayers = 1;
-    codec.VP9()->interLayerPred = InterLayerPredMode::kOff;
+    codec.vp9()->numberOfSpatialLayers = 1;
+    codec.vp9()->interLayerPred = InterLayerPredMode::kOff;
 
     codec.simulcastStream[0] = {.width = 320,
                                 .height = 180,
@@ -359,8 +359,8 @@ TEST(SimulcastToSvc, SupportsOnly421Scaling)
     codec.minBitrate = 10;
     codec.maxBitrate = 2500;
     codec.numberOfSimulcastStreams = 3;
-    codec.VP9()->numberOfSpatialLayers = 1;
-    codec.VP9()->interLayerPred = InterLayerPredMode::kOff;
+    codec.vp9()->numberOfSpatialLayers = 1;
+    codec.vp9()->interLayerPred = InterLayerPredMode::kOff;
 
     codec.simulcastStream[0] = {.width = 320,
                                 .height = 180,

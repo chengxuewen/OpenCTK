@@ -59,7 +59,8 @@ public:
 
     static H264PacketizationMode parseSdpVideoFormat(const SdpVideoFormat &format);
 
-    VideoEncoderOpenh264(const MediaContext &mediaContext, H264PacketizationMode mode);
+    VideoEncoderOpenh264(const MediaContext &mediaContext,
+                         H264PacketizationMode mode = H264PacketizationMode::NonInterleaved);
 
     ~VideoEncoderOpenh264() override;
 

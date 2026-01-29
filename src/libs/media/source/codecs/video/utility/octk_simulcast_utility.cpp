@@ -104,9 +104,9 @@ int SimulcastUtility::NumberOfTemporalLayers(const VideoCodec &codec, int spatia
     {
         switch (codec.codecType)
         {
-            case kVideoCodecVP8: num_temporal_layers = codec.VP8().numberOfTemporalLayers; break;
-            case kVideoCodecVP9: num_temporal_layers = codec.VP9().numberOfTemporalLayers; break;
-            case kVideoCodecH264: num_temporal_layers = codec.H264().numberOfTemporalLayers; break;
+            case kVideoCodecVP8: num_temporal_layers = codec.vp8().numberOfTemporalLayers; break;
+            case kVideoCodecVP9: num_temporal_layers = codec.vp9().numberOfTemporalLayers; break;
+            case kVideoCodecH264: num_temporal_layers = codec.h264().numberOfTemporalLayers; break;
             // For AV1 and H.265 we get temporal layer count from scalability mode,
             // instead of from codec-specifics.
             case kVideoCodecAV1:

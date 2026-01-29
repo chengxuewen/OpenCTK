@@ -83,7 +83,7 @@ public:
     Vector(const Iterable &v, Converter convert)
     {
         mSize = v.size();
-        if (v.size() == 0)
+        if (0 == mSize)
         {
             mArray = 0;
         }
@@ -94,6 +94,24 @@ public:
             for (typename Iterable::const_iterator it = v.begin(); it != v.end(); ++it)
             {
                 mArray[i++] = convert(*it);
+            }
+        }
+    }
+
+    Vector(std::initializer_list<T> initList)
+    {
+        mSize = initList.size();
+        if (0 == mSize)
+        {
+            mArray = nullptr;
+        }
+        else
+        {
+            mArray = new T[mSize];
+            size_t i = 0;
+            for (const T &value : initList)
+            {
+                mArray[i++] = value;
             }
         }
     }
