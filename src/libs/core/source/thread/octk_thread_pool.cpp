@@ -101,7 +101,7 @@ void ThreadPoolTaskThread::exitWait()
 void ThreadPoolTaskThread::init(const StringView name, const WeakPtr &weakThis)
 {
     std::call_once(mInitFlag,
-                   [=]()
+                   [this, name, weakThis]()
                    {
                        mName = name.data();
                        mWeakThis = weakThis;

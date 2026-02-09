@@ -79,41 +79,55 @@ enum class RtcDegradationPreference
 
 class RtcRtcpFeedback
 {
+public:
+    OCTK_DEFINE_SHARED_PTR(RtcRtcpFeedback)
+
     virtual RtcRtcpFeedbackType type() = 0;
-    virtual void set_type(RtcRtcpFeedbackType value) = 0;
+    virtual void setType(RtcRtcpFeedbackType value) = 0;
 
-    virtual RtcRtcpFeedbackMessageType message_type() = 0;
-    virtual void set_message_type(RtcRtcpFeedbackMessageType value) = 0;
+    virtual RtcRtcpFeedbackMessageType messageType() = 0;
+    virtual void setMessageType(RtcRtcpFeedbackMessageType value) = 0;
 
-    virtual bool operator==(const SharedPointer<RtcRtcpFeedback> o) = 0;
-    virtual bool operator!=(const SharedPointer<RtcRtcpFeedback> o) = 0;
+    virtual bool isEqual(const SharedPointer<RtcRtcpFeedback> &other) const = 0;
+
+protected:
+    virtual ~RtcRtcpFeedback() = default;
 };
 
 class RtcRtpExtension
 {
 public:
-    enum RTCFilter
+    OCTK_DEFINE_SHARED_PTR(RtcRtpExtension)
+
+    enum class Filter
     {
-        kDiscardEncryptedExtension,
-        kPreferEncryptedExtension,
-        kRequireEncryptedExtension,
+        kPreferEncrypted,
+        kDiscardEncrypted,
+        kRequireEncrypted,
     };
 
-    virtual const String ToString() const = 0;
-    virtual bool operator==(const SharedPointer<RtcRtpExtension> o) const = 0;
+    virtual String toString() const = 0;
 
-    virtual const String uri() = 0;
-    virtual void set_uri(const String uri) = 0;
+    virtual String uri() const = 0;
+    virtual void setUri(StringView uri) = 0;
 
-    virtual int id() = 0;
-    virtual void set_id(int value) = 0;
+    virtual int id() const = 0;
+    virtual void setId(int value) = 0;
 
-    virtual bool encrypt() = 0;
-    virtual void set_encrypt(bool value) = 0;
+    virtual bool encrypt() const = 0;
+    virtual void setEncrypt(bool value) = 0;
+
+    virtual bool isEqual(const SharedPointer<RtcRtpExtension> &other) const = 0;
+
+protected:
+    virtual ~RtcRtpExtension() = default;
 };
 
 class RtpFecParameters
 {
+public:
+    OCTK_DEFINE_SHARED_PTR(RtpFecParameters)
+
     virtual uint32_t ssrc() = 0;
     virtual void set_ssrc(uint32_t value) = 0;
 
@@ -126,6 +140,9 @@ class RtpFecParameters
 
 class RtcRtpRtxParameters
 {
+public:
+    OCTK_DEFINE_SHARED_PTR(RtcRtpRtxParameters)
+
     virtual uint32_t ssrc() = 0;
     virtual void set_ssrc(uint32_t value) = 0;
 
@@ -137,59 +154,64 @@ class RtcRtpRtxParameters
 class RtcRtpCodecParameters
 {
 public:
-    virtual const String mime_type() const = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtpCodecParameters)
 
-    virtual const String name() = 0;
-    virtual void set_name(const String name) = 0;
+    virtual String mimeType() const = 0;
 
-    virtual RtcMediaType kind() = 0;
-    virtual void set_kind(RtcMediaType value) = 0;
+    virtual int pTime() const = 0;
+    virtual void setPTime(int value) = 0;
 
-    virtual int payload_type() = 0;
-    virtual void set_payload_type(int value) = 0;
+    virtual int maxPTime() const = 0;
+    virtual void setMaxPTime(int value) = 0;
 
-    virtual int clock_rate() = 0;
-    virtual void set_clock_rate(int value) = 0;
+    virtual int clockRate() const = 0;
+    virtual void setClockRate(int value) = 0;
 
-    virtual int num_channels() = 0;
-    virtual void set_num_channels(int value) = 0;
+    virtual String name() const = 0;
+    virtual void setName(StringView name) = 0;
 
-    virtual int max_ptime() = 0;
-    virtual void set_max_ptime(int value) = 0;
+    virtual int payloadType() const = 0;
+    virtual void setPayloadType(int value) = 0;
 
-    virtual int ptime() = 0;
-    virtual void set_ptime(int value) = 0;
+    virtual int numChannels() const = 0;
+    virtual void setNumChannels(int value) = 0;
 
-    virtual const Vector<const SharedPointer<RtcRtcpFeedback>> rtcp_feedback() = 0;
-    virtual void set_rtcp_feedback(const Vector<const SharedPointer<RtcRtcpFeedback>> feecbacks) = 0;
+    virtual RtcMediaType kind() const = 0;
+    virtual void setKind(RtcMediaType value) = 0;
 
-    virtual const Vector<std::pair<String, String>> parameters() = 0;
-    virtual void set_parameters(const VectorMap<String, String> parameters) = 0;
+    virtual Vector<std::pair<String, String>> parameters() const = 0;
+    virtual void setParameters(const VectorMap<String, String> &parameters) = 0;
 
-    virtual bool operator==(const SharedPointer<RtcRtpCodecParameters> o) = 0;
-    virtual bool operator!=(const SharedPointer<RtcRtpCodecParameters> o) = 0;
+    virtual Vector<SharedPointer<RtcRtcpFeedback>> rtcpFeedback() const = 0;
+    virtual void setRtcpFeedback(const Vector<SharedPointer<RtcRtcpFeedback>> &feecbacks) = 0;
+
+    virtual bool isEqual(const SharedPointer<RtcRtpCodecParameters> &other) const = 0;
 
 protected:
-    virtual ~RtcRtpCodecParameters() { }
+    virtual ~RtcRtpCodecParameters() = default;
 };
 
 class RtcRtcpParameters
 {
 public:
-    virtual uint32_t ssrc() = 0;
-    virtual void set_ssrc(uint32_t value) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtcpParameters)
 
-    virtual const String cname() = 0;
-    virtual void set_cname(const String) = 0;
+    virtual uint32_t ssrc() const = 0;
+    virtual void setSsrc(uint32_t value) = 0;
 
-    virtual bool reduced_size() = 0;
-    virtual void set_reduced_size(bool value) = 0;
+    virtual String cname() const = 0;
+    virtual void setCName(StringView value) = 0;
 
-    virtual bool mux() = 0;
-    virtual void set_mux(bool value) = 0;
+    virtual bool reducedSize() const = 0;
+    virtual void setReducedSize(bool value) = 0;
 
-    virtual bool operator==(const SharedPointer<RtcRtcpParameters> o) const = 0;
-    virtual bool operator!=(const SharedPointer<RtcRtcpParameters> o) const = 0;
+    virtual bool mux() const = 0;
+    virtual void setMux(bool value) = 0;
+
+    virtual bool isEqual(const SharedPointer<RtcRtcpParameters> &other) const = 0;
+
+protected:
+    virtual ~RtcRtcpParameters() = default;
 };
 
 enum class RtcPriority
@@ -203,75 +225,80 @@ enum class RtcPriority
 class RtcRtpEncodingParameters
 {
 public:
-    static SharedPointer<RtcRtpEncodingParameters> Create();
+    OCTK_DEFINE_SHARED_PTR(RtcRtpEncodingParameters)
 
-    virtual uint32_t ssrc() = 0;
-    virtual void set_ssrc(uint32_t value) = 0;
+    virtual uint32_t ssrc() const = 0;
+    virtual void setSsrc(uint32_t value) = 0;
 
-    virtual double bitrate_priority() = 0;
-    virtual void set_bitrate_priority(double value) = 0;
+    virtual double bitratePriority() const = 0;
+    virtual void setBitratePriority(double value) = 0;
 
-    virtual RtcPriority network_priority() = 0;
-    virtual void set_network_priority(RtcPriority value) = 0;
+    virtual RtcPriority networkPriority() const = 0;
+    virtual void setNetworkPriority(RtcPriority value) = 0;
 
-    virtual int max_bitrate_bps() = 0;
-    virtual void set_max_bitrate_bps(int value) = 0;
+    virtual int maxBitrateBps() const = 0;
+    virtual void setMaxBitrateBps(int value) = 0;
 
-    virtual int min_bitrate_bps() = 0;
-    virtual void set_min_bitrate_bps(int value) = 0;
+    virtual int minBitrateBps() const = 0;
+    virtual void setMinBitrateBps(int value) = 0;
 
-    virtual double max_framerate() = 0;
-    virtual void set_max_framerate(double value) = 0;
+    virtual double maxFramerate() const = 0;
+    virtual void setMaxFramerate(double value) = 0;
 
-    virtual int num_temporal_layers() = 0;
-    virtual void set_num_temporal_layers(int value) = 0;
+    virtual int numTemporalLayers() const = 0;
+    virtual void setNumTemporalLayers(int value) = 0;
 
-    virtual double scale_resolution_down_by() = 0;
-    virtual void set_scale_resolution_down_by(double value) = 0;
+    virtual double scaleResolutionDownBy() const = 0;
+    virtual void setScaleResolutionDownBy(double value) = 0;
 
-    virtual const String scalability_mode() = 0;
-    virtual void set_scalability_mode(const String mode) = 0;
+    virtual String scalabilityMode() const = 0;
+    virtual void setScalabilityMode(StringView mode) = 0;
 
-    virtual bool active() = 0;
-    virtual void set_active(bool value) = 0;
+    virtual bool active() const = 0;
+    virtual void setActive(bool value) = 0;
 
-    virtual const String rid() = 0;
-    virtual void set_rid(const String rid) = 0;
+    virtual String rid() const = 0;
+    virtual void setRid(StringView rid) = 0;
 
-    virtual bool adaptive_ptime() = 0;
-    virtual void set_adaptive_ptime(bool value) = 0;
+    virtual bool adaptivePtime() const = 0;
+    virtual void setAdaptivePtime(bool value) = 0;
 
-    virtual bool operator==(const SharedPointer<RtcRtpEncodingParameters> o) const = 0;
-    virtual bool operator!=(const SharedPointer<RtcRtpEncodingParameters> o) const = 0;
+    virtual bool isEqual(const SharedPointer<RtcRtpEncodingParameters> &other) const = 0;
+
+protected:
+    virtual ~RtcRtpEncodingParameters() = default;
 };
 
-struct RtcRtpParameters
+class RtcRtpParameters
 {
 public:
-    // static const SharedPointer<RtcRtpParameters> Create();
-    virtual const String transaction_id() = 0;
-    virtual void set_transaction_id(const String id) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtpParameters)
 
-    virtual const String mid() = 0;
-    virtual void set_mid(const String mid) = 0;
+    virtual String transactionId() const = 0;
+    virtual void setTransactionId(StringView id) = 0;
 
-    virtual const Vector<const SharedPointer<RtcRtpCodecParameters>> codecs() = 0;
-    virtual void set_codecs(const Vector<const SharedPointer<RtcRtpCodecParameters>> codecs) = 0;
+    virtual String mid() const = 0;
+    virtual void setMid(StringView mid) = 0;
 
-    virtual const Vector<const SharedPointer<RtcRtpExtension>> header_extensions() = 0;
-    virtual void set_header_extensions(const Vector<const SharedPointer<RtcRtpExtension>> header_extensions) = 0;
+    virtual Vector<SharedPointer<RtcRtpCodecParameters>> codecs() const = 0;
+    virtual void setCodecs(const Vector<SharedPointer<RtcRtpCodecParameters>> &codecs) = 0;
 
-    virtual const Vector<const SharedPointer<RtcRtpEncodingParameters>> encodings() = 0;
-    virtual void set_encodings(const Vector<const SharedPointer<RtcRtpEncodingParameters>> encodings) = 0;
+    virtual Vector<SharedPointer<RtcRtpExtension>> headerExtensions() const = 0;
+    virtual void setHeaderExtensions(const Vector<SharedPointer<RtcRtpExtension>> &header_extensions) = 0;
 
-    virtual const SharedPointer<RtcRtcpParameters> rtcp_parameters() = 0;
-    virtual void set_rtcp_parameters(const SharedPointer<RtcRtcpParameters> rtcp_parameters) = 0;
+    virtual Vector<SharedPointer<RtcRtpEncodingParameters>> encodings() const = 0;
+    virtual void setEncodings(const Vector<SharedPointer<RtcRtpEncodingParameters>> &encodings) = 0;
 
-    virtual RtcDegradationPreference GetDegradationPreference() = 0;
-    virtual void SetDegradationPreference(RtcDegradationPreference value) = 0;
+    virtual SharedPointer<RtcRtcpParameters> rtcpParameters() const = 0;
+    virtual void setRtcpParameters(const SharedPointer<RtcRtcpParameters> &rtcp_parameters) = 0;
 
-    virtual bool operator==(const SharedPointer<RtcRtpParameters> o) const = 0;
-    virtual bool operator!=(const SharedPointer<RtcRtpParameters> o) const = 0;
+    virtual RtcDegradationPreference degradationPreference() const = 0;
+    virtual void setDegradationPreference(RtcDegradationPreference value) = 0;
+
+    virtual bool isEqual(const SharedPointer<RtcRtpParameters> &other) const = 0;
+
+protected:
+    virtual ~RtcRtpParameters() = default;
 };
 
 OCTK_END_NAMESPACE

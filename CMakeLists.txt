@@ -205,12 +205,17 @@ message(STATUS "OpenCTK cmake install prefix set as '${CMAKE_INSTALL_PREFIX}'.")
 # Detect 3rdparty packages directories
 #-----------------------------------------------------------------------------------------------------------------------
 if(DEFINED INPUT_OCTK_3RDPARTY_PACKAGES_DIR)
-	set(OCTK_3RDPARTY_PACKAGES_DIR "${INPUT_OCTK_3RDPARTY_PACKAGES_DIR}"
-		CACHE PATH "3rdparty packages directories")
+	set(OCTK_3RDPARTY_PACKAGES_DIR "${INPUT_OCTK_3RDPARTY_PACKAGES_DIR}"  CACHE PATH "3rdparty packages directories")
+	message(STATUS "Project 3rdparty packages directories: ${OCTK_3RDPARTY_PACKAGES_DIR}")
 else()
 	set(OCTK_3RDPARTY_PACKAGES_DIR "" CACHE PATH "3rdparty packages directories")
 endif()
-message(STATUS "Project 3rdparty packages directories: ${OCTK_3RDPARTY_PACKAGES_DIR}")
+if(DEFINED INPUT_OCTK_3RDPARTY_WEBRTC_PATH)
+	set(OCTK_3RDPARTY_WEBRTC_VERSION "${INPUT_OCTK_3RDPARTY_WEBRTC_VERSION}" CACHE PATH "3rdparty webrtc version")
+	set(OCTK_3RDPARTY_WEBRTC_PATH "${INPUT_OCTK_3RDPARTY_WEBRTC_PATH}" CACHE PATH "3rdparty webrtc path")
+else()
+	set(OCTK_3RDPARTY_WEBRTC_PATH "" CACHE PATH "3rdparty webrtc path")
+endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -229,7 +234,7 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED ON)
 # Specify the C++ standard and flags
 #-----------------------------------------------------------------------------------------------------------------------
 if(CMAKE_CXX_STANDARD)
-	set(OCTK_CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD} CACHE STRING "C++ standard")
+	set(OCTK_CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD} CACHE STRING "C++ standard" FORCE)
 else()
 	set(OCTK_CMAKE_CXX_STANDARD 11 CACHE STRING "C++ standard")
 endif()

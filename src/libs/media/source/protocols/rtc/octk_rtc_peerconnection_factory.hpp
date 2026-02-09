@@ -24,138 +24,68 @@
 
 #pragma once
 
-#include <octk_rtc_audio_track.hpp>
-#include <octk_rtc_audio_source.hpp>
+#include <octk_rtc_media_constraints.hpp>
+#include <octk_rtc_peerconnection.hpp>
+#include <octk_rtc_configuration.hpp>
+#include <octk_rtc_audio_device.hpp>
 #include <octk_rtc_media_stream.hpp>
-#include <octk_rtc_video_source.hpp>
 #include <octk_rtc_video_device.hpp>
+#include <octk_rtc_audio_track.hpp>
+#include <octk_rtc_audio_frame.hpp>
 #include <octk_rtc_types.hpp>
+#include <octk_result.hpp>
+#include <octk_status.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class RtcPeerConnection;
 class RtcAudioDevice;
-class RtcAudioProcessing;
 class RtcVideoDevice;
+class RtcPeerConnection;
+class RtcAudioProcessor;
 class RtcRtpCapabilities;
-
-
-enum class RtcSdpSemantics
-{
-    kPlanB,
-    kUnifiedPlan
-};
-
-struct RtcIceServer
-{
-    String uri;
-    String username;
-    String password;
-};
-
-
-enum class RtcIceTransportsType
-{
-    kNone,
-    kRelay,
-    kNoHost,
-    kAll
-};
-
-enum class RtcTcpCandidatePolicy
-{
-    kTcpCandidatePolicyEnabled,
-    kTcpCandidatePolicyDisabled
-};
-
-enum class RtcCandidateNetworkPolicy
-{
-    kCandidateNetworkPolicyAll,
-    kCandidateNetworkPolicyLowCost
-};
-
-enum class RtcRtcpMuxPolicy
-{
-    kRtcpMuxPolicyNegotiate,
-    kRtcpMuxPolicyRequire,
-};
-
-enum class RtcBundlePolicy
-{
-    kBundlePolicyBalanced,
-    kBundlePolicyMaxBundle,
-    kBundlePolicyMaxCompat
-};
-
-struct RtcConfiguration
-{
-    enum
-    {
-        kMaxIceServerSize = 8
-    };
-
-    RtcIceServer ice_servers[kMaxIceServerSize];
-    RtcIceTransportsType type = RtcIceTransportsType::kAll;
-    RtcBundlePolicy bundle_policy = RtcBundlePolicy::kBundlePolicyBalanced;
-    RtcRtcpMuxPolicy rtcp_mux_policy = RtcRtcpMuxPolicy::kRtcpMuxPolicyRequire;
-    RtcCandidateNetworkPolicy candidate_network_policy = RtcCandidateNetworkPolicy::kCandidateNetworkPolicyAll;
-    RtcTcpCandidatePolicy tcp_candidate_policy = RtcTcpCandidatePolicy::kTcpCandidatePolicyEnabled;
-
-    int ice_candidate_pool_size = 0;
-
-    RtcMediaSecurityType srtp_type = RtcMediaSecurityType::kDTLS_SRTP;
-    RtcSdpSemantics sdp_semantics = RtcSdpSemantics::kUnifiedPlan;
-    bool offer_to_receive_audio = true;
-    bool offer_to_receive_video = true;
-
-    bool disable_ipv6 = false;
-    bool disable_ipv6_on_wifi = false;
-    int max_ipv6_networks = 5;
-    bool disable_link_local_networks = false;
-    int screencast_min_bitrate = -1;
-
-    // private
-    bool use_rtp_mux = true;
-    uint32_t local_audio_bandwidth = 128;
-    uint32_t local_video_bandwidth = 512;
-};
 
 class RtcPeerConnectionFactory
 {
 public:
-    virtual bool initialize() = 0;
+    using SharedPtr = SharedPointer<RtcPeerConnectionFactory>;
 
-    virtual bool terminate() = 0;
+    virtual Status terminate() = 0;
+    virtual Status initialize() = 0;
 
-    virtual SharedPointer<RtcPeerConnection> create(const RtcConfiguration &configuration,
-                                                    const SharedPointer<RtcMediaConstraints> &constraints) = 0;
+    virtual uint32_t version() const = 0;
+    virtual StringView versionName() const = 0;
+    virtual StringView backendName() const = 0;
 
-    virtual void destroy(const SharedPointer<RtcPeerConnection> &peerconnection) = 0;
+    virtual RtcPeerConnection::SharedPtr create(const RtcConfiguration &configuration,
+                                                const RtcMediaConstraints::SharedPtr &constraints) = 0;
 
-    virtual SharedPointer<RtcAudioDevice> getAudioDevice() = 0;
+    virtual void destroy(const RtcPeerConnection::SharedPtr &peerConnection) = 0;
 
-    virtual SharedPointer<RtcAudioProcessing> getAudioProcessing() = 0;
+    virtual RtcAudioDevice::SharedPtr getAudioDevice() = 0;
+    virtual RtcVideoDevice::SharedPtr getVideoDevice() = 0;
+    virtual RtcAudioProcessor::SharedPtr getAudioProcessor() = 0;
 
-    virtual const SharedPointer<RtcVideoDevice> getVideoDevice() = 0;
-    virtual SharedPointer<RtcAudioSource> createAudioSource(
-        const String &audioSourceLabel,
-        RtcAudioSource::SourceType sourceType = RtcAudioSource::SourceType::kMicrophone) = 0;
+    virtual RtcMediaConstraints::SharedPtr createMediaConstraints() = 0;
 
-    virtual SharedPointer<RtcVideoSource> createVideoSource(const SharedPointer<RtcVideoCapturer> &capturer,
-                                                            const String &video_source_label,
-                                                            const SharedPointer<RtcMediaConstraints> &constraints) = 0;
+    virtual Result<RtcAudioTrackSource::SharedPtr> createAudioTrackSource(const RtcAudioSource::SharedPtr &source,
+                                                                          StringView label) = 0;
+    virtual Result<RtcVideoTrackSource::SharedPtr> createVideoTrackSource(const RtcVideoSource::SharedPtr &source,
+                                                                          StringView label) = 0;
 
-    virtual SharedPointer<RtcAudioTrack> createAudioTrack(const SharedPointer<RtcAudioSource> &source,
-                                                          const String &track_id) = 0;
+    virtual Result<RtcAudioTrack::SharedPtr> createAudioTrack(const RtcAudioTrackSource::SharedPtr &source,
+                                                              StringView trackId) = 0;
+    virtual Result<RtcVideoTrack::SharedPtr> createVideoTrack(const RtcVideoTrackSource::SharedPtr &source,
+                                                              StringView trackId) = 0;
+    virtual Result<RtcVideoTrack::SharedPtr> createVideoTrack(const RtcVideoSource::SharedPtr &source,
+                                                              StringView trackId) = 0;
 
-    virtual SharedPointer<RtcVideoTrack> createVideoTrack(const SharedPointer<RtcVideoSource> &source,
-                                                          const String &track_id) = 0;
+    virtual RtcMediaStream::SharedPtr createLocalMediaStream(StringView streamId) = 0;
 
-    virtual SharedPointer<RtcMediaStream> createStream(const String &stream_id) = 0;
+    virtual RtcRtpCapabilities::SharedPtr getRtpSenderCapabilities(RtcMediaType mediaType) = 0;
+    virtual RtcRtpCapabilities::SharedPtr getRtpReceiverCapabilities(RtcMediaType mediaType) = 0;
 
-    virtual SharedPointer<RtcRtpCapabilities> getRtpSenderCapabilities(RtcMediaType media_type) = 0;
-
-    virtual SharedPointer<RtcRtpCapabilities> getRtpReceiverCapabilities(RtcMediaType media_type) = 0;
+protected:
+    virtual ~RtcPeerConnectionFactory() = default;
 };
 
 OCTK_END_NAMESPACE

@@ -421,3 +421,4 @@ OCTK_DECLARE_LOGGER(OCTK_CORE_API, OCTK_LOGGER)
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Critical, __FILE__, OCTK_STRFUNC, __LINE__).logging
 #define OCTK_FATAL                                                                                                     \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Fatal, __FILE__, OCTK_STRFUNC, __LINE__).logging
+

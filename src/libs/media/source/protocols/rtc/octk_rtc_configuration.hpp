@@ -24,32 +24,45 @@
 
 #pragma once
 
-#include <octk_rtc_media_track.hpp>
+#include <octk_rtc_types.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-/**
- * The RtcAudioSource class is a base class for audio sources in WebRTC.
- * Audio sources represent the source of audio data in WebRTC, such as a
- * microphone or a file. This class provides a base interface for audio
- * sources to implement, allowing them to be used with WebRTC's audio
- * processing and transmission mechanisms.
- */
-class RtcAudioSource{
-public:
-    enum SourceType { kMicrophone, kCustom };
+struct RtcIceServer
+{
+    String uri;
+    String username;
+    String password;
+    OCTK_STATIC_CONSTANT_NUMBER(kMaxSize, 8)
+};
 
-    virtual void CaptureFrame(const void* audio_data, int bits_per_sample,
-                              int sample_rate, size_t number_of_channels,
-                              size_t number_of_frames) = 0;
+struct RtcConfiguration
+{
+    RtcIceServer ice_servers[RtcIceServer::kMaxSize];
+    RtcIceTransportsType type{RtcIceTransportsType::kAll};
+    RtcBundlePolicy bundle_policy{RtcBundlePolicy::kBalanced};
+    RtcRtcpMuxPolicy rtcp_mux_policy{RtcRtcpMuxPolicy::kRequire};
+    RtcCandidateNetworkPolicy candidate_network_policy{RtcCandidateNetworkPolicy::kAll};
+    RtcTcpCandidatePolicy tcp_candidate_policy{RtcTcpCandidatePolicy::kEnabled};
 
-    virtual SourceType GetSourceType() const = 0;
+    int ice_candidate_pool_size{0};
 
-protected:
-    /**
-     * The destructor for the RtcAudioSource class.
-     */
-    virtual ~RtcAudioSource() {}
+    RtcMediaSecurityType srtp_type{RtcMediaSecurityType::kDTLS_SRTP};
+    RtcSdpSemantics sdp_semantics{RtcSdpSemantics::kUnifiedPlan};
+
+    bool offer_to_receive_audio{true};
+    bool offer_to_receive_video{true};
+
+    bool disable_ipv6{false};
+    bool disable_ipv6_on_wifi{false};
+    int max_ipv6_networks{5};
+    bool disable_link_local_networks{false};
+    int screencast_min_bitrate{-1};
+
+    // private
+    bool use_rtp_mux{true};
+    uint32_t local_audio_bandwidth{128};
+    uint32_t local_video_bandwidth{512};
 };
 
 OCTK_END_NAMESPACE

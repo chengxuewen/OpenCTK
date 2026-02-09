@@ -28,39 +28,39 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class RtcDtmfSender  {
+class RtcDtmfSender
+{
 public:
-    class Observer {
-    public:
-        virtual void OnToneChange(const String tone, const String tone_buffer) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcDtmfSender);
 
-        virtual void OnToneChange(const String tone) = 0;
+    class Observer
+    {
+    public:
+        virtual void onToneChange(const StringView tone, const StringView toneBuffer) = 0;
+
+        virtual void onToneChange(const StringView tone) = 0;
 
     protected:
         virtual ~Observer() = default;
     };
 
-    static const int kDtmfDefaultCommaDelayMs = 2000;
+    OCTK_STATIC_CONSTANT_NUMBER(kDtmfDefaultCommaDelayMs, 2000)
 
-    virtual void RegisterObserver(RTCDtmfSenderObserver* observer) = 0;
+    virtual void registerObserver(Observer *observer) = 0;
+    virtual void unregisterObserver() = 0;
 
-    virtual void UnregisterObserver() = 0;
+    virtual bool insertDtmf(const StringView tones, int duration, int interToneGap, int commaDelay) = 0;
+    virtual bool insertDtmf(const StringView tones, int duration, int interToneGap) = 0;
 
-    virtual bool InsertDtmf(const String tones, int duration,
-                            int inter_tone_gap) = 0;
+    virtual int interToneGap() const = 0;
 
-    virtual bool InsertDtmf(const String tones, int duration, int inter_tone_gap,
-                            int comma_delay) = 0;
+    virtual int commaDelay() const = 0;
 
-    virtual bool CanInsertDtmf() = 0;
+    virtual bool canInsertDtmf() = 0;
 
-    virtual const String tones() const = 0;
+    virtual String tones() const = 0;
 
     virtual int duration() const = 0;
-
-    virtual int inter_tone_gap() const = 0;
-
-    virtual int comma_delay() const = 0;
 };
 
 OCTK_END_NAMESPACE

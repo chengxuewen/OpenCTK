@@ -130,7 +130,7 @@ Status PlatformThread::requestInterruption()
         return "Thread is not running or finished";
     }
     d->mInterruptionRequested.store(true, std::memory_order_relaxed);
-    return okStatus;
+    return Status::ok;
 }
 
 std::string PlatformThread::name() const
@@ -157,7 +157,7 @@ Status PlatformThread::setName(const StringView name, const void *obj)
         std::snprintf(buf, sizeof(buf), " 0x%p", obj);
         d->mName += buf;
     }
-    return okStatus;
+    return Status::ok;
 }
 
 PlatformThread::Priority PlatformThread::priority() const
@@ -180,7 +180,7 @@ Status PlatformThread::setPriority(Priority priority)
         return "Cannot set priority, thread is not running";
     }
     d->setPriority(priority);
-    return okStatus;
+    return Status::ok;
 }
 
 uint_t PlatformThread::stackSize() const
@@ -199,7 +199,7 @@ Status PlatformThread::setStackSize(uint_t stackSize)
         return "cannot change stack size while the thread is running";
     }
     d->mStackSize = stackSize;
-    return okStatus;
+    return Status::ok;
 }
 
 bool PlatformThread::isFinished() const
@@ -267,7 +267,7 @@ Status PlatformThread::start(Priority priority)
         // d->mData->threadHandle.store(nullptr);
         return "PlatformThread::start: Thread creation error";
     }
-    return okStatus;
+    return Status::ok;
 }
 
 Status PlatformThread::terminate()

@@ -127,62 +127,64 @@ octk_add_test(octk_media_tst_frame_generator_capturer
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_h264_bitstream_parser
-	SOURCES
-	tst_h264_bitstream_parser.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_h264_codecs
-	SOURCES
-	tst_h264_codecs.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_h264_encoder
-	SOURCES
-	tst_h264_encoder.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_h264_pps_parser
-	SOURCES
-	tst_h264_pps_parser.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-#octk_add_test(octk_media_tst_h264_simulcast
-#	SOURCES
-#	tst_h264_simulcast.cpp
-#	INCLUDE_DIRECTORIES
-#	LIBRARIES
-#	${OCTK_TEST_LINK_LIBRARIES}
-#	OUTPUT_DIRECTORY
-#	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_h264_sps_parser
-	SOURCES
-	tst_h264_sps_parser.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(octk_media_tst_h264_sps_vui_rewriter
-	SOURCES
-	tst_h264_sps_vui_rewriter.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+if(OCTK_FEATURE_MEDIA_USE_H264)
+	octk_add_test(octk_media_tst_h264_bitstream_parser
+		SOURCES
+		tst_h264_bitstream_parser.cpp
+		INCLUDE_DIRECTORIES
+		LIBRARIES
+		${OCTK_TEST_LINK_LIBRARIES}
+		OUTPUT_DIRECTORY
+		${OCTK_TEST_OUTPUT_DIR})
+	octk_add_test(octk_media_tst_h264_codecs
+		SOURCES
+		tst_h264_codecs.cpp
+		INCLUDE_DIRECTORIES
+		LIBRARIES
+		${OCTK_TEST_LINK_LIBRARIES}
+		OUTPUT_DIRECTORY
+		${OCTK_TEST_OUTPUT_DIR})
+	octk_add_test(octk_media_tst_h264_encoder
+		SOURCES
+		tst_h264_encoder.cpp
+		INCLUDE_DIRECTORIES
+		LIBRARIES
+		${OCTK_TEST_LINK_LIBRARIES}
+		OUTPUT_DIRECTORY
+		${OCTK_TEST_OUTPUT_DIR})
+	octk_add_test(octk_media_tst_h264_pps_parser
+		SOURCES
+		tst_h264_pps_parser.cpp
+		INCLUDE_DIRECTORIES
+		LIBRARIES
+		${OCTK_TEST_LINK_LIBRARIES}
+		OUTPUT_DIRECTORY
+		${OCTK_TEST_OUTPUT_DIR})
+	#octk_add_test(octk_media_tst_h264_simulcast
+	#	SOURCES
+	#	tst_h264_simulcast.cpp
+	#	INCLUDE_DIRECTORIES
+	#	LIBRARIES
+	#	${OCTK_TEST_LINK_LIBRARIES}
+	#	OUTPUT_DIRECTORY
+	#	${OCTK_TEST_OUTPUT_DIR})
+	octk_add_test(octk_media_tst_h264_sps_parser
+		SOURCES
+		tst_h264_sps_parser.cpp
+		INCLUDE_DIRECTORIES
+		LIBRARIES
+		${OCTK_TEST_LINK_LIBRARIES}
+		OUTPUT_DIRECTORY
+		${OCTK_TEST_OUTPUT_DIR})
+	octk_add_test(octk_media_tst_h264_sps_vui_rewriter
+		SOURCES
+		tst_h264_sps_vui_rewriter.cpp
+		INCLUDE_DIRECTORIES
+		LIBRARIES
+		${OCTK_TEST_LINK_LIBRARIES}
+		OUTPUT_DIRECTORY
+		${OCTK_TEST_OUTPUT_DIR})
+endif()
 octk_add_test(octk_media_tst_media_context
 	SOURCES
 	tst_media_context.cpp

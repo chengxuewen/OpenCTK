@@ -25,34 +25,49 @@
 #pragma once
 
 #include <octk_shared_pointer.hpp>
+#include <octk_media_global.hpp>
+#include <octk_optional.hpp>
+#include <octk_variant.hpp>
 #include <octk_string.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class RtcSessionDescription
+class OCTK_MEDIA_API RtcSessionDescription
 {
 public:
+    OCTK_STATIC_CONSTANT_STRING(kOffer, "offer")
+    OCTK_STATIC_CONSTANT_STRING(kAnswer, "answer")
+    OCTK_STATIC_CONSTANT_STRING(kPrAnswer, "pranswer")
+    OCTK_STATIC_CONSTANT_STRING(kRollback, "rollback")
+
     enum class SdpType
     {
-        kOffer = 0,
-        kPrAnswer,
-        kAnswer
+        kOffer = 0, // Description must be treated as an SDP offer.
+        kPrAnswer,  // Description must be treated as an SDP answer, but not a final answer.
+        kAnswer,    // Description must be treated as an SDP final answer, and the offer-answer exchange must be
+                    // considered complete after receiving this.
+        kRollback   // Resets any pending offers and sets signaling state back to stable.
+    };
+    static StringView sdpTypeToString(SdpType type);
+    static Optional<SdpType> sdpTypeFromString(StringView string);
+
+    using SdpTypeVariant = Variant<std::string, SdpType>;
+    static std::string sdpTypeVariantToString(const SdpTypeVariant &variant);
+    static Optional<SdpType> sdpTypeFromVariant(const SdpTypeVariant &variant);
+
+    struct Data
+    {
+        std::string sdp;
+        std::string type;
     };
 
-    // static LIB_WEBRTC_API const SharedPointer<RtcSessionDescription> Create(const String type,
-    //                                                                         const String sdp,
-    //                                                                         RtcSdpParseError *error);
-
-    virtual bool ToString(String &out) = 0;
-
-    virtual const String sdp() const = 0;
-
-    virtual const String type() = 0;
-
-    virtual SdpType GetType() = 0;
+    virtual bool toString(String &out) = 0;
+    virtual String type() const = 0;
+    virtual String sdp() const = 0;
+    virtual SdpType sdpType() = 0;
 
 protected:
-    virtual ~RtcSessionDescription() = 0;
+    virtual ~RtcSessionDescription() = default;
 };
 
 OCTK_END_NAMESPACE

@@ -32,25 +32,35 @@ OCTK_BEGIN_NAMESPACE
 class RtcMediaConstraints
 {
 public:
-    // These keys are google specific.
-    static const char *kGoogEchoCancellation; // googEchoCancellation
+    OCTK_DEFINE_SHARED_PTR(RtcMediaConstraints)
 
-    static const char *kExtendedFilterEchoCancellation; // googEchoCancellation2
-    static const char *kDAEchoCancellation;             // googDAEchoCancellation
-    static const char *kAutoGainControl;                // googAutoGainControl
-    static const char *kNoiseSuppression;               // googNoiseSuppression
-    static const char *kHighpassFilter;                 // googHighpassFilter
-    static const char *kAudioMirroring;                 // googAudioMirroring
-    static const char *kAudioNetworkAdaptorConfig;      // goodAudioNetworkAdaptorConfig
+    // These keys are google specific.
+    // static const char *kGoogEchoCancellation; // googEchoCancellation
+    //
+    // static const char *kExtendedFilterEchoCancellation; // googEchoCancellation2
+    // static const char *kDAEchoCancellation;             // googDAEchoCancellation
+    // static const char *kAutoGainControl;                // googAutoGainControl
+    // static const char *kNoiseSuppression;               // googNoiseSuppression
+    // static const char *kHighpassFilter;                 // googHighpassFilter
+    // static const char *kAudioMirroring;                 // googAudioMirroring
+    // static const char *kAudioNetworkAdaptorConfig;      // goodAudioNetworkAdaptorConfig
 
     // Constraint keys for CreateOffer / CreateAnswer
     // Specified by the W3C PeerConnection spec
-    static const char *kOfferToReceiveVideo;    // OfferToReceiveVideo
-    static const char *kOfferToReceiveAudio;    // OfferToReceiveAudio
-    static const char *kVoiceActivityDetection; // VoiceActivityDetection
-    static const char *kIceRestart;             // IceRestart
-                                                // These keys are google specific.
-    static const char *kUseRtpMux;              // googUseRtpMUX
+    // static const char *kOfferToReceiveVideo;    // OfferToReceiveVideo
+    OCTK_STATIC_CONSTANT_STRING(kOfferToReceiveVideo, "OfferToReceiveVideo")
+    // static const char *kOfferToReceiveAudio;    // OfferToReceiveAudio
+    OCTK_STATIC_CONSTANT_STRING(kOfferToReceiveAudio, "OfferToReceiveAudio")
+    // static const char *kVoiceActivityDetection; // VoiceActivityDetection
+    OCTK_STATIC_CONSTANT_STRING(kVoiceActivityDetection, "VoiceActivityDetection")
+    // static const char *kIceRestart;             // IceRestart
+    OCTK_STATIC_CONSTANT_STRING(kIceRestart, "IceRestart")
+    // These keys are google specific.
+
+    // static const char *kUseRtpMux;              // googUseRtpMUX
+    OCTK_STATIC_CONSTANT_STRING(kUseRtpMux, "googUseRtpMUX")
+    // static const char *kEnableDscp;            // googDscp
+    OCTK_STATIC_CONSTANT_STRING(kEnableDscp, "googDscp")
 
     // Constraints values.
     static const char *kValueTrue;  // true
@@ -61,33 +71,30 @@ public:
     static const char *kEnableRtpDataChannels; // Enable RTP DataChannels
                                                // Google-specific constraint keys.
                                                // Temporary pseudo-constraint for enabling DSCP through JS.
-    static const char *kEnableDscp;            // googDscp
-                                               // Constraint to enable IPv6 through JS.
-    static const char *kEnableIPv6;            // googIPv6
-                                               // Temporary constraint to enable suspend below min bitrate feature.
-    static const char *kEnableVideoSuspendBelowMinBitrate;
+
+    // Constraint to enable IPv6 through JS.
+    static const char *kEnableIPv6; // googIPv6
+                                    // Temporary constraint to enable suspend below min bitrate feature.
+    OCTK_STATIC_CONSTANT_STRING(kEnableVideoSuspendBelowMinBitrate, "googSuspendBelowMinBitrate")
     // googSuspendBelowMinBitrate
     // Constraint to enable combined audio+video bandwidth estimation.
     // static const char*
     //    kCombinedAudioVideoBwe;  // googCombinedAudioVideoBwe
-    static const char *kScreencastMinBitrate; // googScreencastMinBitrate
-    static const char *kCpuOveruseDetection;  // googCpuOveruseDetection
+    OCTK_STATIC_CONSTANT_STRING(kScreencastMinBitrate, "googScreencastMinBitrate")
+    OCTK_STATIC_CONSTANT_STRING(kCpuOveruseDetection, "googCpuOveruseDetection")
 
-    // Specifies number of simulcast layers for all video tracks
-    // with a Plan B offer/answer
-    // (see RTCOfferAnswerOptions::num_simulcast_layers).
-    static const char *kNumSimulcastLayers;
+    // Specifies number of simulcast layers for all video tracks with a Plan B offer/answer
+    OCTK_STATIC_CONSTANT_STRING(kNumSimulcastLayers, "googNumSimulcastLayers")
+    OCTK_STATIC_CONSTANT_STRING(kRawPacketizationForVideoEnabled, "googRawPacketizationForVideoEnabled")
 
-public:
-    static SharedPointer<RtcMediaConstraints> Create();
+    // static SharedPtr create();
 
-    virtual void AddMandatoryConstraint(const String key, const String value) = 0;
+    virtual void addMandatoryConstraint(StringView key, StringView value) = 0;
 
-    virtual void AddOptionalConstraint(const String key, const String value) = 0;
+    virtual void addOptionalConstraint(StringView key, StringView value) = 0;
 
 protected:
-    virtual ~RtcMediaConstraints() { }
+    virtual ~RtcMediaConstraints() = default;
 };
-
 
 OCTK_END_NAMESPACE

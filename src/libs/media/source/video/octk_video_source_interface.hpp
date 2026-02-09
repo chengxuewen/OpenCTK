@@ -132,9 +132,13 @@ inline bool operator==(const VideoSinkWants::FrameSize &a, const VideoSinkWants:
     return a.width == b.width && a.height == b.height;
 }
 
-inline bool operator!=(const VideoSinkWants::FrameSize &a, const VideoSinkWants::FrameSize &b) { return !(a == b); }
+inline bool operator!=(const VideoSinkWants::FrameSize &a, const VideoSinkWants::FrameSize &b)
+{
+    return !(a == b);
+}
 
-template <typename T> class VideoSourceInterface
+template <typename T>
+class VideoSourceInterface
 {
 public:
     virtual ~VideoSourceInterface() = default;

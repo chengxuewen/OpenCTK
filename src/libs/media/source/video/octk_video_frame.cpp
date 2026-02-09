@@ -49,14 +49,18 @@ VideoFramePrivate::VideoFramePrivate(VideoFrame *p)
 {
 }
 
-VideoFramePrivate::~VideoFramePrivate() { }
+VideoFramePrivate::~VideoFramePrivate()
+{
+}
 
 // VideoFrame::VideoFrame(VideoFramePrivate *d)
 //     : mDPtr(d)
 // {
 // }
 
-VideoFrame::~VideoFrame() { }
+VideoFrame::~VideoFrame()
+{
+}
 
 void VideoFrame::UpdateRect::unionRect(const UpdateRect &other)
 {
@@ -99,9 +103,15 @@ void VideoFrame::UpdateRect::intersectRect(const UpdateRect &other)
     }
 }
 
-void VideoFrame::UpdateRect::makeEmptyUpdate() { width = height = offsetX = offsetY = 0; }
+void VideoFrame::UpdateRect::makeEmptyUpdate()
+{
+    width = height = offsetX = offsetY = 0;
+}
 
-bool VideoFrame::UpdateRect::isEmpty() const { return width == 0 && height == 0; }
+bool VideoFrame::UpdateRect::isEmpty() const
+{
+    return width == 0 && height == 0;
+}
 
 VideoFrame::UpdateRect VideoFrame::UpdateRect::scaleWithFrame(int frame_width,
                                                               int frame_height,
@@ -360,13 +370,25 @@ VideoFrame::VideoFrame(uint16_t id,
     }
 }
 
-int VideoFrame::width() const { return mVideoFrameBuffer ? mVideoFrameBuffer->width() : 0; }
+int VideoFrame::width() const
+{
+    return mVideoFrameBuffer ? mVideoFrameBuffer->width() : 0;
+}
 
-int VideoFrame::height() const { return mVideoFrameBuffer ? mVideoFrameBuffer->height() : 0; }
+int VideoFrame::height() const
+{
+    return mVideoFrameBuffer ? mVideoFrameBuffer->height() : 0;
+}
 
-uint32_t VideoFrame::size() const { return width() * height(); }
+uint32_t VideoFrame::size() const
+{
+    return width() * height();
+}
 
-std::shared_ptr<VideoFrameBuffer> VideoFrame::videoFrameBuffer() const { return mVideoFrameBuffer; }
+std::shared_ptr<VideoFrameBuffer> VideoFrame::videoFrameBuffer() const
+{
+    return mVideoFrameBuffer;
+}
 
 void VideoFrame::setVideoFrameBuffer(const std::shared_ptr<VideoFrameBuffer> &buffer)
 {
@@ -374,6 +396,9 @@ void VideoFrame::setVideoFrameBuffer(const std::shared_ptr<VideoFrameBuffer> &bu
     mVideoFrameBuffer = buffer;
 }
 
-int64_t VideoFrame::renderTimeMSecs() const { return timestampUSecs() / DateTime::kUSecsPerMSec; }
+int64_t VideoFrame::renderTimeMSecs() const
+{
+    return timestampUSecs() / DateTime::kUSecsPerMSec;
+}
 
 OCTK_END_NAMESPACE

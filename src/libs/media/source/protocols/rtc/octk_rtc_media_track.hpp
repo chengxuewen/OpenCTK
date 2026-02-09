@@ -25,39 +25,34 @@
 #pragma once
 
 #include <octk_string.hpp>
+#include <octk_shared_pointer.hpp>
 
 OCTK_BEGIN_NAMESPACE
-
-class RtcAudioTrackSink
-{
-public:
-    virtual void onData(const void *audioData, int bitsPerSample, int sampleRate, size_t nChannels, size_t nFrames) = 0;
-
-protected:
-    virtual ~RtcAudioTrackSink() = 0;
-};
 
 class RtcMediaTrack
 {
 public:
+    OCTK_DEFINE_SHARED_PTR(RtcMediaTrack)
+
     enum class State
     {
         kLive,
         kEnded,
     };
-    virtual State state() const = 0;
 
     /*track id*/
-    virtual const String id() const = 0;
+    virtual String id() const = 0;
 
     /*track type: audio/video*/
-    virtual const String kind() const = 0;
+    virtual String kind() const = 0;
+
+    virtual State state() const = 0;
 
     virtual bool enabled() const = 0;
-    virtual bool set_enabled(bool enable) = 0;
+    virtual bool setEnabled(bool enable) = 0;
 
 protected:
-    virtual ~RtcMediaTrack() = 0;
+    virtual ~RtcMediaTrack() = default;
 };
 
 OCTK_END_NAMESPACE

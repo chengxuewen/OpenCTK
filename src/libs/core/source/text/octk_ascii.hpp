@@ -22,8 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_ASCII_HPP
-#define _OCTK_ASCII_HPP
+#pragma once
 
 #include <octk_types.hpp>
 #include <octk_string_view.hpp>
@@ -265,8 +264,7 @@ OCTK_CORE_API int ascii_xdigit_value(char c);
  * the character after the last character used in the conversion.
  * @return the double value.
  */
-OCTK_CORE_API double_t ascii_strtod(const char *nptr,
-                                    char **endptr);
+OCTK_CORE_API double_t ascii_strtod(const char *nptr, char **endptr);
 
 /**
  * @brief Converts a string to a uint64_t value.
@@ -298,9 +296,7 @@ OCTK_CORE_API double_t ascii_strtod(const char *nptr,
  * @param base      to be used for the conversion, 2..36 or 0
  * @return the uint64_t value or zero on error.
  */
-OCTK_CORE_API uint64_t ascii_strtoull(const char *nptr,
-                                      char **endptr,
-                                      unsigned int base);
+OCTK_CORE_API uint64_t ascii_strtoull(const char *nptr, char **endptr, unsigned int base);
 
 /**
  * @brief Converts a string to a int64_t value.
@@ -327,9 +323,7 @@ OCTK_CORE_API uint64_t ascii_strtoull(const char *nptr,
  * @param base: to be used for the conversion, 2..36 or 0
  * @return the int64_t value or zero on error.
  */
-OCTK_CORE_API int64_t ascii_strtoll(const char *nptr,
-                                    char **endptr,
-                                    unsigned int base);
+OCTK_CORE_API int64_t ascii_strtoll(const char *nptr, char **endptr, unsigned int base);
 
 /**
  * @brief Converts a double to a string, using the '.' as decimal point.
@@ -348,10 +342,7 @@ OCTK_CORE_API int64_t ascii_strtoll(const char *nptr,
  * @param d         The double to convert
  * @return          The pointer to the buffer with the converted string.
  */
-OCTK_CORE_API char *ascii_formatd(char *buffer,
-                                  int buf_len,
-                                  const char *format,
-                                  double_t d);
+OCTK_CORE_API char *ascii_formatd(char *buffer, int buf_len, const char *format, double_t d);
 
 /**
  * @brief Converts a double to a string, using the '.' as decimal point.
@@ -368,9 +359,7 @@ OCTK_CORE_API char *ascii_formatd(char *buffer,
  * @param d         The double to convert
  * @return The pointer to the buffer with the converted string.
  */
-static OCTK_FORCE_INLINE char *ascii_dtostr(char *buffer,
-                                            int buf_len,
-                                            double_t d)
+static OCTK_FORCE_INLINE char *ascii_dtostr(char *buffer, int buf_len, double_t d)
 {
     return ascii_formatd(buffer, buf_len, "%.17g", d);
 }
@@ -396,8 +385,7 @@ static OCTK_FORCE_INLINE char *ascii_dtostr(char *buffer,
  * @param s2    string to compare with @a s1
  * @return 0    if the strings match, a negative value if @a s1 < @a s2, or a positive value if @a s1 > @a s2.
  */
-OCTK_CORE_API int ascii_strcasecmp(const char *s1,
-                                   const char *s2);
+OCTK_CORE_API int ascii_strcasecmp(const char *s1, const char *s2);
 
 /**
  * @brief Compare @a s1 and @a s2, ignoring the case of ASCII characters and any characters after the first @n in each
@@ -417,9 +405,7 @@ OCTK_CORE_API int ascii_strcasecmp(const char *s1,
  * @param n     number of characters to compare
  * @return 0 if the strings match, a negative value if @a s1 < @a s2, or a positive value if @a s1 > @a s2.
  */
-OCTK_CORE_API int ascii_strncasecmp(const char *s1,
-                                    const char *s2,
-                                    size_t n);
+OCTK_CORE_API int ascii_strncasecmp(const char *s1, const char *s2, size_t n);
 
 /**
  * @brief Converts all upper case ASCII letters to lower case ASCII letters.
@@ -430,8 +416,7 @@ OCTK_CORE_API int ascii_strncasecmp(const char *s1,
  * semantics that exactly match ascii_tolower().
  * (Note that this is unlike the old strlwr(), which modified the string in place.)
  */
-OCTK_CORE_API char *ascii_strlwr(const char *str,
-                                 ssize_t len);
+OCTK_CORE_API char *ascii_strlwr(const char *str, ssize_t len);
 
 /**
  * @brief Converts all lower case ASCII letters to upper case ASCII letters.
@@ -442,8 +427,7 @@ OCTK_CORE_API char *ascii_strlwr(const char *str,
  * semantics that exactly match ascii_toupper().
  * (Note that this is unlike the old strupr(), which modified the string in place.)
  */
-OCTK_CORE_API char *ascii_strupr(const char *str,
-                                 ssize_t len);
+OCTK_CORE_API char *ascii_strupr(const char *str, ssize_t len);
 
 /**
  * @brief A convenience function for converting a string to a signed number.
@@ -552,5 +536,3 @@ static OCTK_FORCE_INLINE std::string ascii_string_toupper(StringView s)
 }
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_ASCII_HPP

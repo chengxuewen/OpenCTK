@@ -31,18 +31,23 @@ OCTK_BEGIN_NAMESPACE
 class RtcVideoCapturer
 {
 public:
-    virtual ~RtcVideoCapturer() { }
+    using SharedPtr = SharedPointer<RtcVideoCapturer>;
 
-    virtual bool StartCapture() = 0;
+    virtual bool isCaptureStarted() = 0;
 
-    virtual bool CaptureStarted() = 0;
+    virtual bool startCapture() = 0;
 
-    virtual void StopCapture() = 0;
+    virtual void stopCapture() = 0;
+
+protected:
+    virtual ~RtcVideoCapturer() = default;
 };
 
 class RtcVideoDevice
 {
 public:
+    using SharedPtr = SharedPointer<RtcVideoDevice>;
+
     virtual uint32_t numberOfDevices() = 0;
 
     virtual int32_t getDeviceName(uint32_t deviceNumber,
@@ -53,14 +58,14 @@ public:
                                   char *productUniqueIdUTF8 = 0,
                                   uint32_t productUniqueIdUTF8Length = 0) = 0;
 
-    virtual SharedPointer<RtcVideoCapturer> create(const char *name,
-                                                   uint32_t index,
-                                                   size_t width,
-                                                   size_t height,
-                                                   size_t target_fps) = 0;
+    virtual RtcVideoCapturer::SharedPtr create(const char *name,
+                                               uint32_t index,
+                                               size_t width,
+                                               size_t height,
+                                               size_t targetFps) = 0;
 
 protected:
-    virtual ~RtcVideoDevice() { }
+    virtual ~RtcVideoDevice() = default;
 };
 
 OCTK_END_NAMESPACE

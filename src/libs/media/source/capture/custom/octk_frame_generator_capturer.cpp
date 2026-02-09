@@ -297,7 +297,7 @@ Status FrameGeneratorCapturerVideoTrackSource::start()
         d->mFrameGeneratorCapturer->start();
         this->setState(kLive);
     }
-    return okStatus;
+    return Status::ok;
 }
 
 void FrameGeneratorCapturerVideoTrackSource::stop()

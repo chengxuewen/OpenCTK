@@ -111,13 +111,13 @@ public:
 
     std::map<K, V> std_map() const
     {
-        std::map<K, V> m;
+        std::map<K, V> map;
         for (size_t i = 0; i < mData.size(); ++i)
         {
             const Item *dp = mData.data() + i;
-            m[dp->key] = dp->value;
+            map[convertKey(dp->key)] = convertValue(dp->value);
         }
-        return m;
+        return map;
     }
 
     template <typename K2, typename KC, typename V2, typename VC>

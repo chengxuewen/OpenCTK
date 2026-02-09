@@ -50,7 +50,7 @@ public:
             int height{0};
         } maxResolution;
         int numberOfCores{1};
-        RtcVideoCodec::Type codecType{RtcVideoCodec::Type::kGeneric};
+        // RtcVideoCodec::Type codecType{RtcVideoCodec::Type::kGeneric};
     };
 
     virtual int32_t release() = 0;
@@ -65,7 +65,7 @@ public:
      */
     virtual bool configure(const Settings &settings) = 0;
 
-    virtual int32_t decode(const RtcEncodedImage::SharedPtr &inputImage, int64_t renderTimeMSecs) = 0;
+    // virtual int32_t decode(const RtcEncodedImage::SharedPtr &inputImage, int64_t renderTimeMSecs) = 0;
 
     //int32_t RegisterDecodeCompleteCallback(webrtc::DecodedImageCallback *callback) override;
 

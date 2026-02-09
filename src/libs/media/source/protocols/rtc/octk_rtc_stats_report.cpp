@@ -215,7 +215,7 @@ String RtcStatsReport::toJson() const
     const char *separator = "";
     for (auto iter = this->begin(); iter != this->end(); ++iter)
     {
-        ss << separator << iter->toJson().data();
+        ss << separator << iter->toJson().c_str();
         separator = ",";
     }
     ss << "]";

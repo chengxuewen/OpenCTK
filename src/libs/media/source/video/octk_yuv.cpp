@@ -570,37 +570,6 @@ void NV12ToI420Scaler::NV12ToI420Scale(const uint8_t *src_y,
                       libyuv::kFilterBox);
 }
 
-#define OCTK_I420_Y_PTR(buffer, width, height) (buffer)
-#define OCTK_I420_U_PTR(buffer, width, height) (buffer + width * height)
-#define OCTK_I420_V_PTR(buffer, width, height) (buffer + width * height + (width >> 1) * (height >> 1))
-#define OCTK_I420_Y_STRIDE(width)              (width)
-#define OCTK_I420_U_STRIDE(width)              (width >> 1)
-#define OCTK_I420_V_STRIDE(width)              (width >> 1)
-#define OCTK_I420_Y_OFFSET_PTR(buffer, width, height, xOffset, yOffset)                                                \
-    (OCTK_I420_Y_PTR(buffer, width, height) + OCTK_I420_Y_STRIDE(width) * yOffset + xOffset)
-#define OCTK_I420_U_OFFSET_PTR(buffer, width, height, xOffset, yOffset)                                                \
-    (OCTK_I420_U_PTR(buffer, width, height) + OCTK_I420_U_STRIDE(width) * (yOffset / 2) + (xOffset / 2))
-#define OCTK_I420_V_OFFSET_PTR(buffer, width, height, xOffset, yOffset)                                                \
-    (OCTK_I420_V_PTR(buffer, width, height) + OCTK_I420_V_STRIDE(width) * (yOffset / 2) + (xOffset / 2))
-
-#define OCTK_NV12_Y_PTR(buffer, width, height)  (buffer)
-#define OCTK_NV12_UV_PTR(buffer, width, height) (buffer + width * height)
-#define OCTK_NV12_Y_STRIDE(width)               (width)
-#define OCTK_NV12_UV_STRIDE(width)              (width)
-#define OCTK_NV12_Y_OFFSET_PTR(buffer, width, height, xOffset, yOffset)                                                \
-    (OCTK_NV12_Y_PTR(buffer, width, height) + width * yOffset + xOffset)
-#define OCTK_NV12_UV_OFFSET_PTR(buffer, width, height, xOffset, yOffset)                                               \
-    (OCTK_NV12_UV_PTR(buffer, width, height) + width * (yOffset / 2) + xOffset)
-
-#define OCTK_NV21_Y_PTR(buffer, width, height)  (buffer)
-#define OCTK_NV21_VU_PTR(buffer, width, height) (buffer + width * height)
-#define OCTK_NV21_Y_STRIDE(width)               (width)
-#define OCTK_NV21_VU_STRIDE(width)              (width)
-
-#define OCTK_ARGB_STRIDE(width) (width * 4)
-#define OCTK_ARGB_OFFSET_PTR(buffer, width, xOffset, yOffset)                                                          \
-    (buffer + OCTK_ARGB_STRIDE(width) * yOffset + OCTK_ARGB_STRIDE(xOffset))
-
 namespace yuv
 {
 void scaleI420(const uint8_t *srcY,

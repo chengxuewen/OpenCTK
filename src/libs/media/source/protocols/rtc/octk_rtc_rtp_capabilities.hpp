@@ -24,55 +24,66 @@
 
 #pragma once
 
-#include <octk_rtc_rtp_parameters.hpp>
+#include <octk_rtc_types.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
 class RtcRtpCodecCapability
 {
 public:
-    static const SharedPointer<RtcRtpCodecCapability> Create();
+    OCTK_DEFINE_SHARED_PTR(RtcRtpCodecCapability)
 
-    virtual void set_mime_type(const String &mime_type) = 0;
-    virtual void set_clock_rate(int clock_rate) = 0;
-    virtual void set_channels(int channels) = 0;
-    virtual void set_sdp_fmtp_line(const String &sdp_fmtp_line) = 0;
-
-    virtual String mime_type() const = 0;
-    virtual int clock_rate() const = 0;
     virtual int channels() const = 0;
-    virtual String sdp_fmtp_line() const = 0;
+    virtual void setChannels(int channels) = 0;
+
+    virtual int clockRate() const = 0;
+    virtual void setClockRate(int clockRate) = 0;
+
+    virtual String mimeType() const = 0;
+    virtual void setMimeType(StringView mimeType) = 0;
+
+    virtual String sdpFmtpLine() const = 0;
+    virtual void setSdpFmtpLine(StringView sdpFmtpLine) = 0;
 
 protected:
-    virtual ~RtcRtpCodecCapability() { }
+    virtual ~RtcRtpCodecCapability() = default;
 };
 
 class RtcRtpHeaderExtensionCapability
 {
 public:
-    virtual const String uri() = 0;
-    virtual void set_uri(const String uri) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtpHeaderExtensionCapability)
 
-    virtual int preferred_id() = 0;
-    virtual void set_preferred_id(int value) = 0;
+    virtual String uri() = 0;
+    virtual void setUri(StringView uri) = 0;
 
-    virtual bool preferred_encrypt() = 0;
-    virtual void set_preferred_encrypt(bool value) = 0;
+    virtual int preferredId() = 0;
+    virtual void setPreferredId(int value) = 0;
+
+    virtual bool preferredEncrypt() = 0;
+    virtual void setPreferredEncrypt(bool value) = 0;
+
+protected:
+    virtual ~RtcRtpHeaderExtensionCapability() = default;
 };
 
 class RtcRtpCapabilities
 {
 public:
-    virtual const Vector<const SharedPointer<RtcRtpCodecCapability>> codecs() = 0;
-    virtual void set_codecs(const Vector<const SharedPointer<RtcRtpCodecCapability>> codecs) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtpCapabilities)
 
-    virtual const Vector<const SharedPointer<RtcRtpHeaderExtensionCapability>> header_extensions() = 0;
+    virtual Vector<SharedPointer<RtcRtpCodecCapability>> codecs() = 0;
+    virtual void setCodecs(const Vector<SharedPointer<RtcRtpCodecCapability>> &codecs) = 0;
 
-    virtual void set_header_extensions(
-        const Vector<const SharedPointer<RtcRtpHeaderExtensionCapability>> header_extensions) = 0;
+    virtual Vector<SharedPointer<RtcRtpHeaderExtensionCapability>> headerExtensions() = 0;
+    virtual void setHeaderExtensions(
+        const Vector<SharedPointer<RtcRtpHeaderExtensionCapability>> &headerExtensions) = 0;
 
     // virtual const Vector<const SharedPointer<RtcFecMechanism>> fec() = 0;
     // virtual void set_fec(const Vector<const SharedPointer<RtcFecMechanism>> fec) = 0;
+
+protected:
+    virtual ~RtcRtpCapabilities() = default;
 };
 
 OCTK_END_NAMESPACE

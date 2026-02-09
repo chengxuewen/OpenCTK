@@ -40,22 +40,18 @@ struct RtcSdpParseError
 class RtcIceCandidate
 {
 public:
-    static const SharedPointer<RtcIceCandidate> Create(const String sdp,
-                                                       const String sdp_mid,
-                                                       int sdp_mline_index,
-                                                       RtcSdpParseError *error);
+    OCTK_DEFINE_SHARED_PTR(RtcIceCandidate);
 
-public:
-    virtual const String candidate() const = 0;
+    virtual bool toString(String &out) = 0;
 
-    virtual const String sdp_mid() const = 0;
+    virtual int sdpMLineIndex() const = 0;
 
-    virtual int sdp_mline_index() const = 0;
+    virtual String candidate() const = 0;
 
-    virtual bool ToString(String &out) = 0;
+    virtual String sdpMid() const = 0;
 
 protected:
-    virtual ~RtcIceCandidate() { }
+    virtual ~RtcIceCandidate() = default;
 };
 
 OCTK_END_NAMESPACE

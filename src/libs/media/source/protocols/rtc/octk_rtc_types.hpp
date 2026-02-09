@@ -25,6 +25,7 @@
 #pragma once
 
 #include <octk_shared_pointer.hpp>
+#include <octk_source_sink.hpp>
 #include <octk_vector_map.hpp>
 #include <octk_string.hpp>
 
@@ -39,10 +40,10 @@ enum class RtcMediaSecurityType
 
 enum class RtcMediaType
 {
-    AUDIO,
-    VIDEO,
-    DATA,
-    UNSUPPORTED
+    kUnsupported,
+    kAudio,
+    kVideo,
+    kData
 };
 
 enum class RtcVideoFrameType
@@ -56,6 +57,37 @@ enum class RtcH264PacketizationMode
 {
     kNonInterleaved = 0, // Mode 1 - STAP-A, FU-A is allowed
     kSingleNalUnit       // Mode 0 - only single NALU allowed
+};
+
+enum class RtcBundlePolicy
+{
+    kBalanced,
+    kMaxBundle,
+    kMaxCompat
+};
+
+enum class RtcRtcpMuxPolicy
+{
+    kNegotiate,
+    kRequire,
+};
+
+enum class RtcSdpSemantics
+{
+    kPlanB,
+    kUnifiedPlan
+};
+
+enum class RtcCandidateNetworkPolicy
+{
+    kAll,
+    kLowCost
+};
+
+enum class RtcTcpCandidatePolicy
+{
+    kEnabled,
+    kDisabled
 };
 
 enum class RtcH264Profile
@@ -90,181 +122,191 @@ enum class RtcH264Level
     kLevel5_2 = 52
 };
 
-using RtcCodecParameterMap = VectorMap<String, String>;
 
-class RtcSdpVideoFormat
+enum class RtcIceTransportsType
 {
-public:
-    using SharedPtr = SharedPointer<RtcSdpVideoFormat>;
-
-    OCTK_STATIC_CONSTANT_STRING(kVp8CodecName, "VP8")
-    OCTK_STATIC_CONSTANT_STRING(kVp9CodecName, "VP9")
-    OCTK_STATIC_CONSTANT_STRING(kAv1CodecName, "AV1")
-    OCTK_STATIC_CONSTANT_STRING(kH264CodecName, "H264")
-    OCTK_STATIC_CONSTANT_STRING(kH265CodecName, "H265")
-
-    virtual StringView name() const = 0;
-    virtual void setName(StringView name) = 0;
-
-    virtual RtcCodecParameterMap parameters() const = 0;
-    virtual void setParameters(const RtcCodecParameterMap &parameters) = 0;
-
-    virtual Vector<uint8_t> scalabilityModes() const = 0;
-    virtual void setScalabilityModes(const Vector<uint8_t> &scalabilityModes) = 0;
-
-    virtual String toString() const = 0;
-    virtual bool isSameCodec(const SharedPtr &other) const;
-
-protected:
-    virtual ~RtcSdpVideoFormat() = default;
+    kAll,
+    kNone,
+    kRelay,
+    kNoHost
 };
 
-struct RtcVideoCodec
-{
-    enum class Type
-    {
-        kGeneric = 0,
-        kH264,
-        kH265,
-        kVP8,
-        kVP9,
-        kAV1,
-    };
-    enum class Mode
-    {
-        kRealtimeVideo,
-        kScreenSharing
-    };
+// using RtcCodecParameterMap = VectorMap<String, String>;
 
-    Type type{Type::kGeneric};
-    Mode mode{Mode::kRealtimeVideo};
+// class RtcSdpVideoFormat
+// {
+// public:
+//     using SharedPtr = SharedPointer<RtcSdpVideoFormat>;
+//
+//     OCTK_STATIC_CONSTANT_STRING(kVp8CodecName, "VP8")
+//     OCTK_STATIC_CONSTANT_STRING(kVp9CodecName, "VP9")
+//     OCTK_STATIC_CONSTANT_STRING(kAv1CodecName, "AV1")
+//     OCTK_STATIC_CONSTANT_STRING(kH264CodecName, "H264")
+//     OCTK_STATIC_CONSTANT_STRING(kH265CodecName, "H265")
+//
+//     virtual StringView name() const = 0;
+//     virtual void setName(StringView name) = 0;
+//
+//     virtual RtcCodecParameterMap parameters() const = 0;
+//     virtual void setParameters(const RtcCodecParameterMap &parameters) = 0;
+//
+//     virtual Vector<uint8_t> scalabilityModes() const = 0;
+//     virtual void setScalabilityModes(const Vector<uint8_t> &scalabilityModes) = 0;
+//
+//     virtual String toString() const = 0;
+//     virtual bool isSameCodec(const SharedPtr &other) const;
+//
+// protected:
+//     virtual ~RtcSdpVideoFormat() = default;
+// };
 
-    uint16_t width{0};
-    uint16_t height{0};
+// struct RtcVideoCodec
+// {
+//     enum class Type
+//     {
+//         kGeneric = 0,
+//         kH264,
+//         kH265,
+//         kVP8,
+//         kVP9,
+//         kAV1,
+//     };
+//     enum class Mode
+//     {
+//         kRealtimeVideo,
+//         kScreenSharing
+//     };
+//
+//     Type type{Type::kGeneric};
+//     Mode mode{Mode::kRealtimeVideo};
+//
+//     uint16_t width{0};
+//     uint16_t height{0};
+//
+//     uint32_t maxFramerate{0};
+//
+//     unsigned int maxBitrate{0};   // kilobits/sec.
+//     unsigned int minBitrate{0};   // kilobits/sec.
+//     unsigned int startBitrate{0}; // kilobits/sec.
+//
+//     bool frameDropEnabled{false};
+//
+//     struct H264
+//     {
+//         int keyFrameInterval{0};
+//         uint8_t numberOfTemporalLayers{0};
+//     } h264;
+//
+//     struct VP8
+//     {
+//         bool denoisingOn{false};
+//         bool automaticResizeOn{false};
+//
+//         int keyFrameInterval{0};
+//         unsigned char numberOfTemporalLayers{0};
+//     } vp8;
+//
+//     struct VP9
+//     {
+//         enum class InterLayerPredMode : int
+//         {
+//             kOn = 0,      // Inter-layer prediction is enabled.
+//             kOff = 1,     // Inter-layer prediction is disabled.
+//             kOnKeyPic = 2 // Inter-layer prediction is enabled but limited to key frames.
+//         };
+//         bool denoisingOn{false};
+//         bool flexibleMode{false};
+//         bool adaptiveQpMode{false};
+//         bool automaticResizeOn{false};
+//
+//         int keyFrameInterval{0};
+//         unsigned char numberOfSpatialLayers{0};
+//         unsigned char numberOfTemporalLayers{0};
+//
+//         InterLayerPredMode interLayerPred{InterLayerPredMode::kOff};
+//     } vp9;
+//
+//     struct AV1
+//     {
+//         bool automaticResizeOn{true};
+//     } av1;
+// };
+//
+// class RtcVideoBitrateAllocation
+// {
+// public:
+//     using SharedPtr = SharedPointer<RtcVideoBitrateAllocation>;
+//
+//     virtual uint32_t getBitrate(size_t spatial_index, size_t temporal_index) const = 0;
+//
+//     // Get the sum of all the temporal layer for a specific spatial layer.
+//     virtual uint32_t getSpatialLayerSum(size_t spatial_index) const = 0;
+//
+//     // Whether the specific spatial layers has the bitrate set in any of its temporal layers.
+//     virtual bool isSpatialLayerUsed(size_t spatial_index) const = 0;
+//
+//     // Sum of bitrates of temporal layers, from layer 0 to `temporal_index`
+//     // inclusive, of specified spatial layer `spatial_index`. Bitrates of lower
+//     // spatial layers are not included.
+//     virtual uint32_t getTemporalLayerSum(size_t spatial_index, size_t temporal_index) const = 0;
+//
+//     // Returns a vector of the temporal layer bitrates for the specific spatial
+//     // layer. Length of the returned vector is cropped to the highest temporal
+//     // layer with a defined bitrate.
+//     virtual Vector<uint32_t> getTemporalLayerAllocation(size_t spatial_index) const = 0;
+//
+//     // Sum of all bitrates.
+//     virtual uint32_t getSumBps() const = 0;
+//
+// protected:
+//     virtual ~RtcVideoBitrateAllocation() = default;
+// };
 
-    uint32_t maxFramerate{0};
+// class RtcEncodedImage
+// {
+// public:
+//     using SharedPtr = SharedPointer<RtcEncodedImage>;
+//
+//     virtual size_t size() const = 0;
+//     virtual const uint8_t *data() const = 0;
+//
+//     const uint8_t *begin() const { return this->data(); }
+//     const uint8_t *end() const { return this->data() + this->size(); }
+//
+// protected:
+//     virtual ~RtcEncodedImage() = default;
+// };
+//
+// struct RtcCodecSpecificInfo
+// {
+//     RtcVideoCodec::Type codecType{RtcVideoCodec::Type::kGeneric};
+//     bool endOfPicture{true};
+//
+//     struct Union
+//     {
+//         struct VP8
+//         {
+//             bool nonReference;
+//             uint8_t temporalIdx;
+//             bool layerSync;
+//             int8_t keyIdx; // Negative value to skip keyIdx.
+//
+//             bool useExplicitDependencies;
+//             static constexpr size_t kBuffersCount{3};
+//             size_t referencedBuffers[kBuffersCount];
+//             size_t referencedBuffersCount;
+//             size_t updatedBuffers[kBuffersCount];
+//             size_t updatedBuffersCount;
+//         } vp8;
+//         struct H264
+//         {
+//             RtcH264PacketizationMode packetizationMode{RtcH264PacketizationMode::kNonInterleaved};
+//             uint8_t temporalIndex{0};
+//             bool baseLayerSync{false};
+//             bool idrFrame{false};
+//         } h264;
+//     } codecSpecific;
+// };
 
-    unsigned int maxBitrate{0};   // kilobits/sec.
-    unsigned int minBitrate{0};   // kilobits/sec.
-    unsigned int startBitrate{0}; // kilobits/sec.
-
-    bool frameDropEnabled{false};
-
-    struct H264
-    {
-        int keyFrameInterval{0};
-        uint8_t numberOfTemporalLayers{0};
-    } h264;
-
-    struct VP8
-    {
-        bool denoisingOn{false};
-        bool automaticResizeOn{false};
-
-        int keyFrameInterval{0};
-        unsigned char numberOfTemporalLayers{0};
-    } vp8;
-
-    struct VP9
-    {
-        enum class InterLayerPredMode : int
-        {
-            kOn = 0,      // Inter-layer prediction is enabled.
-            kOff = 1,     // Inter-layer prediction is disabled.
-            kOnKeyPic = 2 // Inter-layer prediction is enabled but limited to key frames.
-        };
-        bool denoisingOn{false};
-        bool flexibleMode{false};
-        bool adaptiveQpMode{false};
-        bool automaticResizeOn{false};
-
-        int keyFrameInterval{0};
-        unsigned char numberOfSpatialLayers{0};
-        unsigned char numberOfTemporalLayers{0};
-
-        InterLayerPredMode interLayerPred{InterLayerPredMode::kOff};
-    } vp9;
-
-    struct AV1
-    {
-        bool automaticResizeOn{true};
-    } av1;
-};
-
-class RtcVideoBitrateAllocation
-{
-public:
-    using SharedPtr = SharedPointer<RtcVideoBitrateAllocation>;
-
-    virtual uint32_t getBitrate(size_t spatial_index, size_t temporal_index) const = 0;
-
-    // Get the sum of all the temporal layer for a specific spatial layer.
-    virtual uint32_t getSpatialLayerSum(size_t spatial_index) const = 0;
-
-    // Whether the specific spatial layers has the bitrate set in any of its temporal layers.
-    virtual bool isSpatialLayerUsed(size_t spatial_index) const = 0;
-
-    // Sum of bitrates of temporal layers, from layer 0 to `temporal_index`
-    // inclusive, of specified spatial layer `spatial_index`. Bitrates of lower
-    // spatial layers are not included.
-    virtual uint32_t getTemporalLayerSum(size_t spatial_index, size_t temporal_index) const = 0;
-
-    // Returns a vector of the temporal layer bitrates for the specific spatial
-    // layer. Length of the returned vector is cropped to the highest temporal
-    // layer with a defined bitrate.
-    virtual Vector<uint32_t> getTemporalLayerAllocation(size_t spatial_index) const = 0;
-
-    // Sum of all bitrates.
-    virtual uint32_t getSumBps() const = 0;
-
-protected:
-    virtual ~RtcVideoBitrateAllocation() = default;
-};
-
-class RtcEncodedImage
-{
-public:
-    using SharedPtr = SharedPointer<RtcEncodedImage>;
-
-    virtual size_t size() const = 0;
-    virtual const uint8_t *data() const = 0;
-
-    const uint8_t *begin() const { return this->data(); }
-    const uint8_t *end() const { return this->data() + this->size(); }
-
-protected:
-    virtual ~RtcEncodedImage() = default;
-};
-
-struct RtcCodecSpecificInfo
-{
-    RtcVideoCodec::Type codecType{RtcVideoCodec::Type::kGeneric};
-    bool endOfPicture{true};
-
-    struct Union
-    {
-        struct VP8
-        {
-            bool nonReference;
-            uint8_t temporalIdx;
-            bool layerSync;
-            int8_t keyIdx; // Negative value to skip keyIdx.
-
-            bool useExplicitDependencies;
-            static constexpr size_t kBuffersCount{3};
-            size_t referencedBuffers[kBuffersCount];
-            size_t referencedBuffersCount;
-            size_t updatedBuffers[kBuffersCount];
-            size_t updatedBuffersCount;
-        } vp8;
-        struct H264
-        {
-            RtcH264PacketizationMode packetizationMode{RtcH264PacketizationMode::kNonInterleaved};
-            uint8_t temporalIndex{0};
-            bool baseLayerSync{false};
-            bool idrFrame{false};
-        } h264;
-    } codecSpecific;
-};
 
 OCTK_END_NAMESPACE

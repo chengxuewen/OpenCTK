@@ -181,9 +181,7 @@ public:
                 {
                     if (0)
                     {
-                        OCTK_TRACE("Event_Refresh width:%d, height:%d",
-                                   mWindowWidth,
-                                   mWindowHeight);
+                        OCTK_TRACE("Event_Refresh width:%d, height:%d", mWindowWidth, mWindowHeight);
                     }
                     if (VideoType::I420 == mVideoType)
                     {
@@ -278,10 +276,10 @@ protected:
             {
                 assert(false);
             }
-            if (mVideoBuff)
-            {
-                free(mVideoBuff);
-            }
+            // if (mVideoBuff)
+            // {
+            //     // free(mVideoBuff);
+            // }
             mVideoBuff = (uint8_t *)std::realloc(mVideoBuff, mFrameLength);
             if (!mVideoBuff)
             {

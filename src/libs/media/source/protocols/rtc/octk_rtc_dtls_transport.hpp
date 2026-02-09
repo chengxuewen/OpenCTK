@@ -29,47 +29,55 @@
 
 OCTK_BEGIN_NAMESPACE
 
-
-class RtcDtlsTransportInformation  {
-public:
-    enum class TransportState {
-        kNew,         // Has not started negotiating yet.
-        kConnecting,  // In the process of negotiating a secure connection.
-        kConnected,   // Completed negotiation and verified fingerprints.
-        kClosed,      // Intentionally closed.
-        kFailed,      // Failure due to an error or failing to verify a remote
-        // fingerprint.
-        kNumValues
-      };
-    virtual RtcDtlsTransportInformation& operator=(
-        const SharedPointer<RtcDtlsTransportInformation> c) = 0;
-
-    virtual State state() const = 0;
-    virtual int ssl_cipher_suite() const = 0;
-    virtual int srtp_cipher_suite() const = 0;
+enum class RtcDtlsTransportState
+{
+    kNew,        // Has not started negotiating yet.
+    kConnecting, // In the process of negotiating a secure connection.
+    kConnected,  // Completed negotiation and verified fingerprints.
+    kClosed,     // Intentionally closed.
+    kFailed,     // Failure due to an error or failing to verify a remote
+    // fingerprint.
+    kNumValues
 };
 
+class RtcDtlsTransportInformation
+{
+public:
+    OCTK_DEFINE_SHARED_PTR(RtcDtlsTransportInformation);
+
+    virtual void copy(const RtcDtlsTransportInformation::SharedPtr &other) = 0;
+    virtual RtcDtlsTransportState state() const = 0;
+    virtual int srtpCipherSuite() const = 0;
+    virtual int sslCipherSuite() const = 0;
+
+protected:
+    virtual ~RtcDtlsTransportInformation() = default;
+};
 
 class RtcDtlsTransport
 {
-    LIB_WEBRTC_API static const SharedPointer<RtcDtlsTransport> Create();
-
 public:
-    class Observer {
-    public:
-        virtual void OnStateChange(RtcDtlsTransportInformation info) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcDtlsTransport);
 
-        virtual void OnError(const int type, const char* message) = 0;
+    class Observer
+    {
+    public:
+        virtual void onStateChange(const RtcDtlsTransportInformation::SharedPtr &info) = 0;
+
+        virtual void onError(int type, const char *message) = 0;
 
     protected:
         virtual ~Observer() = default;
     };
 
-    virtual const SharedPointer<RtcDtlsTransportInformation> GetInformation() = 0;
+    virtual RtcDtlsTransportInformation::SharedPtr getInformation() = 0;
 
-    virtual void RegisterObserver(RTCDtlsTransportObserver* observer) = 0;
+    virtual void registerObserver(Observer *observer) = 0;
 
-    virtual void UnregisterObserver() = 0;
+    virtual void unregisterObserver() = 0;
+
+protected:
+    virtual ~RtcDtlsTransport() = default;
 };
 
 

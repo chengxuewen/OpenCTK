@@ -25,6 +25,7 @@
 #pragma once
 
 #include <octk_rtc_rtp_parameters.hpp>
+#include <octk_rtc_dtls_transport.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -32,37 +33,34 @@ class RtcMediaTrack;
 class RtcMediaStream;
 class RtcDtlsTransport;
 
-class RtcRtpReceiverObserver
-{
-public:
-    virtual void OnFirstPacketReceived(RtcMediaType media_type) = 0;
-
-protected:
-    virtual ~RtcRtpReceiverObserver() { }
-};
-
 class RtcRtpReceiver
 {
 public:
-    virtual const SharedPointer<RtcMediaTrack> track() const = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtpReceiver)
 
-    virtual const SharedPointer<RtcDtlsTransport> dtls_transport() const = 0;
+    class Observer
+    {
+    public:
+        virtual void onFirstPacketReceived(RtcMediaType mediaType) = 0;
 
-    virtual const Vector<String> stream_ids() const = 0;
+    protected:
+        virtual ~Observer() = default;
+    };
 
-    virtual Vector<const SharedPointer<RtcMediaStream>> streams() const = 0;
+    virtual RtcMediaTrack::SharedPtr track() const = 0;
+    virtual RtcDtlsTransport::SharedPtr dtlsTransport() const = 0;
 
-    virtual RtcMediaType media_type() const = 0;
+    virtual Vector<String> streamIds() const = 0;
+    virtual Vector<RtcMediaStream::SharedPtr> streams() const = 0;
 
-    virtual const String id() const = 0;
+    virtual String id() const = 0;
+    virtual RtcMediaType mediaType() const = 0;
 
-    virtual const SharedPointer<RtcRtpParameters> parameters() const = 0;
+    virtual RtcRtpParameters::SharedPtr parameters() const = 0;
+    virtual bool setParameters(const RtcRtpParameters::SharedPtr &parameters) = 0;
 
-    virtual bool set_parameters(const SharedPointer<RtcRtpParameters> parameters) = 0;
-
-    virtual void SetObserver(RtcRtpReceiverObserver *observer) = 0;
-
-    virtual void SetJitterBufferMinimumDelay(double delay_seconds) = 0;
+    virtual void setObserver(Observer *observer) = 0;
+    virtual void setJitterBufferMinimumDelay(double delaySeconds) = 0;
 
     // virtual Vector<RtpSource> GetSources() const = 0;
 

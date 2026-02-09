@@ -24,19 +24,45 @@
 
 #pragma once
 
-#include <octk_rtc_audio_track.hpp>
+#include <octk_rtc_media_source.hpp>
 #include <octk_rtc_video_frame.hpp>
-#include <octk_rtc_video_sink.hpp>
+#include <octk_rtc_audio_track.hpp>
 #include <octk_shared_pointer.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class RtcVideoTrack : public RtcMediaTrack
+class RtcVideoTrackSource : public RtcMediaSource, public RtcVideoSource
 {
 public:
-    virtual void AddRenderer(RtcVideoSink<const SharedPointer<RtcVideoFrame>> *sink) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcVideoTrackSource)
 
-    virtual void RemoveRenderer(RtcVideoSink<const SharedPointer<RtcVideoFrame>> *sink) = 0;
+    struct Stats
+    {
+        // Original size of captured frame, before video adaptation.
+        int inputWidth;
+        int inputHeight;
+    };
+
+    virtual bool getStats(Stats *stats) = 0;
+};
+
+class RtcVideoTrack : public RtcMediaTrack, public RtcVideoSource
+{
+public:
+    OCTK_DEFINE_SHARED_PTR(RtcVideoTrack)
+
+    enum class ContentHint
+    {
+        kNone,
+        kFluid,
+        kDetailed,
+        kText
+    };
+
+    virtual ContentHint contentHint() const = 0;
+    virtual void setContentHint(ContentHint hint) = 0;
+
+    virtual SharedPointer<RtcVideoTrackSource> getSource() const = 0;
 };
 
 OCTK_END_NAMESPACE

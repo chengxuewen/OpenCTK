@@ -41,9 +41,11 @@ OCTK_BEGIN_NAMESPACE
  *
  * @tparam T The type of the value returned on success.
  */
-template <typename T> class Result
+template <typename T>
+class Result
 {
-    template <typename U> friend class Result;
+    template <typename U>
+    friend class Result;
 
 public:
     /**
@@ -318,7 +320,8 @@ public:
      * @param defaultValue The default value to return if the Result does not contain a value.
      * @return The stored value if present, otherwise defaultValue.
      */
-    template <typename U> T valueOr(U &&defaultValue) const &
+    template <typename U>
+    T valueOr(U &&defaultValue) const &
     {
         if (this->ok())
         {
@@ -334,7 +337,8 @@ public:
      * @param defaultValue The default value to return if the Result does not contain a value.
      * @return The stored value if present, otherwise defaultValue.
      */
-    template <typename U> T valueOr(U &&defaultValue) &&
+    template <typename U>
+    T valueOr(U &&defaultValue) &&
     {
         if (this->ok())
         {
@@ -350,7 +354,8 @@ public:
      * @param f The function to invoke if the Result does not contain a value.
      * @return The stored value if present, otherwise the result of invoking f().
      */
-    template <typename F> T valueOrElse(F &&f) const &
+    template <typename F>
+    T valueOrElse(F &&f) const &
     {
         if (this->ok())
         {
@@ -366,7 +371,8 @@ public:
      * @param f The function to invoke if the Result does not contain a value.
      * @return The stored value if present, otherwise the result of invoking f().
      */
-    template <typename F> T valueOrElse(F &&f) &&
+    template <typename F>
+    T valueOrElse(F &&f) &&
     {
         if (this->ok())
         {
@@ -425,7 +431,7 @@ public:
     Status status() const
     {
         const auto error = this->error();
-        return error.data() ? Status(error) : okStatus;
+        return error.data() ? Status(error) : Status::ok;
     }
 
     /**

@@ -30,57 +30,57 @@
 #include <octk_rtc_rtp_sender.hpp>
 #include <octk_rtc_types.hpp>
 #include <octk_vector.hpp>
+#include <octk_status.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
 class RtcRtpTransceiverInit
 {
 public:
-    static const SharedPointer<RtcRtpTransceiverInit> Create(
-        RtcRtpTransceiverDirection direction,
-        const Vector<String> stream_ids,
-        const Vector<const SharedPointer<RtcRtpEncodingParameters>> encodings);
+    OCTK_DEFINE_SHARED_PTR(RtcRtpTransceiverInit)
 
-    virtual RtcRtpTransceiverDirection direction() = 0;
-    virtual void set_direction(RtcRtpTransceiverDirection value) = 0;
+    virtual Vector<String> streamIds() const = 0;
+    virtual void setStreamIds(const Vector<String> &ids) = 0;
 
-    virtual const Vector<String> stream_ids() = 0;
-    virtual void set_stream_ids(const Vector<String> ids) = 0;
+    virtual RtcRtpTransceiverDirection direction() const = 0;
+    virtual void setDirection(RtcRtpTransceiverDirection value) = 0;
 
-    virtual const Vector<const SharedPointer<RtcRtpEncodingParameters>> send_encodings() = 0;
-    virtual void set_send_encodings(const Vector<const SharedPointer<RtcRtpEncodingParameters>> send_encodings) = 0;
+    virtual Vector<RtcRtpEncodingParameters::SharedPtr> sendEncodings() const = 0;
+    virtual void setSendEncodings(const Vector<RtcRtpEncodingParameters::SharedPtr> &sendEncodings) = 0;
+
+protected:
+    virtual ~RtcRtpTransceiverInit() = default;
 };
 
 class RtcRtpTransceiver
 {
 public:
-    virtual RtcMediaType media_type() const = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtpTransceiver)
 
-    virtual const String mid() const = 0;
+    virtual void stopInternal() = 0;
+    virtual String stopStandard() = 0;
 
-    virtual const SharedPointer<RtcRtpSender> sender() const = 0;
+    virtual String mid() const = 0;
 
-    virtual const SharedPointer<RtcRtpReceiver> receiver() const = 0;
+    virtual bool isStopped() const = 0;
+    virtual bool isStopping() const = 0;
 
-    virtual bool Stopped() const = 0;
+    virtual String transceiverId() const = 0;
+    virtual RtcMediaType mediaType() const = 0;
 
-    virtual bool Stopping() const = 0;
+    virtual RtcRtpSender::SharedPtr sender() const = 0;
+    virtual RtcRtpReceiver::SharedPtr receiver() const = 0;
+
+    virtual RtcRtpTransceiverDirection firedDirection() const = 0;
+    virtual RtcRtpTransceiverDirection currentCirection() const = 0;
 
     virtual RtcRtpTransceiverDirection direction() const = 0;
+    virtual Status setDirection(RtcRtpTransceiverDirection newDirection) = 0;
 
-    virtual const String SetDirectionWithError(RtcRtpTransceiverDirection new_direction) = 0;
+    virtual void setCodecPreferences(const Vector<RtcRtpCodecCapability::SharedPtr> &codecs) = 0;
 
-    virtual RtcRtpTransceiverDirection current_direction() const = 0;
-
-    virtual RtcRtpTransceiverDirection fired_direction() const = 0;
-
-    virtual const String StopStandard() = 0;
-
-    virtual void StopInternal() = 0;
-
-    virtual void SetCodecPreferences(Vector<const SharedPointer<RtcRtpCodecCapability>> codecs) = 0;
-
-    virtual const String transceiver_id() const = 0;
+protected:
+    virtual ~RtcRtpTransceiver() = default;
 };
 
 OCTK_END_NAMESPACE

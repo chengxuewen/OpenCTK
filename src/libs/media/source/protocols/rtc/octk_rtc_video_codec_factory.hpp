@@ -35,11 +35,11 @@ class RtcVideoCodecFactory
 public:
     using SharedPtr = SharedPointer<RtcVideoCodecFactory>;
 
-    virtual Vector<RtcSdpVideoFormat::SharedPtr> getSupportedEncoderFormats() const = 0;
-    virtual Vector<RtcSdpVideoFormat::SharedPtr> getSupportedDecoderFormats() const = 0;
+    // virtual Vector<RtcSdpVideoFormat::SharedPtr> getSupportedEncoderFormats() const = 0;
+    // virtual Vector<RtcSdpVideoFormat::SharedPtr> getSupportedDecoderFormats() const = 0;
 
-    virtual RtcVideoEncoder::SharedPtr createVideoEncoder(const RtcSdpVideoFormat::SharedPtr &format) = 0;
-    virtual RtcVideoDecoder::SharedPtr createVideoDecoder(const RtcSdpVideoFormat::SharedPtr &format) = 0;
+    // virtual RtcVideoEncoder::SharedPtr createVideoEncoder(const RtcSdpVideoFormat::SharedPtr &format) = 0;
+    // virtual RtcVideoDecoder::SharedPtr createVideoDecoder(const RtcSdpVideoFormat::SharedPtr &format) = 0;
 
 protected:
     virtual ~RtcVideoCodecFactory() = default;

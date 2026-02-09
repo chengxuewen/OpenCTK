@@ -24,17 +24,26 @@
 
 #pragma once
 
-#include <octk_media_global.hpp>
+#include <octk_rtc_types.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-template <typename VideoFrameT>
-class RtcVideoSink
+class RtcMediaSource
 {
 public:
-    virtual ~RtcVideoSink() { }
+    enum class State
+    {
+        kInitializing,
+        kLive,
+        kEnded,
+        kMuted
+    };
 
-    virtual void OnFrame(const VideoFrameT &frame) = 0;
+    virtual State state() const = 0;
+    virtual bool isRemote() const = 0;
+
+protected:
+    virtual ~RtcMediaSource() = default;
 };
 
 OCTK_END_NAMESPACE

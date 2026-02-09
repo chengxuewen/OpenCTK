@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <octk_global.hpp>
+#include <octk_string_view.hpp>
 
 #include <cstring>
 
@@ -44,6 +44,11 @@ public:
         : String()
     {
         this->init(str.c_str(), str.length());
+    }
+    String(const StringView &str)
+        : String()
+    {
+        this->init(str.data(), str.length());
     }
     String(const String &other)
         : String()
@@ -74,7 +79,6 @@ public:
         std::swap(mDPtr, other.mDPtr);
         return *this;
     }
-
 
     size_t size() const;
     size_t length() const { return this->size(); }
@@ -107,16 +111,35 @@ public:
      */
     static char *strdup(const char *str) { return str ? String::strndup(str, strlen(str) + 1) : nullptr; }
 
-
     static int strncpy_s(char *dst, size_t nElements, const char *src, size_t count);
 
 protected:
     void init(const char *str, size_t len);
     void destroy();
 
-protected:
+private:
     OCTK_DEFINE_DPTR(String)
     OCTK_DECLARE_PRIVATE(String)
 };
+
+static OCTK_FORCE_INLINE bool operator<(const String &lhs, const String &rhs) noexcept
+{
+    return StringView(lhs.c_str()) < StringView(rhs.c_str());
+}
+
+static OCTK_FORCE_INLINE bool operator>(const String &lhs, const String &rhs) noexcept
+{
+    return rhs < lhs;
+}
+
+static OCTK_FORCE_INLINE bool operator<=(const String &lhs, const String &rhs) noexcept
+{
+    return !(rhs < lhs);
+}
+
+static OCTK_FORCE_INLINE bool operator>=(const String &lhs, const String &rhs) noexcept
+{
+    return !(lhs < rhs);
+}
 
 OCTK_END_NAMESPACE

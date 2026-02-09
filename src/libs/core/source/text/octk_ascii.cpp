@@ -666,9 +666,15 @@ char *ascii_strupr(const char *str, ssize_t len)
     return result;
 }
 
-static bool _str_has_sign(const char *str) { return str[0] == '-' || str[0] == '+'; }
+static bool _str_has_sign(const char *str)
+{
+    return str[0] == '-' || str[0] == '+';
+}
 
-static bool _str_has_hex_prefix(const char *str) { return str[0] == '0' && ascii_tolower(str[1]) == 'x'; }
+static bool _str_has_hex_prefix(const char *str)
+{
+    return str[0] == '0' && ascii_tolower(str[1]) == 'x';
+}
 
 bool ascii_string_to_signed(const char *str, uint_t base, int64_t min, int64_t max, int64_t *out_num)
 {
@@ -682,9 +688,9 @@ bool ascii_string_to_signed(const char *str, uint_t base, int64_t min, int64_t m
      */
     const bool isspace = ascii_isspace(str[0]);
     /* We don't support hexadecimal numbers prefixed with 0x or 0X. */
-    const bool support =
-        (base == 16 && (_str_has_sign(str) ? _str_has_hex_prefix(str + 1) : _str_has_hex_prefix(str))) ||
-        (saved_errno != 0 && saved_errno != ERANGE) || end_ptr == NULL || *end_ptr != '\0';
+    const bool support = (base == 16 &&
+                          (_str_has_sign(str) ? _str_has_hex_prefix(str + 1) : _str_has_hex_prefix(str))) ||
+                         (saved_errno != 0 && saved_errno != ERANGE) || end_ptr == NULL || *end_ptr != '\0';
 
     // OCTK_CHECK_SET_STDERR_RETURN_VAL(min <= max, false, OCTK_EINVAL);
     // OCTK_CHECK_SET_STDERR_RETURN_VAL(str != NULL, false, OCTK_EINVAL);

@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <octk_rtc_audio_track.hpp>
+#include <octk_rtc_types.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -54,6 +54,8 @@ struct RtcDataChannelInit
 class RtcDataChannel
 {
 public:
+    OCTK_DEFINE_SHARED_PTR(RtcDataChannel)
+
     /**
  * The RTCDataChannelState enum represents the possible states of a WebRTC data
  * channel. Data channels are used to transmit non-audio/video data over a
@@ -101,33 +103,13 @@ public:
    * The data buffer, its size, and a boolean indicating whether the data is
    * binary are passed as parameters.
    */
-    virtual void Send(const uint8_t *data, uint32_t size, bool binary = false) = 0;
-
-    /**
-   * Closes the data channel.
-   */
-    virtual void Close() = 0;
+    virtual void send(const uint8_t *data, uint32_t size, bool binary = false) = 0;
 
     /**
    * Registers an observer for events related to the data channel.
    * The observer object is passed as a parameter.
    */
-    virtual void RegisterObserver(Observer *observer) = 0;
-
-    /**
-   * Unregisters the current observer for the data channel.
-   */
-    virtual void UnregisterObserver() = 0;
-
-    /**
-   * Returns the label of the data channel.
-   */
-    virtual const String label() const = 0;
-
-    /**
-   * Returns the ID of the data channel.
-   */
-    virtual int id() const = 0;
+    virtual void registerObserver(Observer *observer) = 0;
 
     /**
    * Returns the amount of data buffered in the data channel.
@@ -137,12 +119,32 @@ public:
     virtual uint64_t buffered_amount() const = 0;
 
     /**
+   * Unregisters the current observer for the data channel.
+   */
+    virtual void unregisterObserver() = 0;
+
+    /**
+   * Returns the label of the data channel.
+   */
+    virtual String label() const = 0;
+
+    /**
+   * Returns the ID of the data channel.
+   */
+    virtual int id() const = 0;
+
+    /**
    * Returns the state of the data channel.
    */
     virtual State state() = 0;
 
+    /**
+   * Closes the data channel.
+   */
+    virtual void close() = 0;
+
 protected:
-    virtual ~RtcDataChannel() { }
+    virtual ~RtcDataChannel() = default;
 };
 
 OCTK_END_NAMESPACE

@@ -59,7 +59,7 @@ static inline std::unordered_map<std::string, Logger::Pointer> &loggersNameMap()
 
 static inline std::atomic<int> &loggerIdNumberCounter()
 {
-    static std::atomic<int> counter = ATOMIC_VAR_INIT(0);
+    static std::atomic<int> counter{0};
     return counter;
 }
 

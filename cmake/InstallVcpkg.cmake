@@ -94,7 +94,7 @@ function(octk_vcpkg_install_package NAME)
     octk_parse_all_arguments(arg
         "octk_vcpkg_install_package"
         "NOT_IMPORT;TOOLS;DYNAMIC"
-        "TARGET;PREFIX;OUTPUT_DIR;PACK_NAME"
+        "TARGET;PREFIX;OUTPUT_DIR;PACK_NAME;VERSION"
         "COMPONENTS;IMPORTED_TARGETS" ${ARGN})
 
     if("X${arg_TARGET}" STREQUAL "X")

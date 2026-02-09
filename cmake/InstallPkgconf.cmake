@@ -32,7 +32,7 @@ endmacro()
 macro(octk_pkgconf_check_modules PREFIX)
 	octk_parse_all_arguments(arg
 		"octk_pkgconf_check_modules"
-		"REQUIRED"
+		"REQUIRED;QUIET"
 		"PATH"
 		"IMPORTED_TARGET" ${ARGN})
 
@@ -43,6 +43,8 @@ macro(octk_pkgconf_check_modules PREFIX)
 	endif()
 	if(arg_REQUIRED)
 		pkg_check_modules(${PREFIX} REQUIRED IMPORTED_TARGET ${arg_IMPORTED_TARGET})
+	elseif(arg_QUIET)
+		pkg_check_modules(${PREFIX} QUIET IMPORTED_TARGET ${arg_IMPORTED_TARGET})
 	else()
 		pkg_check_modules(${PREFIX} IMPORTED_TARGET ${arg_IMPORTED_TARGET})
 	endif()

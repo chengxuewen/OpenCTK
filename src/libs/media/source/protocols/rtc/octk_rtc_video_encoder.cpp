@@ -26,13 +26,14 @@
 #include <octk_rtc_video_encoder.hpp>
 #include <octk_memory.hpp>
 
-#if OCTK_FEATURE_MEDIA_USE_H264
-#    include <private/octk_video_encoder_openh264_p.hpp>
-#endif
+#if 0
+#    if OCTK_FEATURE_MEDIA_USE_H264
+#        include <private/octk_video_encoder_openh264_p.hpp>
+#    endif
 
 OCTK_BEGIN_NAMESPACE
 
-#if OCTK_FEATURE_MEDIA_USE_H264
+#    if OCTK_FEATURE_MEDIA_USE_H264
 class RtcVideoEncoderOpenh264 : public RtcVideoEncoder
 {
     //RtcVideoEncoderOpenh264()
@@ -84,6 +85,7 @@ public:
 protected:
     std::unique_ptr<VideoEncoder> mOpenh264Encoder{utils::make_unique<VideoEncoderOpenh264>(CreateMediaContext())};
 };
-#endif
+#    endif
 
 OCTK_END_NAMESPACE
+#endif

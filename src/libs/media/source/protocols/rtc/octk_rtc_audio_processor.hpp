@@ -24,14 +24,35 @@
 
 #pragma once
 
-#include <octk_media_global.hpp>
+#include <octk_rtc_media_track.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
-class RtcVideoSource
+class RtcAudioProcessor
 {
 public:
-    virtual ~RtcVideoSource() = 0;
+    using SharedPtr = SharedPointer<RtcAudioProcessor>;
+
+    class CustomProcessing
+    {
+    public:
+        virtual void process(int nBands, int nFrames, int bufferSize, float *buffer) = 0;
+
+        virtual void initialize(int sampleRateHZ, int nChannels) = 0;
+
+        virtual void reset(int newRate) = 0;
+
+        virtual void release() = 0;
+
+    protected:
+        virtual ~CustomProcessing() = default;
+    };
+
+    virtual void setCapturePostProcessing(CustomProcessing *capturePostProcessing) = 0;
+    virtual void setRenderPreProcessing(CustomProcessing *renderPreProcessing) = 0;
+
+protected:
+    virtual ~RtcAudioProcessor() = default;
 };
 
 OCTK_END_NAMESPACE

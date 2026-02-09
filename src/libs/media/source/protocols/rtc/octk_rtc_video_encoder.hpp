@@ -30,6 +30,8 @@
 
 OCTK_BEGIN_NAMESPACE
 
+#if 0
+
 class RtcVideoEncoder
 {
 public:
@@ -71,12 +73,12 @@ public:
         bool lossNotification{false};
     };
 
-    struct RateControlParameters
-    {
-        double framerateFps{0};
-        RtcVideoBitrateAllocation::SharedPtr bitrate{nullptr};
-        RtcVideoBitrateAllocation::SharedPtr targetBitrate{nullptr};
-    };
+    // struct RateControlParameters
+    // {
+    //     double framerateFps{0};
+    //     // RtcVideoBitrateAllocation::SharedPtr bitrate{nullptr};
+    //     // RtcVideoBitrateAllocation::SharedPtr targetBitrate{nullptr};
+    // };
 
     struct LossNotification
     {
@@ -121,8 +123,8 @@ public:
             kDroppedByEncoder
         };
 
-        virtual Result onEncodedImage(const RtcEncodedImage &encodedImage,
-                                      const RtcCodecSpecificInfo &codecSpecificInfo) = 0;
+        // virtual Result onEncodedImage(const RtcEncodedImage &encodedImage,
+        //                               const RtcCodecSpecificInfo &codecSpecificInfo) = 0;
 
         virtual void onDroppedFrame(DropReason /* reason */) { }
 
@@ -203,5 +205,6 @@ protected:
 
     EncodedImageCallback::SharedPtr mEncodedImageCallback{nullptr};
 };
+#endif
 
 OCTK_END_NAMESPACE

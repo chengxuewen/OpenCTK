@@ -39,17 +39,29 @@ public:
     enum class State
     {
         NeverCalled = 0,
-        Inprocess,
+        InProcess,
         Done
     };
 
     OnceFlag() { }
     virtual ~OnceFlag() { }
 
+    template <typename Func>
+    bool call(Func func)
+    {
+        if (this->enter())
+        {
+            func();
+            this->leave();
+            return true;
+        }
+        return false;
+    }
+
     bool enter()
     {
         auto state = State::NeverCalled;
-        if (mState.compare_exchange_strong(state, State::Inprocess))
+        if (mState.compare_exchange_strong(state, State::InProcess))
         {
             return true;
         }
@@ -63,7 +75,7 @@ public:
     void leave() { mState.exchange(State::Done); }
 
     bool isDone() const { return State::Done == mState.load(); }
-    bool isInprocess() const { return State::Inprocess == mState.load(); }
+    bool isInProcess() const { return State::InProcess == mState.load(); }
     bool isNeverCalled() const { return State::NeverCalled == mState.load(); }
 
     static OnceFlag *localOnceFlag();
@@ -90,15 +102,16 @@ public:
 
 namespace utils
 {
-template <typename Func> void callOnce(OnceFlag &flag, Func func)
+template <typename Func>
+bool callOnce(OnceFlag &flag, Func func)
 {
-    if (flag.enter())
-    {
-        func();
-        flag.leave();
-    }
+    return flag.call(std::move(func));
 }
-template <typename Func> void callOncePerThread(Func func) { callOnce(*OnceFlag::localOnceFlag(), func); }
+template <typename Func>
+void callOncePerThread(Func func)
+{
+    callOnce(*OnceFlag::localOnceFlag(), func);
+}
 } // namespace utils
 
 OCTK_END_NAMESPACE

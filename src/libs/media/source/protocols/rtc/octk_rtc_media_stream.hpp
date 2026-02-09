@@ -34,30 +34,32 @@ OCTK_BEGIN_NAMESPACE
 class RtcMediaStream
 {
 public:
-    virtual bool AddTrack(const SharedPointer<RtcAudioTrack> &track) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcMediaStream)
 
-    virtual bool AddTrack(const SharedPointer<RtcVideoTrack> track) = 0;
+    virtual RtcAudioTrack::SharedPtr findAudioTrack(StringView trackId) = 0;
 
-    virtual bool RemoveTrack(const SharedPointer<RtcAudioTrack> track) = 0;
+    virtual RtcVideoTrack::SharedPtr findVideoTrack(StringView trackId) = 0;
 
-    virtual bool RemoveTrack(const SharedPointer<RtcVideoTrack> track) = 0;
+    virtual bool removeTrack(const RtcAudioTrack::SharedPtr &track) = 0;
 
-    virtual Vector<const SharedPointer<RtcAudioTrack>> audio_tracks() = 0;
+    virtual bool removeTrack(const RtcVideoTrack::SharedPtr &track) = 0;
 
-    virtual Vector<const SharedPointer<RtcVideoTrack>> video_tracks() = 0;
+    virtual bool addTrack(const RtcAudioTrack::SharedPtr &track) = 0;
 
-    virtual Vector<const SharedPointer<RtcMediaTrack>> tracks() = 0;
+    virtual bool addTrack(const RtcVideoTrack::SharedPtr &track) = 0;
 
-    virtual const SharedPointer<RtcAudioTrack> FindAudioTrack(const String track_id) = 0;
+    virtual Vector<RtcAudioTrack::SharedPtr> audioTracks() = 0;
 
-    virtual const SharedPointer<RtcVideoTrack> FindVideoTrack(const String track_id) = 0;
+    virtual Vector<RtcVideoTrack::SharedPtr> videoTracks() = 0;
 
-    virtual const String label() = 0;
+    virtual Vector<RtcMediaTrack::SharedPtr> tracks() = 0;
 
-    virtual const String id() = 0;
+    virtual String label() = 0;
+
+    virtual String id() = 0;
 
 protected:
-    virtual ~RtcMediaStream() = 0;
+    virtual ~RtcMediaStream() = default;
 };
 
 OCTK_END_NAMESPACE

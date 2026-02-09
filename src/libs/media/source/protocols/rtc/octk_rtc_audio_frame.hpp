@@ -28,15 +28,16 @@
 
 OCTK_BEGIN_NAMESPACE
 
-class RtcAudioFrame  {
- public:
-  /**
+class RtcAudioFrame
+{
+public:
+    /**
    * @brief Creates a new instance of RtcAudioFrame.
    * @return RtcAudioFrame*: a pointer to the newly created RtcAudioFrame.
    */
-   static RtcAudioFrame* Create();
+    static RtcAudioFrame *Create();
 
-  /**
+    /**
    * @brief Creates a new instance of RtcAudioFrame with specified parameters.
    * @param id: the unique identifier of the frame.
    * @param timestamp: the timestamp of the frame.
@@ -46,14 +47,15 @@ class RtcAudioFrame  {
    * @param num_channels: the number of audio channels.
    * @return RtcAudioFrame*: a pointer to the newly created RtcAudioFrame.
    */
-   static RtcAudioFrame* Create(int id, uint32_t timestamp,
-                                           const int16_t* data,
-                                           size_t samples_per_channel,
-                                           int sample_rate_hz,
-                                           size_t num_channels = 1);
+    static SharedPointer<RtcAudioFrame> create(int id,
+                                               uint32_t timestamp,
+                                               const int16_t *data,
+                                               size_t samples_per_channel,
+                                               int sample_rate_hz,
+                                               size_t num_channels = 1);
 
- public:
-  /**
+public:
+    /**
    * @brief Updates the audio frame with specified parameters.
    * @param id: the unique identifier of the frame.
    * @param timestamp: the timestamp of the frame.
@@ -62,63 +64,78 @@ class RtcAudioFrame  {
    * @param sample_rate_hz: the sample rate in Hz.
    * @param num_channels: the number of audio channels.
    */
-  virtual void UpdateFrame(int id, uint32_t timestamp, const int16_t* data,
-                           size_t samples_per_channel, int sample_rate_hz,
-                           size_t num_channels = 1) = 0;
+    virtual void UpdateFrame(int id,
+                             uint32_t timestamp,
+                             const int16_t *data,
+                             size_t samples_per_channel,
+                             int sample_rate_hz,
+                             size_t num_channels = 1) = 0;
 
-  /**
+    /**
    * @brief Copies the contents of another RtcAudioFrame.
    * @param src: the source RtcAudioFrame to copy from.
    */
-  virtual void CopyFrom(const RtcAudioFrame& src) = 0;
+    virtual void CopyFrom(const RtcAudioFrame &src) = 0;
 
-  /**
+    /**
    * @brief Adds another RtcAudioFrame to this one.
    * @param frame_to_add: the RtcAudioFrame to add.
    */
-  virtual void Add(const RtcAudioFrame& frame_to_add) = 0;
+    virtual void Add(const RtcAudioFrame &frame_to_add) = 0;
 
-  /**
+    /**
    * @brief Mutes the audio data in this RtcAudioFrame.
    */
-  virtual void Mute() = 0;
+    virtual void Mute() = 0;
 
-  /**
+    /**
    * @brief Returns a pointer to the audio data buffer.
    * @return const int16_t*: a pointer to the audio data buffer.
    */
-  virtual const int16_t* data() = 0;
+    virtual const int16_t *data() = 0;
 
-  /**
+    /**
    * @brief Returns the number of samples per channel.
    * @return size_t: the number of samples per channel.
    */
-  virtual size_t samples_per_channel() = 0;
+    virtual size_t samples_per_channel() = 0;
 
-  /**
+    /**
    * @brief Returns the sample rate in Hz.
    * @return int: the sample rate in Hz.
    */
-  virtual int sample_rate_hz() = 0;
+    virtual int sample_rate_hz() = 0;
 
-  /**
+    /**
    * @brief Returns the number of audio channels.
    * @return size_t: the number of audio channels.
    */
-  virtual size_t num_channels() = 0;
+    virtual size_t num_channels() = 0;
 
-  /**
+    /**
    * @brief Returns the timestamp of the RtcAudioFrame.
    * @return uint32_t: the timestamp of the RtcAudioFrame.
    */
-  virtual uint32_t timestamp() = 0;
+    virtual uint32_t timestamp() = 0;
 
-  /**
+    /**
    * @brief Returns the unique identifier of the RtcAudioFrame.
    * @return int: the unique identifier of the RtcAudioFrame.
    */
 
-  virtual int id() = 0;
+    virtual int id() = 0;
 };
+using RtcAudioSink = Sink<SharedPointer<RtcAudioFrame>>;
+using RtcAudioSource = Source<SharedPointer<RtcAudioFrame>>;
+using RtcAudioSourceProvider = SourceProvider<SharedPointer<RtcAudioFrame>>;
+
+/*class RtcAudioSink
+{
+public:
+    virtual void onData(const void *audioData, int bitsPerSample, int sampleRate, size_t nChannels, size_t nFrames) = 0;
+
+protected:
+    virtual ~RtcAudioSink() = default;
+};*/
 
 OCTK_END_NAMESPACE

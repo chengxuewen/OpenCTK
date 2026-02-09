@@ -84,7 +84,7 @@ TEST(StatusTest, DefaultConstructor)
 {
     Status status;
 
-    EXPECT_TRUE(status.ok());
+    EXPECT_TRUE(status.isOk());
     EXPECT_TRUE(static_cast<bool>(status));
     EXPECT_EQ(status.error(), nullptr);
     EXPECT_TRUE(status.errorString().empty());
@@ -98,7 +98,7 @@ TEST(StatusTest, ConstructFromError)
     const auto error = Error::create(domain, TestDomain::kTestError1, "Test error");
     Status status(error);
 
-    EXPECT_FALSE(status.ok());
+    EXPECT_FALSE(status.isOk());
     EXPECT_FALSE(static_cast<bool>(status));
     EXPECT_EQ(status.error(), error.data());
     EXPECT_EQ(&status.error()->domain(), &domain);
@@ -109,7 +109,7 @@ TEST(StatusTest, ConstructFromError)
     auto cause = Error::create(domain, TestDomain::kTestError2, "Cause");
     const auto error2 = Error::create(domain, TestDomain::kTestError1, "Test error", cause);
     Status status2(error2);
-    EXPECT_FALSE(status2.ok());
+    EXPECT_FALSE(status2.isOk());
     EXPECT_FALSE(static_cast<bool>(status2));
     EXPECT_EQ(status2.error(), error2.data());
     EXPECT_EQ(&status2.error()->domain(), &domain);
@@ -124,18 +124,18 @@ TEST(StatusTest, ConstructWithParameters)
 
     // message
     Status status("Direct construction");
-    EXPECT_FALSE(status.ok());
+    EXPECT_FALSE(status.isOk());
     EXPECT_STREQ(status.errorString().c_str(), "Direct construction");
 
     // no cause
     Status status1(domain, TestDomain::kTestError1, "Direct construction");
-    EXPECT_FALSE(status1.ok());
+    EXPECT_FALSE(status1.isOk());
     EXPECT_EQ(status1.error()->code(), TestDomain::kTestError1);
 
     // with cause
     auto cause = Error::create(domain, TestDomain::kTestError2, "Cause");
     Status status2(domain, TestDomain::kTestError3, "With cause", cause);
-    EXPECT_FALSE(status2.ok());
+    EXPECT_FALSE(status2.isOk());
     EXPECT_EQ(status2.error()->code(), TestDomain::kTestError3);
     EXPECT_NE(status2.error()->cause(), nullptr);
 }
@@ -146,7 +146,7 @@ TEST(StatusTest, CopyConstructor)
     Status status1(domain, TestDomain::kTestError1, "Original");
     Status status2 = status1;
 
-    EXPECT_EQ(status1.ok(), status2.ok());
+    EXPECT_EQ(status1.isOk(), status2.isOk());
     EXPECT_EQ(status1.error()->code(), status2.error()->code());
     EXPECT_EQ(status1.error()->message(), status2.error()->message());
     EXPECT_EQ(status1.error(), status2.error());
@@ -162,11 +162,11 @@ TEST(StatusTest, MoveConstructor)
     // move constructor
     Status status2 = std::move(status1);
 
-    EXPECT_FALSE(status2.ok());
+    EXPECT_FALSE(status2.isOk());
     EXPECT_EQ(status2.error(), original_error);
     EXPECT_EQ(status2.error()->message(), "To be moved");
 
-    EXPECT_TRUE(status1.ok() || status1.error() == nullptr);
+    EXPECT_TRUE(status1.isOk() || status1.error() == nullptr);
 }
 
 TEST(StatusTest, CopyAssignment)
@@ -175,10 +175,10 @@ TEST(StatusTest, CopyAssignment)
     Status status1(domain, TestDomain::kTestError1, "Source");
     Status status2;
 
-    EXPECT_TRUE(status2.ok());
+    EXPECT_TRUE(status2.isOk());
 
     status2 = status1;
-    EXPECT_FALSE(status2.ok());
+    EXPECT_FALSE(status2.isOk());
     EXPECT_EQ(status1.error()->code(), status2.error()->code());
     EXPECT_EQ(status1.error()->message(), status2.error()->message());
 }
@@ -193,9 +193,9 @@ TEST(StatusTest, MoveAssignment)
 
     status2 = std::move(status1);
 
-    EXPECT_FALSE(status2.ok());
+    EXPECT_FALSE(status2.isOk());
     EXPECT_EQ(status2.error(), original_error);
-    EXPECT_TRUE(status1.ok());
+    EXPECT_TRUE(status1.isOk());
 }
 
 TEST(StatusTest, ArrowOperator)
@@ -267,27 +267,27 @@ TEST(StatusTest, MissingConstructors)
     // Test Status(const StringView, const Error::SharedDataPtr &)
     auto cause1 = Error::create(domain, TestDomain::kTestError1, "Cause 1");
     Status status1(StringView("Test message"), cause1);
-    EXPECT_FALSE(status1.ok());
+    EXPECT_FALSE(status1.isOk());
     EXPECT_EQ(status1.error()->message(), "Test message");
     EXPECT_NE(status1.error()->cause(), nullptr);
 
     // Test Status(const std::string &)
     std::string msg = "Std string message";
     Status status2(msg);
-    EXPECT_FALSE(status2.ok());
+    EXPECT_FALSE(status2.isOk());
     EXPECT_EQ(status2.error()->message(), "Std string message");
 
     // Test Status(const std::string &, const Error::SharedDataPtr &)
     auto cause2 = Error::create(domain, TestDomain::kTestError2, "Cause 2");
     Status status3(msg, cause2);
-    EXPECT_FALSE(status3.ok());
+    EXPECT_FALSE(status3.isOk());
     EXPECT_EQ(status3.error()->message(), "Std string message");
     EXPECT_NE(status3.error()->cause(), nullptr);
 
     // Test Status(Error::SharedDataPtr &&)
     auto error = Error::create(domain, TestDomain::kTestError3, "Rvalue error");
     Status status4(std::move(error));
-    EXPECT_FALSE(status4.ok());
+    EXPECT_FALSE(status4.isOk());
     EXPECT_EQ(status4.error()->code(), TestDomain::kTestError3);
 }
 
@@ -298,27 +298,25 @@ TEST(StatusTest, MissingAssignmentOperators)
 
     // Test operator=(const char *)
     status = "C string assignment";
-    EXPECT_FALSE(status.ok());
+    EXPECT_FALSE(status.isOk());
     EXPECT_EQ(status.error()->message(), "C string assignment");
 
     // Test operator=(const StringView)
     status = StringView("StringView assignment");
-    EXPECT_FALSE(status.ok());
+    EXPECT_FALSE(status.isOk());
     EXPECT_EQ(status.error()->message(), "StringView assignment");
 
     // Test operator=(const std::string &)
     std::string msg = "Std string assignment";
     status = msg;
-    EXPECT_FALSE(status.ok());
+    EXPECT_FALSE(status.isOk());
     EXPECT_EQ(status.error()->message(), "Std string assignment");
 }
 
 TEST(StatusTest, IsOkMethod)
 {
-    Status okStatus;
     Status errorStatus("Error message");
 
-    EXPECT_TRUE(okStatus.isOk());
     EXPECT_FALSE(errorStatus.isOk());
 }
 
@@ -335,9 +333,9 @@ TEST(StatusTest, ErrorCodeAndMessageMethods)
     EXPECT_EQ(status.errorMessage(), std::string("Test message")) << status.errorMessage();
 
     // Test with successful status
-    Status okStatus;
-    EXPECT_EQ(okStatus.errorCode(), Error::kInvalidId);
-    EXPECT_TRUE(okStatus.errorMessage().empty());
+    status = Status::ok;
+    EXPECT_EQ(status.errorCode(), Error::kInvalidId);
+    EXPECT_TRUE(status.errorMessage().empty());
 }
 
 TEST(StatusTest, BoundaryCases)
@@ -346,13 +344,13 @@ TEST(StatusTest, BoundaryCases)
 
     // Test with empty message
     Status emptyMsgStatus(domain, TestDomain::kTestError1, "");
-    EXPECT_FALSE(emptyMsgStatus.ok());
+    EXPECT_FALSE(emptyMsgStatus.isOk());
     EXPECT_TRUE(emptyMsgStatus.errorMessage().empty());
 
     // Test with very long message
     std::string longMsg(1000, 'x');
     Status longMsgStatus(domain, TestDomain::kTestError1, longMsg);
-    EXPECT_FALSE(longMsgStatus.ok());
+    EXPECT_FALSE(longMsgStatus.isOk());
     EXPECT_EQ(longMsgStatus.errorMessage(), longMsg);
 
     // Test with different domains
@@ -364,26 +362,25 @@ TEST(StatusTest, BoundaryCases)
 
 TEST(StatusTest, OkStatusConstant)
 {
-    // Test the okStatus constant
-    EXPECT_TRUE(okStatus.ok());
-    EXPECT_TRUE(okStatus.isOk());
-    EXPECT_TRUE(static_cast<bool>(okStatus));
-    EXPECT_EQ(okStatus.error(), nullptr);
-    EXPECT_TRUE(okStatus.errorString().empty());
-
-    // Test comparison with okStatus
+    // Test comparison with Status::ok
     Status status;
-    EXPECT_EQ(status, okStatus);
+    EXPECT_EQ(status, Status::ok);
+
+    // Test the Status::ok constant
+    status = Status::ok;
+    EXPECT_TRUE(status.isOk());
+    EXPECT_EQ(status.error(), nullptr);
+    EXPECT_TRUE(status.errorString().empty());
 
     Status errorStatus("Error");
-    EXPECT_NE(errorStatus, okStatus);
+    EXPECT_NE(errorStatus, Status::ok);
 }
 
 TEST(StatusTest, StreamOutputForOkStatus)
 {
-    Status okStatus;
+    Status status;
     std::ostringstream oss;
-    oss << okStatus;
+    oss << Status::ok;
 
     std::string result = oss.str();
     EXPECT_EQ(result, "OK");
@@ -399,7 +396,7 @@ TEST(IntegrationTest, ErrorChainPropagation)
 
     Status status(top);
 
-    ASSERT_FALSE(status.ok());
+    ASSERT_FALSE(status.isOk());
     EXPECT_EQ(status.error()->code(), TestDomain::kTestError3);
 
     const Error *cause = status.error()->cause();
@@ -427,7 +424,7 @@ TEST(BoundaryTest, ZeroCode)
     auto domain = testDomain();
     Status status(domain, 0, "Code zero error");
 
-    EXPECT_FALSE(status.ok());
+    EXPECT_FALSE(status.isOk());
     EXPECT_EQ(status.error()->code(), 0);
 }
 
@@ -436,7 +433,7 @@ TEST(BoundaryTest, NegativeCode)
     auto domain = testDomain();
     Status status(domain, -1, "Negative code");
 
-    EXPECT_FALSE(status.ok());
+    EXPECT_FALSE(status.isOk());
     EXPECT_EQ(status.error()->code(), -1);
 }
 
@@ -448,7 +445,7 @@ TEST(PerformanceTest, CreateManyStatus)
     for (int i = 0; i < kIterations; ++i)
     {
         Status status(domain, i % 100, "Message " + std::to_string(i));
-        EXPECT_FALSE(status.ok());
+        EXPECT_FALSE(status.isOk());
     }
 }
 

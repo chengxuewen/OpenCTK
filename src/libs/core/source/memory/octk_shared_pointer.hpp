@@ -36,12 +36,9 @@ using SharedPointer = std::shared_ptr<T>;
 namespace utils
 {
 using std::make_shared;
-
-template <typename T, typename... Args>
-inline auto makeShared(Args &&...args)
-{
-    return make_shared(std::forward<Args>(args)...);
-}
+using std::dynamic_pointer_cast;
 } // namespace utils
 
 OCTK_END_NAMESPACE
+
+#define OCTK_DEFINE_SHARED_PTR(ClassName) using SharedPtr = octk::SharedPointer<ClassName>;

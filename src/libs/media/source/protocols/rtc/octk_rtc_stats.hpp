@@ -57,14 +57,15 @@ OCTK_BEGIN_NAMESPACE
 class RtcStats
 {
 public:
-    using SharedPtr = SharedPointer<RtcStats>;
+    OCTK_DEFINE_SHARED_PTR(RtcStats);
+
     /**
      * @brief A light-weight wrapper of an RtcStats attribute, i.e. an individual metric of type Optional<T>.
      */
     class Attribute
     {
     public:
-        using SharedPtr = SharedPointer<Attribute>;
+        OCTK_DEFINE_SHARED_PTR(Attribute);
 
         using Bool = bool;
         using Int32 = int32_t;
@@ -107,7 +108,8 @@ public:
             kStringUint64Map, // Map<std::string, uint64_t>
         };
 
-        virtual ~Attribute() = 0;
+        virtual ~Attribute() = default;
+
         virtual Type type() const = 0;
         virtual bool hasValue() const = 0;
         virtual StringView name() const = 0;
@@ -159,17 +161,18 @@ public:
     };
     using Attributes = Vector<Attribute::SharedPtr>;
 
-    virtual ~RtcStats() = 0;
+    virtual String toJson() const = 0;
 
     virtual StringView id() const = 0;
 
     virtual StringView type() const = 0;
 
-    virtual StringView toJson() const = 0;
-
     virtual int64_t timestamp() const = 0;
 
-    virtual Attributes attributes() const = 0;
+    virtual Attributes attributes() = 0;
+
+protected:
+    virtual ~RtcStats() = default;
 };
 
 OCTK_END_NAMESPACE

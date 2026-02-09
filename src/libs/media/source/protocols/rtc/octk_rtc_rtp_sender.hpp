@@ -24,6 +24,10 @@
 
 #pragma once
 
+#include "octk_rtc_dtls_transport.hpp"
+#include "octk_rtc_dtmf_sender.hpp"
+
+
 #include <octk_rtc_rtp_parameters.hpp>
 #include <octk_rtc_types.hpp>
 #include <octk_vector.hpp>
@@ -31,35 +35,34 @@
 OCTK_BEGIN_NAMESPACE
 
 class RtcMediaTrack;
-class RtcDtlsTransport;
 class RtcDtmfSender;
+class RtcDtlsTransport;
 
 class RtcRtpSender
 {
 public:
-    virtual bool set_track(const SharedPointer<RtcMediaTrack> track) = 0;
+    OCTK_DEFINE_SHARED_PTR(RtcRtpSender);
 
-    virtual const SharedPointer<RtcMediaTrack> track() const = 0;
+    virtual Vector<RtcRtpEncodingParameters::SharedPtr> initSendEncodings() const = 0;
 
-    virtual const SharedPointer<RtcDtlsTransport> dtls_transport() const = 0;
+    virtual RtcRtpParameters::SharedPtr parameters() const = 0;
+    virtual bool setParameters(const RtcRtpParameters::SharedPtr &parameters) = 0;
 
+    virtual RtcMediaTrack::SharedPtr track() const = 0;
+    virtual bool setTrack(const RtcMediaTrack::SharedPtr &track) = 0;
+
+    virtual Vector<String> streamIds() const = 0;
+    virtual void setStreamIds(const Vector<String> &streamIds) const = 0;
+
+    virtual RtcDtmfSender::SharedPtr dtmfSender() const = 0;
+    virtual RtcDtlsTransport::SharedPtr dtlsTransport() const = 0;
+
+    virtual RtcMediaType mediaType() const = 0;
     virtual uint32_t ssrc() const = 0;
+    virtual String id() const = 0;
 
-    virtual RtcMediaType media_type() const = 0;
-
-    virtual const String id() const = 0;
-
-    virtual const Vector<String> stream_ids() const = 0;
-
-    virtual void set_stream_ids(const Vector<String> stream_ids) const = 0;
-
-    virtual const Vector<const SharedPointer<RtcRtpEncodingParameters>> init_send_encodings() const = 0;
-
-    virtual const SharedPointer<RtcRtpParameters> parameters() const = 0;
-
-    virtual bool set_parameters(const SharedPointer<RtcRtpParameters> parameters) = 0;
-
-    virtual const SharedPointer<RtcDtmfSender> dtmf_sender() const = 0;
+protected:
+    virtual ~RtcRtpSender() = default;
 };
 
 OCTK_END_NAMESPACE

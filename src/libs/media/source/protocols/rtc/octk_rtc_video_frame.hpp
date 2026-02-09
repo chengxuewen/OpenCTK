@@ -24,7 +24,9 @@
 
 #pragma once
 
+#include <octk_frame_generator.hpp>
 #include <octk_shared_pointer.hpp>
+#include <octk_source_sink.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -33,7 +35,7 @@ class RtcVideoFrame
 public:
     using SharedPtr = SharedPointer<RtcVideoFrame>;
 
-    enum class BufferType
+    enum class Format
     {
         kI420,
         kNV12
@@ -47,16 +49,8 @@ public:
         kAngle270 = 270
     };
 
-    //     static SharedPtr Create(int width, int height, const uint8_t *buffer, int length);
-    //
-    //     static SharedPtr Create(int width,
-    //                             int height,
-    //                             const uint8_t *data_y,
-    //                             int stride_y,
-    //                             const uint8_t *data_u,
-    //                             int stride_u,
-    //                             const uint8_t *data_v,
-    //                             int stride_v);
+    static SharedPtr create(const VideoFrame &frame);
+    static SharedPtr createI420(const uint8_t *data, int width, int height);
 
     virtual SharedPtr copy() = 0;
 
@@ -64,8 +58,11 @@ public:
     // subsampled, this is the highest-resolution plane.
     virtual int width() const = 0;
     virtual int height() const = 0;
+    virtual Format format() const = 0;
 
-    //virtual Rotation rotation() = 0;
+    virtual uint16_t id() const = 0;
+    virtual int64_t timestamp() const = 0;
+    virtual Rotation rotation() const = 0;
 
     // Returns pointer to the pixel data for a given plane. The memory is owned by
     // the VideoFrameBuffer object and must not be freed by the caller.
@@ -82,6 +79,54 @@ public:
 
 protected:
     virtual ~RtcVideoFrame() { }
+};
+
+using RtcVideoSink = Sink<SharedPointer<RtcVideoFrame>>;
+using RtcVideoSinkCallback = SinkCallback<SharedPointer<RtcVideoFrame>>;
+
+class RtcVideoSinkAdapter : public RtcVideoSink
+{
+public:
+    RtcVideoSinkAdapter(const SharedPointer<VideoSinkInterface<VideoFrame>> &videoFrameSink)
+        : mVideoFrameSink(videoFrameSink) { };
+    ~RtcVideoSinkAdapter() override = default;
+
+    void onData(const DataType &data) override;
+
+protected:
+    SharedPointer<I420Buffer> mI420Buffer;
+    SharedPointer<VideoSinkInterface<VideoFrame>> mVideoFrameSink;
+};
+
+
+using RtcVideoSource = Source<SharedPointer<RtcVideoFrame>>;
+using RtcVideoProvider = SourceProvider<SharedPointer<RtcVideoFrame>>;
+using RtcVideoBroadcaster = SourceBroadcaster<SharedPointer<RtcVideoFrame>>;
+
+class RtcVideoGeneratorPrivate;
+class OCTK_MEDIA_API RtcVideoGenerator : public RtcVideoProvider
+{
+public:
+    OCTK_DEFINE_SHARED_PTR(RtcVideoGenerator);
+
+    ~RtcVideoGenerator() override;
+
+    static SharedPtr create(FrameGeneratorInterface::UniquePtr generator, int fps, StringView name = "");
+    static SharedPtr createSquareGenerator(int width, int height, int numSquares, int fps, StringView name = "");
+
+    int fps() const;
+    int width() const;
+    int height() const;
+
+    VideoSourceInterface<VideoFrame> *source() const;
+
+protected:
+    RtcVideoGenerator(StringView name);
+
+private:
+    OCTK_DEFINE_DPTR(RtcVideoGenerator)
+    OCTK_DECLARE_PRIVATE(RtcVideoGenerator)
+    OCTK_DISABLE_COPY_MOVE(RtcVideoGenerator)
 };
 
 OCTK_END_NAMESPACE

@@ -328,7 +328,7 @@ static void *start(void *arg)
     {
         auto threadPrivate = reinterpret_cast<PlatformThreadPrivate *>(arg);
         auto threadData = PlatformThreadData::current(threadPrivate);
-//        auto thread = PlatformThreadPrivate::get(threadPrivate);
+        //        auto thread = PlatformThreadPrivate::get(threadPrivate);
         {
             PlatformThreadPrivate::ThreadMutex::UniqueLock lock(threadPrivate->mMutex);
 
@@ -551,7 +551,7 @@ Status PlatformThreadPrivate::terminate()
     {
         return "pthread_cancel error";
     }
-    return okStatus;
+    return Status::ok;
 }
 
 void PlatformThread::setCurrentThreadName(const StringView name)

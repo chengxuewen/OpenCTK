@@ -509,7 +509,7 @@ Status PlatformThreadPrivate::terminate()
     TerminateThread(mThreadHandle, 0);
 #    endif
     detail::thread::finish(this, false);
-    return okStatus;
+    return Status::ok;
 }
 
 void PlatformThread::setCurrentThreadName(const StringView name)

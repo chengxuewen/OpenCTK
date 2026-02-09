@@ -39,11 +39,20 @@ OCTK_BEGIN_NAMESPACE
  */
 class Status
 {
+    struct Ok final
+    {
+    };
+
 public:
+    /**
+     * @brief A constant representing a successful status.
+     */
+    static constexpr Ok ok{};
+
     /**
      * @brief Default constructor. Creates a successful status.
      */
-    Status() noexcept = default;
+    Status(const Ok &o = ok) noexcept { OCTK_UNUSED(o); }
 
     /**
      * @brief Copy constructor.
@@ -207,19 +216,13 @@ public:
      * @brief Checks if the operation was successful.
      * @return true if successful, false otherwise.
      */
-    bool ok() const { return !mError.data(); }
-
-    /**
-     * @brief Checks if the operation was successful (alternative method name for compatibility).
-     * @return true if successful, false otherwise.
-     */
-    bool isOk() const { return ok(); }
+    bool isOk() const { return !mError.data(); }
 
     /**
      * @brief Converts to bool type. Returns true if the operation was successful.
      * @return true if successful, false otherwise.
      */
-    operator bool() const { return ok(); }
+    operator bool() const { return isOk(); }
 
     /**
      * @brief Gets shared pointer to the stored error object if the operation failed.
@@ -257,7 +260,7 @@ private:
  */
 inline std::ostream &operator<<(std::ostream &os, const Status &status)
 {
-    if (status.ok())
+    if (status.isOk())
     {
         os << "OK";
     }
@@ -267,10 +270,5 @@ inline std::ostream &operator<<(std::ostream &os, const Status &status)
     }
     return os;
 }
-
-/**
- * @brief A constant representing a successful status.
- */
-static const Status okStatus{};
 
 OCTK_END_NAMESPACE

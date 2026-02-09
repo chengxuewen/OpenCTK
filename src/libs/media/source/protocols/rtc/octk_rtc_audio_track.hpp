@@ -24,9 +24,45 @@
 
 #pragma once
 
+#include <octk_rtc_audio_processor.hpp>
+#include <octk_rtc_media_source.hpp>
+#include <octk_rtc_audio_frame.hpp>
 #include <octk_rtc_media_track.hpp>
 
 OCTK_BEGIN_NAMESPACE
+
+class RtcAudioTrackSource : public RtcMediaSource, public RtcAudioSource
+{
+public:
+    OCTK_DEFINE_SHARED_PTR(RtcAudioTrackSource)
+
+    class Observer
+    {
+    public:
+        virtual void onVolumeChanged(double volume) = 0;
+
+    protected:
+        virtual ~Observer() = default;
+    };
+
+    virtual void registerAudioObserver(Observer *observer) { }
+    virtual void unregisterAudioObserver(Observer *observer) { }
+
+
+    // enum class Type
+    // {
+    //     kMicrophone,
+    //     kCustom
+    // };
+    //
+    // virtual void captureFrame(const void *audio_data,
+    //                           int bits_per_sample,
+    //                           int sample_rate,
+    //                           size_t number_of_channels,
+    //                           size_t number_of_frames) = 0;
+    //
+    // virtual Type sourceType() const = 0;
+};
 
 /**
  * The RtcAudioTrack class represents an audio track in WebRTC.
@@ -37,15 +73,16 @@ OCTK_BEGIN_NAMESPACE
 class RtcAudioTrack : public RtcMediaTrack
 {
 public:
+    OCTK_DEFINE_SHARED_PTR(RtcAudioTrack)
+
     // volume in [0-10]
-    virtual void SetVolume(double volume) = 0;
+    virtual void setVolume(double volume) = 0;
 
-    virtual void AddSink(RtcAudioTrackSink *sink) = 0;
+    virtual SharedPointer<RtcAudioTrackSource> getSource() const = 0;
+    virtual SharedPointer<RtcAudioProcessor> getAudioProcessor() = 0;
 
-    virtual void RemoveSink(RtcAudioTrackSink *sink) = 0;
-
-protected:
-    virtual ~RtcAudioTrack() { }
+    virtual void addSink(RtcAudioSink *sink) = 0;
+    virtual void removeSink(RtcAudioSink *sink) = 0;
 };
 
 OCTK_END_NAMESPACE
