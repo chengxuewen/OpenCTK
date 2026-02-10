@@ -49,6 +49,10 @@ octk_configure_feature("MEDIA_USE_FFMPEG" PUBLIC
 octk_configure_feature("MEDIA_USE_H264" PUBLIC
 	LABEL "Enable this to build enable media use h264 codec"
     CONDITION OFF)
+octk_configure_feature("MEDIA_USE_CODEC_JETSON" PUBLIC
+	LABEL "Enable this to build use jetson codec"
+	ENABLE EXISTS "/usr/src/jetson_multimedia_api"
+	CONDITION ON)
 
 octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_PATH FORCE)
 octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_LIBRARY FORCE)
@@ -62,3 +66,7 @@ octk_configure_definition("OCTK_3RDPARTY_WEBRTC_VERSION"
 octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_MILESTONE DEFAULT "" FORCE)
 octk_configure_definition("OCTK_3RDPARTY_WEBRTC_MILESTONE"
     PRIVATE VALUE "\"${OCTK_3RDPARTY_WEBRTC_MILESTONE}\"")
+
+octk_configure_feature("MEDIA_USE_WEBRTC_GLIBCXX_DEBUG" PUBLIC
+    LABEL "Enable this to build use webrtc lib with GLIBCXX_DEBUG macro"
+	CONDITION OCTK_SYSTEM_LINUX AND OCTK_PROCESSOR_X64 AND OCTK_BUILD_DEBUG)

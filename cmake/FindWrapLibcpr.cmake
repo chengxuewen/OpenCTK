@@ -28,14 +28,6 @@ if(TARGET OCTK3rdparty::WrapLibcpr)
     return()
 endif()
 
-octk_vcpkg_install_package(openssl
-    NOT_IMPORT
-    TARGET
-    OCTK3rdparty::WrapOpenSSL
-	PREFIX
-    OCTK3WrapOpenSSL)
-set(OPENSSL_ROOT_DIR ${OCTK3WrapOpenSSL_INSTALL_DIR})
-find_package(OpenSSL PATHS ${OCTK3WrapOpenSSL_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
 octk_vcpkg_install_package(cpr
     NOT_IMPORT
     TARGET
@@ -45,6 +37,7 @@ octk_vcpkg_install_package(cpr
     COMPONENTS
     ssl)
 set(CPR_ROOT_DIR ${OCTK3WrapLibcpr_INSTALL_DIR})
+set(OPENSSL_ROOT_DIR ${OCTK3WrapLibcpr_INSTALL_DIR})
 find_package(cpr PATHS ${OCTK3WrapLibcpr_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
 get_target_property(cpr_IMPORTED_LOCATION_RELEASE cpr::cpr IMPORTED_LOCATION_RELEASE)
 set_target_properties(cpr::cpr PROPERTIES IMPORTED_LOCATION_MINSIZEREL ${cpr_IMPORTED_LOCATION_RELEASE})

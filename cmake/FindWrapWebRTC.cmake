@@ -72,9 +72,10 @@ add_library(OCTK3rdparty::WrapWebRTC STATIC IMPORTED)
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE _DEBUG)
     if(OCTK_CXX_COMPILER_USING_LIBSTDCXX)
-        target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE
-            _GLIBCXX_ASSERTIONS=1
-            _GLIBCXX_DEBUG=1)
+        target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE _GLIBCXX_ASSERTIONS=1)
+		if(OCTK_FEATURE_MEDIA_USE_WEBRTC_GLIBCXX_DEBUG)
+			target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE _GLIBCXX_DEBUG=1)
+		endif()
     endif()
 endif()
 if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")

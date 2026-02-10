@@ -109,6 +109,8 @@ octk_set01(OCTK_PROCESSOR_X86
     OCTK_SYSTEM_PROCESSOR MATCHES "x86")
 octk_set01(OCTK_PROCESSOR_AMD64
     OCTK_SYSTEM_PROCESSOR STREQUAL "amd64")
+octk_set01(OCTK_PROCESSOR_X64
+    OCTK_PROCESSOR_X86_64 OR OCTK_PROCESSOR_AMD64)
 octk_set01(OCTK_PROCESSOR_AARCH64
     OCTK_SYSTEM_PROCESSOR STREQUAL "aarch64")
 octk_set01(OCTK_PROCESSOR_ARM64
@@ -242,6 +244,16 @@ set(OCTK_PLATFORM_NAME "${OCTK_LOWER_SYSTEM_NAME}-${OCTK_PROCESSOR_MERGE_NAME}")
 set(OCTK_PLATFORM_COMPILER_NAME "${OCTK_PLATFORM_NAME}-${OCTK_LOWER_CXX_COMPILER_ID}")
 message(STATUS "Platform name: ${OCTK_PLATFORM_NAME}")
 message(STATUS "Platform compiler name: ${OCTK_PLATFORM_COMPILER_NAME}")
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# OpenCTK build type variable
+#-----------------------------------------------------------------------------------------------------------------------
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    set(OCTK_BUILD_DEBUG ON)
+else()
+    set(OCTK_BUILD_DEBUG OFF)
+endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

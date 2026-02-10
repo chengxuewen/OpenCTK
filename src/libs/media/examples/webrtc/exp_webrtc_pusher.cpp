@@ -33,6 +33,7 @@
 #include <iostream>
 
 OCTK_DEFINE_LOGGER("exp", EXP_LOGGER)
+#define USE_SDL_RENDERER 0
 
 int main(int argc, char **argv)
 {
@@ -43,6 +44,7 @@ int main(int argc, char **argv)
     octk::Status status;
     const auto width = 1280;
     const auto height = 720;
+#if USE_SDL_RENDERER
     auto renderer = std::make_shared<VideoRenderer>(VideoRenderer::VideoType::I420,
                                                     "SDLRendererVideoSink",
                                                     width,
@@ -51,10 +53,13 @@ int main(int argc, char **argv)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "renderer->init failed");
     }
+#endif
 
-#if 1
+#if 0
     auto videoSource = octk::RtcVideoGenerator::createSquareGenerator(width, height, 50, 25, "VideoGenerator");
+#   if USE_SDL_RENDERER
     videoSource->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
+#   endif
 #else
     auto deviceInfo = octk::CameraCapture::createDeviceInfo();
     if (deviceInfo->numberOfDevices() <= 0)
@@ -71,9 +76,13 @@ int main(int argc, char **argv)
     octk::CameraCapture::Capability capability;
     auto capture = octk::CameraCapture::create(unique_name);
     deviceInfo->getCapability(capture->currentDeviceName(), 0, capability);
+    capability.width = 1920;
+    capability.height = 1080;
     capture->startCapture(capability);
     auto videoSource = octk::RtcVideoCapture::create(capture, "VideoGenerator");
+#   if USE_SDL_RENDERER
 //    videoSource->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
+#   endif
 #endif
     if (!videoSource)
     {
@@ -181,9 +190,11 @@ int main(int argc, char **argv)
 #endif
             }
         });
+#if USE_SDL_RENDERER
     renderer->loop();
     videoSource->source()->removeSink(renderer.get());
     running.store(false);
+#endif
     thread.join();
     return 0;
 }

@@ -52,12 +52,14 @@ int main()
     CameraCapture::Capability capability;
     auto capture = CameraCapture::create(unique_name);
     deviceInfo->getCapability(capture->currentDeviceName(), 0, capability);
+    capability.width = 1920;
+    capability.height = 1080;
     capture->startCapture(capability);
 
     std::unique_ptr<VideoRenderer> renderer = octk::utils::make_unique<VideoRenderer>(VideoRenderer::VideoType::I420,
                                                                                       device_name,
-                                                                                      640,
-                                                                                      480);
+                                                                                      capability.width,
+                                                                                      capability.height);
     capture->registerCaptureDataCallback(renderer.get());
 
     if (renderer->init())

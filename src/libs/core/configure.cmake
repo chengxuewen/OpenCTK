@@ -47,7 +47,7 @@ else()
 endif()
 
 # OpenCTK debug/optimization type
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(OCTK_BUILD_DEBUG)
 	octk_configure_definition("OCTK_BUILD_DEBUG" PUBLIC)
 endif()
 

@@ -32,3 +32,6 @@ octk_internal_extend_target(octk_media
     ${ROOT_DIR}/octk_rtc_backend_webrtc_p.hpp
 	LIBRARIES
 	OCTK3rdparty::WrapWebRTC)
+if(OCTK_FEATURE_MEDIA_USE_CODEC_JETSON)
+	add_subdirectory(${ROOT_DIR}/codecs/jetson)
+endif()
