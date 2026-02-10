@@ -24,7 +24,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapOpenh264 PROVIDED_TARGETS OCTK3rdparty::WrapOpenh264)
+#octk_find_package(WrapOpenh264 PROVIDED_TARGETS OCTK3rdparty::WrapOpenh264)
 octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 
 
@@ -285,7 +285,7 @@ octk_add_library(media
 	source/octk_media_pch.hpp
 	LIBRARIES
 	OCTK3rdparty::WrapLibyuv
-	OCTK3rdparty::WrapOpenh264
+#	OCTK3rdparty::WrapOpenh264
 	${OCTK_LIB_LINK_LIBRARIES}
 	PUBLIC_LIBRARIES
 	octk::network)

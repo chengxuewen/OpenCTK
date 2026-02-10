@@ -52,12 +52,33 @@ int main(int argc, char **argv)
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "renderer->init failed");
     }
 
-    auto videoGenerator = octk::RtcVideoGenerator::createSquareGenerator(width, height, 50, 25, "VideoGenerator");
-    if (!videoGenerator)
+#if 1
+    auto videoSource = octk::RtcVideoGenerator::createSquareGenerator(width, height, 50, 25, "VideoGenerator");
+    videoSource->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
+#else
+    auto deviceInfo = octk::CameraCapture::createDeviceInfo();
+    if (deviceInfo->numberOfDevices() <= 0)
+    {
+        OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
+    }
+    char device_name[256];
+    char unique_name[256];
+    if (deviceInfo->getDeviceName(0, device_name, 256,
+                                  unique_name, 256))
+    {
+        OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
+    }
+    octk::CameraCapture::Capability capability;
+    auto capture = octk::CameraCapture::create(unique_name);
+    deviceInfo->getCapability(capture->currentDeviceName(), 0, capability);
+    capture->startCapture(capability);
+    auto videoSource = octk::RtcVideoCapture::create(capture, "VideoGenerator");
+//    videoSource->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
+#endif
+    if (!videoSource)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "createSquareGenerator failed");
     }
-    videoGenerator->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
 
     auto peerConnectionFactory = octk::RtcEngine::create();
     if (!peerConnectionFactory)
@@ -69,7 +90,7 @@ int main(int argc, char **argv)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnectionFactory.init failed: %s", status.errorString().c_str());
     }
-    auto videoTrackResult = peerConnectionFactory->createVideoTrack(videoGenerator, "videoGenerator");
+    auto videoTrackResult = peerConnectionFactory->createVideoTrack(videoSource, "videoGenerator");
     if (!videoTrackResult)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(),
@@ -161,7 +182,7 @@ int main(int argc, char **argv)
             }
         });
     renderer->loop();
-    videoGenerator->source()->removeSink(renderer.get());
+    videoSource->source()->removeSink(renderer.get());
     running.store(false);
     thread.join();
     return 0;

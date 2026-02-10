@@ -140,6 +140,20 @@ octk_set01(OCTK_CXX_COMPILER_INTEL_LLVM
 octk_set01(OCTK_CXX_COMPILER_QCC
     CMAKE_CXX_COMPILER_ID STREQUAL "QCC") # CMP0047
 
+include(CheckLibraryExists)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    check_library_exists(stdc++ __cxa_demangle "" OCTK_CXX_COMPILER_USING_LIBSTDCXX)
+
+    if(OCTK_CXX_COMPILER_USING_LIBSTDCXX)
+        message(STATUS "Found libstdc++")
+    else()
+        check_library_exists(c++ __cxa_demangle "" OCTK_CXX_COMPILER_USING_LIBCXX)
+        if(OCTK_CXX_COMPILER_USING_LIBCXX)
+            message(STATUS "Found libc++")
+        endif()
+    endif()
+endif()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # OpenCTK arch size variable

@@ -202,23 +202,6 @@ message(STATUS "OpenCTK cmake install prefix set as '${CMAKE_INSTALL_PREFIX}'.")
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Detect 3rdparty packages directories
-#-----------------------------------------------------------------------------------------------------------------------
-if(DEFINED INPUT_OCTK_3RDPARTY_PACKAGES_DIR)
-	set(OCTK_3RDPARTY_PACKAGES_DIR "${INPUT_OCTK_3RDPARTY_PACKAGES_DIR}"  CACHE PATH "3rdparty packages directories")
-	message(STATUS "Project 3rdparty packages directories: ${OCTK_3RDPARTY_PACKAGES_DIR}")
-else()
-	set(OCTK_3RDPARTY_PACKAGES_DIR "" CACHE PATH "3rdparty packages directories")
-endif()
-if(DEFINED INPUT_OCTK_3RDPARTY_WEBRTC_PATH)
-	set(OCTK_3RDPARTY_WEBRTC_VERSION "${INPUT_OCTK_3RDPARTY_WEBRTC_VERSION}" CACHE PATH "3rdparty webrtc version")
-	set(OCTK_3RDPARTY_WEBRTC_PATH "${INPUT_OCTK_3RDPARTY_WEBRTC_PATH}" CACHE PATH "3rdparty webrtc path")
-else()
-	set(OCTK_3RDPARTY_WEBRTC_PATH "" CACHE PATH "3rdparty webrtc path")
-endif()
-
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Set Position independent
 #-----------------------------------------------------------------------------------------------------------------------
 ## Position independent code: PIC

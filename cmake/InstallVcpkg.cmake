@@ -90,6 +90,7 @@ function(octk_vcpkg_install)
 endfunction()
 
 
+octk_set_input_variable(OCTK_3RDPARTY_PACKAGES_DIR)
 function(octk_vcpkg_install_package NAME)
     octk_parse_all_arguments(arg
         "octk_vcpkg_install_package"

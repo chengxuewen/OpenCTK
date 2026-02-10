@@ -24,15 +24,13 @@
 
 #pragma once
 
-#include "../../octk_rtc_audio_device.hpp"
-
-
 #include <private/octk_media_config_p.hpp>
 #include <octk_rtc_peerconnection_factory.hpp>
 #include <octk_rtc_video_codec_factory.hpp>
 #include <octk_rtc_peerconnection.hpp>
 #include <octk_rtc_dtls_transport.hpp>
 #include <octk_rtc_configuration.hpp>
+#include <octk_rtc_audio_device.hpp>
 #include <octk_rtc_dtmf_sender.hpp>
 #include <octk_rtc_video_frame.hpp>
 #include <octk_string_utils.hpp>
@@ -81,6 +79,8 @@
 #include <api/video/i420_buffer.h>
 #include <api/scoped_refptr.h>
 
+#include <media/engine/internal_decoder_factory.h>
+#include <media/engine/internal_encoder_factory.h>
 #include <media/engine/webrtc_video_engine.h>
 #include <media/engine/webrtc_voice_engine.h>
 #include <media/base/video_broadcaster.h>

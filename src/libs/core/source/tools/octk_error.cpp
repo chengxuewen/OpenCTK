@@ -40,21 +40,21 @@ static SpinLock &idDomainDatasMapSpinLock()
     static SpinLock spinLock;
     return spinLock;
 }
-static std::map<Error::Id, DomainData> *idDomainDatasMap()
+static std::map<ErrorId, DomainData> *idDomainDatasMap()
 {
-    static std::map<Error::Id, DomainData> map;
+    static std::map<ErrorId, DomainData> map;
     return &map;
 }
-static bool isIdRegistered(Error::Id id)
+static bool isIdRegistered(ErrorId id)
 {
     SpinLock::Locker locker(idDomainDatasMapSpinLock());
     auto idDomainDatasMap = detail::idDomainDatasMap();
     return idDomainDatasMap->find(id) != idDomainDatasMap->end();
 }
-static Error::Id fnv1aHash(const StringView name)
+static ErrorId fnv1aHash(const StringView name)
 {
-    constexpr Error::Id prime = 0x01000193; // 16777619
-    Error::Id hash = 0x811C9DC5;            // 2166136261
+    constexpr ErrorId prime = 0x01000193; // 16777619
+    ErrorId hash = 0x811C9DC5;            // 2166136261
 
     for (size_t i = 0; i < name.size(); ++i)
     {
@@ -65,7 +65,7 @@ static Error::Id fnv1aHash(const StringView name)
 }
 } // namespace detail
 
-Error::Id Error::Domain::Registry::registerDomain(const StringView type,
+ErrorId Error::Domain::Registry::registerDomain(const StringView type,
                                                   const StringView name,
                                                   const StringView description)
 {
@@ -91,7 +91,7 @@ Error::Id Error::Domain::Registry::registerDomain(const StringView type,
     return id;
 }
 
-Error::Domain::Domain(Id id)
+Error::Domain::Domain(ErrorId id)
     : mId(detail::isIdRegistered(id) ? id : kInvalidId)
 {
     SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
@@ -123,7 +123,7 @@ Error::Domain::Domain(const Domain &other)
 
 Error::Domain::~Domain() { }
 
-Error::Error(const Domain &domain, Id code, const StringView message, const SharedDataPtr &cause)
+Error::Error(const Domain &domain, ErrorId code, const StringView message, const SharedDataPtr &cause)
     : mDomain(domain)
     , mCode(code)
     , mMessage(message)

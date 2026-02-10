@@ -201,6 +201,9 @@ octk_add_library(core
 	source/tools/octk_shared_buffer.cpp
 	source/tools/octk_shared_buffer.hpp
 	source/tools/octk_source_location.hpp
+    source/tools/octk_source_sink.hpp
+    source/tools/octk_status.hpp
+#    source/tools/octk_strong_alias.hpp
 	source/tools/octk_tag_id.hpp
 	source/tools/octk_type_info.hpp
 	source/tools/octk_type_list.hpp

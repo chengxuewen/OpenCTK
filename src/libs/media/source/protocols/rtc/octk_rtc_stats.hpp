@@ -73,7 +73,6 @@ public:
         using Int64 = int64_t;
         using Uint64 = uint64_t;
         using Double = double;
-        using String = String;
 
         using BoolVector = Vector<bool>;
         using Int32Vector = Vector<int32_t>;
@@ -142,22 +141,22 @@ public:
         {
             return utils::nullopt;
         }
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Bool, toBool, Type::kBool)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int32, toInt32, Type::kInt32)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int64, toInt64, Type::kInt64)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint32, toUint32, Type::kUint32)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint64, toUint64, Type::kUint64)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Double, toDouble, Type::kDouble)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(String, toString, Type::kString)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(BoolVector, toBoolVector, Type::kBoolVector)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int32Vector, toInt32Vector, Type::kInt32Vector)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int64Vector, toInt64Vector, Type::kInt64Vector)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint32Vector, toUint32Vector, Type::kUint32Vector)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint64Vector, toUint64Vector, Type::kUint64Vector)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(DoubleVector, toDoubleVector, Type::kDoubleVector)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(StringVector, toStringVector, Type::kStringVector)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(StringUint64Map, toStringUint64Map, Type::kStringUint64Map)
-        OCTK__RTC_STATS_ATTRIBUTE_GETTER(StringDoubleMap, toStringDoubleMap, Type::kStringDoubleMap)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Bool, toBool, Type::kBool)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int32, toInt32, Type::kInt32)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int64, toInt64, Type::kInt64)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint32, toUint32, Type::kUint32)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint64, toUint64, Type::kUint64)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Double, toDouble, Type::kDouble)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(String, toString, Type::kString)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(BoolVector, toBoolVector, Type::kBoolVector)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int32Vector, toInt32Vector, Type::kInt32Vector)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Int64Vector, toInt64Vector, Type::kInt64Vector)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint32Vector, toUint32Vector, Type::kUint32Vector)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(Uint64Vector, toUint64Vector, Type::kUint64Vector)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(DoubleVector, toDoubleVector, Type::kDoubleVector)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(StringVector, toStringVector, Type::kStringVector)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(StringUint64Map, toStringUint64Map, Type::kStringUint64Map)
+//        OCTK__RTC_STATS_ATTRIBUTE_GETTER(StringDoubleMap, toStringDoubleMap, Type::kStringDoubleMap)
     };
     using Attributes = Vector<Attribute::SharedPtr>;
 

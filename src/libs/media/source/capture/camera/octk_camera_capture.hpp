@@ -25,6 +25,7 @@
 #pragma once
 
 #include <octk_video_sink_interface.hpp>
+#include <octk_shared_pointer.hpp>
 #include <octk_video_frame.hpp>
 #include <octk_video_type.hpp>
 
@@ -79,8 +80,7 @@ public:
     class DeviceInfo
     {
     public:
-        using Capability = Capability;
-        using SharedPtr = std::shared_ptr<DeviceInfo>;
+        OCTK_DEFINE_SHARED_PTR(DeviceInfo)
 
         explicit DeviceInfo(DeviceInfoPrivate *d);
         virtual ~DeviceInfo();

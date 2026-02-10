@@ -25,6 +25,7 @@
 #pragma once
 
 #include <octk_unique_function.hpp>
+#include <octk_shared_pointer.hpp>
 
 #include <mutex>
 #include <set>
@@ -101,8 +102,8 @@ class SourceProvider : public Source<Data>
 {
 public:
     using BaseType = Source<Data>;
-    using DataType = BaseType::DataType;
-    using SinkType = BaseType::SinkType;
+    using DataType = typename BaseType::DataType;
+    using SinkType = typename BaseType::SinkType;
     using SharedPtr = SharedPointer<SourceProvider<DataType>>;
 
     SourceProvider() = default;

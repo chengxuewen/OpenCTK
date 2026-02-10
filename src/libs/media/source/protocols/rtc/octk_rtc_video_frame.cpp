@@ -245,4 +245,74 @@ VideoSourceInterface<VideoFrame> *RtcVideoGenerator::source() const
     return d->mGeneratorSource.get();
 }
 
+class RtcVideoCapturePrivate : public VideoSinkInterface<VideoFrame>, public VideoSourceInterface<VideoFrame>
+{
+public:
+    RtcVideoCapturePrivate(RtcVideoCapture *p);
+    ~RtcVideoCapturePrivate() override {}
+
+    void onFrame(const VideoFrame &frame) override
+    {
+        const auto sinks = mPPtr->sinks();
+        const auto rtcFrame = RtcVideoFrame::create(frame);
+        for (const auto &sink : sinks)
+        {
+            sink->onData(rtcFrame);
+        }
+        for (const auto &sink : mVideoSinks)
+        {
+            sink->onFrame(frame);
+        }
+    }
+
+    void addOrUpdateSink(VideoSinkInterface<VideoFrame> *sink, const VideoSinkWants &wants) override
+    {
+        const auto iter = mVideoSinks.find(sink);
+        if (mVideoSinks.end() == iter)
+        {
+            mVideoSinks.insert(sink);
+        }
+    }
+
+    void removeSink(VideoSinkInterface<VideoFrame> *sink) override
+    {
+        mVideoSinks.erase(sink);
+    }
+
+    CameraCapture::SharedPtr mCapture;
+    std::set<VideoSinkInterface<VideoFrame> *> mVideoSinks;
+
+private:
+    OCTK_DEFINE_PPTR(RtcVideoCapture)
+    OCTK_DECLARE_PUBLIC(RtcVideoCapture)
+    OCTK_DISABLE_COPY_MOVE(RtcVideoCapturePrivate)
+};
+
+RtcVideoCapturePrivate::RtcVideoCapturePrivate(RtcVideoCapture *p)
+    : mPPtr(p)
+{
+}
+
+RtcVideoCapture::~RtcVideoCapture()
+{
+}
+
+RtcVideoCapture::SharedPtr RtcVideoCapture::create(const CameraCapture::SharedPtr &capture, StringView name)
+{
+    auto videoCapture = SharedPtr(new RtcVideoCapture(name));
+    capture->registerCaptureDataCallback(videoCapture->dFunc());
+    videoCapture->dFunc()->mCapture = capture;
+    return videoCapture;
+}
+
+VideoSourceInterface<VideoFrame> *RtcVideoCapture::source()
+{
+    return this->dFunc();
+}
+
+RtcVideoCapture::RtcVideoCapture(StringView name)
+    : mDPtr(new RtcVideoCapturePrivate(this))
+{
+}
+
 OCTK_END_NAMESPACE

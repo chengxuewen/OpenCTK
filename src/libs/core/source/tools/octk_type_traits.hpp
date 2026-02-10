@@ -26,6 +26,7 @@
 
 #include <octk_macros.hpp>
 
+#include <memory>
 #include <utility>
 #include <functional>
 #include <type_traits>

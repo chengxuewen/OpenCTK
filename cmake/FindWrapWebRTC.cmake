@@ -29,7 +29,10 @@ if(TARGET OCTK3rdparty::WrapWebRTC)
 endif()
 
 if(NOT OCTK_3RDPARTY_WEBRTC_VERSION)
-	message(FATAL_ERROR "3rdparty webrtc version not set.")
+    message(FATAL_ERROR "3rdparty webrtc OCTK_3RDPARTY_WEBRTC_VERSION not set.")
+endif()
+if(NOT OCTK_3RDPARTY_WEBRTC_MILESTONE)
+    message(STATUS "3rdparty webrtc OCTK_3RDPARTY_WEBRTC_MILESTONE not set.")
 endif()
 if(EXISTS "${OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR}" AND EXISTS "${OCTK_3RDPARTY_WEBRTC_LIBRARY}")
 	set(OCTKWrapWebRTC_INCLUDE_DIR "${OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR}")
@@ -66,8 +69,16 @@ else()
 endif()
 # add wrap lib
 add_library(OCTK3rdparty::WrapWebRTC STATIC IMPORTED)
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE _DEBUG)
+    if(OCTK_CXX_COMPILER_USING_LIBSTDCXX)
+        target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE
+            _GLIBCXX_ASSERTIONS=1
+            _GLIBCXX_DEBUG=1)
+    endif()
+endif()
 if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-	target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE NDEBUG)
+    target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE NDEBUG)
 endif()
 if(WIN32)
 	target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE
@@ -124,24 +135,9 @@ if(WIN32)
 		# WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
 		# _UNICODE
 		# UNICODE
-		# _DEBUG
 		# DYNAMIC_ANNOTATIONS_ENABLED=1
 		# _ENABLE_EXTENDED_ALIGNED_STORAGE
-		#			RTC_ENABLE_VP9
-		#			RTC_DAV1D_IN_INTERNAL_DECODER_FACTORY
-		#			RTC_ENABLE_WIN_WGC
-		#			WEBRTC_ENABLE_PROTOBUF=1
-		#			WEBRTC_STRICT_FIELD_TRIALS=0
-		#			WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE
-		#			WEBRTC_HAVE_SCTP
-		WEBRTC_USE_H264
-		#			WEBRTC_ENABLE_AVX2
-		#			WEBRTC_NON_STATIC_TRACE_EVENT_HANDLERS=0
 		WEBRTC_WIN
-		#			ABSL_ALLOCATOR_NOTHROW=1
-		#			ABSL_FLAGS_STRIP_NAMES=0
-		#			LIBYUV_DISABLE_NEON
-		#			HAVE_WEBRTC_VIDEO
 		#			WIN32_LEAN_AND_MEAN
 		NOMINMAX
 		UNICODE
@@ -162,15 +158,46 @@ else()
 			"-framework ApplicationServices")
 		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_MAC)
 	elseif(OCTK_SYSTEM_LINUX)
-		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_ANDROID WEBRTC_LINUX)
+        find_package(X11 REQUIRED)
+        target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE X11::X11)
+        octk_pkgconf_check_modules(gio REQUIRED
+            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            IMPORTED_TARGET
+            gio-2.0)
+        octk_pkgconf_check_modules(glib REQUIRED
+            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            IMPORTED_TARGET
+            glib-2.0)
+        octk_pkgconf_check_modules(gmodule REQUIRED
+            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            IMPORTED_TARGET
+            gmodule-2.0)
+        octk_pkgconf_check_modules(gobject REQUIRED
+            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            IMPORTED_TARGET
+            gobject-2.0)
+        octk_pkgconf_check_modules(gthread REQUIRED
+            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            IMPORTED_TARGET
+            gthread-2.0)
+        target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE
+            PkgConfig::gio
+            PkgConfig::glib
+            PkgConfig::gmodule
+            PkgConfig::gobject
+            PkgConfig::gthread)
+        target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_LINUX)
 	elseif(OCTK_SYSTEM_ANDROID)
 		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_ANDROID WEBRTC_LINUX)
 	elseif(OCTK_SYSTEM_IOS)
 		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_IOS)
 	endif()
-	target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_POSIX)
+    target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_POSIX HAVE_PTHREAD)
 endif()
-target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_USE_H264)
+target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE
+    ABSL_FLAGS_STRIP_NAMES=0
+    ABSL_ALLOCATOR_NOTHROW=1
+    WEBRTC_USE_H264)
 set_target_properties(OCTK3rdparty::WrapWebRTC PROPERTIES
 	INTERFACE_INCLUDE_DIRECTORIES
 	"${OCTKWrapWebRTC_INCLUDE_DIR}"

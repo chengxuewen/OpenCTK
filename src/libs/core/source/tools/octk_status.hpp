@@ -74,7 +74,7 @@ public:
      * @param cause The cause of this error (optional).
      */
     Status(const Error::Domain &domain,
-           Error::Id code,
+           ErrorId code,
            const StringView message,
            const Error::SharedDataPtr &cause = {})
         : mError(Error::create(domain, code, message, cause))
@@ -234,7 +234,7 @@ public:
      * @brief Gets the error code directly.
      * @return The error code, or Error::kInvalidId if successful.
      */
-    Error::Id errorCode() const { return mError.data() ? mError.data()->code() : Error::kInvalidId; }
+    ErrorId errorCode() const { return mError.data() ? mError.data()->code() : Error::kInvalidId; }
 
     /**
      * @brief Gets the error message directly.

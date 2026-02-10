@@ -82,3 +82,4 @@ OCTK_END_NAMESPACE
 #define OCTK_DCHECK_RUN_ON(x)                                                                                          \
     OCTK_DCHECK((x)->isCurrent()) << "\n" << ContextChecker::expectationToString(x);                                   \
     []() OCTK_ATTRIBUTE_ASSERT_EXCLUSIVE_LOCK(x) { }()
+

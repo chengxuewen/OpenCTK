@@ -48,15 +48,17 @@ octk_configure_feature("MEDIA_USE_FFMPEG" PUBLIC
 	CONDITION OFF)
 octk_configure_feature("MEDIA_USE_H264" PUBLIC
 	LABEL "Enable this to build enable media use h264 codec"
-	CONDITION OFF)
+    CONDITION OFF)
 
+octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_PATH FORCE)
+octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_LIBRARY FORCE)
+octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR FORCE)
 octk_configure_feature("MEDIA_USE_WEBRTC" PUBLIC
-	LABEL "Enable this to build use webrtc lib"
-	DISABLE NOT EXIST "${OCTK_3RDPARTY_WEBRTC_PATH}"
-	CONDITION ON)
+    LABEL "Enable this to build use webrtc lib"
+    CONDITION OFF)
+octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_VERSION FORCE)
 octk_configure_definition("OCTK_3RDPARTY_WEBRTC_VERSION"
 	PRIVATE VALUE ${OCTK_3RDPARTY_WEBRTC_VERSION})
-if(OCTK_3RDPARTY_WEBRTC_MILESTONE)
-	octk_configure_definition("OCTK_3RDPARTY_WEBRTC_MILESTONE"
-		PRIVATE VALUE ${OCTK_3RDPARTY_WEBRTC_MILESTONE})
-endif()
+octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_MILESTONE DEFAULT "" FORCE)
+octk_configure_definition("OCTK_3RDPARTY_WEBRTC_MILESTONE"
+    PRIVATE VALUE "\"${OCTK_3RDPARTY_WEBRTC_MILESTONE}\"")

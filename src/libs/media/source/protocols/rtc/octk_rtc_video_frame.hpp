@@ -25,6 +25,7 @@
 #pragma once
 
 #include <octk_frame_generator.hpp>
+#include <octk_camera_capture.hpp>
 #include <octk_shared_pointer.hpp>
 #include <octk_source_sink.hpp>
 
@@ -127,6 +128,27 @@ private:
     OCTK_DEFINE_DPTR(RtcVideoGenerator)
     OCTK_DECLARE_PRIVATE(RtcVideoGenerator)
     OCTK_DISABLE_COPY_MOVE(RtcVideoGenerator)
+};
+
+class RtcVideoCapturePrivate;
+class OCTK_MEDIA_API RtcVideoCapture : public RtcVideoProvider
+{
+public:
+    OCTK_DEFINE_SHARED_PTR(RtcVideoCapture);
+
+    ~RtcVideoCapture() override;
+
+    static SharedPtr create(const CameraCapture::SharedPtr &capture, StringView name = "");
+
+    VideoSourceInterface<VideoFrame> *source();
+
+protected:
+    RtcVideoCapture(StringView name);
+
+private:
+    OCTK_DEFINE_DPTR(RtcVideoCapture)
+    OCTK_DECLARE_PRIVATE(RtcVideoCapture)
+    OCTK_DISABLE_COPY_MOVE(RtcVideoCapture)
 };
 
 OCTK_END_NAMESPACE

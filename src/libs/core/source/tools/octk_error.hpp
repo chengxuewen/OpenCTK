@@ -42,32 +42,30 @@
 
 OCTK_BEGIN_NAMESPACE
 
+using ErrorId = int32_t;
 class OCTK_CORE_API Error : public SharedData
 {
 public:
-    using Id = int32_t;
     using SharedDataPtr = ImplicitlySharedDataPointer<Error>;
 
-    OCTK_STATIC_CONSTANT_NUMBER(kInvalidId, std::numeric_limits<Id>::max())
+    OCTK_STATIC_CONSTANT_NUMBER(kInvalidId, std::numeric_limits<ErrorId>::max())
 
     class OCTK_CORE_API Domain
     {
-        Id mId{kInvalidId};
         StringView mType;
         StringView mName;
         StringView mDescription;
+        ErrorId mId{kInvalidId};
         mutable std::atomic<bool> mCacheInitialized{false};
 
     public:
-        using Id = Id;
-
         struct OCTK_CORE_API Registry
         {
-            static Id registerDomain(const StringView type, const StringView name, const StringView description = "");
+            static ErrorId registerDomain(const StringView type, const StringView name, const StringView description = "");
         };
 
         Domain() = default;
-        explicit Domain(Id id);
+        explicit Domain(ErrorId id);
         Domain(Domain &&other);
         Domain(const Domain &other);
         virtual ~Domain();
@@ -83,7 +81,7 @@ public:
             return *this;
         }
 
-        Id id() const { return mId; }
+        ErrorId id() const { return mId; }
         bool isValid() const { return kInvalidId != mId; }
 
         StringView type() const { return mType; }
@@ -93,8 +91,8 @@ public:
         bool operator==(const Domain &other) const { return mId == other.mId; }
         bool operator!=(const Domain &other) const { return mId != other.mId; }
 
-        virtual StringView codeString(Id /*code*/) const { return ""; }
-        virtual std::string toString(Id code, const StringView message = "") const
+        virtual StringView codeString(ErrorId /*code*/) const { return ""; }
+        virtual std::string toString(ErrorId code, const StringView message = "") const
         {
             if (!this->isValid())
             {
@@ -117,14 +115,14 @@ public:
         }
     };
 
-    Error(const Domain &domain, Id code, const StringView message, const SharedDataPtr &cause = {});
+    Error(const Domain &domain, ErrorId code, const StringView message, const SharedDataPtr &cause = {});
     Error(const StringView message, const SharedDataPtr &cause = {});
     Error(const char *message, const SharedDataPtr &cause = {});
     Error(const Error &other);
     virtual ~Error();
 
     static SharedDataPtr create(const Domain &domain,
-                                Id code,
+                                ErrorId code,
                                 const StringView message,
                                 const SharedDataPtr &cause = {})
     {
@@ -135,7 +133,7 @@ public:
         return SharedDataPtr(new Error(message, cause));
     }
 
-    Id code() const { return mCode; }
+    ErrorId code() const { return mCode; }
     const std::string &message() const { return mMessage; }
     const Domain &domain() const { return mDomain; }
     const Error *cause() const { return mCause.data(); }
@@ -171,7 +169,7 @@ public:
 
 private:
     const Domain &mDomain;
-    const Id mCode;
+    const ErrorId mCode;
     std::string mMessage;
     SharedDataPtr mCause;
 };

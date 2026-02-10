@@ -179,6 +179,10 @@ public:
                 }
                 case Event_Refresh:
                 {
+                    if (!mVideoBuff)
+                    {
+                        break;
+                    }
                     if (0)
                     {
                         OCTK_TRACE("Event_Refresh width:%d, height:%d", mWindowWidth, mWindowHeight);
@@ -276,10 +280,6 @@ protected:
             {
                 assert(false);
             }
-            // if (mVideoBuff)
-            // {
-            //     // free(mVideoBuff);
-            // }
             mVideoBuff = (uint8_t *)std::realloc(mVideoBuff, mFrameLength);
             if (!mVideoBuff)
             {

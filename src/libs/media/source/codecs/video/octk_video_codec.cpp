@@ -178,6 +178,7 @@ const char *CodecTypeToPayloadString(VideoCodecType type)
         case kVideoCodecH265: return kPayloadNameH265;
     }
     OCTK_CHECK_NOTREACHED();
+    return "";
 }
 
 VideoCodecType PayloadStringToCodecType(const std::string &name)
