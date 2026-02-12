@@ -51,7 +51,7 @@ octk_configure_feature("MEDIA_USE_H264" PUBLIC
     CONDITION OFF)
 octk_configure_feature("MEDIA_USE_CODEC_JETSON" PUBLIC
 	LABEL "Enable this to build use jetson codec"
-	ENABLE EXISTS "/usr/src/jetson_multimedia_api"
+	DISABLE NOT EXISTS "/usr/src/jetson_multimedia_api"
 	CONDITION ON)
 
 octk_set_input_variable(OCTK_3RDPARTY_WEBRTC_PATH FORCE)

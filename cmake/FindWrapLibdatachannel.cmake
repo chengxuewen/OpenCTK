@@ -23,24 +23,22 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapLibcpr)
-    set(OCTK3WrapLibcpr_FOUND ON)
-    return()
+if(TARGET OCTK3rdparty::WrapLibdatachannel)
+	set(OCTKWrapLibdatachannel_FOUND ON)
+	return()
 endif()
 
-octk_vcpkg_install_package(cpr
-    NOT_IMPORT
-    TARGET
-    OCTK3rdparty::WrapLibcpr
-    PREFIX
-	OCTK3WrapLibcpr
-    COMPONENTS
-    ssl)
-set(CPR_ROOT_DIR ${OCTK3WrapLibcpr_INSTALL_DIR})
-set(OPENSSL_ROOT_DIR ${OCTK3WrapLibcpr_INSTALL_DIR})
-find_package(cpr PATHS ${OCTK3WrapLibcpr_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-get_target_property(cpr_IMPORTED_LOCATION_RELEASE cpr::cpr IMPORTED_LOCATION_RELEASE)
-set_target_properties(cpr::cpr PROPERTIES IMPORTED_LOCATION_MINSIZEREL ${cpr_IMPORTED_LOCATION_RELEASE})
-set_target_properties(cpr::cpr PROPERTIES IMPORTED_LOCATION_RELWITHDEBINFO ${cpr_IMPORTED_LOCATION_RELEASE})
-target_link_libraries(OCTK3rdparty::WrapLibcpr INTERFACE cpr::cpr)
-set(OCTK3WrapLibcpr_FOUND ON)
+octk_vcpkg_install_package(libdatachannel
+	NOT_IMPORT
+	TARGET
+	OCTK3rdparty::WrapLibdatachannel
+	PREFIX
+	OCTKWrapLibdatachannel
+	COMPONENTS
+	srtp stdcall ws)
+set(CMAKE_PREFIX_PATH_CACHE ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH ${OCTKWrapLibdatachannel_INSTALL_DIR})
+find_package(LibDataChannel REQUIRED)
+target_link_libraries(OCTK3rdparty::WrapLibdatachannel INTERFACE LibDataChannel::LibDataChannel)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH_CACHE})
+set(OCTKWrapLibdatachannel_FOUND ON)

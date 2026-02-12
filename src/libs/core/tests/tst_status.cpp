@@ -44,7 +44,7 @@ public:
     using Error::Domain::Domain;
     TestDomain() = default;
 
-    StringView codeString(Id code) const override
+    StringView codeString(ErrorId code) const override
     {
         switch (code)
         {
@@ -68,7 +68,7 @@ public:
     using Error::Domain::Domain;
     AnotherDomain() = default;
 
-    StringView codeString(Id code) const override
+    StringView codeString(ErrorId code) const override
     {
         switch (code)
         {

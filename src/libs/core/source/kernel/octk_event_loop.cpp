@@ -74,7 +74,7 @@ int EventLoop::exec(ProcessFlags flags)
     OCTK_D(EventLoop);
     if (d->mInExec)
     {
-        OCTK_WARNING("EventLoop::exec: instance %p has already called exec()", this);
+        OCTK_WARNING("EventLoop::exec: instance {} has already called exec()", utils::fmt::ptr(this));
         return -1;
     }
 
