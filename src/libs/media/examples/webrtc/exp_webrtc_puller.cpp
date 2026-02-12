@@ -58,10 +58,11 @@ int main(int argc, char **argv)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "createPeerConnectionFactory create failed");
     }
-    status = peerConnectionFactory->initialize();
+    octk::RtcPeerConnectionFactory::Settings settings;
+    status = peerConnectionFactory->initialize(settings);
     if (!status)
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnectionFactory.init failed: %s", status.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnectionFactory.init failed: {}", status.errorString().c_str());
     }
 
     octk::RtcConfiguration pcConfiguration;
@@ -69,12 +70,12 @@ int main(int argc, char **argv)
     status = peerConnection->initialize();
     if (!status)
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnection.init failed: %s", status.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnection.init failed: {}", status.errorString().c_str());
     }
     auto transceiverResult = peerConnection->addTransceiver(octk::RtcMediaType::kVideo);
     if (!transceiverResult.ok())
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "addTransceiver failed: %s", transceiverResult.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "addTransceiver failed: {}", transceiverResult.errorString().c_str());
     }
     auto videoTransceiver = transceiverResult.value();
     auto videoReceiver = videoTransceiver->receiver();
@@ -92,23 +93,23 @@ int main(int argc, char **argv)
     status = videoTransceiver->setDirection(octk::RtcRtpTransceiverDirection::kRecvOnly);
     if (!status)
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "setDirectionWithError failed: %s", status.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "setDirectionWithError failed: {}", status.errorString().c_str());
     }
     auto offerResult = peerConnection->createOffer();
     if (!offerResult.ok())
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "createOffer failed: %s", offerResult.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "createOffer failed: {}", offerResult.errorString().c_str());
     }
     const auto &offer = offerResult.value();
     status = peerConnection->setLocalDescription(offer.sdp, offer.type);
     if (!status)
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerHandler.setLocalDescription failed: %s", status.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerHandler.setLocalDescription failed: {}", status.errorString().c_str());
     }
 
     octk::Json offerJson{{"offer", offer.sdp}};
     std::cout << offerJson.dump() << std::endl;
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "offer:%s", offer.sdp.c_str());
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "offer:{}", offer.sdp.c_str());
 #if 1
     const std::string ipaddr("http://192.168.100.47");
 #else
@@ -117,14 +118,14 @@ int main(int argc, char **argv)
     cpr::Response r = cpr::Post(cpr::Url{ipaddr + "/index/api/webrtc?app=live&stream=test&type=play"},
                                 cpr::Header{{"Content-Type", "text/plain;charset=UTF-8"}},
                                 cpr::Body{offer.sdp});
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "status_code:%d", r.status_code);
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "header:%s", r.header["content-type"].c_str());
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "text:%s", r.text.c_str());
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "status_code:{}", r.status_code);
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "header:{}", r.header["content-type"].c_str());
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "text:{}", r.text.c_str());
 
     auto jsonExpected = octk::utils::parseJson(r.text);
     if (!jsonExpected.has_value())
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "parseJson failed: %s", jsonExpected.error().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "parseJson failed: {}", jsonExpected.error().c_str());
     }
     auto json = jsonExpected.value();
     if (!json["sdp"].is_string())
@@ -135,7 +136,7 @@ int main(int argc, char **argv)
     status = peerConnection->setRemoteDescription(answer, octk::RtcSessionDescription::kAnswer);
     if (!status)
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "setRemoteDescription failed: %s", status.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "setRemoteDescription failed: {}", status.errorString().c_str());
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
     renderer->loop();

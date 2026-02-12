@@ -69,11 +69,11 @@ namespace utils
 {
 OCTK_CORE_API std::string toString(DataSize value);
 
-template <typename Sink>
-void stringify(Sink &sink, DataSize value)
-{
-    sink.Append(toString(value));
-}
+// template <typename Sink>
+// void stringify(Sink &sink, DataSize value)
+// {
+//     sink.Append(toString(value));
+// }
 } // namespace utils
 
 OCTK_END_NAMESPACE

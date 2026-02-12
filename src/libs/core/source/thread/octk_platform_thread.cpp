@@ -22,12 +22,10 @@
 **
 ***********************************************************************************************************************/
 
-#include "../tools/octk_result.hpp"
-
-
 #include <private/octk_platform_thread_p.hpp>
 #include <octk_exception.hpp>
 #include <octk_logging.hpp>
+#include <octk_result.hpp>
 #include <octk_checks.hpp>
 
 #include <thread>

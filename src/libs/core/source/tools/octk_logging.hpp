@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <octk_format.hpp>
 #include <octk_string_utils.hpp>
 
 #include <functional>
@@ -278,6 +279,20 @@ public:
             mStream->ss << t.data();
             return this->maybeSpace();
         }
+
+        template <typename... Args>
+        inline Stream &format(const char *format, const Args &...args)
+        {
+            mStream->ss << utils::fmt::vformat(utils::fmt::string_view(format), utils::fmt::make_format_args(args...));
+            return this->maybeSpace();
+        }
+
+        template <typename... Args>
+        inline Stream &printf(const char *format, const Args &...args)
+        {
+            mStream->ss << utils::fmt::vsprintf(utils::fmt::string_view(format), utils::fmt::make_printf_args(args...));
+            return this->maybeSpace();
+        }
     };
 
     struct Streamer final
@@ -288,14 +303,11 @@ public:
         {
         }
 
-        void logging(const char *format, ...) const
+        OCTK_FORCE_INLINE Stream logging(const char *string) const
         {
-            va_list args;
-            va_start(args, format);
-            logger.vlogging(context, format, args);
-            va_end(args);
+            // raw string
+            return Stream(logger, context, false) << string;
         }
-
         OCTK_FORCE_INLINE Stream logging(const StringView &string) const
         {
             return Stream(logger, context, true) << string;
@@ -311,7 +323,13 @@ public:
             return Stream(logger, context, true) << stream.str();
         }
 
-        OCTK_FORCE_INLINE Stream logging() const { return Stream(logger, context); }
+        OCTK_FORCE_INLINE Stream logging() const { return Stream(logger, context, false); }
+
+        template <typename... Args>
+        Stream logging(const char *format, const Args &...args) const
+        {
+            return Stream(logger, context, false).format(format, args...);
+        }
 
         Logger &logger;
         Context context;
@@ -387,10 +405,10 @@ OCTK_END_NAMESPACE
 
 #define OCTK_LOGGING(logger, level, ...)                                                                               \
     for (bool enabled = logger.isLevelEnabled(level); enabled; enabled = false)                                        \
-        octk::Logger::Streamer(logger, level, __FILE__, OCTK_STRFUNC, __LINE__).logging(__VA_ARGS__);
+    octk::Logger::Streamer(logger, level, __FILE__, OCTK_STRFUNC, __LINE__).logging(__VA_ARGS__)
 #define OCTK_LOGGING_FULL(logger, level, file, func, line, ...)                                                        \
     for (bool enabled = logger.isLevelEnabled(level); enabled; enabled = false)                                        \
-        octk::Logger::Streamer(logger, level, file, func, line).logging(__VA_ARGS__);
+    octk::Logger::Streamer(logger, level, file, func, line).logging(__VA_ARGS__)
 
 #define OCTK_LOGGING_TRACE(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Trace, __VA_ARGS__)
 #define OCTK_LOGGING_DEBUG(logger, ...)    OCTK_LOGGING(logger, octk::LogLevel::Debug, __VA_ARGS__)
@@ -421,4 +439,3 @@ OCTK_DECLARE_LOGGER(OCTK_CORE_API, OCTK_LOGGER)
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Critical, __FILE__, OCTK_STRFUNC, __LINE__).logging
 #define OCTK_FATAL                                                                                                     \
     octk::Logger::Streamer(OCTK_LOGGER(), octk::LogLevel::Fatal, __FILE__, OCTK_STRFUNC, __LINE__).logging
-

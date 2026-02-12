@@ -24,45 +24,48 @@
 
 #pragma once
 
-#include <octk_logging.hpp>
+#include <octk_global.hpp>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/daily_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/rotating_file_sink.h>
+#include <fmt/os.h>
+#include <fmt/base.h>
+#include <fmt/color.h>
+#include <fmt/format.h>
+#include <fmt/printf.h>
+#include <fmt/ranges.h>
+#include <fmt/chrono.h>
 
-#include <atomic>
+namespace fmt
+{
+template <typename Enum>
+struct enum_as_int
+{
+    Enum value;
+    explicit enum_as_int(Enum v)
+        : value(v)
+    {
+    }
+};
+template <typename Enum>
+auto as_int(Enum e)
+{
+    return enum_as_int<Enum>{e};
+}
+template <typename Enum>
+struct formatter<enum_as_int<Enum>> : formatter<int>
+{
+    template <typename FormatContext>
+    auto format(const enum_as_int<Enum> &wrapper, FormatContext &ctx) const
+    {
+        return formatter<int>::format(static_cast<int>(wrapper.value), ctx);
+    }
+};
+} // namespace fmt
 
 OCTK_BEGIN_NAMESPACE
 
-class OCTK_CORE_API LoggerPrivate
+namespace utils
 {
-public:
-    using Context = Logger::Context;
-    using MessageHandler = Logger::MessageHandler;
-    struct MessageHandlerWraper
-    {
-        explicit MessageHandlerWraper(const MessageHandler &h) : handler(h) {}
-        const MessageHandler handler;
-    };
-
-    LoggerPrivate(Logger *p, const char *name);
-    virtual ~LoggerPrivate();
-
-    bool messageHandlerOutput(const Context &context, const char *message);
-
-    bool mNoSource;
-    const int mIdNumber;
-    const char * const mName;
-    std::shared_ptr<spdlog::logger> mLogger;
-    std::atomic_bool mLevelEnabled[LogLevelNum];
-    std::atomic_bool mMessageHandleUniqueOwnership;
-    std::atomic<MessageHandlerWraper *> mMessageHandlerWraper{nullptr};
-
-protected:
-    OCTK_DEFINE_PPTR(Logger)
-    OCTK_DECLARE_PUBLIC(Logger)
-    OCTK_DISABLE_COPY_MOVE(LoggerPrivate)
-};
+namespace fmt = ::fmt;
+} // namespace utils
 
 OCTK_END_NAMESPACE

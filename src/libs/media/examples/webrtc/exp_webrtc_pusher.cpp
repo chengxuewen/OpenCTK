@@ -45,6 +45,7 @@ int main(int argc, char **argv)
     const auto width = 1280;
     const auto height = 720;
 #if USE_SDL_RENDERER
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "create VideoRenderer");
     auto renderer = std::make_shared<VideoRenderer>(VideoRenderer::VideoType::I420,
                                                     "SDLRendererVideoSink",
                                                     width,
@@ -55,12 +56,14 @@ int main(int argc, char **argv)
     }
 #endif
 
-#if 0
+#if 1
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "create SquareGenerator");
     auto videoSource = octk::RtcVideoGenerator::createSquareGenerator(width, height, 50, 25, "VideoGenerator");
-#   if USE_SDL_RENDERER
+#    if USE_SDL_RENDERER
     videoSource->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
-#   endif
+#    endif
 #else
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "create CameraCapture");
     auto deviceInfo = octk::CameraCapture::createDeviceInfo();
     if (deviceInfo->numberOfDevices() <= 0)
     {
@@ -68,8 +71,7 @@ int main(int argc, char **argv)
     }
     char device_name[256];
     char unique_name[256];
-    if (deviceInfo->getDeviceName(0, device_name, 256,
-                                  unique_name, 256))
+    if (deviceInfo->getDeviceName(0, device_name, 256, unique_name, 256))
     {
         OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
     }
@@ -80,88 +82,103 @@ int main(int argc, char **argv)
     capability.height = 1080;
     capture->startCapture(capability);
     auto videoSource = octk::RtcVideoCapture::create(capture, "VideoGenerator");
-#   if USE_SDL_RENDERER
+#    if USE_SDL_RENDERER
 //    videoSource->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
-#   endif
+#    endif
 #endif
     if (!videoSource)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "createSquareGenerator failed");
     }
 
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "peerConnectionFactory create");
     auto peerConnectionFactory = octk::RtcEngine::create();
     if (!peerConnectionFactory)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "createPeerConnectionFactory create failed");
     }
-    status = peerConnectionFactory->initialize();
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "peerConnectionFactory initialize");
+    octk::RtcPeerConnectionFactory::Settings settings;
+    settings.useHardwareCodec = true;
+    status = peerConnectionFactory->initialize(settings);
     if (!status)
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnectionFactory.init failed: %s", status.errorString().c_str());
+        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnectionFactory.init failed: {}", status.errorString().c_str());
     }
+    OCTK_LOGGING_INFO(EXP_LOGGER(), "peerConnectionFactory createVideoTrack");
     auto videoTrackResult = peerConnectionFactory->createVideoTrack(videoSource, "videoGenerator");
     if (!videoTrackResult)
     {
         OCTK_LOGGING_FATAL(EXP_LOGGER(),
-                           "peerConnectionFactory.createVideoTrack failed, %s",
+                           "peerConnectionFactory.createVideoTrack failed, {}",
                            videoTrackResult.errorString().c_str());
     }
     auto videoTrack = videoTrackResult.value();
 
     octk::RtcConfiguration pcConfiguration;
-    auto peerConnection = peerConnectionFactory->create(pcConfiguration, nullptr);
-    status = peerConnection->initialize();
-    if (!status)
+    static constexpr int peerConnectionNum = 1;
+    octk::SharedPointer<octk::RtcPeerConnection> peerConnections[peerConnectionNum];
+    for (int i = 0; i < peerConnectionNum; ++i)
     {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnection.init failed: %s", status.errorString().c_str());
-    }
-    auto trackResult = peerConnection->addTrack(videoTrack, {"videoGenerator"});
-    if (!trackResult)
-    {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "addTrack failed: %s", trackResult.errorString().c_str());
-    }
-    auto offerResult = peerConnection->createOffer();
-    if (!offerResult)
-    {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "createOffer failed: %s", offerResult.errorString().c_str());
-    }
-    const auto offer = offerResult.value();
-    status = peerConnection->setLocalDescription(offer.sdp, offer.type);
-    if (!status)
-    {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerHandler.setLocalDescription failed: %s", status.errorString().c_str());
-    }
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "peerConnection{} create", i);
+        auto peerConnection = peerConnectionFactory->create(pcConfiguration, nullptr);
+        peerConnections[i] = peerConnection;
+        status = peerConnection->initialize();
+        if (!status)
+        {
+            OCTK_LOGGING_FATAL(EXP_LOGGER(), "peerConnection.init failed: {}", status.errorString().c_str());
+        }
+        auto trackResult = peerConnection->addTrack(videoTrack, {"videoGenerator"});
+        if (!trackResult)
+        {
+            OCTK_LOGGING_FATAL(EXP_LOGGER(), "addTrack failed: {}", trackResult.errorString().c_str());
+        }
+        auto offerResult = peerConnection->createOffer();
+        if (!offerResult)
+        {
+            OCTK_LOGGING_FATAL(EXP_LOGGER(), "createOffer failed: {}", offerResult.errorString().c_str());
+        }
+        const auto offer = offerResult.value();
+        status = peerConnection->setLocalDescription(offer.sdp, offer.type);
+        if (!status)
+        {
+            OCTK_LOGGING_FATAL(EXP_LOGGER(),
+                               "peerHandler.setLocalDescription failed: {}",
+                               status.errorString().c_str());
+        }
 
-    octk::Json offerJson{{"offer", offer.sdp}};
-    // std::cout << offerJson.dump() << std::endl;
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "offerJson:%s", offerJson.dump().c_str());
+        octk::Json offerJson{{"offer", offer.sdp}};
+        // std::cout << offerJson.dump() << std::endl;
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "offerJson:{}", offerJson.dump().c_str());
 #if 1
-    const std::string ipaddr("http://192.168.110.64");
+        const std::string ipaddr("http://192.168.110.64");
 #else
-    const std::string ipaddr("http://127.0.0.1");
+        const std::string ipaddr("http://127.0.0.1");
 #endif
-    cpr::Response r = cpr::Post(cpr::Url{ipaddr + "/index/api/webrtc?app=live&stream=test1&type=push"},
-                                cpr::Header{{"Content-Type", "text/plain;charset=UTF-8"}},
-                                cpr::Body{offer.sdp});
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "status_code:%d", r.status_code);
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "header:%s", r.header["content-type"].c_str());
-    OCTK_LOGGING_INFO(EXP_LOGGER(), "text:%s", r.text.c_str());
+        const std::string streamName = "pusher-" + std::to_string(i);
+        cpr::Response r = cpr::Post(cpr::Url{ipaddr + "/index/api/webrtc?app=live&stream=" + streamName + "&type=push"},
+                                    cpr::Header{{"Content-Type", "text/plain;charset=UTF-8"}},
+                                    cpr::Body{offer.sdp});
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "status_code:{}", r.status_code);
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "header:{}", r.header["content-type"].c_str());
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "text:{}", r.text.c_str());
 
-    auto jsonExpected = octk::utils::parseJson(r.text);
-    if (!jsonExpected.has_value())
-    {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "parseJson failed: %s", jsonExpected.error().c_str());
-    }
-    auto json = jsonExpected.value();
-    if (!json["sdp"].is_string())
-    {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "sdp invalid!");
-    }
-    auto answer = json["sdp"].get<std::string>();
-    status = peerConnection->setRemoteDescription(answer, octk::RtcSessionDescription::kAnswer);
-    if (!status)
-    {
-        OCTK_LOGGING_FATAL(EXP_LOGGER(), "setRemoteDescription failed: %s", status.errorString().c_str());
+        auto jsonExpected = octk::utils::parseJson(r.text);
+        if (!jsonExpected.has_value())
+        {
+            OCTK_LOGGING_FATAL(EXP_LOGGER(), "parseJson failed: {}", jsonExpected.error().c_str());
+        }
+        auto json = jsonExpected.value();
+        if (!json["sdp"].is_string())
+        {
+            OCTK_LOGGING_FATAL(EXP_LOGGER(), "sdp invalid!");
+        }
+        auto answer = json["sdp"].get<std::string>();
+        status = peerConnection->setRemoteDescription(answer, octk::RtcSessionDescription::kAnswer);
+        if (!status)
+        {
+            OCTK_LOGGING_FATAL(EXP_LOGGER(), "setRemoteDescription failed: {}", status.errorString().c_str());
+        }
     }
 
     std::atomic_bool running{true};
@@ -183,7 +200,7 @@ int main(int argc, char **argv)
                             auto expected = msrtc::utils::parseJson(json);
                             if (expected.has_value())
                             {
-                                // OCTK_LOGGING_DEBUG(EXP_LOGGER(), "%s", expected->dump(4).c_str());
+                                // OCTK_LOGGING_DEBUG(EXP_LOGGER(), "{}", expected->dump(4).c_str());
                             }
                         }
                     });

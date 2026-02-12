@@ -22,10 +22,8 @@
 **
 ***********************************************************************************************************************/
 
-#ifndef _OCTK_JSON_HPP
-#define _OCTK_JSON_HPP
+#pragma once
 
-#include <octk_global.hpp>
 #include <octk_exception.hpp>
 
 #include <nlohmann/json.hpp>
@@ -78,5 +76,3 @@ template <typename T> static OCTK_FORCE_INLINE bool readJsonValue(const Json &js
 } // namespace utils
 
 OCTK_END_NAMESPACE
-
-#endif // _OCTK_JSON_HPP

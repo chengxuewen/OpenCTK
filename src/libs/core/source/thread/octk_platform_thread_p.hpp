@@ -149,7 +149,7 @@ public:
         this->dFunc()->mFinished = false;
         this->init();
     }
-    ~AdoptedPlatformThread() override { OCTK_TRACE("~AdoptedPlatformThread = %p\n", this); }
+    ~AdoptedPlatformThread() override { OCTK_TRACE("~AdoptedPlatformThread = %p\n", (void*)this); }
 
     void init(); // impl
 

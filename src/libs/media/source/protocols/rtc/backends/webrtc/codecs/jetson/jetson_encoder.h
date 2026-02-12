@@ -1,15 +1,14 @@
-#ifndef JETSON_CODEC_
-#define JETSON_CODEC_
+#pragma once
 
-#include "common/interface/processor.h"
-#include "common/thread_safe_queue.h"
-#include "common/v4l2_frame_buffer.h"
-#include "common/v4l2_utils.h"
-#include "common/worker.h"
+#include "v4l2_frame_buffer.h"
+#include "worker.h"
 
 #include <NvVideoEncoder.h>
 
-struct JetsonEncoderConfig {
+OCTK_USE_NAMESPACE
+
+struct JetsonEncoderConfig
+{
     int width;
     int height;
     bool is_dma_src;
@@ -22,22 +21,21 @@ struct JetsonEncoderConfig {
     v4l2_mpeg_video_bitrate_mode rc_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_CBR;
 };
 
-class JetsonEncoder : public IFrameProcessor {
-  public:
-    static std::unique_ptr<JetsonEncoder> Create(int width, int height, uint32_t dst_pix_fmt,
-                                                 bool is_dma_src);
+class JetsonEncoder : public IFrameProcessor
+{
+public:
+    static std::unique_ptr<JetsonEncoder> Create(int width, int height, uint32_t dst_pix_fmt, bool is_dma_src);
     static std::unique_ptr<JetsonEncoder> Create(JetsonEncoderConfig config);
 
     JetsonEncoder(JetsonEncoderConfig config, const char *name);
     ~JetsonEncoder() override;
 
-    void EmplaceBuffer(V4L2FrameBufferRef frame_buffer,
-                       std::function<void(V4L2FrameBufferRef)> on_capture) override;
+    void EmplaceBuffer(V4L2FrameBufferRef frame_buffer, std::function<void(V4L2FrameBufferRef)> on_capture) override;
     void ForceKeyFrame();
     void SetFps(int adjusted_fps);
     void SetBitrate(int adjusted_bitrate_bps);
 
-  private:
+private:
     NvVideoEncoder *encoder_;
     std::atomic<bool> abort_;
     const char *name_;
@@ -51,17 +49,16 @@ class JetsonEncoder : public IFrameProcessor {
     uint32_t dst_pix_fmt_;
     bool is_dma_src_;
     v4l2_mpeg_video_bitrate_mode rate_control_mode_;
-    ThreadSafeQueue<std::function<void(V4L2FrameBufferRef)>> capturing_tasks_;
+    LockFreeQueue<std::function<void(V4L2FrameBufferRef)>> capturing_tasks_;
 
     bool CreateVideoEncoder();
     bool PrepareCaptureBuffer();
     void Start();
     void SendEOS();
-    static bool EncoderCapturePlaneDqCallback(struct v4l2_buffer *v4l2_buf, NvBuffer *buffer,
-                                              NvBuffer *shared_buffer, void *arg);
-    void ConvertI420ToYUV420M(NvBuffer *nv_buffer,
-                              rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer);
+    static bool EncoderCapturePlaneDqCallback(struct v4l2_buffer *v4l2_buf,
+                                              NvBuffer *buffer,
+                                              NvBuffer *shared_buffer,
+                                              void *arg);
+    void ConvertI420ToYUV420M(NvBuffer *nv_buffer, rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer);
     uint32_t DisableAV1IVF();
 };
-
-#endif

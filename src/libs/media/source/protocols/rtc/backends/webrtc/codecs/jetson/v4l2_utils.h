@@ -1,14 +1,15 @@
-#ifndef V4L2_UTILS_
-#define V4L2_UTILS_
+#pragma once
 
 #include <linux/videodev2.h>
+
+#include <unordered_set>
 #include <stdint.h>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 /* Save single-plane data with stride equal to width */
-struct V4L2Buffer {
+struct V4L2Buffer
+{
     void *start = nullptr;
     uint32_t pix_fmt;
     uint32_t length;
@@ -20,7 +21,8 @@ struct V4L2Buffer {
 
     V4L2Buffer() = default;
 
-    static V4L2Buffer FromV4L2(void *start, const v4l2_buffer &v4l2, uint32_t fmt) {
+    static V4L2Buffer FromV4L2(void *start, const v4l2_buffer &v4l2, uint32_t fmt)
+    {
         V4L2Buffer buf;
         buf.start = start;
         buf.pix_fmt = fmt;
@@ -31,8 +33,8 @@ struct V4L2Buffer {
         return buf;
     }
 
-    static V4L2Buffer FromLibcamera(void *start, int length, int dmafd, timeval timestamp,
-                                    uint32_t fmt) {
+    static V4L2Buffer FromLibcamera(void *start, int length, int dmafd, timeval timestamp, uint32_t fmt)
+    {
         V4L2Buffer buf;
         buf.start = start;
         buf.dmafd = dmafd;
@@ -42,8 +44,8 @@ struct V4L2Buffer {
         return buf;
     }
 
-    static V4L2Buffer FromCapturedPlane(void *start, uint32_t bytesused, int dmafd, uint32_t flags,
-                                        uint32_t pix_fmt) {
+    static V4L2Buffer FromCapturedPlane(void *start, uint32_t bytesused, int dmafd, uint32_t flags, uint32_t pix_fmt)
+    {
         V4L2Buffer buf;
         buf.start = start;
         buf.dmafd = dmafd;
@@ -54,7 +56,8 @@ struct V4L2Buffer {
     }
 };
 
-struct V4L2BufferGroup {
+struct V4L2BufferGroup
+{
     int fd = -1;
     uint32_t num_planes = 0;
     uint32_t num_buffers = 0;
@@ -64,8 +67,9 @@ struct V4L2BufferGroup {
     enum v4l2_memory memory;
 };
 
-class V4L2Util {
-  public:
+class V4L2Util
+{
+public:
     static bool IsSinglePlaneVideo(v4l2_capability *cap);
     static bool IsMultiPlaneVideo(v4l2_capability *cap);
     static std::string FourccToString(uint32_t fourcc);
@@ -73,7 +77,10 @@ class V4L2Util {
     static int OpenDevice(const char *file);
     static void CloseDevice(int fd);
     static bool QueryCapabilities(int fd, v4l2_capability *cap);
-    static bool InitBuffer(int fd, V4L2BufferGroup *gbuffer, v4l2_buf_type type, v4l2_memory memory,
+    static bool InitBuffer(int fd,
+                           V4L2BufferGroup *gbuffer,
+                           v4l2_buf_type type,
+                           v4l2_memory memory,
                            bool has_dmafd = false);
     static bool DequeueBuffer(int fd, v4l2_buffer *buffer);
     static bool QueueBuffer(int fd, v4l2_buffer *buffer);
@@ -81,8 +88,7 @@ class V4L2Util {
     static std::unordered_set<std::string> GetDeviceSupportedFormats(const char *file);
     static bool SubscribeEvent(int fd, uint32_t type);
     static bool SetFps(int fd, v4l2_buf_type type, uint32_t fps);
-    static bool SetFormat(int fd, V4L2BufferGroup *gbuffer, uint32_t width, uint32_t height,
-                          uint32_t &pixel_format);
+    static bool SetFormat(int fd, V4L2BufferGroup *gbuffer, uint32_t width, uint32_t height, uint32_t &pixel_format);
     static bool SetCtrl(int fd, uint32_t id, int32_t value);
     static bool SetExtCtrl(int fd, uint32_t id, int32_t value);
     static bool StreamOn(int fd, v4l2_buf_type type);
@@ -92,5 +98,3 @@ class V4L2Util {
     static bool AllocateBuffer(int fd, V4L2BufferGroup *gbuffer, int num_buffers);
     static bool DeallocateBuffer(int fd, V4L2BufferGroup *gbuffer);
 };
-
-#endif // V4L2_UTILS_

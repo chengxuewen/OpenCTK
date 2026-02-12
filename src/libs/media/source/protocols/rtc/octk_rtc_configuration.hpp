@@ -38,31 +38,31 @@ struct RtcIceServer
 
 struct RtcConfiguration
 {
-    RtcIceServer ice_servers[RtcIceServer::kMaxSize];
+    RtcIceServer iceServers[RtcIceServer::kMaxSize];
     RtcIceTransportsType type{RtcIceTransportsType::kAll};
-    RtcBundlePolicy bundle_policy{RtcBundlePolicy::kBalanced};
-    RtcRtcpMuxPolicy rtcp_mux_policy{RtcRtcpMuxPolicy::kRequire};
-    RtcCandidateNetworkPolicy candidate_network_policy{RtcCandidateNetworkPolicy::kAll};
-    RtcTcpCandidatePolicy tcp_candidate_policy{RtcTcpCandidatePolicy::kEnabled};
+    RtcBundlePolicy bundlePolicy{RtcBundlePolicy::kBalanced};
+    RtcRtcpMuxPolicy rtcpMuxPolicy{RtcRtcpMuxPolicy::kRequire};
+    RtcCandidateNetworkPolicy candidateNetworkPolicy{RtcCandidateNetworkPolicy::kAll};
+    RtcTcpCandidatePolicy tcpCandidatePolicy{RtcTcpCandidatePolicy::kEnabled};
 
-    int ice_candidate_pool_size{0};
+    int iceCandidatePoolSize{0};
 
-    RtcMediaSecurityType srtp_type{RtcMediaSecurityType::kDTLS_SRTP};
-    RtcSdpSemantics sdp_semantics{RtcSdpSemantics::kUnifiedPlan};
+    RtcMediaSecurityType srtpType{RtcMediaSecurityType::kDTLS_SRTP};
+    RtcSdpSemantics sdpSemantics{RtcSdpSemantics::kUnifiedPlan};
 
-    bool offer_to_receive_audio{true};
-    bool offer_to_receive_video{true};
+    bool offerToReceiveAudio{true};
+    bool offerToReceiveVideo{true};
 
-    bool disable_ipv6{false};
-    bool disable_ipv6_on_wifi{false};
-    int max_ipv6_networks{5};
-    bool disable_link_local_networks{false};
-    int screencast_min_bitrate{-1};
+    bool disableIpv6{false};
+    bool disableIpv6OnWifi{false};
+    int maxIpv6Networks{5};
+    bool disableLinkLocalNetworks{false};
+    int screencastMinBitrate{-1};
 
     // private
-    bool use_rtp_mux{true};
-    uint32_t local_audio_bandwidth{128};
-    uint32_t local_video_bandwidth{512};
+    bool useRtpMux{true};
+    uint32_t localAudioBandWidth{128};
+    uint32_t localVideoBandWidth{512};
 };
 
 OCTK_END_NAMESPACE

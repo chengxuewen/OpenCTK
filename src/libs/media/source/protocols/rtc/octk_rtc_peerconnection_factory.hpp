@@ -49,8 +49,14 @@ class RtcPeerConnectionFactory
 public:
     using SharedPtr = SharedPointer<RtcPeerConnectionFactory>;
 
+    struct Settings final
+    {
+        // codecs
+        bool useHardwareCodec{true};
+    };
+
     virtual Status terminate() = 0;
-    virtual Status initialize() = 0;
+    virtual Status initialize(const Settings &settings) = 0;
 
     virtual uint32_t version() const = 0;
     virtual StringView versionName() const = 0;

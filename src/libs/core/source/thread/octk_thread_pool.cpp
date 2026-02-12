@@ -89,11 +89,11 @@ void ThreadPoolTaskThread::start()
 
 void ThreadPoolTaskThread::exitWait()
 {
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p exitWait", this);
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} exitWait", utils::fmt::ptr(this));
     mExit.store(true);
     if (mThread.joinable())
     {
-        OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p exitWait join", this);
+        OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} exitWait join", utils::fmt::ptr(this));
         mThread.join();
     }
 }
@@ -110,19 +110,19 @@ void ThreadPoolTaskThread::init(const StringView name, const WeakPtr &weakThis)
 
 void ThreadPoolTaskThread::wake()
 {
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p wake", this);
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} wake", utils::fmt::ptr(this));
     mTaskReadyCondition.notify_one();
 }
 
 void ThreadPoolTaskThread::wakeAll()
 {
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p wake all", this);
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} wake all", utils::fmt::ptr(this));
     mTaskReadyCondition.notify_all();
 }
 
 void ThreadPoolTaskThread::run()
 {
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p run enter", this);
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} run enter", utils::fmt::ptr(this));
     mExit.store(false);
     dFunc()->mRunning.store(true);
     dFunc()->mInFinish.store(false);
@@ -133,13 +133,16 @@ void ThreadPoolTaskThread::run()
         auto task = std::move(mTask);
         do
         {
-            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p do", this);
+            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} do", utils::fmt::ptr(this));
             if (task)
             {
                 lock.unlock();
                 OCTK_TRY
                 {
-                    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p do run task:%p", this, task.get());
+                    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
+                                       "thread {} do run task:{}",
+                                       utils::fmt::ptr(this),
+                                       utils::fmt::ptr(task.get()));
                     mManager->mTasksDispatchedCount.fetch_add(1);
                     task->run();
                     mManager->mTasksCompletedCount.fetch_add(1);
@@ -159,14 +162,16 @@ void ThreadPoolTaskThread::run()
             // if too many threads are active, exit do task loop
             if (mManager->isTooManyThreadsActive())
             {
-                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p do isTooManyThreadsActive true", this);
+                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
+                                   "thread {} do isTooManyThreadsActive true",
+                                   utils::fmt::ptr(this));
                 break;
             }
             // if task queue is empty, exit do task loop
             task = mManager->mTaskQueue.pop();
             if (!task)
             {
-                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p do task queue empty", this);
+                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} do task queue empty", utils::fmt::ptr(this));
                 break;
             }
         } while (!mExit.load());
@@ -182,21 +187,21 @@ void ThreadPoolTaskThread::run()
             this->registerThreadInactive();
             if (mExit.load())
             {
-                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p is exit set expired", this);
+                OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} is exit set expired", utils::fmt::ptr(this));
                 expired = true;
             }
             else
             {
                 // wait for work, exiting after the expiry timeout is reached
                 OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
-                                   "thread %p TaskReadyCondition start wait, expiry timeout: %d ms, joinable:%d",
-                                   this,
+                                   "thread {} TaskReadyCondition start wait, expiry timeout: {} ms, joinable:{}",
+                                   utils::fmt::ptr(this),
                                    mManager->mExpiryTimeout,
                                    mThread.joinable());
                 mTaskReadyCondition.wait_for(lock, std::chrono::milliseconds(mManager->mExpiryTimeout));
                 OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
-                                   "thread %p TaskReadyCondition finish wait, expiry timeout: %d ms",
-                                   this,
+                                   "thread {} TaskReadyCondition finish wait, expiry timeout: {} ms",
+                                   utils::fmt::ptr(this),
                                    mManager->mExpiryTimeout);
                 // start exit waiting state
                 ++mManager->mActiveThreadCount;
@@ -206,7 +211,9 @@ void ThreadPoolTaskThread::run()
                 const auto iter = std::find(mManager->mWaitingThreads.begin(), mManager->mWaitingThreads.end(), this);
                 if (mManager->mWaitingThreads.end() != iter)
                 {
-                    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p is still in the waiting list", this);
+                    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
+                                       "thread {} is still in the waiting list",
+                                       utils::fmt::ptr(this));
                     mManager->mWaitingThreads.erase(iter);
                     expired = true;
                 }
@@ -217,7 +224,9 @@ void ThreadPoolTaskThread::run()
                 if (mManager->mAllThreads.end() == iter)
                 {
                     // can not use "expired = true;", avoid mExpiredThreads set
-                    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p is not in the all threads list", this);
+                    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
+                                       "thread {} is not in the all threads list",
+                                       utils::fmt::ptr(this));
                     this->registerThreadInactive();
                     break;
                 }
@@ -225,13 +234,13 @@ void ThreadPoolTaskThread::run()
         }
         if (expired)
         {
-            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p is expired", this);
+            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} is expired", utils::fmt::ptr(this));
             mManager->mExpiredThreads.push_back(this);
             this->registerThreadInactive();
             break;
         }
     }
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p run exit", this);
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} run exit", utils::fmt::ptr(this));
     dFunc()->mInFinish.store(true);
     dFunc()->mRunning.store(false);
 }
@@ -241,12 +250,12 @@ void ThreadPoolTaskThread::registerThreadInactive()
     OCTK_ASSERT_X(mManager->mActiveThreadCount > 0,
                   "ThreadPoolThread::registerThreadInactive()",
                   "mActiveThreadCount must be greater than 0");
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p registerThreadInactive", this);
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} registerThreadInactive", utils::fmt::ptr(this));
     if (--mManager->mActiveThreadCount == 0)
     {
         OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
-                           "thread %p registerThreadInactive mNoActiveThreadsCondition",
-                           this);
+                           "thread {} registerThreadInactive mNoActiveThreadsCondition",
+                           utils::fmt::ptr(this));
         mManager->mNoActiveThreadsCondition.notify_all();
     }
 }
@@ -258,7 +267,7 @@ ThreadPool::Thread::Thread(bool adopted)
 
 ThreadPool::Thread::~Thread()
 {
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPool::Thread::~Thread():%p", this);
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "ThreadPool::Thread::~Thread() {}", utils::fmt::ptr(this));
 }
 
 ThreadPool::Thread::Id ThreadPool::Thread::threadId() const
@@ -451,10 +460,12 @@ void ThreadPoolPrivate::reset()
         auto thread = item.second;
         if (!thread->isFinished())
         {
-            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p is not finished, wake and exitWait", thread.get());
+            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(),
+                               "thread {} is not finished, wake and exitWait",
+                               utils::fmt::ptr(thread.get()));
             thread->wakeAll();
             thread->exitWait();
-            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread %p exitWait done", thread.get());
+            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "thread {} exitWait done", utils::fmt::ptr(thread.get()));
         }
     }
     mMutex.lock();
@@ -611,7 +622,7 @@ bool ThreadPool::waitForDone(unsigned int msecs)
         }
         else
         {
-            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "waitForDone() do wait %d ms", msecs);
+            OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "waitForDone() do wait {} ms", msecs);
             d->mNoActiveThreadsCondition.wait_until(lock, deadline);
             if (!d->isDone())
             {
@@ -622,7 +633,7 @@ bool ThreadPool::waitForDone(unsigned int msecs)
         d->reset();
         // More threads can be started during reset(), in that case continue waiting if we still have time left.
     } while (!d->isDone() && std::chrono::steady_clock::now() < deadline);
-    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "waitForDone() do finish:%d", d->isDone());
+    OCTK_LOGGING_TRACE(OCTK_THREAD_POOL_LOGGER(), "waitForDone() do finish:{}", d->isDone());
     return d->isDone();
 }
 

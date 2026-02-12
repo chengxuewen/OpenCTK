@@ -20,11 +20,15 @@ int main()
 {
     std::cout << "octk_logging exp!\n" << std::endl;
     expns::myfunction(1, 2);
-    return 0;
     std::cout << "\noctk_logging c!" << std::endl;
 
     std::cout << "\noctk_logging cxx!" << std::endl;
     OCTK_LOGGING_WARNING(MY_LOGGER(), "OCTK_LOGGING_WARN");
+    OCTK_LOGGING_WARNING(MY_LOGGER(), "tst-") << "ss";
+    OCTK_LOGGING_WARNING(MY_LOGGER()).format("{}-{}-", "tst", 1) << "ss";
+    OCTK_LOGGING_WARNING(MY_LOGGER(), "{}-{}-", "tst", 1);
+    OCTK_LOGGING_WARNING(MY_LOGGER()).format("{}-", octk::utils::fmt::ptr(expns::myfunction)) << "ss";
+    OCTK_LOGGING_WARNING(MY_LOGGER());
 
     OCTK_TRACE("OCTK_TRACE");
     OCTK_DEBUG("OCTK_DEBUG");

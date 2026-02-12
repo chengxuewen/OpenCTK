@@ -25,6 +25,7 @@
 #pragma once
 
 #include <private/octk_media_config_p.hpp>
+#include <private/octk_webrtc_logger_p.hpp>
 #include <octk_rtc_peerconnection_factory.hpp>
 #include <octk_rtc_video_codec_factory.hpp>
 #include <octk_rtc_peerconnection.hpp>
@@ -35,6 +36,7 @@
 #include <octk_rtc_video_frame.hpp>
 #include <octk_string_utils.hpp>
 #include <octk_once_flag.hpp>
+#include <octk_logging.hpp>
 #include <octk_yuv.hpp>
 
 #ifndef OCTK_3RDPARTY_WEBRTC_VERSION
@@ -111,7 +113,6 @@ using cricket::VideoAdapter;
 using VideoSinkWants = rtc::VideoSinkWants;
 using CopyOnWriteBuffer = rtc::CopyOnWriteBuffer;
 } // namespace webrtc
-
 
 OCTK_BEGIN_NAMESPACE
 
@@ -3082,7 +3083,7 @@ public:
     ~RtcPeerConnectionFactoryWebRTC() override = default;
 
     Status terminate() override;
-    Status initialize() override;
+    Status initialize(const Settings &settings) override;
 
     uint32_t version() const override;
     StringView versionName() const override;
@@ -3140,6 +3141,7 @@ protected:
     //                                                         scoped_refptr<RTCMediaConstraints> constraints);
     // #endif
 private:
+    Settings mSettings;
     OnceFlag mInitOnceFlag;
     std::string mLastError;
     std::unique_ptr<rtc::Thread> mWebRTCWorkerThread;

@@ -82,7 +82,9 @@ LoggerPrivate::LoggerPrivate(Logger *p, const char *name)
     detail::loggersNameMap().emplace(name, p);
 }
 
-LoggerPrivate::~LoggerPrivate() { }
+LoggerPrivate::~LoggerPrivate()
+{
+}
 
 bool LoggerPrivate::messageHandlerOutput(const Context &context, const char *message)
 {
@@ -114,7 +116,9 @@ Logger::Logger(LoggerPrivate *d)
 {
 }
 
-Logger::~Logger() { }
+Logger::~Logger()
+{
+}
 
 Logger::Pointer Logger::logger(int idNumber)
 {

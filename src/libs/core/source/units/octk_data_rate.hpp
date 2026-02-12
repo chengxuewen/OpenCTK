@@ -155,11 +155,11 @@ namespace utils
 {
 OCTK_CORE_API std::string toString(DataRate value);
 
-template <typename Sink>
-void stringify(Sink &sink, DataRate value)
-{
-    sink.Append(toString(value));
-}
+// template <typename Sink>
+// void stringify(Sink &sink, DataRate value)
+// {
+//     sink.Append(toString(value));
+// }
 } // namespace utils
 
 OCTK_END_NAMESPACE

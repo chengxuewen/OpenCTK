@@ -1,28 +1,25 @@
-#ifndef JETSON_VIDEO_ENCODER_H_
-#define JETSON_VIDEO_ENCODER_H_
+#pragma once
+
+#include "jetson_encoder.h"
 
 // WebRTC
 #include <api/video_codecs/video_encoder.h>
 #include <common_video/include/bitrate_adjuster.h>
 
-#include "args.h"
-#include "jetson_encoder.h"
+class JetsonVideoEncoder : public webrtc::VideoEncoder
+{
+public:
+    static std::unique_ptr<webrtc::VideoEncoder> Create();
+    JetsonVideoEncoder();
 
-class JetsonVideoEncoder : public webrtc::VideoEncoder {
-  public:
-    static std::unique_ptr<webrtc::VideoEncoder> Create(Args args);
-    JetsonVideoEncoder(Args args);
-
-    int32_t InitEncode(const webrtc::VideoCodec *codec_settings,
-                       const VideoEncoder::Settings &settings) override;
+    int32_t InitEncode(const webrtc::VideoCodec *codec_settings, const VideoEncoder::Settings &settings) override;
     int32_t RegisterEncodeCompleteCallback(webrtc::EncodedImageCallback *callback) override;
     int32_t Release() override;
-    int32_t Encode(const webrtc::VideoFrame &frame,
-                   const std::vector<webrtc::VideoFrameType> *frame_types) override;
+    int32_t Encode(const webrtc::VideoFrame &frame, const std::vector<webrtc::VideoFrameType> *frame_types) override;
     void SetRates(const RateControlParameters &parameters) override;
     webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const override;
 
-  protected:
+protected:
     int width_;
     int height_;
     int fps_adjuster_;
@@ -36,8 +33,6 @@ class JetsonVideoEncoder : public webrtc::VideoEncoder {
 
     virtual void SendFrame(const webrtc::VideoFrame &frame, V4L2Buffer &encoded_buffer);
 
-  private:
+private:
     static uint32_t GetV4L2CodecFormat(webrtc::VideoCodecType codec);
 };
-
-#endif

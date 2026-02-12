@@ -24,45 +24,12 @@
 
 #pragma once
 
-#include <octk_logging.hpp>
+#include <octk_exception.hpp>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/daily_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/rotating_file_sink.h>
-
-#include <atomic>
+#include <yaml-cpp/yaml.h>
 
 OCTK_BEGIN_NAMESPACE
 
-class OCTK_CORE_API LoggerPrivate
-{
-public:
-    using Context = Logger::Context;
-    using MessageHandler = Logger::MessageHandler;
-    struct MessageHandlerWraper
-    {
-        explicit MessageHandlerWraper(const MessageHandler &h) : handler(h) {}
-        const MessageHandler handler;
-    };
-
-    LoggerPrivate(Logger *p, const char *name);
-    virtual ~LoggerPrivate();
-
-    bool messageHandlerOutput(const Context &context, const char *message);
-
-    bool mNoSource;
-    const int mIdNumber;
-    const char * const mName;
-    std::shared_ptr<spdlog::logger> mLogger;
-    std::atomic_bool mLevelEnabled[LogLevelNum];
-    std::atomic_bool mMessageHandleUniqueOwnership;
-    std::atomic<MessageHandlerWraper *> mMessageHandlerWraper{nullptr};
-
-protected:
-    OCTK_DEFINE_PPTR(Logger)
-    OCTK_DECLARE_PUBLIC(Logger)
-    OCTK_DISABLE_COPY_MOVE(LoggerPrivate)
-};
+namespace yaml = ::YAML;
 
 OCTK_END_NAMESPACE

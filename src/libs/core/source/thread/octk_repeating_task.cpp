@@ -68,12 +68,12 @@ RepeatingTaskClosure::RepeatingTaskClosure(TaskQueueBase *taskQueue,
     , mNextRunTime(mClock->CurrentTime() + firstDelay)
     , mAliveFlag(aliveFlag)
 {
-    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::RepeatingTaskClosure() ctor:%p", this);
+    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::RepeatingTaskClosure() ctor:{}", utils::fmt::ptr(this));
 }
 
 RepeatingTaskClosure::~RepeatingTaskClosure()
 {
-    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::~RepeatingTaskClosure() dtor:%p", this);
+    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::~RepeatingTaskClosure() dtor:{}", utils::fmt::ptr(this));
 }
 
 void RepeatingTaskClosure::operator()() &&
@@ -81,7 +81,7 @@ void RepeatingTaskClosure::operator()() &&
     // OCTK_DCHECK_RUN_ON(mTaskQueue);
     if (!mAliveFlag->isAlive())
     {
-        OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::operator() not Alive:%p", this);
+        OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskClosure::operator() not Alive:{}", utils::fmt::ptr(this));
         return;
     }
 
@@ -93,7 +93,7 @@ void RepeatingTaskClosure::operator()() &&
     // Alternatively, the closure might have stopped this task.
     if (delay.IsPlusInfinity() || !mAliveFlag->isAlive())
     {
-        OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskHandle::operator() not be run again %p", this);
+        OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskHandle::operator() not be run again {}", utils::fmt::ptr(this));
         return;
     }
 
@@ -108,7 +108,9 @@ void RepeatingTaskClosure::operator()() &&
 
 RepeatingTaskHandle::~RepeatingTaskHandle()
 {
-    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "RepeatingTaskHandle::RepeatingTaskHandle() dtor:%p", this);
+    OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(),
+                       "RepeatingTaskHandle::RepeatingTaskHandle() dtor:{}",
+                       utils::fmt::ptr(this));
 }
 
 RepeatingTaskHandle RepeatingTaskHandle::start(TaskQueueBase *taskQueue,

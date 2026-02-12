@@ -239,7 +239,7 @@ public:
         if (0)
         {
             OCTK_TRACE("VideoRenderer::onFrame:type=%d, width:%d, height:%d, ntp:%lld, ts:%lld(%s)",
-                       frameBuffer->type(),
+                       octk::utils::fmt::as_int(frameBuffer->type()),
                        frame.width(),
                        frame.height(),
                        frame.ntpTimeMSecs(),

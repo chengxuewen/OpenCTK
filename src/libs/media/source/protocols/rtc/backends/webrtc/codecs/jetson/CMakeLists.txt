@@ -32,21 +32,18 @@ find_library(NVBUF_SURFACE_LIBRARY nvbufsurface HINTS ${TEGRA_LIB_DIR})
 find_library(NVBUF_SURFACE_TRANSFORM_LIBRARY nvbufsurftransform HINTS ${TEGRA_LIB_DIR})
 octk_internal_extend_target(octk_media
 	SOURCES
-	${ROOT_DIR}/common/logging.cpp
-	${ROOT_DIR}/common/logging.h
-	${ROOT_DIR}/common/thread_safe_queue.h
-	${ROOT_DIR}/common/v4l2_frame_buffer.cpp
-	${ROOT_DIR}/common/v4l2_frame_buffer.h
-	${ROOT_DIR}/common/v4l2_utils.cpp
-	${ROOT_DIR}/common/v4l2_utils.h
-	${ROOT_DIR}/common/worker.cpp
-	${ROOT_DIR}/common/worker.h
 	${ROOT_DIR}/jetson_encoder.cpp
 	${ROOT_DIR}/jetson_encoder.h
 	${ROOT_DIR}/jetson_scaler.cpp
 	${ROOT_DIR}/jetson_scaler.h
 	${ROOT_DIR}/jetson_video_encoder.cpp
 	${ROOT_DIR}/jetson_video_encoder.h
+	${ROOT_DIR}/v4l2_frame_buffer.cpp
+	${ROOT_DIR}/v4l2_frame_buffer.h
+	${ROOT_DIR}/v4l2_utils.cpp
+	${ROOT_DIR}/v4l2_utils.h
+	${ROOT_DIR}/worker.cpp
+	${ROOT_DIR}/worker.h
 	${JETSON_MULTIMEDIA_API_DIR}/samples/common/classes/NvBuffer.cpp
 	${JETSON_MULTIMEDIA_API_DIR}/samples/common/classes/NvBufSurface.cpp
 	${JETSON_MULTIMEDIA_API_DIR}/samples/common/classes/NvElement.cpp

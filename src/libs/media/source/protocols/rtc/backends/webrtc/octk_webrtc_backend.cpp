@@ -22,12 +22,13 @@
 **
 ***********************************************************************************************************************/
 
-#include <private/octk_rtc_backend_webrtc_p.hpp>
-#include <octk_rtc_engine.hpp>
+#include <private/octk_webrtc_backend_p.hpp>
 #include <octk_scope_guard.hpp>
+#include <octk_rtc_engine.hpp>
 
-#include "codecs/jetson/jetson_video_encoder.h"
-#define USE_JETSON_HW_ENCODER 1
+#if OCTK_FEATURE_MEDIA_USE_CODEC_JETSON
+#    include "codecs/jetson/jetson_video_encoder.h"
+#endif
 
 OCTK_DEFINE_LOGGER_WITH_LEVEL("WebRTC", WEBRTC_LOGGER, octk::LogLevel::Warning)
 
@@ -269,114 +270,132 @@ bool copyConstraintsIntoOfferAnswerOptions(const webrtc::MediaConstraints *const
 
 namespace
 {
-std::vector<webrtc::SdpVideoFormat> SupportedH264Codecs(bool add_scalability_modes = false)
+std::vector<webrtc::SdpVideoFormat> supportedH264JetsonCodecFormats(bool add_scalability_modes = false)
 {
-    //    if (!IsH264CodecSupported())
-    //      return std::vector<SdpVideoFormat>();
-    //    return {
-    //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel3_1, "1"),
-    //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel3_1, "0"),
-    //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel3_1, "1"),
-    //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel3_1, "0")};
-
-    return {webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline,
-                                     webrtc::H264Level::kLevel3_1,
-                                     "1",
-                                     add_scalability_modes),
-            webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline,
-                                     webrtc::H264Level::kLevel3_1,
-                                     "0",
-                                     add_scalability_modes),
-            webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline,
-                                     webrtc::H264Level::kLevel3_1,
-                                     "1",
-                                     add_scalability_modes),
-            webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline,
-                                     webrtc::H264Level::kLevel3_1,
-                                     "0",
-                                     add_scalability_modes),
-            webrtc::CreateH264Format(webrtc::H264Profile::kProfileMain,
-                                     webrtc::H264Level::kLevel3_1,
-                                     "1",
-                                     add_scalability_modes),
-            webrtc::CreateH264Format(webrtc::H264Profile::kProfileMain,
-                                     webrtc::H264Level::kLevel3_1,
-                                     "0",
-                                     add_scalability_modes)};
+    std::vector<webrtc::SdpVideoFormat> supportedFormats;
+    supportedFormats.push_back(
+        webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel4, "1"));
+    supportedFormats.push_back(
+        webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel4, "0"));
+    supportedFormats.push_back(
+        webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel4, "1"));
+    supportedFormats.push_back(
+        webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel4, "0"));
+    return supportedFormats;
 }
-std::vector<webrtc::SdpVideoFormat> SupportedH264DecoderCodecs()
-{
-    //    if (!IsH264CodecSupported())
-    //      return std::vector<SdpVideoFormat>();
-
-    std::vector<webrtc::SdpVideoFormat> supportedCodecs = SupportedH264Codecs();
-
-    // OpenH264 doesn't yet support High Predictive 4:4:4 encoding but it does
-    // support decoding.
-    supportedCodecs.push_back(
-        CreateH264Format(webrtc::H264Profile::kProfilePredictiveHigh444, webrtc::H264Level::kLevel3_1, "1"));
-    supportedCodecs.push_back(
-        CreateH264Format(webrtc::H264Profile::kProfilePredictiveHigh444, webrtc::H264Level::kLevel3_1, "0"));
-
-    return supportedCodecs;
-}
+// std::vector<webrtc::SdpVideoFormat> SupportedH264Codecs(bool add_scalability_modes = false)
+// {
+//     //    if (!IsH264CodecSupported())
+//     //      return std::vector<SdpVideoFormat>();
+//     //    return {
+//     //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel3_1, "1"),
+//     //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel3_1, "0"),
+//     //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel3_1, "1"),
+//     //        webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel3_1, "0")};
+//
+//     return {webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline,
+//                                      webrtc::H264Level::kLevel3_1,
+//                                      "1",
+//                                      add_scalability_modes),
+//             webrtc::CreateH264Format(webrtc::H264Profile::kProfileBaseline,
+//                                      webrtc::H264Level::kLevel3_1,
+//                                      "0",
+//                                      add_scalability_modes),
+//             webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline,
+//                                      webrtc::H264Level::kLevel3_1,
+//                                      "1",
+//                                      add_scalability_modes),
+//             webrtc::CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline,
+//                                      webrtc::H264Level::kLevel3_1,
+//                                      "0",
+//                                      add_scalability_modes),
+//             webrtc::CreateH264Format(webrtc::H264Profile::kProfileMain,
+//                                      webrtc::H264Level::kLevel3_1,
+//                                      "1",
+//                                      add_scalability_modes),
+//             webrtc::CreateH264Format(webrtc::H264Profile::kProfileMain,
+//                                      webrtc::H264Level::kLevel3_1,
+//                                      "0",
+//                                      add_scalability_modes)};
+// }
+// std::vector<webrtc::SdpVideoFormat> SupportedH264DecoderCodecs()
+// {
+//     //    if (!IsH264CodecSupported())
+//     //      return std::vector<SdpVideoFormat>();
+//
+//     std::vector<webrtc::SdpVideoFormat> supportedCodecs = SupportedH264Codecs();
+//
+//     // OpenH264 doesn't yet support High Predictive 4:4:4 encoding but it does
+//     // support decoding.
+//     supportedCodecs.push_back(
+//         CreateH264Format(webrtc::H264Profile::kProfilePredictiveHigh444, webrtc::H264Level::kLevel3_1, "1"));
+//     supportedCodecs.push_back(
+//         CreateH264Format(webrtc::H264Profile::kProfilePredictiveHigh444, webrtc::H264Level::kLevel3_1, "0"));
+//
+//     return supportedCodecs;
+// }
 } // namespace
 
 class ExternalVideoEncoderFactory : public webrtc::VideoEncoderFactory
 {
+    RtcPeerConnectionFactory::Settings mSettings;
+
 public:
-    static std::unique_ptr<ExternalVideoEncoderFactory> Create()
+    ExternalVideoEncoderFactory(const RtcPeerConnectionFactory::Settings &settings)
+        : mSettings(settings)
     {
-        return std::make_unique<ExternalVideoEncoderFactory>();
+    }
+    ~ExternalVideoEncoderFactory() override = default;
+
+    static std::unique_ptr<ExternalVideoEncoderFactory> Create(const RtcPeerConnectionFactory::Settings &settings)
+    {
+        return std::make_unique<ExternalVideoEncoderFactory>(settings);
     }
 
     std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override
     {
         std::vector<webrtc::SdpVideoFormat> supportedFormats;
-#if USE_JETSON_HW_ENCODER
-        supportedFormats.push_back(
-            CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel4, "1"));
-        supportedFormats.push_back(
-            CreateH264Format(webrtc::H264Profile::kProfileConstrainedBaseline, webrtc::H264Level::kLevel4, "0"));
-        supportedFormats.push_back(
-            CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel4, "1"));
-        supportedFormats.push_back(
-            CreateH264Format(webrtc::H264Profile::kProfileBaseline, webrtc::H264Level::kLevel4, "0"));
-#else
-        supportedFormats.push_back(webrtc::SdpVideoFormat(cricket::kVp8CodecName));
-        //        for (const webrtc::SdpVideoFormat &format : webrtc::SupportedVP9Codecs())
-        //        {
-        //            supportedFormats.push_back(format);
-        //        }
-        for (const webrtc::SdpVideoFormat &format : webrtc::SupportedH264Codecs())
+#if OCTK_FEATURE_MEDIA_USE_CODEC_JETSON
+        if (mSettings.useHardwareCodec)
         {
-            supportedFormats.push_back(format);
+            for (const webrtc::SdpVideoFormat &format : supportedH264JetsonCodecFormats())
+            {
+                supportedFormats.push_back(format);
+            }
         }
+        else
 #endif
+        {
+            supportedFormats.push_back(webrtc::SdpVideoFormat(cricket::kVp8CodecName));
+            for (const webrtc::SdpVideoFormat &format : webrtc::SupportedH264Codecs())
+            {
+                supportedFormats.push_back(format);
+            }
+        }
         return supportedFormats;
     }
 
     std::unique_ptr<webrtc::VideoEncoder> Create(const webrtc::Environment &env,
                                                  const webrtc::SdpVideoFormat &format) override
     {
-#if USE_JETSON_HW_ENCODER
-        Args args_;
-        return JetsonVideoEncoder::Create(args_);
-#else
+#if OCTK_FEATURE_MEDIA_USE_CODEC_JETSON
+        if (mSettings.useHardwareCodec)
+        {
+            return JetsonVideoEncoder::Create();
+        }
+#endif
         if (utils::stringEqualsIgnoreCase(format.name, cricket::kVp8CodecName))
         {
             return webrtc::LibvpxVp8EncoderTemplateAdapter::CreateEncoder(env, format);
         }
-        //        if (utils::stringEqualsIgnoreCase(format.name, cricket::kVp9CodecName))
-        //        {
-        //            return webrtc::LibvpxVp9EncoderTemplateAdapter::CreateEncoder(env, format);
-        //        }
         if (utils::stringEqualsIgnoreCase(format.name, cricket::kH264CodecName))
         {
             return webrtc::OpenH264EncoderTemplateAdapter::CreateEncoder(env, format);
         }
-#endif
-        RTC_LOG(LS_WARNING) << "create video encoder failed, format not supported," << "format: " << format.name;
+
+        OCTK_LOGGING_WARNING(WEBRTC_LOGGER(),
+                             "create video encoder failed, format not supported, format: {}",
+                             format.name.c_str());
         return nullptr;
     }
 };
@@ -393,41 +412,11 @@ public:
     {
         std::vector<webrtc::SdpVideoFormat> supportedFormats;
         supportedFormats.push_back(webrtc::SdpVideoFormat(cricket::kVp8CodecName));
-        //        for (const webrtc::SdpVideoFormat &format : webrtc::SupportedVP9Codecs())
-        //        {
-        //            supportedFormats.push_back(format);
-        //        }
-        for (const webrtc::SdpVideoFormat &format : SupportedH264DecoderCodecs())
+        for (const webrtc::SdpVideoFormat &format : webrtc::SupportedH264Codecs())
         {
             supportedFormats.push_back(format);
         }
-
-        //        if (kDav1dIsIncluded)
-        //        {
-        //            supportedFormats.push_back(SdpVideoFormat::AV1Profile0());
-        //            supportedFormats.push_back(SdpVideoFormat::AV1Profile1());
-        //        }
-
         return supportedFormats;
-    }
-
-    CodecSupport QueryCodecSupport(const webrtc::SdpVideoFormat &format, bool reference_scaling) const override
-    {
-        // Query for supported formats and check if the specified format is supported.
-        // Return unsupported if an invalid combination of format and
-        // reference_scaling is specified.
-        if (reference_scaling)
-        {
-            VideoCodecType codec = PayloadStringToCodecType(format.name);
-            if (codec != kVideoCodecVP9 && codec != kVideoCodecAV1)
-            {
-                return {/*is_supported=*/false, /*is_power_efficient=*/false};
-            }
-        }
-
-        CodecSupport codec_support;
-        codec_support.is_supported = format.IsCodecInList(this->GetSupportedFormats());
-        return codec_support;
     }
 
     std::unique_ptr<webrtc::VideoDecoder> Create(const webrtc::Environment &env,
@@ -437,15 +426,13 @@ public:
         {
             return webrtc::LibvpxVp8DecoderTemplateAdapter::CreateDecoder(env, format);
         }
-        //        if (utils::stringEqualsIgnoreCase(format.name, cricket::kVp9CodecName))
-        //        {
-        //            return webrtc::LibvpxVp9DecoderTemplateAdapter::CreateDecoder(format);
-        //        }
         if (utils::stringEqualsIgnoreCase(format.name, cricket::kH264CodecName))
         {
             return webrtc::OpenH264DecoderTemplateAdapter::CreateDecoder(format);
         }
-        RTC_LOG(LS_WARNING) << "create video decoder failed, format not supported," << "format: " << format.name;
+        OCTK_LOGGING_WARNING(WEBRTC_LOGGER(),
+                             "create video decoder failed, format not supported, format: {}",
+                             format.name.c_str());
         return nullptr;
     }
 };
@@ -709,12 +696,12 @@ RtcPeerConnectionWebRTC::RtcPeerConnectionWebRTC(
     , mConstraints(constraints)
     , mCallbackMutex(new webrtc::Mutex())
 {
-    OCTK_TRACE() << __FUNCTION__ << ": ctor" << this;
+    OCTK_LOGGING_TRACE(WEBRTC_LOGGER()) << "RtcPeerConnectionWebRTC: ctor" << this;
 }
 
 RtcPeerConnectionWebRTC::~RtcPeerConnectionWebRTC()
 {
-    OCTK_TRACE() << __FUNCTION__ << ": dtor" << this;
+    OCTK_TRACE() << "RtcPeerConnectionWebRTC: dtor" << this;
 }
 
 Status RtcPeerConnectionWebRTC::initialize()
@@ -726,7 +713,7 @@ Status RtcPeerConnectionWebRTC::initialize()
         if (!mWebRTCPeerConnectionFactory.get())
         {
             mLastError = "PeerConnectionFactory is null";
-            OCTK_WARNING("%s", mLastError.c_str());
+            OCTK_WARNING("{}", mLastError.c_str());
             status = Status(mLastError);
             return status;
         }
@@ -738,7 +725,7 @@ Status RtcPeerConnectionWebRTC::initialize()
 
         for (int i = 0; i < RtcIceServer::kMaxSize; i++)
         {
-            const auto &ice_server = mConfiguration.ice_servers[i];
+            const auto &ice_server = mConfiguration.iceServers[i];
             if (ice_server.uri.size() > 0)
             {
                 webrtc::PeerConnectionInterface::IceServer server;
@@ -748,25 +735,25 @@ Status RtcPeerConnectionWebRTC::initialize()
                 config.servers.push_back(server);
             }
         }
-        config.candidate_network_policy = utils::toWebRTC(mConfiguration.candidate_network_policy);
-        config.tcp_candidate_policy = utils::toWebRTC(mConfiguration.tcp_candidate_policy);
-        config.rtcp_mux_policy = utils::toWebRTC(mConfiguration.rtcp_mux_policy);
-        config.bundle_policy = utils::toWebRTC(mConfiguration.bundle_policy);
-        config.sdp_semantics = utils::toWebRTC(mConfiguration.sdp_semantics);
+        config.candidate_network_policy = utils::toWebRTC(mConfiguration.candidateNetworkPolicy);
+        config.tcp_candidate_policy = utils::toWebRTC(mConfiguration.tcpCandidatePolicy);
+        config.rtcp_mux_policy = utils::toWebRTC(mConfiguration.rtcpMuxPolicy);
+        config.bundle_policy = utils::toWebRTC(mConfiguration.bundlePolicy);
+        config.sdp_semantics = utils::toWebRTC(mConfiguration.sdpSemantics);
         config.type = utils::toWebRTC(mConfiguration.type);
 
-        mWebRTCOfferAnswerOptions.offer_to_receive_audio = mConfiguration.offer_to_receive_audio;
-        mWebRTCOfferAnswerOptions.offer_to_receive_video = mConfiguration.offer_to_receive_video;
-        mWebRTCOfferAnswerOptions.use_rtp_mux = mConfiguration.use_rtp_mux;
+        mWebRTCOfferAnswerOptions.offer_to_receive_audio = mConfiguration.offerToReceiveAudio;
+        mWebRTCOfferAnswerOptions.offer_to_receive_video = mConfiguration.offerToReceiveVideo;
+        mWebRTCOfferAnswerOptions.use_rtp_mux = mConfiguration.useRtpMux;
 
         // config.disable_ipv6 = configuration_.disable_ipv6;
-        config.disable_ipv6_on_wifi = mConfiguration.disable_ipv6_on_wifi;
-        config.disable_link_local_networks = mConfiguration.disable_link_local_networks;
-        config.max_ipv6_networks = mConfiguration.max_ipv6_networks;
+        config.disable_ipv6_on_wifi = mConfiguration.disableIpv6OnWifi;
+        config.disable_link_local_networks = mConfiguration.disableLinkLocalNetworks;
+        config.max_ipv6_networks = mConfiguration.maxIpv6Networks;
 
-        if (mConfiguration.screencast_min_bitrate > 0)
+        if (mConfiguration.screencastMinBitrate > 0)
         {
-            config.screencast_min_bitrate = mConfiguration.screencast_min_bitrate;
+            config.screencast_min_bitrate = mConfiguration.screencastMinBitrate;
         }
 
         const auto mediaConstraints = utils::dynamic_pointer_cast<RtcMediaConstraintsWebRTC>(mConstraints);
@@ -778,7 +765,7 @@ Status RtcPeerConnectionWebRTC::initialize()
         }
 
         webrtc::PeerConnectionFactoryInterface::Options options;
-        options.disable_encryption = (mConfiguration.srtp_type == RtcMediaSecurityType::kSRTP_None);
+        options.disable_encryption = (mConfiguration.srtpType == RtcMediaSecurityType::kSRTP_None);
         // options.network_ignore_mask |= ADAPTER_TYPE_CELLULAR;
         mWebRTCPeerConnectionFactory->SetOptions(options);
 
@@ -787,7 +774,7 @@ Status RtcPeerConnectionWebRTC::initialize()
         if (!result.ok())
         {
             mLastError = std::string("CreatePeerConnection failed: ") + result.error().message();
-            OCTK_WARNING("%s", mLastError.c_str());
+            OCTK_WARNING("{}", mLastError.c_str());
             status = Status(mLastError);
             return status;
         }
@@ -798,7 +785,6 @@ Status RtcPeerConnectionWebRTC::initialize()
 
 void RtcPeerConnectionWebRTC::restartIce()
 {
-    RTC_LOG(LS_INFO) << __FUNCTION__;
     if (mWebRTCPeerConnection.get())
     {
         mWebRTCPeerConnection->RestartIce();
@@ -807,7 +793,6 @@ void RtcPeerConnectionWebRTC::restartIce()
 
 void RtcPeerConnectionWebRTC::close()
 {
-    RTC_LOG(LS_INFO) << __FUNCTION__;
     if (mWebRTCPeerConnection.get())
     {
         mWebRTCPeerConnection = nullptr;
@@ -1003,9 +988,9 @@ void RtcPeerConnectionWebRTC::setRemoteDescription(StringView sdp,
     auto media_content_desc = session_description->description()->GetContentDescriptionByName("video");
     // auto media_content_desc = (webrtc::MediaContentDescription *)content_desc;
 
-    if (media_content_desc && mConfiguration.local_video_bandwidth > 0)
+    if (media_content_desc && mConfiguration.localVideoBandWidth > 0)
     {
-        media_content_desc->set_bandwidth(mConfiguration.local_video_bandwidth * 1000);
+        media_content_desc->set_bandwidth(mConfiguration.localVideoBandWidth * 1000);
     }
     auto observer = SetRemoteDescriptionObserver::create(std::move(success), std::move(failure));
     mWebRTCPeerConnection->SetRemoteDescription(std::move(session_description), observer);
@@ -1374,7 +1359,11 @@ void RtcPeerConnectionWebRTC::OnAddTrack(
     webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
     const std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>> &streams)
 {
-    OCTK_TRACE("[%p]%s(%p, %l)", this, OCTK_STRFUNC_NAME, receiver.get(), streams.size());
+    OCTK_TRACE("[{}]{}({}, {})",
+               utils::fmt::ptr(this),
+               OCTK_STRFUNC_NAME,
+               utils::fmt::ptr(receiver.get()),
+               streams.size());
     if (mObserver)
     {
         std::vector<SharedPointer<RtcMediaStream>> out_streams;
@@ -1389,7 +1378,7 @@ void RtcPeerConnectionWebRTC::OnAddTrack(
 
 void RtcPeerConnectionWebRTC::OnTrack(webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver)
 {
-    OCTK_TRACE("[%p]%s(%p)", this, OCTK_STRFUNC_NAME, transceiver.get());
+    OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, utils::fmt::ptr(transceiver.get()));
     if (mObserver)
     {
         mObserver->onTrack(utils::make_shared<RtcRtpTransceiverWebRTC>(transceiver));
@@ -1398,7 +1387,7 @@ void RtcPeerConnectionWebRTC::OnTrack(webrtc::scoped_refptr<webrtc::RtpTransceiv
 
 void RtcPeerConnectionWebRTC::OnRemoveTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver)
 {
-    OCTK_TRACE("[%p]%s(%p)", this, OCTK_STRFUNC_NAME, receiver.get());
+    OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, utils::fmt::ptr(receiver.get()));
     if (mObserver)
     {
         mObserver->onRemoveTrack(utils::make_shared<RtcRtpReceiverWebRTC>(receiver));
@@ -1407,7 +1396,11 @@ void RtcPeerConnectionWebRTC::OnRemoveTrack(webrtc::scoped_refptr<webrtc::RtpRec
 
 void RtcPeerConnectionWebRTC::OnAddStream(webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream)
 {
-    OCTK_TRACE("[%p]%s(%p, %s)", this, OCTK_STRFUNC_NAME, stream.get(), stream->id().c_str());
+    OCTK_TRACE("[{}]{}({}, {})",
+               utils::fmt::ptr(this),
+               OCTK_STRFUNC_NAME,
+               utils::fmt::ptr(stream.get()),
+               stream->id().c_str());
 
     auto remote_stream = utils::make_shared<RtcMediaStreamWebRTC>(stream);
     remote_stream->RegisterRTCPeerConnectionObserver(mObserver);
@@ -1421,7 +1414,11 @@ void RtcPeerConnectionWebRTC::OnAddStream(webrtc::scoped_refptr<webrtc::MediaStr
 
 void RtcPeerConnectionWebRTC::OnRemoveStream(webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream)
 {
-    OCTK_TRACE("[%p]%s(%p, %s)", this, OCTK_STRFUNC_NAME, stream.get(), stream->id().c_str());
+    OCTK_TRACE("[{}]{}({}, {})",
+               utils::fmt::ptr(this),
+               OCTK_STRFUNC_NAME,
+               utils::fmt::ptr(stream.get()),
+               stream->id().c_str());
     SharedPointer<RtcMediaStreamWebRTC> recv_stream;
 
     for (auto kv : mRemoteStreams)
@@ -1445,7 +1442,11 @@ void RtcPeerConnectionWebRTC::OnRemoveStream(webrtc::scoped_refptr<webrtc::Media
 
 void RtcPeerConnectionWebRTC::OnDataChannel(webrtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
 {
-    OCTK_TRACE("[%p]%s(%p, %s)", this, OCTK_STRFUNC_NAME, data_channel.get(), data_channel->label().c_str());
+    OCTK_TRACE("[{}]{}({}, {})",
+               utils::fmt::ptr(this),
+               OCTK_STRFUNC_NAME,
+               utils::fmt::ptr(data_channel.get()),
+               data_channel->label().c_str());
     mDataChannel = utils::make_shared<RtcDataChannelWebRTC>(data_channel);
     if (mObserver)
     {
@@ -1455,7 +1456,7 @@ void RtcPeerConnectionWebRTC::OnDataChannel(webrtc::scoped_refptr<webrtc::DataCh
 
 void RtcPeerConnectionWebRTC::OnRenegotiationNeeded()
 {
-    OCTK_TRACE("[%p]%s()", this, OCTK_STRFUNC_NAME);
+    OCTK_TRACE("[{}]{}()", utils::fmt::ptr(this), OCTK_STRFUNC_NAME);
     if (mObserver)
     {
         mObserver->onRenegotiationNeeded();
@@ -1464,7 +1465,7 @@ void RtcPeerConnectionWebRTC::OnRenegotiationNeeded()
 
 void RtcPeerConnectionWebRTC::OnIceCandidate(const webrtc::IceCandidateInterface *candidate)
 {
-    OCTK_TRACE("[%p]%s(%p)", this, OCTK_STRFUNC_NAME, candidate);
+    OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, utils::fmt::ptr(candidate));
     // if (!rtc_peerconnection_)
     //     return;
 
@@ -1499,7 +1500,7 @@ void RtcPeerConnectionWebRTC::OnIceCandidate(const webrtc::IceCandidateInterface
 
 void RtcPeerConnectionWebRTC::OnConnectionChange(webrtc::PeerConnectionInterface::PeerConnectionState new_state)
 {
-    OCTK_TRACE("[%p]%s(%s)", this, OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
+    OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
     if (mObserver)
     {
         mObserver->onPeerConnectionState(utils::fromWebRTC(new_state));
@@ -1508,7 +1509,7 @@ void RtcPeerConnectionWebRTC::OnConnectionChange(webrtc::PeerConnectionInterface
 
 void RtcPeerConnectionWebRTC::OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState new_state)
 {
-    OCTK_TRACE("[%p]%s(%s)", this, OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
+    OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
     if (mObserver)
     {
         mObserver->onIceGatheringState(utils::fromWebRTC(new_state));
@@ -1517,7 +1518,7 @@ void RtcPeerConnectionWebRTC::OnIceGatheringChange(webrtc::PeerConnectionInterfa
 
 void RtcPeerConnectionWebRTC::OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState new_state)
 {
-    OCTK_TRACE("[%p]%s(%s)", this, OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
+    OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
     if (mObserver)
     {
         mObserver->onIceConnectionState(utils::fromWebRTC(new_state));
@@ -1526,7 +1527,7 @@ void RtcPeerConnectionWebRTC::OnIceConnectionChange(webrtc::PeerConnectionInterf
 
 void RtcPeerConnectionWebRTC::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state)
 {
-    OCTK_TRACE("[%p]%s(%s)", this, OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
+    OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, toString(utils::fromWebRTC(new_state)).data());
     if (mObserver)
     {
         mObserver->onSignalingState(utils::fromWebRTC(new_state));
@@ -1559,18 +1560,19 @@ Status RtcPeerConnectionFactoryWebRTC::terminate()
     return Status::ok;
 }
 
-Status RtcPeerConnectionFactoryWebRTC::initialize()
+Status RtcPeerConnectionFactoryWebRTC::initialize(const Settings &settings)
 {
     Status status = mInitOnceFlag.isNeverCalled() ? Status::ok : Status(mLastError);
     utils::callOnce(mInitOnceFlag,
-                    [this, &status]()
+                    [this, &status, settings]()
                     {
+                        mSettings = settings;
                         mWebRTCNetworkThread = rtc::Thread::CreateWithSocketServer();
                         mWebRTCNetworkThread->SetName("network_thread", nullptr);
                         if (!mWebRTCNetworkThread->Start())
                         {
                             mLastError = "WebRTC network thread start failed";
-                            OCTK_WARNING("%s", mLastError.c_str());
+                            OCTK_WARNING("{}", mLastError.c_str());
                             status = mLastError;
                             return;
                         }
@@ -1580,7 +1582,7 @@ Status RtcPeerConnectionFactoryWebRTC::initialize()
                         if (!mWebRTCSignalingThread->Start())
                         {
                             mLastError = "WebRTC signaling thread start failed";
-                            OCTK_WARNING("%s", mLastError.c_str());
+                            OCTK_WARNING("{}", mLastError.c_str());
                             status = mLastError;
                             return;
                         }
@@ -1590,7 +1592,7 @@ Status RtcPeerConnectionFactoryWebRTC::initialize()
                         if (!mWebRTCWorkerThread->Start())
                         {
                             mLastError = "WebRTC worker thread start failed";
-                            OCTK_WARNING("%s", mLastError.c_str());
+                            OCTK_WARNING("{}", mLastError.c_str());
                             status = mLastError;
                             return;
                         }
@@ -1603,9 +1605,9 @@ Status RtcPeerConnectionFactoryWebRTC::initialize()
                                 {
                                     if (!mWebRTCAudioDeviceModule)
                                     {
-                                        //                                        mWebRTCAudioDeviceModule = webrtc::AudioDeviceModule::Create(
-                                        //                                            webrtc::AudioDeviceModule::kPlatformDefaultAudio,
-                                        //                                            mWebRTCTaskQueueFactory.get());
+                                        // mWebRTCAudioDeviceModule = webrtc::AudioDeviceModule::Create(
+                                        //     webrtc::AudioDeviceModule::kPlatformDefaultAudio,
+                                        //     mWebRTCTaskQueueFactory.get());
                                     }
                                     // CreateAudioDeviceModule_w();
                                 });
@@ -1626,28 +1628,22 @@ Status RtcPeerConnectionFactoryWebRTC::initialize()
                         // }
 
                         mWebRTCPeerConnectionFactory = webrtc::CreatePeerConnectionFactory(
-                            mWebRTCNetworkThread.get(),                 // network_thread
-                            mWebRTCWorkerThread.get(),                  // worker_thread
-                            mWebRTCSignalingThread.get(),               // signaling_thread
-                            mWebRTCAudioDeviceModule,                   // default_adm
-                            webrtc::CreateBuiltinAudioEncoderFactory(), // audio_encoder_factory
-                            webrtc::CreateBuiltinAudioDecoderFactory(), // audio_decoder_factory
-#if 0
-                    webrtc::CreateBuiltinVideoEncoderFactory(), // video_encoder_factory
-                    webrtc::CreateBuiltinVideoDecoderFactory(), // video_decoder_factory
-#else
-                            detail::ExternalVideoEncoderFactory::Create(), // video_encoder_factory
-                            detail::ExternalVideoDecoderFactory::Create(), // video_decoder_factory
-        //                            std::make_unique<webrtc::InternalDecoderFactory>(),
-#endif
-                            nullptr, // audio_mixer
-                            nullptr, // audio_processing
-                            nullptr  // owned_audio_frame_processor
+                            mWebRTCNetworkThread.get(),                             // network_thread
+                            mWebRTCWorkerThread.get(),                              // worker_thread
+                            mWebRTCSignalingThread.get(),                           // signaling_thread
+                            mWebRTCAudioDeviceModule,                               // default_adm
+                            webrtc::CreateBuiltinAudioEncoderFactory(),             // audio_encoder_factory
+                            webrtc::CreateBuiltinAudioDecoderFactory(),             // audio_decoder_factory
+                            detail::ExternalVideoEncoderFactory::Create(mSettings), // video_encoder_factory
+                            detail::ExternalVideoDecoderFactory::Create(),          // video_decoder_factory
+                            nullptr,                                                // audio_mixer
+                            nullptr,                                                // audio_processing
+                            nullptr                                                 // owned_audio_frame_processor
                         );
                         if (!mWebRTCPeerConnectionFactory.get())
                         {
                             mLastError = "WebRTC create peerconnection factory failed";
-                            OCTK_WARNING("%s", mLastError.c_str());
+                            OCTK_WARNING("{}", mLastError.c_str());
                             status = mLastError;
                             this->terminate();
                         }

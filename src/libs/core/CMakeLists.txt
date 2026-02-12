@@ -48,8 +48,10 @@ endif()
 find_package(Threads REQUIRED)
 list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
+octk_find_package(WrapFmt PROVIDED_TARGETS OCTK3rdparty::WrapFmt)
 octk_find_package(WrapJson PROVIDED_TARGETS OCTK3rdparty::WrapJson)
 octk_find_package(WrapSpdlog PROVIDED_TARGETS OCTK3rdparty::WrapSpdlog)
+octk_find_package(WrapYamlCpp PROVIDED_TARGETS OCTK3rdparty::WrapYamlCpp)
 octk_find_package(WrapAnyLite PROVIDED_TARGETS OCTK3rdparty::WrapAnyLite)
 octk_find_package(WrapVariant PROVIDED_TARGETS OCTK3rdparty::WrapVariant)
 octk_find_package(WrapExpected PROVIDED_TARGETS OCTK3rdparty::WrapExpected)
@@ -57,6 +59,8 @@ octk_find_package(WrapOptional PROVIDED_TARGETS OCTK3rdparty::WrapOptional)
 octk_find_package(WrapFunction2 PROVIDED_TARGETS OCTK3rdparty::WrapFunction2)
 octk_find_package(WrapFilesystem PROVIDED_TARGETS OCTK3rdparty::WrapFilesystem)
 octk_find_package(WrapStringViewLite PROVIDED_TARGETS OCTK3rdparty::WrapStringViewLite)
+octk_find_package(WrapConcurrentQueue PROVIDED_TARGETS OCTK3rdparty::WrapConcurrentQueue)
+octk_find_package(WrapReaderWriterQueue PROVIDED_TARGETS OCTK3rdparty::WrapReaderWriterQueue)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -65,6 +69,13 @@ octk_find_package(WrapStringViewLite PROVIDED_TARGETS OCTK3rdparty::WrapStringVi
 octk_add_library(core
 	EXCEPTIONS
 	SOURCES
+	source/containers/octk_array_view.hpp
+	source/containers/octk_concurrent_queue.hpp
+	source/containers/octk_flat_set.hpp
+	source/containers/octk_inlined_vector.hpp
+	source/containers/octk_reader_writer_queue.hpp
+	source/containers/octk_vector.hpp
+	source/containers/octk_vector_map.hpp
 	source/functional/octk_function_view.hpp
 	source/functional/octk_invocable.hpp
 	source/functional/octk_unique_function.hpp
@@ -119,6 +130,7 @@ octk_add_library(core
 	source/text/octk_base64.hpp
 	source/text/octk_bit_buffer.cpp
 	source/text/octk_bit_buffer.hpp
+	source/text/octk_format.hpp
 	source/text/octk_json.hpp
 	source/text/octk_string.cpp
 	source/text/octk_string.hpp
@@ -130,6 +142,7 @@ octk_add_library(core
 	source/text/octk_string_utils.cpp
 	source/text/octk_string_utils.hpp
 	source/text/octk_string_view.hpp
+	source/text/octk_yaml.hpp
 	source/thread/octk_concurrent.cpp
 	source/thread/octk_concurrent.hpp
 	source/thread/octk_context_checker.cpp
@@ -165,7 +178,7 @@ octk_add_library(core
 	source/time/octk_elapsed_timer.cpp
 	source/time/octk_elapsed_timer.hpp
 	source/tools/octk_algorithm.hpp
-	source/tools/octk_array_view.hpp
+	source/tools/octk_any.hpp
 	source/tools/octk_assert.cpp
 	source/tools/octk_assert.hpp
 	source/tools/octk_buffer.hpp
@@ -181,7 +194,6 @@ octk_add_library(core
 	source/tools/octk_fake_clock.hpp
 	source/tools/octk_id_registry.cpp
 	source/tools/octk_id_registry.hpp
-	source/tools/octk_inlined_vector.hpp
 	source/tools/octk_iterator.hpp
 	source/tools/octk_limits.hpp
 	source/tools/octk_logging.cpp
@@ -202,7 +214,7 @@ octk_add_library(core
 	source/tools/octk_shared_buffer.hpp
 	source/tools/octk_source_location.hpp
     source/tools/octk_source_sink.hpp
-    source/tools/octk_status.hpp
+	source/tools/octk_status.hpp
 #    source/tools/octk_strong_alias.hpp
 	source/tools/octk_tag_id.hpp
 	source/tools/octk_type_info.hpp
@@ -210,8 +222,6 @@ octk_add_library(core
 	source/tools/octk_type_traits.hpp
 	source/tools/octk_utility.hpp
 	source/tools/octk_variant.hpp
-	source/tools/octk_vector.hpp
-	source/tools/octk_vector_map.hpp
 	source/units/octk_data_rate.cpp
 	source/units/octk_data_rate.hpp
 	source/units/octk_data_size.cpp
@@ -228,17 +238,23 @@ octk_add_library(core
 	PRECOMPILED_HEADER
 	source/octk_pch.hpp
 	EXTERNAL_HEADERS_DIRS
+	${OCTKWrapFmt_INSTALL_DIR}/include
 	${OCTKWrapJson_INSTALL_DIR}/include
+	${OCTKWrapYamlCpp_INSTALL_DIR}/include
 	${OCTKWrapVariant_INSTALL_DIR}/include
 	${OCTKWrapAnyLite_INSTALL_DIR}/include
 	${OCTKWrapOptional_INSTALL_DIR}/include
 	${OCTKWrapExpected_INSTALL_DIR}/include
 	${OCTKWrapFilesystem_INSTALL_DIR}/include
 	${OCTKWrapStringviewLite_INSTALL_DIR}/include
+	${OCTKWrapConcurrentQueue_INSTALL_DIR}/include
+	${OCTKWrapReaderWriterQueue_INSTALL_DIR}/include
 	LIBRARIES
 	OCTK3rdparty::WrapSpdlog
 	PUBLIC_LIBRARIES
+	OCTK3rdparty::WrapFmt
 	OCTK3rdparty::WrapJson
+	OCTK3rdparty::WrapYamlCpp
 	OCTK3rdparty::WrapVariant
 	OCTK3rdparty::WrapAnyLite
 	OCTK3rdparty::WrapExpected
@@ -246,6 +262,8 @@ octk_add_library(core
 	OCTK3rdparty::WrapFunction2
 	OCTK3rdparty::WrapFilesystem
 	OCTK3rdparty::WrapStringViewLite
+	OCTK3rdparty::WrapConcurrentQueue
+	OCTK3rdparty::WrapReaderWriterQueue
 	${OCTK_LIB_LINK_LIBRARIES})
 octk_internal_extend_target(octk_core
 	SOURCES

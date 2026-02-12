@@ -256,8 +256,8 @@ void TaskQueueThread::processTasks()
         if (nextTask.runTask)
         {
             OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(),
-                               "TaskQueueThread::processTasks() runTask:%p",
-                               nextTask.runTask.get());
+                               "TaskQueueThread::processTasks() runTask:{}",
+                               utils::fmt::ptr(nextTask.runTask.get()));
             // process entry immediately then try again
             nextTask.runTask->run();
             // Attempt to run more tasks before going to sleep.
@@ -266,7 +266,7 @@ void TaskQueueThread::processTasks()
 
         lock.lock();
         OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(),
-                           "TaskQueueThread::processTasks() wait %d us",
+                           "TaskQueueThread::processTasks() wait {} us",
                            nextTask.sleepTime.us());
         const auto deadline = std::chrono::steady_clock::now() +
                               std::chrono::microseconds(std::min(nextTask.sleepTime.us(), (int64_t)1'000'000LL));

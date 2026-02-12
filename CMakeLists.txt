@@ -236,8 +236,25 @@ endforeach()
 if(NOT OCTK_CMAKE_CXX_STANDARD_VALID)
 	message(FATAL_ERROR " Unsupport C++ standard: ${OCTK_CMAKE_CXX_STANDARD}.")
 endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Using C++: ${OCTK_CMAKE_CXX_STANDARD}")
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Check the C++ compiler version
+#-----------------------------------------------------------------------------------------------------------------------
+set(OCTK_MSVC_MIN_VERSION 16.0)
+set(OCTK_GCC_MIN_VERSION 4.7)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${OCTK_MSVC_MIN_VERSION})
+		message(FATAL_ERROR "MSVC too old: ${CMAKE_CXX_COMPILER_VERSION}. Need >= ${OCTK_MSVC_MIN_VERSION}")
+	endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${OCTK_GCC_MIN_VERSION})
+		message(FATAL_ERROR "GCC too old: ${CMAKE_CXX_COMPILER_VERSION}. Need >= ${OCTK_GCC_MIN_VERSION}")
+	endif()
+endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

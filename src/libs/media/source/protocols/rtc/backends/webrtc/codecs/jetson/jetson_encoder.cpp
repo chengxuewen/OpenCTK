@@ -1,18 +1,19 @@
 #include "jetson_encoder.h"
-#include "common/logging.h"
-#include <cstring>
+#include <private/octk_webrtc_logger_p.hpp>
 
-#include "Error.h"
-#include "NvBuffer.h"
+#include <Error.h>
+#include <NvBuffer.h>
 #include <NvBufSurface.h>
+
+#include <cstring>
 
 const int BUFFER_NUM = 4;
 
 static std::atomic<uint32_t> global_enc_id{0};
 
 /* Only accept V4L2_PIX_FMT_YUV420M (multi-pnale yuv420) or dma source input */
-std::unique_ptr<JetsonEncoder> JetsonEncoder::Create(int width, int height, uint32_t dst_pix_fmt,
-                                                     bool is_dma_src) {
+std::unique_ptr<JetsonEncoder> JetsonEncoder::Create(int width, int height, uint32_t dst_pix_fmt, bool is_dma_src)
+{
     JetsonEncoderConfig config = {
         .width = width,
         .height = height,
@@ -22,7 +23,8 @@ std::unique_ptr<JetsonEncoder> JetsonEncoder::Create(int width, int height, uint
     return Create(config);
 }
 
-std::unique_ptr<JetsonEncoder> JetsonEncoder::Create(JetsonEncoderConfig config) {
+std::unique_ptr<JetsonEncoder> JetsonEncoder::Create(JetsonEncoderConfig config)
+{
     char auto_name[16];
     snprintf(auto_name, sizeof(auto_name), "enc%d", global_enc_id.fetch_add(1) % 10);
     auto ptr = std::make_unique<JetsonEncoder>(config, auto_name);
@@ -31,21 +33,24 @@ std::unique_ptr<JetsonEncoder> JetsonEncoder::Create(JetsonEncoderConfig config)
 }
 
 JetsonEncoder::JetsonEncoder(JetsonEncoderConfig config, const char *name)
-    : abort_(true),
-      encoder_(nullptr),
-      name_(name),
-      width_(config.width),
-      height_(config.height),
-      framerate_(config.fps),
-      bitrate_bps_(config.bitrate),
-      i_interval_(config.i_interval),
-      idr_interval_(config.idr_interval),
-      src_pix_fmt_(V4L2_PIX_FMT_NV12M),
-      dst_pix_fmt_(config.dst_pix_fmt),
-      is_dma_src_(config.is_dma_src),
-      rate_control_mode_(config.rc_mode) {}
+    : abort_(true)
+    , encoder_(nullptr)
+    , name_(name)
+    , width_(config.width)
+    , height_(config.height)
+    , framerate_(config.fps)
+    , bitrate_bps_(config.bitrate)
+    , i_interval_(config.i_interval)
+    , idr_interval_(config.idr_interval)
+    , src_pix_fmt_(V4L2_PIX_FMT_YUV420M)
+    , dst_pix_fmt_(config.dst_pix_fmt)
+    , is_dma_src_(config.is_dma_src)
+    , rate_control_mode_(config.rc_mode)
+{
+}
 
-JetsonEncoder::~JetsonEncoder() {
+JetsonEncoder::~JetsonEncoder()
+{
     abort_ = true;
 
     SendEOS();
@@ -56,15 +61,17 @@ JetsonEncoder::~JetsonEncoder() {
     encoder_->capture_plane.deinitPlane();
     encoder_->output_plane.deinitPlane();
 
-    if (encoder_) {
+    if (encoder_)
+    {
         delete encoder_;
         encoder_ = nullptr;
     }
 
-    DEBUG_PRINT("~JetsonEncoder");
+    OCTK_LOGGING_DEBUG(WEBRTC_LOGGER(), "codecs-jetson:~JetsonEncoder");
 }
 
-bool JetsonEncoder::CreateVideoEncoder() {
+bool JetsonEncoder::CreateVideoEncoder()
+{
     int ret = 0;
 
     encoder_ = NvVideoEncoder::createVideoEncoder(name_);
@@ -75,7 +82,8 @@ bool JetsonEncoder::CreateVideoEncoder() {
     if (ret < 0)
         ORIGINATE_ERROR("Could not set capture plane format");
 
-    if (dst_pix_fmt_ == V4L2_PIX_FMT_AV1) {
+    if (dst_pix_fmt_ == V4L2_PIX_FMT_AV1)
+    {
         ret = DisableAV1IVF();
         if (ret < 0)
             ORIGINATE_ERROR("Could not disable IVF headers for AV1 codec");
@@ -89,7 +97,8 @@ bool JetsonEncoder::CreateVideoEncoder() {
     if (ret < 0)
         ORIGINATE_ERROR("Could not set bitrate");
 
-    if (dst_pix_fmt_ == V4L2_PIX_FMT_H264) {
+    if (dst_pix_fmt_ == V4L2_PIX_FMT_H264)
+    {
         ret = encoder_->setProfile(V4L2_MPEG_VIDEO_H264_PROFILE_HIGH);
         ret = encoder_->setLevel(V4L2_MPEG_VIDEO_H264_LEVEL_5_1); // 4k60fps needs level 5.2
         if (ret < 0)
@@ -130,13 +139,16 @@ bool JetsonEncoder::CreateVideoEncoder() {
 
     /* Query, Export and Map the output plane buffers so that we can read
        raw data into the buffers */
-    if (is_dma_src_) {
-        INFO_PRINT("Set output dma buffer parameters");
+    if (is_dma_src_)
+    {
+        OCTK_LOGGING_INFO(WEBRTC_LOGGER(), "codecs-jetson:Set output dma buffer parameters");
         ret = encoder_->output_plane.reqbufs(V4L2_MEMORY_DMABUF, BUFFER_NUM);
         if (ret)
             ORIGINATE_ERROR("reqbufs failed for output plane V4L2_MEMORY_DMABUF");
-    } else {
-        INFO_PRINT("Set output mmap parameters");
+    }
+    else
+    {
+        OCTK_LOGGING_INFO(WEBRTC_LOGGER(), "codecs-jetson:Set output mmap parameters");
         ret = encoder_->output_plane.setupPlane(V4L2_MEMORY_MMAP, BUFFER_NUM, true, false);
         if (ret < 0)
             ORIGINATE_ERROR("Could not setup output plane");
@@ -151,9 +163,11 @@ bool JetsonEncoder::CreateVideoEncoder() {
     return true;
 }
 
-bool JetsonEncoder::PrepareCaptureBuffer() {
+bool JetsonEncoder::PrepareCaptureBuffer()
+{
     /* Enqueue all the empty capture plane buffers */
-    for (uint32_t i = 0; i < encoder_->capture_plane.getNumBuffers(); i++) {
+    for (uint32_t i = 0; i < encoder_->capture_plane.getNumBuffers(); i++)
+    {
         struct v4l2_buffer v4l2_buf;
         struct v4l2_plane planes[MAX_PLANES];
 
@@ -170,39 +184,45 @@ bool JetsonEncoder::PrepareCaptureBuffer() {
     return true;
 }
 
-void JetsonEncoder::SetFps(int adjusted_fps) {
-    if (framerate_ != adjusted_fps) {
+void JetsonEncoder::SetFps(int adjusted_fps)
+{
+    if (framerate_ != adjusted_fps)
+    {
         framerate_ = adjusted_fps;
         int ret = encoder_->setFrameRate(framerate_, 1);
         if (ret < 0)
-            ERROR_PRINT("Could not set encoder framerate to %d", framerate_);
+            OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Could not set encoder framerate to %d", framerate_);
     }
 }
 
-void JetsonEncoder::SetBitrate(int adjusted_bitrate_bps) {
-    if (bitrate_bps_ != adjusted_bitrate_bps) {
+void JetsonEncoder::SetBitrate(int adjusted_bitrate_bps)
+{
+    if (bitrate_bps_ != adjusted_bitrate_bps)
+    {
         bitrate_bps_ = adjusted_bitrate_bps;
         encoder_->setBitrate(adjusted_bitrate_bps);
     }
 }
 
-void JetsonEncoder::ForceKeyFrame() {
+void JetsonEncoder::ForceKeyFrame()
+{
     int ret = encoder_->forceIDR();
     if (ret < 0)
-        ERROR_PRINT("Could not force set encoder to key frame");
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Could not force set encoder to key frame");
 }
 
-void JetsonEncoder::Start() {
+void JetsonEncoder::Start()
+{
     if (!CreateVideoEncoder())
-        ERROR_PRINT("Failed to create video m_VideoEncoderoder");
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to create video m_VideoEncoderoder");
 
     /* Stream on */
     int e = encoder_->output_plane.setStreamStatus(true);
     if (e < 0)
-        ERROR_PRINT("Failed to stream on output plane");
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to stream on output plane");
     e = encoder_->capture_plane.setStreamStatus(true);
     if (e < 0)
-        ERROR_PRINT("Failed to stream on capture plane");
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to stream on capture plane");
 
     /* Set video encoder callback */
     encoder_->capture_plane.setDQThreadCallback(EncoderCapturePlaneDqCallback);
@@ -217,14 +237,16 @@ void JetsonEncoder::Start() {
     abort_ = false;
 }
 
-void JetsonEncoder::EmplaceBuffer(V4L2FrameBufferRef frame_buffer,
-                                  std::function<void(V4L2FrameBufferRef)> on_capture) {
-    if (encoder_->isInError()) {
-        ERROR_PRINT("ERROR in encoder");
+void JetsonEncoder::EmplaceBuffer(V4L2FrameBufferRef frame_buffer, std::function<void(V4L2FrameBufferRef)> on_capture)
+{
+    if (encoder_->isInError())
+    {
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:ERROR in encoder");
         return;
     }
 
-    if (abort_) {
+    if (abort_)
+    {
         return;
     }
 
@@ -238,94 +260,118 @@ void JetsonEncoder::EmplaceBuffer(V4L2FrameBufferRef frame_buffer,
 
     NvBuffer *nv_buffer;
 
-    if (encoder_->output_plane.getNumQueuedBuffers() == encoder_->output_plane.getNumBuffers()) {
-        if (encoder_->output_plane.dqBuffer(v4l2_output_buf, &nv_buffer, NULL, 10) < 0) {
-            ERROR_PRINT("Failed to dqBuffer at encoder output_plane");
+    if (encoder_->output_plane.getNumQueuedBuffers() == encoder_->output_plane.getNumBuffers())
+    {
+        if (encoder_->output_plane.dqBuffer(v4l2_output_buf, &nv_buffer, NULL, 10) < 0)
+        {
+            OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to dqBuffer at encoder output_plane");
             return;
         }
-    } else {
-        nv_buffer =
-            encoder_->output_plane.getNthBuffer(encoder_->output_plane.getNumQueuedBuffers());
+    }
+    else
+    {
+        nv_buffer = encoder_->output_plane.getNthBuffer(encoder_->output_plane.getNumQueuedBuffers());
         v4l2_output_buf.index = nv_buffer->index;
     }
 
-    if (is_dma_src_) {
+    if (is_dma_src_)
+    {
         v4l2_output_buf.m.planes[0].m.fd = frame_buffer->GetDmaFd();
         v4l2_output_buf.m.planes[0].bytesused = 1; // byteused must be non-zero
-    } else {
+    }
+    else
+    {
         //std::cout << "JetsonEncoder::EmplaceBuffer: converting input frame to NV12M" << std::endl;
         ConvertI420ToYUV420M(nv_buffer, frame_buffer->ToI420());
     }
 
-    if (encoder_->output_plane.qBuffer(v4l2_output_buf, nullptr) < 0) {
-        ERROR_PRINT("Failed to qBuffer at encoder output_plane");
+    if (encoder_->output_plane.qBuffer(v4l2_output_buf, nullptr) < 0)
+    {
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to qBuffer at encoder output_plane");
         return;
     }
 
-    capturing_tasks_.push(on_capture);
+    capturing_tasks_.enqueue(on_capture);
 }
 
-bool JetsonEncoder::EncoderCapturePlaneDqCallback(struct v4l2_buffer *v4l2_buf, NvBuffer *buffer,
-                                                  NvBuffer *shared_buffer, void *arg) {
+bool JetsonEncoder::EncoderCapturePlaneDqCallback(struct v4l2_buffer *v4l2_buf,
+                                                  NvBuffer *buffer,
+                                                  NvBuffer *shared_buffer,
+                                                  void *arg)
+{
     JetsonEncoder *thiz = (JetsonEncoder *)arg;
 
-    if (!v4l2_buf) {
+    if (!v4l2_buf)
+    {
         thiz->abort_ = true;
         thiz->encoder_->abort();
-        ERROR_PRINT("Failed to dequeue buffer from encoder capture plane");
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to dequeue buffer from encoder capture plane");
         return false;
     }
 
-    auto item = thiz->capturing_tasks_.pop();
-    if (item) {
-        auto v4l2buffer = V4L2Buffer::FromCapturedPlane(
-            buffer->planes[0].data, buffer->planes[0].bytesused, buffer->planes[0].fd,
-            v4l2_buf->flags, thiz->dst_pix_fmt_);
-        auto encoded_frame_buffer =
-            V4L2FrameBuffer::Create(thiz->width_, thiz->height_, v4l2buffer);
-        auto task = item.value();
+    std::function<void(V4L2FrameBufferRef)> task;
+    if (thiz->capturing_tasks_.try_dequeue(task))
+    {
+        auto v4l2buffer = V4L2Buffer::FromCapturedPlane(buffer->planes[0].data,
+                                                        buffer->planes[0].bytesused,
+                                                        buffer->planes[0].fd,
+                                                        v4l2_buf->flags,
+                                                        thiz->dst_pix_fmt_);
+        auto encoded_frame_buffer = V4L2FrameBuffer::Create(thiz->width_, thiz->height_, v4l2buffer);
         task(encoded_frame_buffer);
     }
 
-    if (thiz->encoder_->capture_plane.qBuffer(*v4l2_buf, NULL) < 0) {
+    if (thiz->encoder_->capture_plane.qBuffer(*v4l2_buf, NULL) < 0)
+    {
         thiz->abort_ = true;
         thiz->encoder_->abort();
-        ERROR_PRINT("Failed to enqueue buffer to encoder capture plane");
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to enqueue buffer to encoder capture plane");
         return false;
     }
 
     /* GOT EOS from encoder. Stop dqthread */
-    if (buffer->planes[0].bytesused == 0) {
-        DEBUG_PRINT("Got EOS, exiting jetson encoder.");
+    if (buffer->planes[0].bytesused == 0)
+    {
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Got EOS, exiting jetson encoder.");
         return false;
     }
 
     return true;
 }
 
-void JetsonEncoder::ConvertI420ToYUV420M(
-    NvBuffer *nv_buffer, rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer) {
+void JetsonEncoder::ConvertI420ToYUV420M(NvBuffer *nv_buffer,
+                                         rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer)
+{
     //std::cout << "JetsonEncoder::ConvertI420ToYUV420M" << std::endl;
-    for (uint32_t p = 0; p < nv_buffer->n_planes; p++) {
+    for (uint32_t p = 0; p < nv_buffer->n_planes; p++)
+    {
         const uint8_t *src_addr;
         int stride;
-        if (p == 0) {
+        if (p == 0)
+        {
             src_addr = i420_buffer->DataY();
             stride = i420_buffer->StrideY();
-        } else if (p == 1) {
+        }
+        else if (p == 1)
+        {
             src_addr = i420_buffer->DataU();
             stride = i420_buffer->StrideU();
-        } else if (p == 2) {
+        }
+        else if (p == 2)
+        {
             src_addr = i420_buffer->DataV();
             stride = i420_buffer->StrideV();
-        } else {
+        }
+        else
+        {
             break;
         }
         auto &plane = nv_buffer->planes[p];
         int row_size = plane.fmt.bytesperpixel * plane.fmt.width;
         uint8_t *dst_addr = plane.data;
         plane.bytesused = 0;
-        for (uint32_t row = 0; row < plane.fmt.height; row++) {
+        for (uint32_t row = 0; row < plane.fmt.height; row++)
+        {
             memcpy(dst_addr, src_addr + stride * row, row_size);
             dst_addr += plane.fmt.stride;
         }
@@ -335,7 +381,8 @@ void JetsonEncoder::ConvertI420ToYUV420M(
 
 // Send End of Stream to encoder by queueing on the output plane a buffer with bytesused = 0 for
 // the 0th plane (v4l2_buffer.m.planes[0].bytesused = 0).
-void JetsonEncoder::SendEOS() {
+void JetsonEncoder::SendEOS()
+{
     struct v4l2_buffer v4l2_buffer;
     struct v4l2_plane planes[MAX_PLANES];
     NvBuffer *buffer;
@@ -344,18 +391,22 @@ void JetsonEncoder::SendEOS() {
     memset(planes, 0, MAX_PLANES * sizeof(struct v4l2_plane));
     v4l2_buffer.m.planes = planes;
 
-    if (encoder_->output_plane.getNumQueuedBuffers() == encoder_->output_plane.getNumBuffers()) {
-        if (encoder_->output_plane.dqBuffer(v4l2_buffer, &buffer, NULL, 10) < 0) {
-            ERROR_PRINT("Failed to dqBuffer at encoder while sending eos");
+    if (encoder_->output_plane.getNumQueuedBuffers() == encoder_->output_plane.getNumBuffers())
+    {
+        if (encoder_->output_plane.dqBuffer(v4l2_buffer, &buffer, NULL, 10) < 0)
+        {
+            OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to dqBuffer at encoder while sending eos");
         }
     }
     planes[0].bytesused = 0;
-    if (encoder_->output_plane.qBuffer(v4l2_buffer, NULL) < 0) {
-        ERROR_PRINT("Failed to qBuffer at encoder while sending eos");
+    if (encoder_->output_plane.qBuffer(v4l2_buffer, NULL) < 0)
+    {
+        OCTK_LOGGING_ERROR(WEBRTC_LOGGER(), "codecs-jetson:Failed to qBuffer at encoder while sending eos");
     }
 }
 
-uint32_t JetsonEncoder::DisableAV1IVF() {
+uint32_t JetsonEncoder::DisableAV1IVF()
+{
     struct v4l2_ext_control control;
     struct v4l2_ext_controls ctrls;
 
