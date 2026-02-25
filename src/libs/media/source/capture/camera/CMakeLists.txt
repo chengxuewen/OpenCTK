@@ -52,15 +52,17 @@ octk_internal_extend_target(octk_media
 #    "-framework ScreenCaptureKit"
 #    "-framework ApplicationServices"
     CONDITION OCTK_SYSTEM_MAC)
-if(OCTK_FEATURE_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
-    pkg_check_modules(pipewire QUIET IMPORTED_TARGET libpipewire-0.3)
-    octk_internal_extend_target(octk_media
-        SOURCES
-        ${ROOT_DIR}/octk_camera_capture_pipewire.cpp
-        ${ROOT_DIR}/octk_camera_capture_pipewire_p.hpp
-        ${ROOT_DIR}/octk_camera_device_info_pipewire.cpp
-        ${ROOT_DIR}/octk_camera_device_info_pipewire_p.hpp
-        LIBRARIES
-        PkgConfig::pipewire)
+if(OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
+    octk_find_package(WrapPipewire PROVIDED_TARGETS OCTK3rdparty::WrapPipewire)
+    if(OCTKWrapPipewire_INSTALLED)
+        octk_internal_extend_target(octk_media
+            SOURCES
+            ${ROOT_DIR}/octk_camera_capture_pipewire.cpp
+            ${ROOT_DIR}/octk_camera_capture_pipewire_p.hpp
+            ${ROOT_DIR}/octk_camera_device_info_pipewire.cpp
+            ${ROOT_DIR}/octk_camera_device_info_pipewire_p.hpp
+            LIBRARIES
+            OCTK3rdparty::WrapPipewire)
+    endif()
 endif()
 

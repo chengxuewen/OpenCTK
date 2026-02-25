@@ -94,7 +94,7 @@ octk_set_input_variable(OCTK_3RDPARTY_PACKAGES_DIR)
 function(octk_vcpkg_install_package NAME)
     octk_parse_all_arguments(arg
         "octk_vcpkg_install_package"
-        "NOT_IMPORT;TOOLS;DYNAMIC"
+        "NOT_IMPORT;TOOLS;DYNAMIC;QUIET"
         "TARGET;PREFIX;OUTPUT_DIR;PACK_NAME;VERSION"
         "COMPONENTS;IMPORTED_TARGETS" ${ARGN})
 
@@ -127,6 +127,7 @@ function(octk_vcpkg_install_package NAME)
             set(${arg_PREFIX}_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
         endif()
     endif()
+    set(${arg_PREFIX}_INSTALLED "OFF" CACHE INTERNAL "" FORCE)
     set(${arg_PREFIX}_NAME "${arg_PACK_NAME}" CACHE INTERNAL "" FORCE)
     set(${arg_PREFIX}_ROOT_DIR "${arg_OUTPUT_DIR}/${arg_PACK_NAME}"  CACHE INTERNAL "" FORCE)
     set(${arg_PREFIX}_PACKAGE_NAME "${arg_PACK_NAME}-${${arg_PREFIX}_VCPKG_TRIPLET}.7z"  CACHE INTERNAL "" FORCE)
@@ -188,13 +189,21 @@ function(octk_vcpkg_install_package NAME)
                 message(STATUS "${${arg_PREFIX}_NAME} not installed, start install...")
                 set(${arg_PREFIX}_VCPKG_CONFIGS ${NAME}${${arg_PREFIX}_COMPONENTS_CONFIG}:${${arg_PREFIX}_VCPKG_TRIPLET})
                 message(STATUS "${${arg_PREFIX}_NAME} vcpkg install configs: ${${arg_PREFIX}_VCPKG_CONFIGS}")
+                if(EXISTS ${ANDROID_NDK})
+                    set(ENV{ANDROID_NDK_HOME} ${ANDROID_NDK})
+                endif()
                 execute_process(
                     COMMAND "${Vcpkg_EXECUTABLE}" install ${${arg_PREFIX}_VCPKG_CONFIGS} --recurse
                     WORKING_DIRECTORY "${Vcpkg_ROOT_DIR}"
                     RESULT_VARIABLE INSTALL_RESULT
                     COMMAND_ECHO STDOUT)
                 if(NOT (INSTALL_RESULT MATCHES 0))
-                    message(FATAL_ERROR "${${arg_PREFIX}_NAME} install failed.")
+                    if(${arg_QUIET})
+                        message(WARNING "${${arg_PREFIX}_NAME} install failed.")
+                        return()
+                    else()
+                        message(FATAL_ERROR "${${arg_PREFIX}_NAME} install failed.")
+                    endif()
                 endif()
             endif()
 
@@ -261,6 +270,7 @@ function(octk_vcpkg_install_package NAME)
             target_link_libraries(${arg_TARGET} INTERFACE PkgConfig::${NAME})
         endif()
     endif()
+    set(${arg_PREFIX}_INSTALLED ON CACHE INTERNAL "" FORCE)
     set(${arg_PREFIX}_FOUND ON PARENT_SCOPE)
 endfunction()
 

@@ -32,13 +32,10 @@ octk_configure_feature("MEDIA_ENABLE_CAPTURE_CAMERA" PUBLIC
 	LABEL "Enable this to build enable capture camera function"
 	CONDITION OFF)
 
-octk_pkgconf_check_modules(pipewire QUIET
-#	PATH "/lib/pkgconfig"
-	IMPORTED_TARGET libpipewire-0.3)
 octk_configure_feature("MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE" PUBLIC
 	LABEL "Enable this to build enable capture video libpipewire"
-	DISABLE NOT TARGET PkgConfig::pipewire
-	AUTODETECT ON)
+    DISABLE NOT LINUX
+    CONDITION OFF)
 
 octk_configure_feature("MEDIA_USE_LIBSRTP" PUBLIC
 	LABEL "Enable this to build use libsrtp"
