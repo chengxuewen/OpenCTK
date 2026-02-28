@@ -369,3 +369,7 @@ octk_configure_definition("OCTK_SIZET_IS_SHORT_TYPE" PUBLIC VALUE ${TEST_SIZET_I
 octk_configure_definition("OCTK_SIZET_IS_INT_TYPE" PUBLIC VALUE ${TEST_SIZET_IS_INT_TYPE})
 octk_configure_definition("OCTK_SIZET_IS_LONG_TYPE" PUBLIC VALUE ${TEST_SIZET_IS_LONG_TYPE})
 octk_configure_definition("OCTK_SIZET_IS_LONG_LONG_TYPE" PUBLIC VALUE ${TEST_SIZET_IS_LONG_LONG_TYPE})
+
+octk_configure_feature("USE_BOOST_BACKEND" PUBLIC
+	LABEL "Enable this to build use boost backend"
+	CONDITION OFF)

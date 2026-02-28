@@ -42,7 +42,8 @@ octk_add_library(graphics
 	LIBRARIES
 	octk::platform_private
 	PUBLIC_LIBRARIES
-	octk::platform)
+	octk::platform
+	octk::media)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

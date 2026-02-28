@@ -33,6 +33,9 @@
 octk_add_library(network
 	EXCEPTIONS
 	SOURCES
+	source/http/octk_http.cpp
+	source/http/octk_http.hpp
+	source/http/octk_http_p.hpp
 	source/ssl/octk_ssl_certificate.cpp
 	source/ssl/octk_ssl_certificate.hpp
 	source/ssl/octk_ssl_fingerprint.cpp
@@ -43,7 +46,6 @@ octk_add_library(network
 	PRECOMPILED_HEADER
 	source/octk_network_pch.hpp
 	LIBRARIES
-#	OCTK3rdparty::WrapOpenSSL
 	octk::core_private
 	PUBLIC_LIBRARIES
 	octk::core)
@@ -55,18 +57,12 @@ if(OCTK_FEATURE_USE_BOOST_BACKEND)
 		LIBRARIES
 		OCTK3rdparty::WrapBoostAsio
 		OCTK3rdparty::WrapBoostBeast)
+elseif(OCTK_FEATURE_HTTP_USE_LIBCPR_VCPKG)
+	octk_find_package(WrapLibcprVcpkg PROVIDED_TARGETS OCTK3rdparty::WrapLibcprVcpkg)
+	octk_internal_extend_target(octk_network LIBRARIES OCTK3rdparty::WrapLibcprVcpkg)
 else()
-	octk_find_package(WrapLibcurl PROVIDED_TARGETS OCTK3rdparty::WrapLibcurl)
-#	octk_internal_extend_target(octk_network
-#		SOURCES
-#		LIBRARIES
-#		OCTK3rdparty::WrapLibcurl)
-endif()
-if(OCTK_FEATURE_USE_LIBCPR)
 	octk_find_package(WrapLibcpr PROVIDED_TARGETS OCTK3rdparty::WrapLibcpr)
-	octk_internal_extend_target(octk_network
-		LIBRARIES
-		OCTK3rdparty::WrapLibcpr)
+	octk_internal_extend_target(octk_network LIBRARIES OCTK3rdparty::WrapLibcpr)
 endif()
 
 

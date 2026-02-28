@@ -35,13 +35,20 @@ using namespace octk;
 
 int main()
 {
-    OCTK_LOGGER().switchLevel(octk::LogLevel::Trace);
+    OCTK_LOGGER().switchLevel(LogLevel::Trace);
 
-    auto deviceInfo = CameraCapture::createDeviceInfo();
+    CameraCapture::Options options;
+    // options.allowPipeWire = true;
+    auto deviceInfo = CameraCapture::createDeviceInfo(&options);
+    if (!deviceInfo)
+    {
+        OCTK_FATAL("deviceInfo null");
+    }
     if (deviceInfo->numberOfDevices() <= 0)
     {
         OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
     }
+
     char device_name[256];
     char unique_name[256];
     if (deviceInfo->getDeviceName(0, device_name, 256,

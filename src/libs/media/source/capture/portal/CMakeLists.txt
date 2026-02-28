@@ -2,7 +2,7 @@
 #
 # Library: OpenCTK
 #
-# Copyright (C) 2026~Present ChengXueWen.
+# Copyright (C) 2025~Present ChengXueWen.
 #
 # License: MIT License
 #
@@ -21,21 +21,25 @@
 #
 ########################################################################################################################
 
-# We can't create the same interface imported target multiple times, CMake will complain if we do
-# that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapPipewire)
-    set(OCTK3WrapPipewire_FOUND ON)
-    return()
-endif()
-
-include(InstallVcpkg)
-octk_vcpkg_install_package(pipewire
-    NOT_IMPORT
-    QUIET
-    TARGET
-    OCTK3rdparty::WrapPipewire
-    PREFIX
-    OCTK3WrapPipewire)
-if(OCTK3WrapPipewire_INSTALLED)
-    set(OCTK3WrapPipewire_FOUND ON)
-endif()
+set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+#-----------------------------------------------------------------------------------------------------------------------
+# extend lib target
+#-----------------------------------------------------------------------------------------------------------------------
+octk_internal_extend_target(octk_media
+	SOURCES
+	${ROOT_DIR}/octk_camera_portal.cpp
+	${ROOT_DIR}/octk_camera_portal_p.hpp
+	${ROOT_DIR}/octk_portal_request_response_p.hpp
+	${ROOT_DIR}/octk_scoped_glib.cpp
+	${ROOT_DIR}/octk_scoped_glib_p.hpp
+	${ROOT_DIR}/octk_xdg_desktop_portal_utils.cpp
+	${ROOT_DIR}/octk_xdg_desktop_portal_utils_p.hpp
+	${ROOT_DIR}/octk_xdg_session_detail_p.hpp)
+if (OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
+	octk_internal_extend_target(octk_media
+		SOURCES
+		octk_pipewire_utils.cpp
+		octk_pipewire_utils_p.hpp
+		LIBRARIES
+		PkgConfig::PipeWire)
+endif ()

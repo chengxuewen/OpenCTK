@@ -138,7 +138,7 @@ public:
         using CreaterFunction = std::function<ImGuiApplication::UniquePtr(const Properties &)>;
         template <typename T> static CreaterFunction makeCreaterFunction()
         {
-            return [](const Properties &properties) { return utils::makeUnique<T>(properties); };
+            return [](const Properties &properties) { return utils::make_unique<T>(properties); };
         }
 
         static ImGuiApplication::UniquePtr create(StringView typeName = "", const Properties &properties = {});

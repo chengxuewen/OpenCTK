@@ -63,7 +63,7 @@ public:
     OCTK_STATIC_CONSTANT_NUMBER(kNoOfV4L2Bufffers, 4)
 
     explicit CameraCaptureV4L2Private(CameraCaptureV4L2 *p);
-    virtual ~CameraCaptureV4L2Private();
+    ~CameraCaptureV4L2Private() override;
 
     bool deAllocateVideoBuffers();
     bool allocateVideoBuffers();

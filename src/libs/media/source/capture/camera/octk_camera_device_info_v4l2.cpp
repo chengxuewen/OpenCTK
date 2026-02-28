@@ -71,7 +71,7 @@ class CameraDeviceInfoV4L2Private : public CameraCapture::DeviceInfoPrivate
 {
 public:
     explicit CameraDeviceInfoV4L2Private(CameraDeviceInfoV4L2 *p);
-    ~CameraDeviceInfoV4L2Private();
+    ~CameraDeviceInfoV4L2Private() override;
 
     int32_t fillCapabilities(int fd);
 

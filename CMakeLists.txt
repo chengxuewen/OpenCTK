@@ -329,9 +329,6 @@ octk_option(OCTK_BUILD_INSTALL "Enable this to build the installer" ${OCTK_WILL_
 
 octk_option(OCTK_ENABLE_LIB_PLATFORM "Enable this to build enable platform lib" OFF
 	OR_CONDITION OCTK_BUILD_ALL)
-octk_option(OCTK_ENABLE_LIB_GRAPHICS "Enable this to build enable graphics lib" OFF
-	DEPENDS OCTK_ENABLE_LIB_PLATFORM
-	OR_CONDITION OCTK_BUILD_ALL)
 octk_option(OCTK_ENABLE_LIB_NETWORK "Enable this to build enable network lib" OFF
 	OR_CONDITION OCTK_BUILD_ALL)
 octk_option(OCTK_ENABLE_LIB_SERVICE "Enable this to build enable service lib" OFF
@@ -339,7 +336,11 @@ octk_option(OCTK_ENABLE_LIB_SERVICE "Enable this to build enable service lib" OF
 octk_option(OCTK_ENABLE_LIB_MEDIA "Enable this to build enable media lib" OFF
 	DEPENDS OCTK_ENABLE_LIB_NETWORK
 	OR_CONDITION OCTK_BUILD_ALL)
+octk_option(OCTK_ENABLE_LIB_GRAPHICS "Enable this to build enable graphics lib" OFF
+	DEPENDS OCTK_ENABLE_LIB_PLATFORM AND OCTK_ENABLE_LIB_MEDIA
+	OR_CONDITION OCTK_BUILD_ALL)
 octk_option(OCTK_ENABLE_LIB_IMGUI "Enable this to build enable imgui lib" OFF
+	DEPENDS OCTK_ENABLE_LIB_GRAPHICS
 	OR_CONDITION OCTK_BUILD_ALL)
 
 

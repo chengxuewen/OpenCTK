@@ -28,4 +28,30 @@
 
 OCTK_BEGIN_NAMESPACE
 
+class CameraDeviceInfoPipeWirePrivate;
+class OCTK_CORE_API CameraDeviceInfoPipeWire : public CameraCapture::DeviceInfo
+{
+public:
+    CameraDeviceInfoPipeWire();
+    ~CameraDeviceInfoPipeWire() override;
+
+    uint32_t numberOfDevices() override;
+
+    int32_t getDeviceName(uint32_t deviceNumber,
+                          char* deviceNameUTF8,
+                          uint32_t deviceNameLength,
+                          char* deviceUniqueIdUTF8,
+                          uint32_t deviceUniqueIdUTF8Length,
+                          char* productUniqueIdUTF8 = 0,
+                          uint32_t productUniqueIdUTF8Length = 0) override;
+
+protected:
+    int32_t init() override;
+    int32_t createCapabilityMap(const char* deviceUniqueIdUTF8) override;
+
+private:
+    OCTK_DECLARE_PRIVATE(CameraDeviceInfoPipeWire)
+    OCTK_DISABLE_COPY_MOVE(CameraDeviceInfoPipeWire)
+};
+
 OCTK_END_NAMESPACE

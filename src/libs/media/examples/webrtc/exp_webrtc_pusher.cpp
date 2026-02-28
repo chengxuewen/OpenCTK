@@ -24,9 +24,7 @@
 
 #include <octk_rtc_engine.hpp>
 #include <octk_json.hpp>
-#include <octk_yuv.hpp>
-
-#include <cpr/cpr.h>
+#include <octk_http.hpp>
 
 #include "../capture/video_renderer.hpp"
 
@@ -156,14 +154,15 @@ int main(int argc, char **argv)
         const std::string ipaddr("http://127.0.0.1");
 #endif
         const std::string streamName = "pusher-" + std::to_string(i);
-        cpr::Response r = cpr::Post(cpr::Url{ipaddr + "/index/api/webrtc?app=live&stream=" + streamName + "&type=push"},
-                                    cpr::Header{{"Content-Type", "text/plain;charset=UTF-8"}},
-                                    cpr::Body{offer.sdp});
-        OCTK_LOGGING_INFO(EXP_LOGGER(), "status_code:{}", r.status_code);
-        OCTK_LOGGING_INFO(EXP_LOGGER(), "header:{}", r.header["content-type"].c_str());
-        OCTK_LOGGING_INFO(EXP_LOGGER(), "text:{}", r.text.c_str());
+        auto response = octk::http::post(
+            octk::http::Url{ipaddr + "/index/api/webrtc?app=live&stream=" + streamName + "&type=push"},
+            octk::http::Header{{"Content-Type", "text/plain;charset=UTF-8"}},
+            octk::http::Body{offer.sdp});
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "status_code:{}", response->statusCode());
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "header:{}", response->header("content-type").c_str());
+        OCTK_LOGGING_INFO(EXP_LOGGER(), "text:{}", response->text().c_str());
 
-        auto jsonExpected = octk::utils::parseJson(r.text);
+        auto jsonExpected = octk::utils::parseJson(response->text());
         if (!jsonExpected.has_value())
         {
             OCTK_LOGGING_FATAL(EXP_LOGGER(), "parseJson failed: {}", jsonExpected.error().c_str());

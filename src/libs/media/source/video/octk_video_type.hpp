@@ -26,11 +26,6 @@
 
 #include <octk_media_global.hpp>
 
-#define OCTK_FOURCC(a, b, c, d) \
-    ((static_cast<uint32_t>(a)) | (static_cast<uint32_t>(b) << 8) | \
-    (static_cast<uint32_t>(c) << 16) | /* NOLINT */                \
-    (static_cast<uint32_t>(d) << 24))  /* NOLINT */
-
 OCTK_BEGIN_NAMESPACE
 
 enum class VideoType : uint32_t

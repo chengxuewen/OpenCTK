@@ -28,7 +28,6 @@ if(TARGET OCTK3rdparty::WrapLibcurl)
     return()
 endif()
 
-octk_find_package(WrapMbedTLS PROVIDED_TARGETS OCTK3rdparty::WrapMbedTLS)
 set(OCTKWrapLibcurl_NAME "curl-8.16.0")
 set(OCTKWrapLibcurl_PKG_NAME "${OCTKWrapLibcurl_NAME}.tar.xz")
 set(OCTKWrapLibcurl_DIR_NAME "${OCTKWrapLibcurl_NAME}-${OCTK_LOWER_BUILD_TYPE}")
@@ -45,6 +44,7 @@ if(NOT EXISTS "${OCTKWrapLibcurl_STAMP_FILE_PATH}")
     endif()
     octk_reset_dir(${OCTKWrapLibcurl_BUILD_DIR})
 
+    octk_find_package(WrapMbedTLS PROVIDED_TARGETS OCTK3rdparty::WrapMbedTLS)
     message(STATUS "Configure ${OCTKWrapLibcurl_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}

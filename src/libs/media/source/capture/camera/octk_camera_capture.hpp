@@ -37,25 +37,21 @@ class OCTK_CORE_API CameraCapture
 public:
     OCTK_STATIC_CONSTANT_NUMBER(kUniqueNameLength, 1024)
 
-    OCTK_STATIC_CONSTANT_NUMBER(kDefaultWidth, 640) // Start width
-    OCTK_STATIC_CONSTANT_NUMBER(kDefaultHeight, 480)  // Start heigt
+    OCTK_STATIC_CONSTANT_NUMBER(kDefaultWidth, 640)  // Start width
+    OCTK_STATIC_CONSTANT_NUMBER(kDefaultHeight, 480) // Start heigt
 
     OCTK_STATIC_CONSTANT_NUMBER(kDefaultFrameRate, 30) // Start frame rate
-    OCTK_STATIC_CONSTANT_NUMBER(kMaxFrameRate, 60) // Max allowed frame rate of the start image
+    OCTK_STATIC_CONSTANT_NUMBER(kMaxFrameRate, 60)     // Max allowed frame rate of the start image
 
     OCTK_STATIC_CONSTANT_NUMBER(kDefaultCaptureDelay, 120)
-    OCTK_STATIC_CONSTANT_NUMBER(kMaxCaptureDelay, 270) // Max capture delay allowed in the precompiled capture delay values.
+    OCTK_STATIC_CONSTANT_NUMBER(kMaxCaptureDelay,
+                                270) // Max capture delay allowed in the precompiled capture delay values.
 
     OCTK_STATIC_CONSTANT_NUMBER(kFrameRateCallbackInterval, 1000)
     OCTK_STATIC_CONSTANT_NUMBER(kFrameRateCountHistorySize, 90)
     OCTK_STATIC_CONSTANT_NUMBER(kFrameRateHistoryWindowMs, 2000)
 
     using SharedPtr = std::shared_ptr<CameraCapture>;
-
-    //    class Options
-    //    {
-
-    //    };
 
     struct Capability final
     {
@@ -67,12 +63,12 @@ public:
 
         Capability() = default;
         ~Capability() = default;
-        bool operator!=(const Capability& other) const
+        bool operator!=(const Capability &other) const
         {
             return width == other.width && height == other.height && maxFPS == other.maxFPS &&
-                    interlaced == other.interlaced && videoType != other.videoType;
+                   interlaced == other.interlaced && videoType != other.videoType;
         }
-        bool operator==(const Capability& other) const { return !operator!=(other); }
+        bool operator==(const Capability &other) const { return !operator!=(other); }
     };
     using Capabilities = std::vector<Capability>;
 
@@ -92,7 +88,7 @@ public:
          * @param deviceUniqueIdUTF8
          * @return
          */
-        virtual int32_t numberOfCapabilities(const char* deviceUniqueIdUTF8);
+        virtual int32_t numberOfCapabilities(const char *deviceUniqueIdUTF8);
 
         /**
          * @brief getDeviceName
@@ -108,11 +104,11 @@ public:
          * @return
          */
         virtual int32_t getDeviceName(uint32_t deviceNumber,
-                                      char* deviceNameUTF8,
+                                      char *deviceNameUTF8,
                                       uint32_t deviceNameLength,
-                                      char* deviceUniqueIdUTF8,
+                                      char *deviceUniqueIdUTF8,
                                       uint32_t deviceUniqueIdUTF8Length,
-                                      char* productUniqueIdUTF8 = 0,
+                                      char *productUniqueIdUTF8 = 0,
                                       uint32_t productUniqueIdUTF8Length = 0) = 0;
 
         /**
@@ -122,9 +118,9 @@ public:
          * @param capability
          * @return
          */
-        virtual int32_t getCapability(const char* deviceUniqueIdUTF8,
+        virtual int32_t getCapability(const char *deviceUniqueIdUTF8,
                                       uint32_t deviceCapabilityNumber,
-                                      Capability& capability);
+                                      Capability &capability);
 
         /**
          * @brief Gets clockwise angle the captured frames should be rotated in order to be displayed correctly on
@@ -133,8 +129,7 @@ public:
          * @param orientation
          * @return
          */
-        virtual int32_t getOrientation(const char* deviceUniqueIdUTF8,
-                                       VideoRotation& orientation);
+        virtual int32_t getOrientation(const char *deviceUniqueIdUTF8, VideoRotation &orientation);
 
         /**
          * @brief Gets the capability that best matches the requested width, height and frame rate.
@@ -144,13 +139,13 @@ public:
          * @param resulting
          * @return
          */
-        virtual int32_t getBestMatchedCapability(const char* deviceUniqueIdUTF8,
-                                                 const Capability& requested,
-                                                 Capability& resulting);
+        virtual int32_t getBestMatchedCapability(const char *deviceUniqueIdUTF8,
+                                                 const Capability &requested,
+                                                 Capability &resulting);
 
     protected:
         virtual int32_t init() = 0;
-        virtual int32_t createCapabilityMap(const char* deviceUniqueIdUTF8) = 0;
+        virtual int32_t createCapabilityMap(const char *deviceUniqueIdUTF8) = 0;
 
     protected:
         OCTK_DEFINE_DPTR(DeviceInfo)
@@ -158,8 +153,39 @@ public:
         OCTK_DISABLE_COPY_MOVE(DeviceInfo)
     };
 
-    static DeviceInfo::SharedPtr createDeviceInfo();
-    static SharedPtr create(const char* deviceUniqueIdUTF8);
+    struct Options final
+    {
+        enum class Status
+        {
+            SUCCESS,
+            UNINITIALIZED,
+            UNAVAILABLE,
+            DENIED,
+            ERROR,
+            MAX_VALUE = ERROR
+        };
+
+        class Callback
+        {
+        public:
+            virtual void OnInitialized(Status status) = 0;
+
+        protected:
+            virtual ~Callback() = default;
+        };
+
+        // Status Init(Callback *callback);
+
+        bool allowPipeWire{false};
+
+        Options() = default;
+        ~Options() = default;
+        bool operator!=(const Options &other) const { return allowPipeWire == other.allowPipeWire; }
+        bool operator==(const Options &other) const { return !operator!=(other); }
+    };
+
+    static DeviceInfo::SharedPtr createDeviceInfo(Options *options = nullptr);
+    static SharedPtr create(const char *deviceUniqueIdUTF8, Options *options = nullptr);
 
     explicit CameraCapture(CameraCapturePrivate *d);
     virtual ~CameraCapture();
@@ -181,7 +207,7 @@ public:
      * @param capability
      * @return
      */
-    virtual int32_t startCapture(const Capability& capability);
+    virtual int32_t startCapture(const Capability &capability);
 
     virtual int32_t stopCapture();
 
@@ -195,14 +221,14 @@ public:
      * @brief Returns the name of the device used by this module.
      * @return
      */
-    virtual const char* currentDeviceName() const;
+    virtual const char *currentDeviceName() const;
 
     /**
      * @brief Gets the current configuration.
      * @param settings
      * @return
      */
-    virtual int32_t captureSettings(Capability& settings);
+    virtual int32_t captureSettings(Capability &settings);
 
     /**
      * @brief Set the rotation of the captured frames.
@@ -228,8 +254,10 @@ public:
      */
     virtual bool setApplyRotation(bool enable);
 
+    static void test();
+
 protected:
-    virtual bool init(const char* deviceUniqueIdUTF8) = 0;
+    virtual bool init(const char *deviceUniqueIdUTF8) = 0;
 
 protected:
     OCTK_DEFINE_DPTR(CameraCapture)

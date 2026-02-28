@@ -28,4 +28,24 @@
 
 OCTK_BEGIN_NAMESPACE
 
+class CameraCapturePipeWirePrivate;
+class CameraCapturePipeWire : public CameraCapture
+{
+public:
+    CameraCapturePipeWire();
+    ~CameraCapturePipeWire() override;
+
+    int32_t startCapture(const Capability& capability) override;
+    int32_t stopCapture() override;
+
+    bool isCaptureStarted() override;
+    int32_t captureSettings(Capability& settings) override;
+
+    bool init(const char* deviceUniqueIdUTF8) override;
+
+private:
+    OCTK_DECLARE_PRIVATE(CameraCapturePipeWire)
+    OCTK_DISABLE_COPY_MOVE(CameraCapturePipeWire)
+};
+
 OCTK_END_NAMESPACE

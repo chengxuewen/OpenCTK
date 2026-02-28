@@ -99,13 +99,4 @@ inline typename detail::make_unique_helper<T>::Pointer make_unique(Args &&...arg
 } // namespace utils
 #endif
 
-namespace utils
-{
-template <typename T, typename... Args>
-inline auto makeUnique(Args &&...args)
-{
-    return make_unique(std::forward<Args>(args)...);
-}
-} // namespace utils
-
 OCTK_END_NAMESPACE

@@ -33,6 +33,9 @@
 #    include <private/octk_camera_capture_v4l2_p.hpp>
 #    include <private/octk_camera_device_info_v4l2_p.hpp>
 #endif
+#if OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE
+#    include <private/octk_camera_device_info_pipewire_p.hpp>
+#endif
 
 OCTK_BEGIN_NAMESPACE
 
@@ -74,7 +77,8 @@ int32_t CameraCapture::DeviceInfo::numberOfCapabilities(const char *deviceUnique
     return this->createCapabilityMap(deviceUniqueIdUTF8);
 }
 
-int32_t CameraCapture::DeviceInfo::getCapability(const char *deviceUniqueIdUTF8, uint32_t deviceCapabilityNumber,
+int32_t CameraCapture::DeviceInfo::getCapability(const char *deviceUniqueIdUTF8,
+                                                 uint32_t deviceCapabilityNumber,
                                                  Capability &capability)
 {
     OCTK_D(DeviceInfo);
@@ -94,8 +98,7 @@ int32_t CameraCapture::DeviceInfo::getCapability(const char *deviceUniqueIdUTF8,
     // Make sure the number is valid
     if (deviceCapabilityNumber >= (unsigned int)d->mCapabilities.size())
     {
-        OCTK_ERROR() << "Invalid deviceCapabilityNumber "
-                     << deviceCapabilityNumber << ">= number of capabilities ("
+        OCTK_ERROR() << "Invalid deviceCapabilityNumber " << deviceCapabilityNumber << ">= number of capabilities ("
                      << d->mCapabilities.size() << ").";
         return -1;
     }
@@ -110,7 +113,8 @@ int32_t CameraCapture::DeviceInfo::getOrientation(const char *deviceUniqueIdUTF8
     return -1;
 }
 
-int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUniqueIdUTF8, const Capability &requested,
+int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUniqueIdUTF8,
+                                                            const Capability &requested,
                                                             Capability &resulting)
 {
     OCTK_D(DeviceInfo);
@@ -136,7 +140,7 @@ int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUn
     VideoType bestVideoType = VideoType::kANY;
 
     const int32_t numberOfCapabilies = static_cast<int32_t>(d->mCapabilities.size());
-    for (int32_t tmp = 0; tmp < numberOfCapabilies; ++tmp)  // Loop through all capabilities
+    for (int32_t tmp = 0; tmp < numberOfCapabilies; ++tmp) // Loop through all capabilities
     {
         auto &capability = d->mCapabilities[tmp];
 
@@ -148,51 +152,50 @@ int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUn
         const int32_t currentbestDiffHeight = bestHeight - requested.height;
         const int32_t currentbestDiffFrameRate = bestFrameRate - requested.maxFPS;
 
-        if ((diffHeight >= 0 && diffHeight <= abs(currentbestDiffHeight))  // Height better or equalt that previouse.
-                || (currentbestDiffHeight < 0 && diffHeight >= currentbestDiffHeight))
+        if ((diffHeight >= 0 && diffHeight <= abs(currentbestDiffHeight)) // Height better or equalt that previouse.
+            || (currentbestDiffHeight < 0 && diffHeight >= currentbestDiffHeight))
         {
-            if (diffHeight == currentbestDiffHeight)  // Found best height. Care about the width)
+            if (diffHeight == currentbestDiffHeight) // Found best height. Care about the width)
             {
-                if ((diffWidth >= 0 && diffWidth <= abs(currentbestDiffWith))  // Width better or equal
-                        || (currentbestDiffWith < 0 && diffWidth >= currentbestDiffWith))
+                if ((diffWidth >= 0 && diffWidth <= abs(currentbestDiffWith)) // Width better or equal
+                    || (currentbestDiffWith < 0 && diffWidth >= currentbestDiffWith))
                 {
-                    if (diffWidth == currentbestDiffWith && diffHeight == currentbestDiffHeight)// Same size as previously
+                    if (diffWidth == currentbestDiffWith &&
+                        diffHeight == currentbestDiffHeight) // Same size as previously
                     {
                         // Also check the best frame rate if the diff is the same as previouse
-                        if (((diffFrameRate >= 0 && diffFrameRate <= currentbestDiffFrameRate)  // Frame rate to high but
+                        if (((diffFrameRate >= 0 && diffFrameRate <= currentbestDiffFrameRate) // Frame rate to high but
                              // better match than previouse and we have not selected IUV
-                             || (currentbestDiffFrameRate < 0 && diffFrameRate >=
-                                 currentbestDiffFrameRate))  // Current frame rate is
-                                // lower than requested.
-                                // This is better.
-                                )
+                             || (currentbestDiffFrameRate < 0 &&
+                                 diffFrameRate >= currentbestDiffFrameRate)) // Current frame rate is
+                            // lower than requested.
+                            // This is better.
+                        )
                         {
                             if ((currentbestDiffFrameRate ==
-                                 diffFrameRate)  // Same frame rate as previous  or frame rate
-                                    // allready good enough
-                                    || (currentbestDiffFrameRate >= 0))
+                                 diffFrameRate) // Same frame rate as previous  or frame rate
+                                // allready good enough
+                                || (currentbestDiffFrameRate >= 0))
                             {
-                                if (bestVideoType != requested.videoType &&
-                                        requested.videoType != VideoType::kANY &&
-                                        (capability.videoType == requested.videoType ||
-                                         capability.videoType == VideoType::kI420 ||
-                                         capability.videoType == VideoType::kYUY2 ||
-                                         capability.videoType == VideoType::kYV12 ||
-                                         capability.videoType == VideoType::kNV12))
+                                if (bestVideoType != requested.videoType && requested.videoType != VideoType::kANY &&
+                                    (capability.videoType == requested.videoType ||
+                                     capability.videoType == VideoType::kI420 ||
+                                     capability.videoType == VideoType::kYUY2 ||
+                                     capability.videoType == VideoType::kYV12 ||
+                                     capability.videoType == VideoType::kNV12))
                                 {
                                     bestVideoType = capability.videoType;
                                     bestformatIndex = tmp;
                                 }
                                 // If width height and frame rate is full filled we can use the
                                 // camera for encoding if it is supported.
-                                if (capability.height == requested.height &&
-                                        capability.width == requested.width &&
-                                        capability.maxFPS >= requested.maxFPS)
+                                if (capability.height == requested.height && capability.width == requested.width &&
+                                    capability.maxFPS >= requested.maxFPS)
                                 {
                                     bestformatIndex = tmp;
                                 }
                             }
-                            else  // Better frame rate
+                            else // Better frame rate
                             {
                                 bestWidth = capability.width;
                                 bestHeight = capability.height;
@@ -202,7 +205,7 @@ int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUn
                             }
                         }
                     }
-                    else  // Better width than previously
+                    else // Better width than previously
                     {
                         bestWidth = capability.width;
                         bestHeight = capability.height;
@@ -210,9 +213,9 @@ int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUn
                         bestVideoType = capability.videoType;
                         bestformatIndex = tmp;
                     }
-                }     // else width no good
+                } // else width no good
             }
-            else  // Better height
+            else // Better height
             {
                 bestWidth = capability.width;
                 bestHeight = capability.height;
@@ -220,13 +223,11 @@ int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUn
                 bestVideoType = capability.videoType;
                 bestformatIndex = tmp;
             }
-        }  // else height not good
-    }    // end for
+        } // else height not good
+    } // end for
 
-    OCTK_TRACE() << "Best camera format: " << bestWidth << "x"
-                 << bestHeight << "@" << bestFrameRate
-                 << "fps, color format: "
-                 << static_cast<int>(bestVideoType);
+    OCTK_TRACE() << "Best camera format: " << bestWidth << "x" << bestHeight << "@" << bestFrameRate
+                 << "fps, color format: " << static_cast<int>(bestVideoType);
 
     // Copy the capability
     if (bestformatIndex < 0)
@@ -237,15 +238,25 @@ int32_t CameraCapture::DeviceInfo::getBestMatchedCapability(const char *deviceUn
     return bestformatIndex;
 }
 
-CameraCapture::DeviceInfo::SharedPtr CameraCapture::createDeviceInfo()
+CameraCapture::DeviceInfo::SharedPtr CameraCapture::createDeviceInfo(Options *options)
 {
 #if defined(OCTK_OS_LINUX)
+    if (options)
+    {
+        if (options->allowPipeWire)
+        {
+#    if OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE
+            return std::make_shared<CameraDeviceInfoPipeWire>();
+#    endif
+            return nullptr;
+        }
+    }
     return std::make_shared<CameraDeviceInfoV4L2>();
 #endif
     return nullptr;
 }
 
-CameraCapture::SharedPtr CameraCapture::create(const char *deviceUniqueIdUTF8)
+CameraCapture::SharedPtr CameraCapture::create(const char *deviceUniqueIdUTF8, Options *options)
 {
 #if defined(OCTK_OS_LINUX)
     auto capture = std::make_shared<CameraCaptureV4L2>();
@@ -294,8 +305,10 @@ void CameraCapturePrivate::updateFrameCount()
     mIncomingFrameTimesNanos[0] = DateTime::TimeNanos();
 }
 
-int32_t CameraCapturePrivate::incomingFrame(uint8_t *videoFrame, std::size_t videoFrameLength,
-                                            const Capability &frameInfo, int64_t captureTime)
+int32_t CameraCapturePrivate::incomingFrame(uint8_t *videoFrame,
+                                            std::size_t videoFrameLength,
+                                            const Capability &frameInfo,
+                                            int64_t captureTime)
 {
     OCTK_CHECK_RUNS_SERIALIZED(&mCaptureChecker);
     std::unique_lock<std::mutex> lock(mApiMutex);
@@ -323,8 +336,7 @@ int32_t CameraCapturePrivate::incomingFrame(uint8_t *videoFrame, std::size_t vid
         // See https://github.com/umlaeute/v4l2loopback/issues/190.
         if (auto size = utils::videoTypeBufferSize(frameInfo.videoType, width, abs(height)); videoFrameLength < size)
         {
-            OCTK_INFO() << "Wrong incoming frame length. Expected " << size
-                        << ", Got " << videoFrameLength << ".";
+            OCTK_INFO() << "Wrong incoming frame length. Expected " << size << ", Got " << videoFrameLength << ".";
             return -1;
         }
     }
@@ -356,25 +368,27 @@ int32_t CameraCapturePrivate::incomingFrame(uint8_t *videoFrame, std::size_t vid
                                                             buffer.get()->strideU(),
                                                             buffer.get()->MutableDataV(),
                                                             buffer.get()->strideV(),
-                                                            0, 0,  // No Cropping
-                                                            width, height,
-                                                            target_width, target_height,
+                                                            0,
+                                                            0, // No Cropping
+                                                            width,
+                                                            height,
+                                                            target_width,
+                                                            target_height,
                                                             rotateFrame,
                                                             frameInfo.videoType);
     if (!conversionResult)
     {
-        OCTK_INFO() << "Failed to convert capture frame from type "
-                    << static_cast<int>(frameInfo.videoType) << "to I420.";
+        OCTK_INFO() << "Failed to convert capture frame from type " << static_cast<int>(frameInfo.videoType)
+                    << "to I420.";
         return -1;
     }
 
-    VideoFrame captureFrame =
-            VideoFrame::Builder()
-            .setVideoFrameBuffer(buffer)
-            .setRtpTimestamp(0)
-            .setTimestampMSecs(DateTime::TimeMillis())
-            .setRotation(!mApplyRotation ? mVideoRotation : VideoRotation::kAngle0)
-            .build();
+    VideoFrame captureFrame = VideoFrame::Builder()
+                                  .setVideoFrameBuffer(buffer)
+                                  .setRtpTimestamp(0)
+                                  .setTimestampMSecs(DateTime::TimeMillis())
+                                  .setRotation(!mApplyRotation ? mVideoRotation : VideoRotation::kAngle0)
+                                  .build();
     captureFrame.setNtpTimeMSecs(captureTime);
 
     lock.lock();
@@ -386,7 +400,7 @@ int32_t CameraCapturePrivate::deliverCapturedFrame(VideoFrame &captureFrame)
 {
     OCTK_CHECK_RUNS_SERIALIZED(&mCaptureChecker);
 
-    this->updateFrameCount();  // frame count used for local frame rate callback.
+    this->updateFrameCount(); // frame count used for local frame rate callback.
 
     if (mDataCallBack)
     {

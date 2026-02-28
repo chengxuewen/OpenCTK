@@ -78,7 +78,15 @@ if(NOT EXISTS "${OCTKWrapAnyLite_STAMP_FILE_PATH}")
     octk_make_stamp_file("${OCTKWrapAnyLite_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapAnyLite INTERFACE IMPORTED)
+add_library(OCTK3rdparty::WrapAnyLite INTERFACE IMPORTED
+    ../src/libs/media/source/capture/portal/octk_xdg_session_detail_p.hpp
+    ../src/libs/media/source/capture/portal/octk_xdg_desktop_portal_utils.cpp
+    ../src/libs/media/source/capture/portal/octk_xdg_desktop_portal_utils_p.hpp
+    ../src/libs/media/source/capture/portal/octk_scoped_glib.cpp
+    ../src/libs/media/source/capture/portal/octk_scoped_glib_p.hpp
+    ../src/libs/media/source/capture/portal/octk_portal_request_response_p.hpp
+    ../src/libs/media/source/capture/portal/octk_pipewire_utils.cpp
+    ../src/libs/media/source/capture/portal/octk_pipewire_utils_p.hpp)
 find_package(any-lite PATHS ${OCTKWrapAnyLite_INSTALL_DIR} REQUIRED)
 target_link_libraries(OCTK3rdparty::WrapAnyLite INTERFACE nonstd::any-lite)
 set(OCTKWrapAnyLite_FOUND ON)
