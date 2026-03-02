@@ -23,4 +23,5 @@
 
 octk_configure_feature("HTTP_USE_LIBCPR_VCPKG" PUBLIC
 	LABEL "Enable this to build use libcpr as http backend"
-	CONDITION ON)
+	DISABLE NOT OCTK_CMAKE_CXX_STANDARD_17
+	CONDITION OFF)
