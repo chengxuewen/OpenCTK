@@ -205,7 +205,7 @@ set_target_properties(OCTK3rdparty::WrapWebRTC PROPERTIES
 	IMPORTED_LOCATION
 	"${OCTKWrapWebRTC_LIBRARY}")
 target_include_directories(OCTK3rdparty::WrapWebRTC
-	INTERFACE
+	SYSTEM BEFORE INTERFACE
 	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party"
 	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party/abseil-cpp"
 	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party/libyuv/include"

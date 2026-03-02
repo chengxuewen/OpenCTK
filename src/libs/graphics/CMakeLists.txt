@@ -40,10 +40,9 @@ octk_add_library(graphics
 	PRECOMPILED_HEADER
 	source/octk_graphics_pch.hpp
 	LIBRARIES
-	octk::platform_private
+	octk::core_private
 	PUBLIC_LIBRARIES
-	octk::platform
-	octk::media)
+	octk::core)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
