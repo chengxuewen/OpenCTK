@@ -150,44 +150,6 @@ octk_add_library(media
 	source/media_context/octk_media_context_factory.cpp
 	source/media_context/octk_media_context_factory.hpp
 	source/media_context/octk_media_context.hpp
-	source/protocols/rtc/octk_rtc_audio_device.hpp
-	source/protocols/rtc/octk_rtc_audio_frame.hpp
-	source/protocols/rtc/octk_rtc_audio_processor.hpp
-	source/protocols/rtc/octk_rtc_audio_track.hpp
-	source/protocols/rtc/octk_rtc_configuration.hpp
-	source/protocols/rtc/octk_rtc_data_channel.hpp
-	source/protocols/rtc/octk_rtc_dtls_transport.hpp
-	source/protocols/rtc/octk_rtc_dtmf_sender.hpp
-	source/protocols/rtc/octk_rtc_engine.cpp
-	source/protocols/rtc/octk_rtc_engine.hpp
-	source/protocols/rtc/octk_rtc_ice_candidate.hpp
-	source/protocols/rtc/octk_rtc_ice_transport.hpp
-	source/protocols/rtc/octk_rtc_media_constraints.cpp
-	source/protocols/rtc/octk_rtc_media_constraints.hpp
-	source/protocols/rtc/octk_rtc_media_stream.hpp
-	source/protocols/rtc/octk_rtc_media_track.hpp
-	source/protocols/rtc/octk_rtc_peerconnection.cpp
-	source/protocols/rtc/octk_rtc_peerconnection.hpp
-	source/protocols/rtc/octk_rtc_peerconnection_factory.hpp
-	source/protocols/rtc/octk_rtc_rtp_capabilities.hpp
-	source/protocols/rtc/octk_rtc_rtp_parameters.hpp
-	source/protocols/rtc/octk_rtc_rtp_receiver.hpp
-	source/protocols/rtc/octk_rtc_rtp_sender.hpp
-	source/protocols/rtc/octk_rtc_rtp_transceiver.hpp
-	source/protocols/rtc/octk_rtc_session_description.cpp
-	source/protocols/rtc/octk_rtc_session_description.hpp
-	source/protocols/rtc/octk_rtc_stats.hpp
-	source/protocols/rtc/octk_rtc_stats_report.cpp
-	source/protocols/rtc/octk_rtc_stats_report.hpp
-	source/protocols/rtc/octk_rtc_types.hpp
-	source/protocols/rtc/octk_rtc_video_codec_factory.hpp
-	source/protocols/rtc/octk_rtc_video_decoder.hpp
-	source/protocols/rtc/octk_rtc_video_device.hpp
-	source/protocols/rtc/octk_rtc_video_encoder.cpp
-	source/protocols/rtc/octk_rtc_video_encoder.hpp
-	source/protocols/rtc/octk_rtc_video_frame.cpp
-	source/protocols/rtc/octk_rtc_video_frame.hpp
-	source/protocols/rtc/octk_rtc_video_track.hpp
 	source/protocols/rtp/octk_rtp_headers.cpp
 	source/protocols/rtp/octk_rtp_headers.hpp
 	source/protocols/rtp/octk_rtp_packet_info.cpp
@@ -297,8 +259,8 @@ add_subdirectory(source/capture/custom)
 octk_add_subdirectory(source/capture/desktop OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_DESKTOP)
 octk_add_subdirectory(source/capture/camera OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA)
 octk_add_subdirectory(source/capture/portal OCTK_SYSTEM_LINUX)
+add_subdirectory(source/protocols/rtc)
 
-octk_add_subdirectory(source/protocols/rtc/backends/webrtc OCTK_FEATURE_MEDIA_USE_WEBRTC)
 if(OCTK_FEATURE_MEDIA_USE_FFMPEG)
 	octk_find_package(WrapFFmpeg PROVIDED_TARGETS OCTK3rdparty::WrapFFmpeg)
 	octk_internal_extend_target(octk_media
@@ -313,7 +275,7 @@ if(OCTK_FEATURE_MEDIA_USE_FFMPEG)
 		LINK_OPTIONS "-Wl,-w")
 endif()
 if(OCTK_FEATURE_MEDIA_USE_LIBSRTP)
-	octk_find_package(WrapZLMediaKit PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
+	octk_find_package(WrapLibsrtp PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
 	octk_internal_extend_target(octk_media
 		LIBRARIES
 		OCTK3rdparty::WrapLibsrtp)

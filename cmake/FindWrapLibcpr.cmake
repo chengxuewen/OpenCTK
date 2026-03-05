@@ -28,6 +28,8 @@ if(TARGET OCTK3rdparty::WrapLibcpr)
 	return()
 endif()
 
+octk_find_package(WrapMbedTLS PROVIDED_TARGETS OCTK3rdparty::WrapMbedTLS)
+octk_find_package(WrapLibcurl PROVIDED_TARGETS OCTK3rdparty::WrapLibcurl)
 set(OCTKWrapLibcpr_NAME "cpr-1.9.9")
 set(OCTKWrapLibcpr_PKG_NAME "${OCTKWrapLibcpr_NAME}.tar.gz")
 set(OCTKWrapLibcpr_DIR_NAME "${OCTKWrapLibcpr_NAME}-${OCTK_LOWER_BUILD_TYPE}")
@@ -44,8 +46,6 @@ if(NOT EXISTS "${OCTKWrapLibcpr_STAMP_FILE_PATH}")
 	endif()
 	octk_reset_dir(${OCTKWrapLibcpr_BUILD_DIR})
 
-	octk_find_package(WrapMbedTLS PROVIDED_TARGETS OCTK3rdparty::WrapMbedTLS)
-	octk_find_package(WrapLibcurl PROVIDED_TARGETS OCTK3rdparty::WrapLibcurl)
 	message(STATUS "Configure ${OCTKWrapLibcpr_DIR_NAME} lib...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND}

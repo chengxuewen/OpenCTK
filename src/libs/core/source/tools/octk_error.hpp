@@ -61,7 +61,7 @@ public:
     public:
         struct OCTK_CORE_API Registry
         {
-            static ErrorId registerDomain(const StringView type, const StringView name, const StringView description = "");
+            static ErrorId registerDomain(StringView type, StringView name, StringView description = "");
         };
 
         Domain() = default;
@@ -92,7 +92,7 @@ public:
         bool operator!=(const Domain &other) const { return mId != other.mId; }
 
         virtual StringView codeString(ErrorId /*code*/) const { return ""; }
-        virtual std::string toString(ErrorId code, const StringView message = "") const
+        virtual std::string toString(ErrorId code, StringView message = "") const
         {
             if (!this->isValid())
             {
@@ -115,20 +115,17 @@ public:
         }
     };
 
-    Error(const Domain &domain, ErrorId code, const StringView message, const SharedDataPtr &cause = {});
-    Error(const StringView message, const SharedDataPtr &cause = {});
+    Error(const Domain &domain, ErrorId code, StringView message, const SharedDataPtr &cause = {});
+    Error(StringView message, const SharedDataPtr &cause = {});
     Error(const char *message, const SharedDataPtr &cause = {});
     Error(const Error &other);
     virtual ~Error();
 
-    static SharedDataPtr create(const Domain &domain,
-                                ErrorId code,
-                                const StringView message,
-                                const SharedDataPtr &cause = {})
+    static SharedDataPtr create(const Domain &domain, ErrorId code, StringView message, const SharedDataPtr &cause = {})
     {
         return SharedDataPtr(new Error(domain, code, message, cause));
     }
-    static SharedDataPtr create(const StringView message, const SharedDataPtr &cause = {})
+    static SharedDataPtr create(StringView message, const SharedDataPtr &cause = {})
     {
         return SharedDataPtr(new Error(message, cause));
     }

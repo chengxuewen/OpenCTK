@@ -51,7 +51,7 @@ static bool isIdRegistered(ErrorId id)
     auto idDomainDatasMap = detail::idDomainDatasMap();
     return idDomainDatasMap->find(id) != idDomainDatasMap->end();
 }
-static ErrorId fnv1aHash(const StringView name)
+static ErrorId fnv1aHash(StringView name)
 {
     constexpr ErrorId prime = 0x01000193; // 16777619
     ErrorId hash = 0x811C9DC5;            // 2166136261
@@ -65,9 +65,7 @@ static ErrorId fnv1aHash(const StringView name)
 }
 } // namespace detail
 
-ErrorId Error::Domain::Registry::registerDomain(const StringView type,
-                                                  const StringView name,
-                                                  const StringView description)
+ErrorId Error::Domain::Registry::registerDomain(StringView type, StringView name, StringView description)
 {
     SpinLock::Locker locker(detail::idDomainDatasMapSpinLock());
     auto id = detail::fnv1aHash(type);
@@ -121,9 +119,11 @@ Error::Domain::Domain(const Domain &other)
     mDescription = other.mDescription;
 }
 
-Error::Domain::~Domain() { }
+Error::Domain::~Domain()
+{
+}
 
-Error::Error(const Domain &domain, ErrorId code, const StringView message, const SharedDataPtr &cause)
+Error::Error(const Domain &domain, ErrorId code, StringView message, const SharedDataPtr &cause)
     : mDomain(domain)
     , mCode(code)
     , mMessage(message)
@@ -131,7 +131,7 @@ Error::Error(const Domain &domain, ErrorId code, const StringView message, const
 {
 }
 
-Error::Error(const StringView message, const SharedDataPtr &cause)
+Error::Error(StringView message, const SharedDataPtr &cause)
     : mDomain(invalidDomain())
     , mCode(kInvalidId)
     , mMessage(message)
@@ -155,7 +155,9 @@ Error::Error(const Error &other)
 {
 }
 
-Error::~Error() { }
+Error::~Error()
+{
+}
 
 const Error::Domain &invalidDomain()
 {
