@@ -33,6 +33,7 @@
 #include <octk_optional.hpp>
 #include <octk_logging.hpp>
 #include <octk_random.hpp>
+#include <octk_memory.hpp>
 #include <octk_mutex.hpp>
 #include <octk_clock.hpp>
 
@@ -119,7 +120,8 @@ public:
 class OCTK_MEDIA_API SquareGenerator : public FrameGeneratorInterface
 {
 public:
-    using UniquePtr = std::unique_ptr<SquareGenerator>;
+    using UniquePtr = UniquePointer<SquareGenerator>;
+    using SharedPtr = SharedPointer<SquareGenerator>;
 
     SquareGenerator(int width, int height, OutputType type, int num_squares);
 
