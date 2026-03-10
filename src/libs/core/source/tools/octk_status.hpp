@@ -52,19 +52,19 @@ public:
     /**
      * @brief Default constructor. Creates a successful status.
      */
-    Status(const Ok &o = ok) noexcept { OCTK_UNUSED(o); }
+    Status(const Ok &o = ok) { OCTK_UNUSED(o); }
 
     /**
      * @brief Copy constructor.
      * @param other The Status object to copy from.
      */
-    Status(const Status &) noexcept = default;
+    Status(const Status &) = default;
 
     /**
      * @brief Move constructor.
      * @param other The Status object to move from.
      */
-    Status(Status &&) noexcept = default;
+    Status(Status &&) = default;
 
     /**
      * @brief Constructs a Status with error information.
@@ -149,21 +149,21 @@ public:
     /**
      * @brief Destructor.
      */
-    ~Status() noexcept = default;
+    ~Status() = default;
 
     /**
      * @brief Copy assignment operator.
      * @param other The Status object to copy from.
      * @return A reference to this Status object.
      */
-    Status &operator=(const Status &) noexcept = default;
+    Status &operator=(const Status &) = default;
 
     /**
      * @brief Move assignment operator.
      * @param other The Status object to move from.
      * @return A reference to this Status object.
      */
-    Status &operator=(Status &&) noexcept = default;
+    Status &operator=(Status &&) = default;
 
     /**
      * @brief Equality operator.
@@ -184,7 +184,7 @@ public:
      * @param message The error message.
      * @return A reference to this Status object.
      */
-    Status &operator=(const std::string &message) noexcept
+    Status &operator=(const std::string &message)
     {
         mError = Error::create(message);
         return *this;
@@ -195,7 +195,7 @@ public:
      * @param message The error message.
      * @return A reference to this Status object.
      */
-    Status &operator=(const StringView message) noexcept
+    Status &operator=(const StringView message)
     {
         mError = Error::create(message);
         return *this;
@@ -206,7 +206,7 @@ public:
      * @param message The error message.
      * @return A reference to this Status object.
      */
-    Status &operator=(const char *message) noexcept
+    Status &operator=(const char *message)
     {
         mError = Error::create(message);
         return *this;

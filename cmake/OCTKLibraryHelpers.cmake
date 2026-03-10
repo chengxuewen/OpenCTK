@@ -652,11 +652,12 @@ function(octk_add_library name)
         list(APPEND exported_target_names ${name}_private)
     endif()
     set(export_name "${path_suffix}-targets")
-    if(arg_EXTERNAL_HEADERS_DIRS)
-        # octk_install set in octk_internal_extend_target
-        get_target_property(public_header_backup ${target} PUBLIC_HEADER)
-        set_property(TARGET ${target} PROPERTY PUBLIC_HEADER "")
-    endif()
+#    if(arg_EXTERNAL_HEADERS_DIRS)
+#        # octk_install set in octk_internal_extend_target
+#        get_target_property(public_header_backup ${target} PUBLIC_HEADER)
+#        message(public_header_backup=${public_header_backup})
+##        set_property(TARGET ${target} PROPERTY PUBLIC_HEADER "")
+#    endif()
 
     octk_install(TARGETS ${exported_targets}
         EXPORT ${export_name}
@@ -666,10 +667,11 @@ function(octk_add_library name)
         FRAMEWORK DESTINATION ${OCTK_INSTALL_LIBDIR}
         PRIVATE_HEADER DESTINATION "${library_install_interface_private_include_dir}"
         PUBLIC_HEADER DESTINATION "${library_install_interface_include_dir}")
-    if(arg_EXTERNAL_HEADERS_DIRS)
-        set_property(TARGET ${target} PROPERTY PUBLIC_HEADER ${public_header_backup})
-        unset(public_header_backup)
-    endif()
+#    if(arg_EXTERNAL_HEADERS_DIRS)
+#        message(public_header_backup=${public_header_backup})
+#        set_property(TARGET ${target} PROPERTY PUBLIC_HEADER ${public_header_backup})
+#        unset(public_header_backup)
+#    endif()
     if(BUILD_SHARED_LIBS)
         octk_apply_rpaths(TARGET "${target}" INSTALL_PATH "${OCTK_INSTALL_LIBDIR}" RELATIVE_RPATH)
         octk_internal_apply_staging_prefix_build_rpath_workaround()
