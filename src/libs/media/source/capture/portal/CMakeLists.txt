@@ -25,7 +25,7 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_camera_portal.cpp
 	${ROOT_DIR}/octk_camera_portal_p.hpp
@@ -36,7 +36,7 @@ octk_internal_extend_target(octk_media
 	${ROOT_DIR}/octk_xdg_desktop_portal_utils_p.hpp
 	${ROOT_DIR}/octk_xdg_session_detail_p.hpp)
 if (OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
-	octk_internal_extend_target(octk_media
+	octk_internal_extend_target(OpenCTKMedia
 		SOURCES
 		octk_pipewire_utils.cpp
 		octk_pipewire_utils_p.hpp

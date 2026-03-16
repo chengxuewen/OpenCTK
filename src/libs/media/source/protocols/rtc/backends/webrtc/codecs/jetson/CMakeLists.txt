@@ -30,7 +30,7 @@ set(TEGRA_LIB_DIR /usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/tegra)
 find_library(NVV4L2_LIBRARY nvv4l2 HINTS ${TEGRA_LIB_DIR})
 find_library(NVBUF_SURFACE_LIBRARY nvbufsurface HINTS ${TEGRA_LIB_DIR})
 find_library(NVBUF_SURFACE_TRANSFORM_LIBRARY nvbufsurftransform HINTS ${TEGRA_LIB_DIR})
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/jetson_encoder.cpp
 	${ROOT_DIR}/jetson_encoder.h
