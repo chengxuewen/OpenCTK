@@ -23,6 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_webrtc_backend_p.hpp>
+#include <octk_rtc_constants.hpp>
 #include <octk_scope_guard.hpp>
 #include <octk_rtc_engine.hpp>
 
@@ -186,18 +187,18 @@ void constraintToOptional(const webrtc::MediaConstraints *constraints,
 void copyConstraintsIntoRtcConfiguration(const webrtc::MediaConstraints *constraints,
                                          webrtc::PeerConnectionInterface::RTCConfiguration *configuration)
 {
-    findConstraint(constraints, RtcMediaConstraints::kEnableDscp, &configuration->media_config.enable_dscp, nullptr);
+    findConstraint(constraints, constants::rtc::kEnableDscp, &configuration->media_config.enable_dscp, nullptr);
     findConstraint(constraints,
-                   RtcMediaConstraints::kCpuOveruseDetection,
+                   constants::rtc::kCpuOveruseDetection,
                    &configuration->media_config.video.enable_cpu_adaptation,
                    nullptr);
     // Find Suspend Below Min Bitrate constraint.
     findConstraint(constraints,
-                   RtcMediaConstraints::kEnableVideoSuspendBelowMinBitrate,
+                   constants::rtc::kEnableVideoSuspendBelowMinBitrate,
                    &configuration->media_config.video.suspend_below_min_bitrate,
                    nullptr);
     constraintToOptional<int>(constraints,
-                              RtcMediaConstraints::kScreencastMinBitrate,
+                              constants::rtc::kScreencastMinBitrate,
                               &configuration->screencast_min_bitrate);
 }
 void copyIntoAudioOptions(const webrtc::MediaConstraints *constraints, cricket::AudioOptions *options)
@@ -214,41 +215,32 @@ bool copyConstraintsIntoOfferAnswerOptions(const webrtc::MediaConstraints *const
     bool value = false;
     size_t mandatory_constraints_satisfied = 0;
 
-    if (findConstraint(constraints,
-                       RtcMediaConstraints::kOfferToReceiveAudio,
-                       &value,
-                       &mandatory_constraints_satisfied))
+    if (findConstraint(constraints, constants::rtc::kOfferToReceiveAudio, &value, &mandatory_constraints_satisfied))
     {
         offerAnswerOptions->offer_to_receive_audio =
             value ? webrtc::PeerConnectionInterface::RTCOfferAnswerOptions::kOfferToReceiveMediaTrue : 0;
     }
 
-    if (findConstraint(constraints,
-                       RtcMediaConstraints::kOfferToReceiveVideo,
-                       &value,
-                       &mandatory_constraints_satisfied))
+    if (findConstraint(constraints, constants::rtc::kOfferToReceiveVideo, &value, &mandatory_constraints_satisfied))
     {
         offerAnswerOptions->offer_to_receive_video =
             value ? webrtc::PeerConnectionInterface::RTCOfferAnswerOptions::kOfferToReceiveMediaTrue : 0;
     }
-    if (findConstraint(constraints,
-                       RtcMediaConstraints::kVoiceActivityDetection,
-                       &value,
-                       &mandatory_constraints_satisfied))
+    if (findConstraint(constraints, constants::rtc::kVoiceActivityDetection, &value, &mandatory_constraints_satisfied))
     {
         offerAnswerOptions->voice_activity_detection = value;
     }
-    if (findConstraint(constraints, RtcMediaConstraints::kUseRtpMux, &value, &mandatory_constraints_satisfied))
+    if (findConstraint(constraints, constants::rtc::kUseRtpMux, &value, &mandatory_constraints_satisfied))
     {
         offerAnswerOptions->use_rtp_mux = value;
     }
-    if (findConstraint(constraints, RtcMediaConstraints::kIceRestart, &value, &mandatory_constraints_satisfied))
+    if (findConstraint(constraints, constants::rtc::kIceRestart, &value, &mandatory_constraints_satisfied))
     {
         offerAnswerOptions->ice_restart = value;
     }
 
     if (findConstraint(constraints,
-                       RtcMediaConstraints::kRawPacketizationForVideoEnabled,
+                       constants::rtc::kRawPacketizationForVideoEnabled,
                        &value,
                        &mandatory_constraints_satisfied))
     {
@@ -256,10 +248,7 @@ bool copyConstraintsIntoOfferAnswerOptions(const webrtc::MediaConstraints *const
     }
 
     int layers;
-    if (findConstraint(constraints,
-                       RtcMediaConstraints::kNumSimulcastLayers,
-                       &layers,
-                       &mandatory_constraints_satisfied))
+    if (findConstraint(constraints, constants::rtc::kNumSimulcastLayers, &layers, &mandatory_constraints_satisfied))
     {
         offerAnswerOptions->num_simulcast_layers = layers;
     }
@@ -946,7 +935,8 @@ void RtcPeerConnectionWebRTC::setLocalDescription(StringView sdp,
                                                   OnSetSdpFailure failure)
 {
     webrtc::SdpParseError error;
-    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(RtcSessionDescription::sdpTypeToString(type));
+    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(
+        RtcSessionDescription::sdpTypeVariantToString(type));
     if (!maybe_type)
     {
         return;
@@ -971,7 +961,8 @@ void RtcPeerConnectionWebRTC::setRemoteDescription(StringView sdp,
     RTC_LOG(LS_INFO) << " Received session description :" << sdp.data();
     webrtc::SdpParseError error;
     webrtc::SdpParseError sdp_error;
-    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(RtcSessionDescription::sdpTypeToString(type));
+    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(
+        RtcSessionDescription::sdpTypeVariantToString(type));
     if (!maybe_type)
     {
         return;
@@ -1674,7 +1665,7 @@ StringView RtcPeerConnectionFactoryWebRTC::versionName() const
 
 StringView RtcPeerConnectionFactoryWebRTC::backendName() const
 {
-    return RtcEngine::kBackendNameWebRTC;
+    return constants::rtc::kBackendNameWebRTC;
 }
 
 RtcPeerConnection::SharedPtr RtcPeerConnectionFactoryWebRTC::create(const RtcConfiguration &configuration,
@@ -1886,7 +1877,7 @@ RtcRtpCapabilities::SharedPtr RtcPeerConnectionFactoryWebRTC::getRtpReceiverCapa
 
 OCTK_RTC_ENGINE_REGISTER_FACTORY(
     RtcPeerConnectionFactoryWebRTC,
-    RtcEngine::kBackendNameWebRTC,
+    constants::rtc::kBackendNameWebRTC,
     []()
     {
         rtc::InitializeSSL();

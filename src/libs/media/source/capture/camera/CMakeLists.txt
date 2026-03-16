@@ -25,12 +25,12 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_camera_capture.cpp
 	${ROOT_DIR}/octk_camera_capture.hpp
 	${ROOT_DIR}/octk_camera_capture_p.hpp)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_camera_capture_v4l2.cpp
 	${ROOT_DIR}/octk_camera_capture_v4l2_p.hpp
@@ -38,7 +38,7 @@ octk_internal_extend_target(octk_media
 	${ROOT_DIR}/octk_camera_device_info_v4l2_p.hpp
 	LIBRARIES
 	CONDITION OCTK_SYSTEM_LINUX)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	LIBRARIES
 	#    "-framework AppKit"
@@ -53,7 +53,7 @@ octk_internal_extend_target(octk_media
 	#    "-framework ApplicationServices"
 	CONDITION OCTK_SYSTEM_MAC)
 if (OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
-	octk_internal_extend_target(octk_media
+	octk_internal_extend_target(OpenCTKMedia
 		SOURCES
 		${ROOT_DIR}/octk_camera_capture_pipewire.cpp
 		${ROOT_DIR}/octk_camera_capture_pipewire_p.hpp
@@ -73,7 +73,7 @@ if (OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_LIBARGUS)
 	find_library(NVARGUS_SOCKETCLIENT_LIBRARY nvargus_socketclient HINTS ${TEGRA_LIB_DIR})
 	find_library(NVBUF_SURFACE_LIBRARY nvbufsurface HINTS ${TEGRA_LIB_DIR})
 	find_library(NVBUF_SURFACE_TRANSFORM_LIBRARY nvbufsurftransform HINTS ${TEGRA_LIB_DIR})
-	octk_internal_extend_target(octk_media
+	octk_internal_extend_target(OpenCTKMedia
 		SOURCES
 		${JETSON_MULTIMEDIA_API_DIR}/samples/common/classes/NvBuffer.cpp
 		${JETSON_MULTIMEDIA_API_DIR}/samples/common/classes/NvBufSurface.cpp

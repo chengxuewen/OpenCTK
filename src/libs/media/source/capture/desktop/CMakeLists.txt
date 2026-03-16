@@ -25,7 +25,7 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_blank_detector_desktop_capturer_wrapper.cpp
 	${ROOT_DIR}/octk_blank_detector_desktop_capturer_wrapper.hpp
@@ -88,7 +88,7 @@ octk_internal_extend_target(octk_media
 	${ROOT_DIR}/octk_shared_desktop_frame.hpp
 	${ROOT_DIR}/octk_window_finder.cpp
 	${ROOT_DIR}/octk_window_finder.hpp)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/mac/octk_desktop_configuration.hpp
 	${ROOT_DIR}/mac/octk_desktop_configuration.mm
@@ -128,19 +128,19 @@ octk_internal_extend_target(octk_media
 	"-framework ScreenCaptureKit"
 	"-framework ApplicationServices"
 	CONDITION OCTK_SYSTEM_MAC)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_mouse_cursor_monitor_linux.cpp
 	${ROOT_DIR}/octk_screen_capturer_linux.cpp
 	${ROOT_DIR}/octk_screen_drawer_linux.cpp
 	${ROOT_DIR}/octk_window_capturer_linux.cpp
 	CONDITION OCTK_SYSTEM_LINUX)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_screen_drawer_lock_posix.cpp
 	${ROOT_DIR}/octk_screen_drawer_lock_posix.hpp
 	CONDITION OCTK_SYSTEM_UNIX)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_cropping_window_capturer_win.cpp
 	${ROOT_DIR}/octk_mouse_cursor_monitor_win.cpp
@@ -148,7 +148,7 @@ octk_internal_extend_target(octk_media
 	${ROOT_DIR}/octk_screen_drawer_win.cpp
 	${ROOT_DIR}/octk_window_capturer_win.cpp
 	CONDITION OCTK_SYSTEM_WIN)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_cropping_window_capturer_win.cpp
 	${ROOT_DIR}/octk_mouse_cursor_monitor_win.cpp
@@ -156,7 +156,7 @@ octk_internal_extend_target(octk_media
 	${ROOT_DIR}/octk_screen_drawer_win.cpp
 	${ROOT_DIR}/octk_window_capturer_win.cpp
 	CONDITION OCTK_SYSTEM_WIN)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_screen_capturer_null.cpp
 	${ROOT_DIR}/octk_window_capturer_null.cpp

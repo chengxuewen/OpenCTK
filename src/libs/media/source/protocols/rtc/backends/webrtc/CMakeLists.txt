@@ -26,7 +26,7 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
 octk_find_package(WrapWebRTC PROVIDED_TARGETS OCTK3rdparty::WrapWebRTC)
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
     SOURCES
     ${ROOT_DIR}/octk_webrtc_backend.cpp
     ${ROOT_DIR}/octk_webrtc_backend_p.hpp
