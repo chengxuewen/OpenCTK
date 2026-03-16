@@ -66,7 +66,7 @@ octk_find_package(WrapReaderWriterQueue PROVIDED_TARGETS OCTK3rdparty::WrapReade
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_library(core
+octk_add_library(Core
 	EXCEPTIONS
 	SOURCES
 	source/containers/octk_array_view.hpp
@@ -215,6 +215,7 @@ octk_add_library(core
 	source/tools/octk_shared_buffer.hpp
 	source/tools/octk_source_location.hpp
     source/tools/octk_source_sink.hpp
+	source/tools/octk_status.cpp
 	source/tools/octk_status.hpp
 	source/tools/octk_tag_id.hpp
 	source/tools/octk_type_info.hpp
@@ -265,13 +266,13 @@ octk_add_library(core
 	OCTK3rdparty::WrapConcurrentQueue
 	OCTK3rdparty::WrapReaderWriterQueue
 	${OCTK_LIB_LINK_LIBRARIES})
-octk_internal_extend_target(octk_core
+octk_internal_extend_target(OpenCTKCore
 	SOURCES
 	source/thread/octk_platform_thread_win.cpp
 	PUBLIC_DEFINES
 	NOMINMAX
 	CONDITION OCTK_SYSTEM_WIN)
-octk_internal_extend_target(octk_core
+octk_internal_extend_target(OpenCTKCore
 	SOURCES
 	source/thread/octk_platform_thread_posix.cpp
 	CONDITION NOT OCTK_SYSTEM_WIN)

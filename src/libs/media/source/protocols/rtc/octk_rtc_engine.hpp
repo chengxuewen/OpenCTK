@@ -26,6 +26,7 @@
 
 #include <octk_rtc_peerconnection_factory.hpp>
 #include <octk_rtc_peerconnection.hpp>
+#include <octk_rtc_constants.hpp>
 #include <octk_media_global.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -33,9 +34,6 @@ OCTK_BEGIN_NAMESPACE
 class OCTK_MEDIA_API RtcEngine
 {
 public:
-    OCTK_STATIC_CONSTANT_STRING(kBackendNameWebRTC, "WebRTC");
-    OCTK_STATIC_CONSTANT_STRING(kBackendNameGStreamer, "GStreamer");
-
     static SharedPointer<RtcPeerConnectionFactory> create(StringView backendName = "");
 
     struct Creater final

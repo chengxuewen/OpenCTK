@@ -23,6 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <octk_rtc_session_description.hpp>
+#include <octk_rtc_constants.hpp>
 #include <octk_checks.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -31,10 +32,10 @@ StringView RtcSessionDescription::sdpTypeToString(SdpType type)
 {
     switch (type)
     {
-        case SdpType::kOffer: return kOffer;
-        case SdpType::kPrAnswer: return kPrAnswer;
-        case SdpType::kAnswer: return kAnswer;
-        case SdpType::kRollback: return kRollback;
+        case SdpType::kOffer: return constants::rtc::sdp::kOffer;
+        case SdpType::kPrAnswer: return constants::rtc::sdp::kPrAnswer;
+        case SdpType::kAnswer: return constants::rtc::sdp::kAnswer;
+        case SdpType::kRollback: return constants::rtc::sdp::kRollback;
         default: break;
     }
     OCTK_CHECK_NOTREACHED();
@@ -43,19 +44,19 @@ StringView RtcSessionDescription::sdpTypeToString(SdpType type)
 
 Optional<RtcSessionDescription::SdpType> RtcSessionDescription::sdpTypeFromString(StringView string)
 {
-    if (string == kOffer)
+    if (string == constants::rtc::sdp::kOffer)
     {
         return SdpType::kOffer;
     }
-    else if (string == kPrAnswer)
+    else if (string == constants::rtc::sdp::kPrAnswer)
     {
         return SdpType::kPrAnswer;
     }
-    else if (string == kAnswer)
+    else if (string == constants::rtc::sdp::kAnswer)
     {
         return SdpType::kAnswer;
     }
-    else if (string == kRollback)
+    else if (string == constants::rtc::sdp::kRollback)
     {
         return SdpType::kRollback;
     }

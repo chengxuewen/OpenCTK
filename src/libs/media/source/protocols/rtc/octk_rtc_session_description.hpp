@@ -35,11 +35,6 @@ OCTK_BEGIN_NAMESPACE
 class OCTK_MEDIA_API RtcSessionDescription
 {
 public:
-    OCTK_STATIC_CONSTANT_STRING(kOffer, "offer")
-    OCTK_STATIC_CONSTANT_STRING(kAnswer, "answer")
-    OCTK_STATIC_CONSTANT_STRING(kPrAnswer, "pranswer")
-    OCTK_STATIC_CONSTANT_STRING(kRollback, "rollback")
-
     enum class SdpType
     {
         kOffer = 0, // Description must be treated as an SDP offer.
@@ -69,5 +64,6 @@ public:
 protected:
     virtual ~RtcSessionDescription() = default;
 };
+using RtcSdpTypeVariant = RtcSessionDescription::SdpTypeVariant;
 
 OCTK_END_NAMESPACE

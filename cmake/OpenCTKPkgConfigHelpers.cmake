@@ -84,7 +84,7 @@ function(octk_internal_generate_pkg_config_file target)
     # TODO: Handle macOS framework builds
     octk_internal_collect_direct_target_dependencies(${target} loose_target_requires)
     foreach(dep IN LISTS loose_target_requires)
-        if(dep MATCHES "^octk::")
+        if(dep MATCHES "^OpenCTK::")
             string(REGEX REPLACE "OpenCTK" "${OCTK_CMAKE_EXPORT_NAMESPACE}" dep ${dep})
         else()
             # TODO: Figure out a way to get non-OpenCTK requirements PkgConfig files.

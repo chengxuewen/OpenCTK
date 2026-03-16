@@ -31,7 +31,7 @@ set(OCTK_TEST_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_TESTSDIR})
 # Add tests link libraries
 #-----------------------------------------------------------------------------------------------------------------------
 octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
-set(OCTK_TEST_LINK_LIBRARIES octk::media octk::media_private OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
+set(OCTK_TEST_LINK_LIBRARIES OpenCTK::Media OpenCTK::MediaPrivate OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

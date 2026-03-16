@@ -232,7 +232,7 @@ function(octk_configure_file)
     endif()
 
     if(arg_CONTENT)
-        set(template_name "OCTKFileConfigure.txt.in")
+        set(template_name "OpenCTKFileConfigure.txt.in")
         set(input_file "${PROJECT_SOURCE_DIR}/cmake/${template_name}")
         set(__octk_file_configure_content "${arg_CONTENT}")
     elseif(arg_INPUT)
@@ -429,7 +429,7 @@ function(octk_internal_write_octk_package_version_file package_name out_path)
             set(__octk_disable_package_version_check_due_to_developer_build TRUE)")
     endif()
 
-    configure_file("${OCTK_CMAKE_DIR}/OCTKCMakePackageVersionFile.cmake.in" "${out_path}" @ONLY)
+    configure_file("${OCTK_CMAKE_DIR}/OpenCTKCMakePackageVersionFile.cmake.in" "${out_path}" @ONLY)
 endfunction()
 
 

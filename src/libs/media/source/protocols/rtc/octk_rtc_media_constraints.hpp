@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <octk_rtc_constants.hpp>
 #include <octk_shared_pointer.hpp>
 #include <octk_string.hpp>
 
@@ -45,22 +46,6 @@ public:
     // static const char *kAudioMirroring;                 // googAudioMirroring
     // static const char *kAudioNetworkAdaptorConfig;      // goodAudioNetworkAdaptorConfig
 
-    // Constraint keys for CreateOffer / CreateAnswer
-    // Specified by the W3C PeerConnection spec
-    // static const char *kOfferToReceiveVideo;    // OfferToReceiveVideo
-    OCTK_STATIC_CONSTANT_STRING(kOfferToReceiveVideo, "OfferToReceiveVideo")
-    // static const char *kOfferToReceiveAudio;    // OfferToReceiveAudio
-    OCTK_STATIC_CONSTANT_STRING(kOfferToReceiveAudio, "OfferToReceiveAudio")
-    // static const char *kVoiceActivityDetection; // VoiceActivityDetection
-    OCTK_STATIC_CONSTANT_STRING(kVoiceActivityDetection, "VoiceActivityDetection")
-    // static const char *kIceRestart;             // IceRestart
-    OCTK_STATIC_CONSTANT_STRING(kIceRestart, "IceRestart")
-    // These keys are google specific.
-
-    // static const char *kUseRtpMux;              // googUseRtpMUX
-    OCTK_STATIC_CONSTANT_STRING(kUseRtpMux, "googUseRtpMUX")
-    // static const char *kEnableDscp;            // googDscp
-    OCTK_STATIC_CONSTANT_STRING(kEnableDscp, "googDscp")
 
     // Constraints values.
     static const char *kValueTrue;  // true
@@ -75,17 +60,7 @@ public:
     // Constraint to enable IPv6 through JS.
     static const char *kEnableIPv6; // googIPv6
                                     // Temporary constraint to enable suspend below min bitrate feature.
-    OCTK_STATIC_CONSTANT_STRING(kEnableVideoSuspendBelowMinBitrate, "googSuspendBelowMinBitrate")
-    // googSuspendBelowMinBitrate
-    // Constraint to enable combined audio+video bandwidth estimation.
-    // static const char*
-    //    kCombinedAudioVideoBwe;  // googCombinedAudioVideoBwe
-    OCTK_STATIC_CONSTANT_STRING(kScreencastMinBitrate, "googScreencastMinBitrate")
-    OCTK_STATIC_CONSTANT_STRING(kCpuOveruseDetection, "googCpuOveruseDetection")
 
-    // Specifies number of simulcast layers for all video tracks with a Plan B offer/answer
-    OCTK_STATIC_CONSTANT_STRING(kNumSimulcastLayers, "googNumSimulcastLayers")
-    OCTK_STATIC_CONSTANT_STRING(kRawPacketizationForVideoEnabled, "googRawPacketizationForVideoEnabled")
 
     // static SharedPtr create();
 

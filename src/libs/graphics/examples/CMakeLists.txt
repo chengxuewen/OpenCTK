@@ -30,7 +30,7 @@ set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Set example link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::graphics)
+list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTK::Graphics)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES
 	OCTK3rdparty::WrapGLFW
 	OCTK3rdparty::WrapGLM
 	OCTK3rdparty::WrapSTB
-	octk::graphics)
+	OpenCTK::Graphics)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

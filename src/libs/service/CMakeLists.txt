@@ -29,7 +29,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_library(service
+octk_add_library(Service
 	EXCEPTIONS
 	SOURCES
 	source/octk_service.cpp
@@ -41,10 +41,10 @@ octk_add_library(service
 	PRECOMPILED_HEADER
 	source/octk_service_pch.hpp
 	LIBRARIES
-	octk::network_private
-	octk::core_private
+	OpenCTK::NetworkPrivate
+	OpenCTK::CorePrivate
 	PUBLIC_LIBRARIES
-	octk::network)
+	OpenCTK::Network)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

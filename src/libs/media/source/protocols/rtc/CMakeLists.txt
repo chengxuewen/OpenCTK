@@ -25,13 +25,14 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_rtc_audio_device.hpp
 	${ROOT_DIR}/octk_rtc_audio_frame.hpp
 	${ROOT_DIR}/octk_rtc_audio_processor.hpp
 	${ROOT_DIR}/octk_rtc_audio_track.hpp
 	${ROOT_DIR}/octk_rtc_configuration.hpp
+	${ROOT_DIR}/octk_rtc_constants.hpp
 	${ROOT_DIR}/octk_rtc_data_channel.hpp
 	${ROOT_DIR}/octk_rtc_dtls_transport.hpp
 	${ROOT_DIR}/octk_rtc_dtmf_sender.hpp

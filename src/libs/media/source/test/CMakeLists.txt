@@ -25,7 +25,7 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_internal_extend_target(octk_media
+octk_internal_extend_target(OpenCTKMedia
 	SOURCES
     ${ROOT_DIR}/octk_explicit_key_value_config_p.hpp
 	${ROOT_DIR}/octk_scalability_structure_test_helpers_p.hpp)

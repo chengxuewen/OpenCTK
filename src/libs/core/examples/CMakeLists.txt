@@ -31,7 +31,7 @@ set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
 # Set example link libraries
 #-----------------------------------------------------------------------------------------------------------------------
 set(OCTK_EXAMPLE_LINK_LIBRARIES)
-list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::core)
+list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTK::Core)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::core)
 #-----------------------------------------------------------------------------------------------------------------------
 # add_subdirectory(rcc)
 
-octk_add_executable(octk_core_exp_version
+octk_add_executable(OpenCTKCoreExpVersion
     EXCEPTIONS
     SOURCES
     exp_core_version.cpp
@@ -48,7 +48,7 @@ octk_add_executable(octk_core_exp_version
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_core_exp_logging
+octk_add_executable(OpenCTKCoreExpLogging
     EXCEPTIONS
     SOURCES
     exp_logging.cpp

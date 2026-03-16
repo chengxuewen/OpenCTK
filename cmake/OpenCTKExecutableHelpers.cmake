@@ -224,7 +224,7 @@ function(octk_add_executable name)
     # If linking against IMGui, make sure to also build the default PA(Platform Abstraction) plugin.
     # This makes the experience of an initial OpenCTK configuration to build and run one single test / executable nicer.
     #    get_target_property(linked_libs "${name}" LINK_LIBRARIES)
-    #    if("octk::gui" IN_LIST linked_libs AND TARGET pa_default_plugins)
+    #    if("OpenCTK::Imgui" IN_LIST linked_libs AND TARGET pa_default_plugins)
     #        add_dependencies("${name}" pa_default_plugins)
     #    endif()
 
@@ -248,10 +248,10 @@ function(octk_add_executable name)
                 continue()
             endif()
 
-            # Normalize module by stripping any leading "octk::", because properties are set on the
+            # Normalize module by stripping any leading "OpenCTK::", because properties are set on the
             # versioned target (either IMGui when building the module, or OCTK6::IMGui when it's
             # imported).
-            if(lib MATCHES "octk::([-_A-Za-z0-9]+)")
+            if(lib MATCHES "OpenCTK::([-_A-Za-z0-9]+)")
                 set(new_lib "${OCTK_CMAKE_EXPORT_NAMESPACE}::${CMAKE_MATCH_1}")
                 if(TARGET "${new_lib}")
                     set(lib "${new_lib}")

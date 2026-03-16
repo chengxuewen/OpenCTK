@@ -30,7 +30,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_library(network
+octk_add_library(Network
 	EXCEPTIONS
 	SOURCES
 	source/http/octk_http.cpp
@@ -46,23 +46,23 @@ octk_add_library(network
 	PRECOMPILED_HEADER
 	source/octk_network_pch.hpp
 	LIBRARIES
-	octk::core_private
+	OpenCTK::CorePrivate
 	PUBLIC_LIBRARIES
-	octk::core)
+	OpenCTK::Core)
 if(OCTK_FEATURE_USE_BOOST_BACKEND)
 	octk_find_package(WrapBoostAsio PROVIDED_TARGETS OCTK3rdparty::WrapBoostAsio)
 	octk_find_package(WrapBoostBeast PROVIDED_TARGETS OCTK3rdparty::WrapBoostBeast)
-	octk_internal_extend_target(octk_network
+	octk_internal_extend_target(OpenCTKNetwork
 		SOURCES
 		LIBRARIES
 		OCTK3rdparty::WrapBoostAsio
 		OCTK3rdparty::WrapBoostBeast)
 elseif(OCTK_FEATURE_HTTP_USE_LIBCPR_VCPKG)
 	octk_find_package(WrapLibcprVcpkg PROVIDED_TARGETS OCTK3rdparty::WrapLibcprVcpkg)
-	octk_internal_extend_target(octk_network LIBRARIES OCTK3rdparty::WrapLibcprVcpkg)
+	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OCTK3rdparty::WrapLibcprVcpkg)
 else()
 	octk_find_package(WrapLibcpr PROVIDED_TARGETS OCTK3rdparty::WrapLibcpr)
-	octk_internal_extend_target(octk_network LIBRARIES OCTK3rdparty::WrapLibcpr)
+	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OCTK3rdparty::WrapLibcpr)
 endif()
 
 

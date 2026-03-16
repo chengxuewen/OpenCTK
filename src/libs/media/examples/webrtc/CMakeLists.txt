@@ -31,7 +31,7 @@ set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
 # Set example link libraries
 #-----------------------------------------------------------------------------------------------------------------------
 octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
-list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::media)
+list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTK::Media)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

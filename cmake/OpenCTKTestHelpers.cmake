@@ -159,7 +159,7 @@ function(octk_internal_add_test name)
             set_target_properties(${name} PROPERTIES MACOSX_BUNDLE TRUE)
         endif()
 
-        # Android requires octk::gui so add it by default for tests, todo
+        # Android requires OpenCTK::Imgui so add it by default for tests, todo
         #        octk_internal_extend_target("${name}" CONDITION ANDROID PUBLIC_LIBRARIES ${OCTK_CMAKE_EXPORT_NAMESPACE}::IMGui)
     endif()
 

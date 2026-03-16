@@ -232,7 +232,6 @@ function(octk_install_injections target build_dir install_dir)
                 DESTINATION ${install_destination}
                 RENAME ${destinationname} OPTIONAL)
         endif()
-
         # Generate UpperCaseNamed forwarding headers (part 3).
         foreach(fwd_hdr ${fwd_hdrs})
             set(upper_case_forwarding_header_path "include/${library_include_name}")
@@ -285,7 +284,6 @@ function(octk_compute_injection_forwarding_header target)
     else()
         set(fwd "${dst_file}")
     endif()
-
     string(APPEND ${arg_OUT_VAR} " ${relpath}:${fwd}")
     set(${arg_OUT_VAR} ${${arg_OUT_VAR}} PARENT_SCOPE)
 endfunction()

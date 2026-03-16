@@ -941,12 +941,12 @@ void RtcPeerConnectionWebRTC::createAnswer(OnSdpCreateSuccess success,
 }
 
 void RtcPeerConnectionWebRTC::setLocalDescription(StringView sdp,
-                                                  StringView type,
+                                                  RtcSdpTypeVariant type,
                                                   OnSetSdpSuccess success,
                                                   OnSetSdpFailure failure)
 {
     webrtc::SdpParseError error;
-    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(type.data());
+    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(RtcSessionDescription::sdpTypeToString(type));
     if (!maybe_type)
     {
         return;
@@ -964,14 +964,14 @@ void RtcPeerConnectionWebRTC::setLocalDescription(StringView sdp,
 }
 
 void RtcPeerConnectionWebRTC::setRemoteDescription(StringView sdp,
-                                                   StringView type,
+                                                   RtcSdpTypeVariant type,
                                                    OnSetSdpSuccess success,
                                                    OnSetSdpFailure failure)
 {
     RTC_LOG(LS_INFO) << " Received session description :" << sdp.data();
     webrtc::SdpParseError error;
     webrtc::SdpParseError sdp_error;
-    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(type.data());
+    std::optional<webrtc::SdpType> maybe_type = webrtc::SdpTypeFromString(RtcSessionDescription::sdpTypeToString(type));
     if (!maybe_type)
     {
         return;

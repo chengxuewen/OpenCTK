@@ -31,7 +31,7 @@ octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_library(media
+octk_add_library(Media
 	EXCEPTIONS
 	SOURCES
 #	source/codecs/video/backends/h264/octk_video_decoder_openh264.cpp
@@ -250,7 +250,7 @@ octk_add_library(media
 #	OCTK3rdparty::WrapOpenh264
 	${OCTK_LIB_LINK_LIBRARIES}
 	PUBLIC_LIBRARIES
-	octk::network)
+	OpenCTK::Network)
 if(OCTK_BUILD_TESTS)
 	add_subdirectory(source/test)
 	add_subdirectory(source/codecs/video/test)
@@ -263,20 +263,20 @@ add_subdirectory(source/protocols/rtc)
 
 if(OCTK_FEATURE_MEDIA_USE_FFMPEG)
 	octk_find_package(WrapFFmpeg PROVIDED_TARGETS OCTK3rdparty::WrapFFmpeg)
-	octk_internal_extend_target(octk_media
+	octk_internal_extend_target(OpenCTKMedia
 		#		SOURCES
 		LIBRARIES
 		OCTK3rdparty::WrapFFmpeg)
-	octk_internal_extend_target(octk_media # for static ffmpeg
+	octk_internal_extend_target(OpenCTKMedia # for static ffmpeg
 		CONDITION OCTK_SYSTEM_LINUX
 		LINK_OPTIONS "-Wl,-Bsymbolic")
-	octk_internal_extend_target(octk_media # for static ffmpeg
+	octk_internal_extend_target(OpenCTKMedia # for static ffmpeg
 		CONDITION OCTK_SYSTEM_DARWIN
 		LINK_OPTIONS "-Wl,-w")
 endif()
 if(OCTK_FEATURE_MEDIA_USE_LIBSRTP)
 	octk_find_package(WrapLibsrtp PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
-	octk_internal_extend_target(octk_media
+	octk_internal_extend_target(OpenCTKMedia
 		LIBRARIES
 		OCTK3rdparty::WrapLibsrtp)
 endif()

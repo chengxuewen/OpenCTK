@@ -196,7 +196,6 @@ namespace OCTK_NAMESPACE
             name = static_cast<decltype(number)>(number)                                                               \
         };                                                                                                             \
         OCTK_WARNING_POP
-// #    define OCTK_STATIC_CONSTANT_NUMBER(name, number) static const decltype(number) name = number;
 #else
 #    define OCTK_STATIC_CONSTANT_NUMBER(name, number) static constexpr decltype(number) name = number;
 #endif

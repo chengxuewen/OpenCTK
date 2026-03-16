@@ -118,23 +118,23 @@ Result<RtcSessionDescription::Data> RtcPeerConnection::createAnswer(const RtcMed
     return promise.get_future().get();
 }
 
-Status RtcPeerConnection::setLocalDescription(StringView sdp, StringView type)
+Status RtcPeerConnection::setLocalDescription(StringView sdp, RtcSdpTypeVariant type)
 {
     std::promise<Status> promise;
     this->setLocalDescription(
         sdp.data(),
-        type.data(),
+        type,
         [&promise]() { promise.set_value(Status::ok); },
         [&promise](const char *error) { promise.set_value(Error::create(error)); });
     return promise.get_future().get();
 }
 
-Status RtcPeerConnection::setRemoteDescription(StringView sdp, StringView type)
+Status RtcPeerConnection::setRemoteDescription(StringView sdp, RtcSdpTypeVariant type)
 {
     std::promise<Status> promise;
     this->setRemoteDescription(
         sdp.data(),
-        type.data(),
+        type,
         [&promise]() { promise.set_value(Status::ok); },
         [&promise](const char *error) { promise.set_value(Error::create(error)); });
     return promise.get_future().get();

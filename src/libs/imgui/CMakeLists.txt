@@ -34,7 +34,7 @@ octk_find_package(WrapSTB PROVIDED_TARGETS OCTK3rdparty::WrapSTB)
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_library(imgui
+octk_add_library(Imgui
 	EXCEPTIONS
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
@@ -72,8 +72,8 @@ octk_add_library(imgui
 	OCTK3rdparty::WrapSTB
 	PUBLIC_LIBRARIES
 	OCTK3rdparty::WrapImGui
-	octk::graphics)
-octk_internal_extend_target(octk_imgui
+	OpenCTK::Graphics)
+octk_internal_extend_target(OpenCTKImgui
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
@@ -93,7 +93,7 @@ if(NOT WIN32)
 	elseif(TARGET OpenGL::OpenGL)
 		set(OpenGL_TARGET OpenGL::OpenGL)
 	endif()
-	octk_internal_extend_target(octk_imgui
+	octk_internal_extend_target(OpenCTKImgui
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h

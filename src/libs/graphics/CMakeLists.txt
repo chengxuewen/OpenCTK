@@ -29,7 +29,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_library(graphics
+octk_add_library(Graphics
 	EXCEPTIONS
 	SOURCES
 	source/octk_graphics.cpp
@@ -40,9 +40,9 @@ octk_add_library(graphics
 	PRECOMPILED_HEADER
 	source/octk_graphics_pch.hpp
 	LIBRARIES
-	octk::core_private
+	OpenCTK::CorePrivate
 	PUBLIC_LIBRARIES
-	octk::core)
+	OpenCTK::Core)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

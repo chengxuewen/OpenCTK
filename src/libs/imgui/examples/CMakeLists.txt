@@ -39,7 +39,7 @@ if(APPLE)
 		"-framework IOKit"
 		"-framework CoreVideo")
 endif()
-list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::imgui)
+list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTKImgui)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

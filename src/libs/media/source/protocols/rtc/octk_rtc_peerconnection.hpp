@@ -164,15 +164,15 @@ public:
                               OnSdpCreateFailure failure,
                               const RtcMediaConstraints::SharedPtr &constraints) = 0;
 
-    Status setLocalDescription(StringView sdp, StringView type);
+    Status setLocalDescription(StringView sdp, RtcSdpTypeVariant type);
     virtual void setLocalDescription(StringView sdp,
-                                     StringView type,
+                                     RtcSdpTypeVariant type,
                                      OnSetSdpSuccess success,
                                      OnSetSdpFailure failure) = 0;
 
-    Status setRemoteDescription(StringView sdp, StringView type);
+    Status setRemoteDescription(StringView sdp, RtcSdpTypeVariant type);
     virtual void setRemoteDescription(StringView sdp,
-                                      StringView type,
+                                      RtcSdpTypeVariant type,
                                       OnSetSdpSuccess success,
                                       OnSetSdpFailure failure) = 0;
 

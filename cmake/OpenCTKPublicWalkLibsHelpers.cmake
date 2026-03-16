@@ -268,15 +268,15 @@ endfunction()
 function(__octk_internal_memoize_values_in_dict target dict_name dict_key values)
     # Memoize the computed values for the target as well as its aliases.
     #
-    # Aka assigns the contents of ${values} to OpenCTK, octk::core,
-    # octk::core.
+    # Aka assigns the contents of ${values} to OpenCTK, OpenCTK::Core,
+    # OpenCTK::Core.
     #
     # Yes, i know it's crazy that target names are legal property names.
     #
     # Assigning for library aliases is needed to avoid multiple recomputation of values.
     # Scenario in the context of __octk_internal_walk_libs:
     # 'values' are computed for Core target and memoized to INTERFACE_Core.
-    # When processing IMGui, it depends on octk::core, but there are no values for INTERFACE_OCTK::Core.
+    # When processing IMGui, it depends on OpenCTK::Core, but there are no values for OpenCTK::Core.
     set_target_properties(${dict_name} PROPERTIES INTERFACE_${target}_${dict_key} "${values}")
 
     get_target_property(versionless_alias "${target}" "_octk_versionless_alias")

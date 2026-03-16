@@ -30,13 +30,13 @@ set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Set example link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES octk::network)
+list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTK::Network)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_executable(octk_network_exp_version
+octk_add_executable(OpenCTKNetworkExpVersion
     SOURCES
 	exp_network_version.cpp
     INCLUDE_DIRECTORIES

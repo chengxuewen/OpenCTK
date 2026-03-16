@@ -2995,11 +2995,11 @@ public:
                       const RtcMediaConstraints::SharedPtr &constraints) override;
 
     void setLocalDescription(StringView sdp,
-                             StringView type,
+                             RtcSdpTypeVariant type,
                              OnSetSdpSuccess success,
                              OnSetSdpFailure failure) override;
     void setRemoteDescription(StringView sdp,
-                              StringView type,
+                              RtcSdpTypeVariant type,
                               OnSetSdpSuccess success,
                               OnSetSdpFailure failure) override;
 

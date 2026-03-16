@@ -125,9 +125,9 @@ function(octk_internal_extend_target target)
         # CorePrivate).
         set(octk_libs_private "")
         foreach(it ${known_librarys})
-            list(FIND arg_LIBRARIES "octk::${it}_private" pos)
+            list(FIND arg_LIBRARIES "OpenCTK::${it}Private" pos)
             if(pos GREATER -1)
-                list(APPEND octk_libs_private "octk::${it}_private")
+                list(APPEND octk_libs_private "OpenCTK::${it}Private")
             endif()
         endforeach()
 
@@ -181,13 +181,13 @@ endfunction()
 # Common function to add OpenCTK prefixes to the target name, use the OpenCTK'fied library name as a framework identifier.
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_internal_target_name out_var target)
-    set(${out_var} "octk_${target}" PARENT_SCOPE)
-    set(${out_var}_versioned "octk${OCTKPP_NAMESPACE_VERSION}_${target}" PARENT_SCOPE)
+    set(${out_var} "OpenCTK${target}" PARENT_SCOPE)
+    set(${out_var}_versioned "OpenCTK${OCTKPP_NAMESPACE_VERSION}${target}" PARENT_SCOPE)
 endfunction()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Add octk::target and octk1::target as aliases for the target
+# Add OpenCTK::target and OpenCTK0::target as aliases for the target
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_internal_add_target_aliases target)
     get_target_property(library_base_name ${target} _octk_target_base_name)
@@ -195,8 +195,8 @@ function(octk_internal_add_target_aliases target)
         message(FATAL_ERROR "${target} is not a library.")
     endif()
 
-    set(versionless_alias "octk::${library_base_name}")
-    set(versionfull_alias "octk${OCTK_NAMESPACE_VERSION}::${library_base_name}")
+    set(versionless_alias "OpenCTK::${library_base_name}")
+    set(versionfull_alias "OpenCTK${OCTK_NAMESPACE_VERSION}::${library_base_name}")
     set_target_properties("${target}" PROPERTIES _octk_versionless_alias "${versionless_alias}")
     set_target_properties("${target}" PROPERTIES _octk_versionfull_alias "${versionfull_alias}")
 
@@ -282,7 +282,7 @@ function(octk_internal_set_compile_pdb_names target)
         if(target_type STREQUAL "STATIC_LIBRARY" OR target_type STREQUAL "OBJECT_LIBRARY")
             get_target_property(output_name ${target} OUTPUT_NAME)
             if(NOT output_name)
-                set(output_name "${OCTK_CMAKE_INSTALL_NAMESPACE}_${target}")
+                set(output_name "${OCTK_CMAKE_INSTALL_NAMESPACE}${target}")
             endif()
             set_target_properties(${target} PROPERTIES COMPILE_PDB_NAME "${output_name}")
             set_target_properties(${target} PROPERTIES COMPILE_PDB_NAME_DEBUG "${output_name}d")
@@ -347,7 +347,7 @@ endmacro()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Create a octk*-additional-target-info.cmake file that is included by octk*config.cmake
+# Create a OpenCTK*AdditionalTargetInfo.cmake file that is included by OpenCTK*Config.cmake
 # and sets IMPORTED_*_<CONFIG> properties on the exported targets.
 #
 # The file also makes the targets global if the OCTK_PROMOTE_TO_GLOBAL_TARGETS property is set in the consuming project.
@@ -361,13 +361,13 @@ endmacro()
 # TARGETS:
 #    The internal target names. Those must be actual targets.
 # TARGET_EXPORT_NAMES:
-#    The target names how they appear in the octkXXX-targets.cmake files.
+#    The target names how they appear in the OpenCTK*Targets.cmake files.
 #    The names get prefixed by ${OCTK_CMAKE_EXPORT_NAMESPACE}:: unless they already are.
 #    This argument may be empty, then the target export names are the same as the internal ones.
 #
 # TARGETS and TARGET_EXPORT_NAMES must contain exactly the same number of elements.
 # Example: TARGETS = scriptjs_native
-#          TARGET_EXPORT_NAMES = octk::scriptJs
+#          TARGET_EXPORT_NAMES = OpenCTK::scriptJs
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_internal_export_additional_targets_file)
     octk_internal_get_export_additional_targets_keywords(option_args single_args multi_args)
@@ -449,9 +449,9 @@ endfunction()
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_internal_export_modern_cmake_config_targets_file)
     cmake_parse_arguments(arg "" "EXPORT_NAME_PREFIX;CONFIG_INSTALL_DIR" "TARGETS" ${ARGN})
-    set(export_name "${arg_EXPORT_NAME_PREFIX}-versionless-targets")
+    set(export_name "${arg_EXPORT_NAME_PREFIX}VersionlessTargets")
     foreach(target ${arg_TARGETS})
-        if(TARGET "${target}-versionless")
+        if(TARGET "${target}Versionless")
             continue()
         endif()
 
@@ -459,16 +459,16 @@ function(octk_internal_export_modern_cmake_config_targets_file)
         if(NOT target_base_name)
             set(target_base_name ${target})
         endif()
-        add_library("${target}-versionless" INTERFACE)
-        target_link_libraries("${target}-versionless" INTERFACE "${target}")
-        set_target_properties("${target}-versionless" PROPERTIES
+        add_library("${target}Versionless" INTERFACE)
+        target_link_libraries("${target}Versionless" INTERFACE "${target}")
+        set_target_properties("${target}Versionless" PROPERTIES
             _octk_target_base_name "${target_base_name}"
             _octk_is_versionless_target "TRUE")
-        set_property(TARGET "${target}-versionless" APPEND PROPERTY EXPORT_PROPERTIES _octk_is_versionless_target)
+        set_property(TARGET "${target}Versionless" APPEND PROPERTY EXPORT_PROPERTIES _octk_is_versionless_target)
 
-        octk_install(TARGETS "${target}-versionless" EXPORT ${export_name})
+        octk_install(TARGETS "${target}Versionless" EXPORT ${export_name})
     endforeach()
-    octk_install(EXPORT ${export_name} NAMESPACE octk:: DESTINATION "${arg_CONFIG_INSTALL_DIR}")
+    octk_install(EXPORT ${export_name} NAMESPACE OpenCTK:: DESTINATION "${arg_CONFIG_INSTALL_DIR}")
 endfunction()
 
 
@@ -730,7 +730,7 @@ function(octk_internal_export_additional_targets_file_handler id)
             unset(_octk_imported_configs)")
     endif()
 
-    octk_path_join(output_file "${arg_CONFIG_INSTALL_DIR}" "${arg_EXPORT_NAME_PREFIX}-additional-target-info.cmake")
+    octk_path_join(output_file "${arg_CONFIG_INSTALL_DIR}" "${arg_EXPORT_NAME_PREFIX}AdditionalTargetInfo.cmake")
     if(NOT IS_ABSOLUTE "${output_file}")
         octk_path_join(output_file "${OCTK_BUILD_DIR}" "${output_file}")
     endif()

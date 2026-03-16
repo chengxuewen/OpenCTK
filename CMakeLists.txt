@@ -104,6 +104,25 @@ endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# build directory check
+#-----------------------------------------------------------------------------------------------------------------------
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+	message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run "
+		"CMake from there. You may need to remove CMakeCache.txt.")
+endif()
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# top project check
+#-----------------------------------------------------------------------------------------------------------------------
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+	set(OCTK_PROJECT_IS_TOP_LEVEL ON)
+else()
+	set(OCTK_PROJECT_IS_TOP_LEVEL OFF)
+endif()
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Detect prefix and install
 #-----------------------------------------------------------------------------------------------------------------------
 # Pre-calculate the developer_build feature if it's set by the user via INPUT_OCTK_FEATURE_DEV_BUILD
@@ -133,6 +152,9 @@ set(OCTK_BINARY_DIR ${OpenCTK_BINARY_DIR})
 if((OCTK_FEATURE_DEV_BUILD OR OCTK_FEATURE_NO_PREFIX) AND NOT CMAKE_STAGING_PREFIX)
 	# Handle non-prefix builds by setting the CMake install prefix to point to OpenCTK's build dir.
 	set(OCTK_DEFAULT_PREFIX "${OCTK_BINARY_DIR}/install")
+	if(OCTK_PROJECT_IS_TOP_LEVEL)
+		set(CMAKE_INSTALL_PREFIX "${OCTK_DEFAULT_PREFIX}")
+	endif()
 else()
 	if(CMAKE_HOST_WIN32)
 		set(OCTK_DEFAULT_PREFIX "C:/OpenCTK/")
@@ -141,6 +163,7 @@ else()
 	endif()
 	string(APPEND OCTK_DEFAULT_PREFIX "OpenCTK-${OCTK_VERSION}")
 endif()
+set(OCTK_DEFAULT_PREFIX "${OCTK_BINARY_DIR}/install")
 message(STATUS "Project default prefix set as '${OCTK_DEFAULT_PREFIX}'.")
 
 if(NOT DEFINED INPUT_OCTK_FEATURE_INSTALL_PREFIX)
@@ -276,32 +299,32 @@ set(OCTK_NUMBER_OF_ASYNC_JOBS ${OCTK_PROCESSOR_COUNT})
 #-----------------------------------------------------------------------------------------------------------------------
 set(OCTK_CMAKE_DIR "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_MODULE_PATH ${OCTK_CMAKE_DIR} ${CMAKE_MODULE_PATH})
-include(OCTKPrecompiledHeadersHelpers)
-include(OCTKScopeFinalizerHelpers)
-include(OCTKPublicWalkLibsHelpers)
-include(OCTKPublicResourceHelpers)
-include(OCTKPublicTargetHelpers)
-include(OCTKFlagHandlingHelpers)
-include(OCTKSubdirectoryHelpers)
-include(OCTKCMakeVersionHelpers)
-include(OCTKGlobalStateHelpers)
-include(OCTKSyncIncludeHelpers)
-include(OCTKFindPackageHelpers)
-include(OCTKPrecompiledHelpers)
-include(OCTKExecutableHelpers)
-include(OCTKSeparateDebugInfo)
-include(OCTKConfigureHelpers)
-include(OCTKFrameworkHelpers)
-include(OCTKPkgConfigHelpers)
-include(OCTKCompilerHelpers)
-include(OCTKLibraryHelpers)
-include(OCTKInstallHelpers)
-include(OCTKModuleHelpers)
-include(OCTKTargetHelpers)
-include(OCTKOptionHelpers)
-include(OCTKCMakeHelpers)
-include(OCTKRpathHelpers)
-include(OCTKTestHelpers)
+include(OpenCTKPrecompiledHeadersHelpers)
+include(OpenCTKScopeFinalizerHelpers)
+include(OpenCTKPublicWalkLibsHelpers)
+include(OpenCTKPublicResourceHelpers)
+include(OpenCTKPublicTargetHelpers)
+include(OpenCTKFlagHandlingHelpers)
+include(OpenCTKSubdirectoryHelpers)
+include(OpenCTKCMakeVersionHelpers)
+include(OpenCTKGlobalStateHelpers)
+include(OpenCTKSyncIncludeHelpers)
+include(OpenCTKFindPackageHelpers)
+include(OpenCTKPrecompiledHelpers)
+include(OpenCTKExecutableHelpers)
+include(OpenCTKSeparateDebugInfo)
+include(OpenCTKConfigureHelpers)
+include(OpenCTKFrameworkHelpers)
+include(OpenCTKPkgConfigHelpers)
+include(OpenCTKCompilerHelpers)
+include(OpenCTKLibraryHelpers)
+include(OpenCTKInstallHelpers)
+include(OpenCTKModuleHelpers)
+include(OpenCTKTargetHelpers)
+include(OpenCTKOptionHelpers)
+include(OpenCTKCMakeHelpers)
+include(OpenCTKRpathHelpers)
+include(OpenCTKTestHelpers)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -461,22 +484,22 @@ endif()
 #-----------------------------------------------------------------------------------------------------------------------
 # Set Platform and InternalTargets define
 #-----------------------------------------------------------------------------------------------------------------------
-include(OCTKPlatformSupport)
-include(OCTKInternalTargets)
+include(OpenCTKPlatformSupport)
+include(OpenCTKInternalTargets)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Set namespace and separator
 #-----------------------------------------------------------------------------------------------------------------------
 set(OCTK_NAMESPACE_VERSION ${OCTK_VERSION_MAJOR})
-set(OCTK_NAMESPACE "octk" CACHE STRING "OpenCTK Namespace")
+set(OCTK_NAMESPACE "OpenCTK" CACHE INTERNAL "OpenCTK Namespace" FORCE)
 if(NOT OCTK_CMAKE_INSTALL_NAMESPACE)
-	set(OCTK_CMAKE_INSTALL_NAMESPACE "octk${OCTK_NAMESPACE_VERSION}"
-		CACHE STRING "CMake namespace [octk${OCTK_NAMESPACE_VERSION}]")
+	set(OCTK_CMAKE_INSTALL_NAMESPACE "${OCTK_NAMESPACE}${OCTK_NAMESPACE_VERSION}"
+		CACHE STRING "CMake namespace [${OCTK_NAMESPACE}${OCTK_NAMESPACE_VERSION}]")
 endif()
 if(NOT OCTK_CMAKE_EXPORT_NAMESPACE)
-	set(OCTK_CMAKE_EXPORT_NAMESPACE "octk${OCTK_NAMESPACE_VERSION}"
-		CACHE STRING "CMake namespace used when exporting targets [octk${OCTK_NAMESPACE_VERSION}]")
+	set(OCTK_CMAKE_EXPORT_NAMESPACE "${OCTK_NAMESPACE}${OCTK_NAMESPACE_VERSION}"
+		CACHE STRING "CMake namespace used when exporting targets [${OCTK_NAMESPACE}${OCTK_NAMESPACE_VERSION}]")
 endif()
 
 set(OCTK_KNOWN_LIBRARIES_WITH_TOOLS "" CACHE INTERNAL "Known OpenCTK modules with tools" FORCE)
@@ -516,25 +539,6 @@ endif()
 #-----------------------------------------------------------------------------------------------------------------------
 if(OCTK_MSVC_STATIC_RUNTIME)
 	message(STATUS "Build as static runtime")
-endif()
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# build directory check
-#-----------------------------------------------------------------------------------------------------------------------
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-	message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run "
-		"CMake from there. You may need to remove CMakeCache.txt.")
-endif()
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# top project check
-#-----------------------------------------------------------------------------------------------------------------------
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
-	set(OCTK_PROJECT_IS_TOP_LEVEL ON)
-else()
-	set(OCTK_PROJECT_IS_TOP_LEVEL OFF)
 endif()
 
 

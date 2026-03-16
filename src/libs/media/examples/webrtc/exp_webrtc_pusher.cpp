@@ -173,7 +173,7 @@ int main(int argc, char **argv)
             OCTK_LOGGING_FATAL(EXP_LOGGER(), "sdp invalid!");
         }
         auto answer = json["sdp"].get<std::string>();
-        status = peerConnection->setRemoteDescription(answer, octk::RtcSessionDescription::kAnswer);
+        status = peerConnection->setRemoteDescription(answer, octk::RtcSessionDescription::SdpType::kAnswer);
         if (!status)
         {
             OCTK_LOGGING_FATAL(EXP_LOGGER(), "setRemoteDescription failed: {}", status.errorString().c_str());

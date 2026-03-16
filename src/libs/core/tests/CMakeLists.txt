@@ -31,7 +31,7 @@ set(OCTK_TEST_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_TESTSDIR})
 # Add tests link libraries
 #-----------------------------------------------------------------------------------------------------------------------
 #octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
-set(OCTK_TEST_LINK_LIBRARIES octk::core_private OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
+set(OCTK_TEST_LINK_LIBRARIES OpenCTK::CorePrivate OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
