@@ -49,6 +49,7 @@ if(NOT EXISTS "${OCTKWrapLibcurl_STAMP_FILE_PATH}")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
+		-DUSE_LIBIDN2=OFF
         -DCURL_USE_MBEDTLS=ON
         -DCURL_USE_LIBPSL=OFF
         -DBUILD_STATIC_CURL=ON

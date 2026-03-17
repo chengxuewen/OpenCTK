@@ -24,7 +24,7 @@
 
 #include <octk_frame_generator_capturer.hpp>
 #include <octk_rtc_video_frame.hpp>
-#include <octk_memory.hpp>
+#include <octk_date_time.hpp>
 #include <octk_yuv.hpp>
 
 OCTK_BEGIN_NAMESPACE
@@ -62,7 +62,7 @@ public:
     Format format() const override { return Format::kI420; }
 
     uint16_t id() const override { return mId; }
-    int64_t timestamp() const override { return mTimestampUSecs; }
+    int64_t timestampUSecs() const override { return mTimestampUSecs; }
     Rotation rotation() const override
     {
         switch (mVideoRotation)
@@ -95,7 +95,7 @@ RtcVideoFrame::SharedPtr RtcVideoFrame::create(const VideoFrame &frame)
     return utils::make_shared<RtcVideoFrameDefault>(frame);
 }
 
-RtcVideoFrame::SharedPtr RtcVideoFrame::createI420(const uint8_t *data, int width, int height)
+RtcVideoFrame::SharedPtr RtcVideoFrame::createI420(const uint8_t *data, int width, int height, int64_t timestampUSecs)
 {
     auto buffer = I420Buffer::create(width, height);
     utils::yuv::copyI420(OCTK_I420_Y_PTR(data, width, height),
@@ -112,21 +112,36 @@ RtcVideoFrame::SharedPtr RtcVideoFrame::createI420(const uint8_t *data, int widt
                          buffer->strideV(),
                          width,
                          height);
-    return utils::make_shared<RtcVideoFrameDefault>(buffer, octk::VideoRotation::kAngle0, 0, 0);
+    return utils::make_shared<RtcVideoFrameDefault>(buffer,
+                                                    octk::VideoRotation::kAngle0,
+                                                    timestampUSecs > 0 ? timestampUSecs : DateTime::steadyTimeMSecs(),
+                                                    0);
 }
 
-RtcVideoFrame::SharedPtr RtcVideoFrame::createFromARGB(const uint8_t *data, int width, int height)
+RtcVideoFrame::SharedPtr RtcVideoFrame::createFromARGB(const uint8_t *data,
+                                                       int width,
+                                                       int height,
+                                                       int64_t timestampUSecs)
 {
     auto buffer = I420Buffer::create(width, height);
     utils::yuv::convertARGBToI420(data, buffer->MutableDataY(), width, height);
-    return utils::make_shared<RtcVideoFrameDefault>(buffer, octk::VideoRotation::kAngle0, 0, 0);
+    return utils::make_shared<RtcVideoFrameDefault>(buffer,
+                                                    VideoRotation::kAngle0,
+                                                    timestampUSecs > 0 ? timestampUSecs : DateTime::steadyTimeMSecs(),
+                                                    0);
 }
 
-RtcVideoFrame::SharedPtr RtcVideoFrame::createFromRGBA(const uint8_t *data, int width, int height)
+RtcVideoFrame::SharedPtr RtcVideoFrame::createFromRGBA(const uint8_t *data,
+                                                       int width,
+                                                       int height,
+                                                       int64_t timestampUSecs)
 {
     auto buffer = I420Buffer::create(width, height);
     utils::yuv::convertRGBAToI420(data, buffer->MutableDataY(), width, height);
-    return utils::make_shared<RtcVideoFrameDefault>(buffer, octk::VideoRotation::kAngle0, 0, 0);
+    return utils::make_shared<RtcVideoFrameDefault>(buffer,
+                                                    VideoRotation::kAngle0,
+                                                    timestampUSecs > 0 ? timestampUSecs : DateTime::steadyTimeMSecs(),
+                                                    0);
 }
 
 void RtcVideoSinkAdapter::onData(const DataType &data)
@@ -149,7 +164,7 @@ void RtcVideoSinkAdapter::onData(const DataType &data)
                          mI420Buffer->strideV(),
                          data->width(),
                          data->height());
-    mVideoFrameSink->onFrame(VideoFrame(mI420Buffer, octk::VideoRotation::kAngle0, data->timestamp()));
+    mVideoFrameSink->onFrame(VideoFrame(mI420Buffer, octk::VideoRotation::kAngle0, data->timestampUSecs()));
 }
 
 class RtcVideoGeneratorPrivate : public VideoSinkInterface<VideoFrame>

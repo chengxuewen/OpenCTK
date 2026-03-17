@@ -45,6 +45,7 @@ protected:
 public:
     static SharedPtr makeShared();
     static UniquePtr makeUnique();
+    static SharedPtr create() { return makeShared(); }
 
     ~TaskQueueThread() override;
 

@@ -637,7 +637,7 @@ public:
     Format format() const override { return Format::kI420; }
 
     uint16_t id() const override { return mId; }
-    int64_t timestamp() const override { return mTimestampUSecs; }
+    int64_t timestampUSecs() const override { return mTimestampUSecs; }
     Rotation rotation() const override { return utils::fromWebRTC(mWebRTCRotation); }
 
     // Returns pointer to the pixel data for a given plane. The memory is owned by
@@ -954,7 +954,7 @@ protected:
         {
             sink->onData(videoFrame);
         }*/
-        mVideoBroadcaster.pushData(videoFrame);
+        mVideoBroadcaster.sendData(videoFrame);
     }
 
     webrtc::scoped_refptr<webrtc::VideoTrackInterface> mWebRTCVideoTrack;
@@ -1003,7 +1003,7 @@ public:
             // mAdapter->mWebRTCVideoBroadcaster.OnFrame(
             //     webrtc::VideoFrame(mWebRTCI420Buffer, webrtc::kVideoRotation_0, data->timestamp()));
             mVideoBroadcaster->OnFrame(
-                webrtc::VideoFrame(mWebRTCI420Buffer, webrtc::kVideoRotation_0, data->timestamp()));
+                webrtc::VideoFrame(mWebRTCI420Buffer, webrtc::kVideoRotation_0, data->timestampUSecs()));
             // mAdapter->OnFrame(webrtc::VideoFrame::Builder()
             //                       .set_video_frame_buffer(mWebRTCI420Buffer)
             //                       .set_rotation(utils::toWebRTC(data->rotation()))

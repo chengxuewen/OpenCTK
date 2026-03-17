@@ -51,9 +51,9 @@ public:
     };
 
     static SharedPtr create(const VideoFrame &frame);
-    static SharedPtr createI420(const uint8_t *data, int width, int height);
-    static SharedPtr createFromARGB(const uint8_t *data, int width, int height);
-    static SharedPtr createFromRGBA(const uint8_t *data, int width, int height);
+    static SharedPtr createI420(const uint8_t *data, int width, int height, int64_t timestampUSecs = 0);
+    static SharedPtr createFromARGB(const uint8_t *data, int width, int height, int64_t timestampUSecs = 0);
+    static SharedPtr createFromRGBA(const uint8_t *data, int width, int height, int64_t timestampUSecs = 0);
 
     virtual SharedPtr copy() = 0;
 
@@ -64,8 +64,8 @@ public:
     virtual Format format() const = 0;
 
     virtual uint16_t id() const = 0;
-    virtual int64_t timestamp() const = 0;
     virtual Rotation rotation() const = 0;
+    virtual int64_t timestampUSecs() const = 0;
 
     // Returns pointer to the pixel data for a given plane. The memory is owned by
     // the VideoFrameBuffer object and must not be freed by the caller.

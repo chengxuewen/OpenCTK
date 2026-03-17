@@ -166,7 +166,7 @@ public:
         SourceType::removeSink(sink);
     }
 
-    void pushData(const Data &data) { this->onData(data); }
+    void sendData(const Data &data) { this->onData(data); }
 
 protected:
     void onData(const Data &data) override
