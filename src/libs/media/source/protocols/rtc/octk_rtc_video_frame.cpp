@@ -115,6 +115,20 @@ RtcVideoFrame::SharedPtr RtcVideoFrame::createI420(const uint8_t *data, int widt
     return utils::make_shared<RtcVideoFrameDefault>(buffer, octk::VideoRotation::kAngle0, 0, 0);
 }
 
+RtcVideoFrame::SharedPtr RtcVideoFrame::createFromARGB(const uint8_t *data, int width, int height)
+{
+    auto buffer = I420Buffer::create(width, height);
+    utils::yuv::convertARGBToI420(data, buffer->MutableDataY(), width, height);
+    return utils::make_shared<RtcVideoFrameDefault>(buffer, octk::VideoRotation::kAngle0, 0, 0);
+}
+
+RtcVideoFrame::SharedPtr RtcVideoFrame::createFromRGBA(const uint8_t *data, int width, int height)
+{
+    auto buffer = I420Buffer::create(width, height);
+    utils::yuv::convertRGBAToI420(data, buffer->MutableDataY(), width, height);
+    return utils::make_shared<RtcVideoFrameDefault>(buffer, octk::VideoRotation::kAngle0, 0, 0);
+}
+
 void RtcVideoSinkAdapter::onData(const DataType &data)
 {
     if (!mI420Buffer.get() || mI420Buffer->width() != data->width() || mI420Buffer->height() != data->height())
@@ -170,8 +184,8 @@ private:
     OCTK_DISABLE_COPY_MOVE(RtcVideoGeneratorPrivate)
 };
 
-RtcVideoGenerator::SharedPtr RtcVideoGenerator::create(FrameGeneratorInterface::UniquePtr generator,
-                                                       int fps,
+RtcVideoGenerator::SharedPtr RtcVideoGenerator::create(int fps,
+                                                       FrameGeneratorInterface::UniquePtr generator,
                                                        StringView name)
 {
     if (generator && fps > 0)
@@ -194,19 +208,19 @@ RtcVideoGenerator::SharedPtr RtcVideoGenerator::create(FrameGeneratorInterface::
     return nullptr;
 }
 
-RtcVideoGenerator::SharedPtr RtcVideoGenerator::createSquareGenerator(int width,
+RtcVideoGenerator::SharedPtr RtcVideoGenerator::createSquareGenerator(int fps,
+                                                                      int width,
                                                                       int height,
                                                                       int numSquares,
-                                                                      int fps,
                                                                       StringView name)
 {
-    if (width > 0 && height > 0 && numSquares > 0 && fps > 0)
+    if (fps > 0 && width > 0 && height > 0 && numSquares > 0)
     {
         auto generator = utils::make_unique<SquareGenerator>(width,
                                                              height,
                                                              SquareGenerator::OutputType::kI420,
                                                              numSquares);
-        return create(std::move(generator), fps, name);
+        return create(fps, std::move(generator), name);
     }
     OCTK_ERROR("createSquareGenerator: invalid parameter");
     return nullptr;
@@ -249,7 +263,7 @@ class RtcVideoCapturePrivate : public VideoSinkInterface<VideoFrame>, public Vid
 {
 public:
     RtcVideoCapturePrivate(RtcVideoCapture *p);
-    ~RtcVideoCapturePrivate() override {}
+    ~RtcVideoCapturePrivate() override { }
 
     void onFrame(const VideoFrame &frame) override
     {
@@ -274,10 +288,7 @@ public:
         }
     }
 
-    void removeSink(VideoSinkInterface<VideoFrame> *sink) override
-    {
-        mVideoSinks.erase(sink);
-    }
+    void removeSink(VideoSinkInterface<VideoFrame> *sink) override { mVideoSinks.erase(sink); }
 
     CameraCapture::SharedPtr mCapture;
     std::set<VideoSinkInterface<VideoFrame> *> mVideoSinks;

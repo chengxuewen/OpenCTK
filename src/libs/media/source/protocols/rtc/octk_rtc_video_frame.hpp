@@ -52,6 +52,8 @@ public:
 
     static SharedPtr create(const VideoFrame &frame);
     static SharedPtr createI420(const uint8_t *data, int width, int height);
+    static SharedPtr createFromARGB(const uint8_t *data, int width, int height);
+    static SharedPtr createFromRGBA(const uint8_t *data, int width, int height);
 
     virtual SharedPtr copy() = 0;
 
@@ -112,8 +114,8 @@ public:
 
     ~RtcVideoGenerator() override;
 
-    static SharedPtr create(FrameGeneratorInterface::UniquePtr generator, int fps, StringView name = "");
-    static SharedPtr createSquareGenerator(int width, int height, int numSquares, int fps, StringView name = "");
+    static SharedPtr create(int fps, FrameGeneratorInterface::UniquePtr generator, StringView name = "");
+    static SharedPtr createSquareGenerator(int fps, int width, int height, int numSquares, StringView name = "");
 
     int fps() const;
     int width() const;

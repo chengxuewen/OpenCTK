@@ -31,7 +31,7 @@
 #include <iostream>
 
 OCTK_DEFINE_LOGGER("exp", EXP_LOGGER)
-#define USE_SDL_RENDERER 0
+#define USE_SDL_RENDERER 1
 
 int main(int argc, char **argv)
 {
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
 #if 1
     OCTK_LOGGING_INFO(EXP_LOGGER(), "create SquareGenerator");
-    auto videoSource = octk::RtcVideoGenerator::createSquareGenerator(width, height, 50, 25, "VideoGenerator");
+    auto videoSource = octk::RtcVideoGenerator::createSquareGenerator(50, width, height, 25, "VideoGenerator");
 #    if USE_SDL_RENDERER
     videoSource->source()->addOrUpdateSink(renderer.get(), octk::VideoSinkWants());
 #    endif

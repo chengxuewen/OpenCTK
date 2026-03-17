@@ -88,7 +88,6 @@ int main(int argc, char **argv)
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "track failed");
     }
     videoTrack->addSink(sinkAdapter);
-    // videoTrack->frameReady.connect([renderer](const octk::VideoFrame &frame) { renderer->onFrame(frame); });
     status = videoTransceiver->setDirection(octk::RtcRtpTransceiverDirection::kRecvOnly);
     if (!status)
     {
