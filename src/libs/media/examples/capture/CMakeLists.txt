@@ -38,7 +38,7 @@ list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTK::Media OCTK3rdparty::WrapSDL)
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
 if(OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_DESKTOP)
-	octk_add_executable(octk_media_exp_desktop_capture
+	octk_add_executable(OpenCTKMediaExpDesktopCapture
 		EXCEPTIONS
 		SOURCES
 		exp_desktop_capture.cpp
@@ -51,7 +51,7 @@ if(OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_DESKTOP)
 		${OCTK_EXAMPLE_OUTPUT_DIR})
 endif()
 if(OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA)
-    octk_add_executable(octk_media_exp_camera_capture
+    octk_add_executable(OpenCTKMediaExpCameraCapture
         EXCEPTIONS
         SOURCES
         exp_camera_capture.cpp
@@ -63,7 +63,7 @@ if(OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA)
         OUTPUT_DIRECTORY
         ${OCTK_EXAMPLE_OUTPUT_DIR})
 endif()
-octk_add_executable(octk_media_exp_square_generator
+octk_add_executable(OpenCTKMediaExpSquareGenerator
 	EXCEPTIONS
 	SOURCES
 	exp_square_generator.cpp

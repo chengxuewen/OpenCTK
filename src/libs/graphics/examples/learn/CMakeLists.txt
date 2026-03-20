@@ -21,4 +21,4 @@
 #
 ########################################################################################################################
 
-add_subdirectory(opengl)
+octk_add_subdirectory(opengl OCTK_FEATURE_GRAPHICS_ENABLE_LEARN_OPENGL)

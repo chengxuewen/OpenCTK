@@ -37,7 +37,7 @@ list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTK::Media)
 #-----------------------------------------------------------------------------------------------------------------------
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_executable(octk_media_exp_webrtc_puller
+octk_add_executable(OpenCTKMediaExpWebrtcPuller
 	EXCEPTIONS
 	SOURCES
 	exp_webrtc_puller.cpp
@@ -48,7 +48,7 @@ octk_add_executable(octk_media_exp_webrtc_puller
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_media_exp_webrtc_pusher
+octk_add_executable(OpenCTKMediaExpWebrtcPusher
 	EXCEPTIONS
 	SOURCES
 	exp_webrtc_pusher.cpp

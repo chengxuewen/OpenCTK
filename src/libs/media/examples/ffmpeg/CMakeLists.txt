@@ -18,7 +18,7 @@ list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OCTK3rdparty::WrapFFmpeg)
 #-----------------------------------------------------------------------------------------------------------------------
 # Add examples
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_executable(octk_ffmpeg_exp_aac
+octk_add_executable(OpenCTKMediaExpFFmpegAac
     SOURCES
     exp_ffmpeg_aac.cpp
     INCLUDE_DIRECTORIES
@@ -27,7 +27,7 @@ octk_add_executable(octk_ffmpeg_exp_aac
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_ffmpeg_exp_aacdec
+octk_add_executable(OpenCTKMediaExpFFmpegAacdec
     SOURCES
     exp_ffmpeg_aacdec.cpp
     INCLUDE_DIRECTORIES
@@ -36,7 +36,7 @@ octk_add_executable(octk_ffmpeg_exp_aacdec
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_ffmpeg_exp_buffer
+octk_add_executable(OpenCTKMediaExpFFmpegBuffer
     SOURCES
     exp_ffmpeg_buffer.cpp
     INCLUDE_DIRECTORIES
@@ -45,7 +45,7 @@ octk_add_executable(octk_ffmpeg_exp_buffer
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_ffmpeg_exp_demux
+octk_add_executable(OpenCTKMediaExpFFmpegDemux
     SOURCES
     exp_ffmpeg_demux.cpp
     INCLUDE_DIRECTORIES
@@ -54,7 +54,7 @@ octk_add_executable(octk_ffmpeg_exp_demux
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_ffmpeg_exp_h264dec
+octk_add_executable(OpenCTKMediaExpFFmpegH264dec
     SOURCES
     exp_ffmpeg_h264dec.cpp
     INCLUDE_DIRECTORIES
@@ -63,7 +63,7 @@ octk_add_executable(octk_ffmpeg_exp_h264dec
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_ffmpeg_exp_h264enc
+octk_add_executable(OpenCTKMediaExpFFmpegH264enc
     SOURCES
     exp_ffmpeg_h264enc.cpp
     INCLUDE_DIRECTORIES

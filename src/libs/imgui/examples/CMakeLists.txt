@@ -49,7 +49,7 @@ execute_process(
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/test.bmp" "./"
 	WORKING_DIRECTORY "${OCTK_EXAMPLE_OUTPUT_DIR}")
 
-octk_add_executable(octk_imgui_exp_dockspace
+octk_add_executable(OpenCTKImguiExpDockspace
 	SOURCES
 	exp_imgui_dockspace.cpp
 	INCLUDE_DIRECTORIES
@@ -58,7 +58,7 @@ octk_add_executable(octk_imgui_exp_dockspace
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_imgui_exp_image
+octk_add_executable(OpenCTKImguiExpImage
 	SOURCES
 	exp_imgui_image.cpp
 	INCLUDE_DIRECTORIES
@@ -68,7 +68,7 @@ octk_add_executable(octk_imgui_exp_image
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_imgui_exp_rwbmp
+octk_add_executable(OpenCTKImguiExpRwbmp
 	SOURCES
 	exp_imgui_rwbmp.cpp
 	INCLUDE_DIRECTORIES
@@ -78,7 +78,7 @@ octk_add_executable(octk_imgui_exp_rwbmp
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_imgui_exp_theme
+octk_add_executable(OpenCTKImguiExpTheme
 	SOURCES
 	exp_imgui_theme.cpp
 	INCLUDE_DIRECTORIES
@@ -87,7 +87,7 @@ octk_add_executable(octk_imgui_exp_theme
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_imgui_exp_window
+octk_add_executable(OpenCTKImguiExpWindow
 	SOURCES
 	exp_imgui_window.cpp
 	INCLUDE_DIRECTORIES
@@ -96,7 +96,7 @@ octk_add_executable(octk_imgui_exp_window
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_imgui_exp_version
+octk_add_executable(OpenCTKImguiExpVersion
 	SOURCES
 	exp_imgui_version.cpp
 	INCLUDE_DIRECTORIES
@@ -107,7 +107,7 @@ octk_add_executable(octk_imgui_exp_version
 	${OCTK_EXAMPLE_OUTPUT_DIR})
 
 if(APPLE)
-	octk_add_executable(octk_imgui_exp_apple_metal
+	octk_add_executable(OpenCTKImguiExpAppleMetal
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.h
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.mm
@@ -127,7 +127,7 @@ if(APPLE)
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
-	octk_add_executable(octk_imgui_exp_apple_opengl2
+	octk_add_executable(OpenCTKImguiExpAppleOpengl2
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.h
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.mm
@@ -145,7 +145,7 @@ if(APPLE)
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
-	octk_add_executable(octk_imgui_exp_sdl3_metal
+	octk_add_executable(OpenCTKImguiExpSdl3Metal
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
@@ -164,7 +164,7 @@ if(APPLE)
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
-	octk_add_executable(octk_imgui_exp_glfw_metal
+	octk_add_executable(OpenCTKImguiExpGlfwMetal
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
@@ -190,7 +190,7 @@ endif()
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL 2 QUIET)
 if(OpenGL_FOUND)
-	octk_add_executable(octk_imgui_exp_glfw_opengl2
+	octk_add_executable(OpenCTKImguiExpGlfwOpengl2
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
@@ -210,7 +210,7 @@ if(OpenGL_FOUND)
 endif()
 find_package(OpenGL 3 QUIET)
 if(OpenGL_FOUND)
-	octk_add_executable(octk_imgui_exp_glfw_opengl3
+	octk_add_executable(OpenCTKImguiExpGlfwOpengl3
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
@@ -227,7 +227,7 @@ if(OpenGL_FOUND)
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
-	octk_add_executable(octk_imgui_exp_sdl3_opengl3
+	octk_add_executable(OpenCTKImguiExpSdl3Opengl3
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
@@ -245,7 +245,7 @@ if(OpenGL_FOUND)
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
 endif()
-octk_add_executable(octk_imgui_exp_sdl3_sdlgpu3
+octk_add_executable(OpenCTKImguiExpSdl3SdlGPU3
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
@@ -261,7 +261,7 @@ octk_add_executable(octk_imgui_exp_sdl3_sdlgpu3
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
-octk_add_executable(octk_imgui_exp_sdl3_sdlrenderer3
+octk_add_executable(OpenCTKImguiExpSdl3SdlRenderer3
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
@@ -279,7 +279,7 @@ octk_add_executable(octk_imgui_exp_sdl3_sdlrenderer3
 	${OCTK_EXAMPLE_OUTPUT_DIR})
 find_package(Vulkan QUIET)
 if(Vulkan_FOUND)
-	octk_add_executable(octk_imgui_exp_glfw_vulkan
+	octk_add_executable(OpenCTKImguiExpGlfwVulkan
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
@@ -296,7 +296,7 @@ if(Vulkan_FOUND)
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
-	octk_add_executable(octk_imgui_exp_sdl3_vulkan
+	octk_add_executable(OpenCTKImguiExpSdl3Vulkan
 		SOURCES
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
 		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
