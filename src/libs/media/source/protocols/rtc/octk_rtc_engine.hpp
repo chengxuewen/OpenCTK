@@ -86,13 +86,23 @@ public:
     };
 
     static void switchLogLevel(LogLevel level, StringView backendName = "");
-    // static void installLogHandler(Logger::MessageHandler handler, bool uniqueOwnership, StringView backendName = "");
 };
 
 OCTK_END_NAMESPACE
 
+#define OCTK_RTC_ENGINE_REGISTER_REFERENCE(Type)                                                                       \
+    extern void referenceRtcFactoryRegistrar##Type();                                                                  \
+    namespace detail                                                                                                   \
+    {                                                                                                                  \
+    volatile auto reference##Type = &referenceRtcFactoryRegistrar##Type;                                               \
+    }
 #define OCTK_RTC_ENGINE_REGISTER_FACTORY(Type, ...)                                                                    \
     namespace detail                                                                                                   \
     {                                                                                                                  \
     static octk::RtcEngine::Registrar<Type> rtcFactoryRegistrar##Type(__VA_ARGS__);                                    \
+    }                                                                                                                  \
+    void referenceRtcFactoryRegistrar##Type()                                                                          \
+    {                                                                                                                  \
+        auto &registrar = detail::rtcFactoryRegistrar##Type;                                                           \
+        OCTK_UNUSED(registrar);                                                                                        \
     }

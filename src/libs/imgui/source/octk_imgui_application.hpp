@@ -136,14 +136,16 @@ public:
     struct Factory
     {
         using CreaterFunction = std::function<ImGuiApplication::UniquePtr(const Properties &)>;
-        template <typename T> static CreaterFunction makeCreaterFunction()
+        template <typename T>
+        static CreaterFunction makeCreaterFunction()
         {
             return [](const Properties &properties) { return utils::make_unique<T>(properties); };
         }
 
         static ImGuiApplication::UniquePtr create(StringView typeName = "", const Properties &properties = {});
         static void registerApplication(StringView typeName, CreaterFunction func);
-        template <typename T> static void registerApplication(StringView typeName)
+        template <typename T>
+        static void registerApplication(StringView typeName)
         {
             enum
             {
@@ -154,7 +156,8 @@ public:
         }
         static std::vector<std::string> registeredTypes();
     };
-    template <typename T> struct Registrar final
+    template <typename T>
+    struct Registrar final
     {
         explicit Registrar(StringView typeName) { Factory::registerApplication<T>(typeName); }
     };
@@ -199,10 +202,21 @@ protected:
 
 OCTK_END_NAMESPACE
 
+#define OCTK_IMGUI_REGISTER_APPLICATION_REFERENCE(Type)                                                                \
+    extern void referenceImguiRegistrar##Type();                                                                       \
+    namespace detail                                                                                                   \
+    {                                                                                                                  \
+    volatile auto reference##Type = &referenceImguiRegistrar##Type;                                                    \
+    }
 #define OCTK_IMGUI_REGISTER_APPLICATION(Type, Name)                                                                    \
-    namespace detail                                                                                                 \
+    namespace detail                                                                                                   \
     {                                                                                                                  \
     static octk::ImGuiApplication::Registrar<Type> imguiRegistrar##Type(Name);                                         \
+    }                                                                                                                  \
+    void referenceImguiRegistrar##Type()                                                                               \
+    {                                                                                                                  \
+        auto &registrar = detail::imguiRegistrar##Type;                                                                \
+        OCTK_UNUSED(registrar);                                                                                        \
     }
 
 #endif // _OCTK_IMGUI_APPLICATION_HPP

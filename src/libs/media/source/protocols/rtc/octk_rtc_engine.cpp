@@ -27,6 +27,10 @@
 
 OCTK_BEGIN_NAMESPACE
 
+#if OCTK_FEATURE_MEDIA_USE_WEBRTC
+OCTK_RTC_ENGINE_REGISTER_REFERENCE(RtcPeerConnectionFactoryWebRTC);
+#endif
+
 namespace detail
 {
 using RtcEngineCreaterMap = std::map<std::string, RtcEngine::Creater>;
@@ -68,6 +72,7 @@ void RtcEngine::registerFactory(StringView backendName, Creater creater)
     {
         OCTK_FATAL("RtcEngine::registerFactory: backendName %s already registered.", backendName.data());
     }
+    OCTK_DEBUG("RtcEngine register {} factory", backendName.data());
     if (creater.initializeFunc)
     {
         creater.initializeFunc();

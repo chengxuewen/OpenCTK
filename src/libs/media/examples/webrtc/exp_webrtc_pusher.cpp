@@ -89,6 +89,7 @@ int main(int argc, char **argv)
         OCTK_LOGGING_FATAL(EXP_LOGGER(), "createSquareGenerator failed");
     }
 
+#if 1
     OCTK_LOGGING_INFO(EXP_LOGGER(), "peerConnectionFactory create");
     auto peerConnectionFactory = octk::RtcEngine::create();
     if (!peerConnectionFactory)
@@ -179,8 +180,10 @@ int main(int argc, char **argv)
             OCTK_LOGGING_FATAL(EXP_LOGGER(), "setRemoteDescription failed: {}", status.errorString().c_str());
         }
     }
+#endif
 
     std::atomic_bool running{true};
+#if 1
     auto thread = std::thread(
         [=, &running]()
         {
@@ -206,6 +209,7 @@ int main(int argc, char **argv)
 #endif
             }
         });
+#endif
 #if USE_SDL_RENDERER
     renderer->loop();
     videoSource->source()->removeSink(renderer.get());

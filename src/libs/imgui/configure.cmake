@@ -20,3 +20,15 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
+
+if(NOT WIN32)
+	set(OpenGL_GL_PREFERENCE "GLVND")
+	find_package(OpenGL 3 QUIET)
+	set(OCTK_IMGUI_OpenGL_FOUND ${OpenGL_FOUND})
+else()
+	set(OCTK_IMGUI_OpenGL_FOUND OFF)
+endif()
+octk_configure_feature("IMGUI_USE_SDL_OPENGL3" PUBLIC
+	LABEL "Enable this to build ImGui with SDL OpenGL 3"
+	DISABLE NOT OCTK_IMGUI_OpenGL_FOUND
+	CONDITION ON)

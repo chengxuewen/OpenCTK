@@ -21,6 +21,10 @@ int main()
     octk::ImGuiApplication::Properties properties;
     properties.title = "test";
     auto imguiApp = octk::ImGuiApplication::Factory::create(type, properties);
+    if (!imguiApp)
+    {
+        OCTK_FATAL("Failed to create ImGuiApplication");
+    }
     int count = 0;
     imguiApp->setDrawFunction([&]() { ImGui::Text("This is some useful text. count=%d", count); });
     auto thread = std::thread(

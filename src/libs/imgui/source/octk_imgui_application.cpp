@@ -23,6 +23,7 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_imgui_application_p.hpp>
+#include <octk_imgui_config.hpp>
 #include <octk_processor.hpp>
 #include <octk_checks.hpp>
 
@@ -32,6 +33,12 @@
 #include <stb_image.h>
 
 OCTK_BEGIN_NAMESPACE
+
+OCTK_IMGUI_REGISTER_APPLICATION_REFERENCE(ImGuiApplicationSDLGPU3)
+OCTK_IMGUI_REGISTER_APPLICATION_REFERENCE(ImGuiApplicationSDLRenderer3)
+#if OCTK_FEATURE_IMGUI_USE_SDL_OPENGL3
+OCTK_IMGUI_REGISTER_APPLICATION_REFERENCE(ImguiApplicationSDLOpenGL3)
+#endif
 
 void ImGuiImage::setFrameData(const uint8_t *data, int width, int height)
 {
@@ -103,7 +110,7 @@ ImGuiApplication::UniquePtr ImGuiApplication::Factory::create(StringView typeNam
 {
     if ("" == typeName)
     {
-        typeName = constants::kImGuiApplicationSDLGPU3;
+        typeName = constants::kImGuiApplicationSDLRenderer3;
     }
     auto map = detail::imGuiApplicationCreaterMap();
     const auto iter = map.find(typeName.data());
@@ -120,6 +127,7 @@ ImGuiApplication::UniquePtr ImGuiApplication::Factory::create(StringView typeNam
 
 void ImGuiApplication::Factory::registerApplication(StringView typeName, CreaterFunction func)
 {
+    OCTK_DEBUG("Register ImGuiApplication type: {}", typeName.data());
     detail::imGuiApplicationCreaterMap().insert(std::make_pair(typeName, func));
 }
 
@@ -128,7 +136,9 @@ ImGuiApplicationPrivate::ImGuiApplicationPrivate(ImGuiApplication *p)
 {
 }
 
-ImGuiApplicationPrivate::~ImGuiApplicationPrivate() { }
+ImGuiApplicationPrivate::~ImGuiApplicationPrivate()
+{
+}
 
 ImGuiApplication::ImGuiApplication(const Properties &properties)
     : ImGuiApplication(new ImGuiApplicationPrivate(this), properties)
@@ -140,7 +150,10 @@ ImGuiApplication::ImGuiApplication(ImGuiApplicationPrivate *d, const Properties 
     mDPtr->mProperties = properties;
 }
 
-ImGuiApplication::~ImGuiApplication() { this->destroy(); }
+ImGuiApplication::~ImGuiApplication()
+{
+    this->destroy();
+}
 
 bool ImGuiApplication::isReady() const
 {
@@ -188,9 +201,14 @@ bool ImGuiApplication::init()
     return d->mInitSuccess.load();
 }
 
-bool ImGuiApplication::exec() { return true; }
+bool ImGuiApplication::exec()
+{
+    return true;
+}
 
-void ImGuiApplication::destroy() { }
+void ImGuiApplication::destroy()
+{
+}
 
 Expected<ImGuiImage::SharedPtr, std::string> ImGuiApplication::loadImage(StringView path)
 {

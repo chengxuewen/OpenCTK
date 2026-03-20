@@ -108,7 +108,7 @@ class ImguiApplicationSDLOpenGL3Private : public ImGuiApplicationPrivate
     OCTK_DISABLE_COPY_MOVE(ImguiApplicationSDLOpenGL3Private)
 public:
     explicit ImguiApplicationSDLOpenGL3Private(ImguiApplicationSDLOpenGL3 *p);
-    virtual ~ImguiApplicationSDLOpenGL3Private();
+    ~ImguiApplicationSDLOpenGL3Private() override;
 
     SDL_FColor mSDLClearColor{mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w};
 
@@ -121,14 +121,18 @@ ImguiApplicationSDLOpenGL3Private::ImguiApplicationSDLOpenGL3Private(ImguiApplic
     : ImGuiApplicationPrivate(p)
 {
 }
-ImguiApplicationSDLOpenGL3Private::~ImguiApplicationSDLOpenGL3Private() { }
+ImguiApplicationSDLOpenGL3Private::~ImguiApplicationSDLOpenGL3Private()
+{
+}
 
 ImguiApplicationSDLOpenGL3::ImguiApplicationSDLOpenGL3(const Properties &properties)
     : ImGuiApplication(new ImguiApplicationSDLOpenGL3Private(this), properties)
 {
 }
 
-ImguiApplicationSDLOpenGL3::~ImguiApplicationSDLOpenGL3() { }
+ImguiApplicationSDLOpenGL3::~ImguiApplicationSDLOpenGL3()
+{
+}
 
 bool ImguiApplicationSDLOpenGL3::init()
 {
@@ -375,10 +379,15 @@ void ImguiApplicationSDLOpenGL3::destroy()
     }
 }
 
-StringView ImguiApplicationSDLOpenGL3::typeName() const { return constants::kImguiApplicationSDLOpenGL3; }
+StringView ImguiApplicationSDLOpenGL3::typeName() const
+{
+    return constants::kImguiApplicationSDLOpenGL3;
+}
 
-ImGuiImage::SharedPtr
-ImguiApplicationSDLOpenGL3::createImage(ImGuiImage::Format format, const Binary &binary, int width, int height)
+ImGuiImage::SharedPtr ImguiApplicationSDLOpenGL3::createImage(ImGuiImage::Format format,
+                                                              const Binary &binary,
+                                                              int width,
+                                                              int height)
 {
     OCTK_D(ImguiApplicationSDLOpenGL3);
     GLint pixelFormat = 0;

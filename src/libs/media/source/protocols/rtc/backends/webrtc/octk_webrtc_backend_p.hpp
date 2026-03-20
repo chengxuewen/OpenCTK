@@ -118,7 +118,7 @@ OCTK_BEGIN_NAMESPACE
 
 namespace utils
 {
-RtcPeerConnection::PeerConnectionState fromWebRTC(webrtc::PeerConnectionInterface::PeerConnectionState state)
+static RtcPeerConnection::PeerConnectionState fromWebRTC(webrtc::PeerConnectionInterface::PeerConnectionState state)
 {
     switch (state)
     {
@@ -139,7 +139,7 @@ RtcPeerConnection::PeerConnectionState fromWebRTC(webrtc::PeerConnectionInterfac
     OCTK_CHECK_NOTREACHED();
     return RtcPeerConnection::PeerConnectionState::kFailed;
 }
-RtcPeerConnection::IceConnectionState fromWebRTC(webrtc::PeerConnectionInterface::IceConnectionState state)
+static RtcPeerConnection::IceConnectionState fromWebRTC(webrtc::PeerConnectionInterface::IceConnectionState state)
 {
     switch (state)
     {
@@ -162,7 +162,7 @@ RtcPeerConnection::IceConnectionState fromWebRTC(webrtc::PeerConnectionInterface
     OCTK_CHECK_NOTREACHED();
     return RtcPeerConnection::IceConnectionState::kFailed;
 }
-RtcPeerConnection::IceGatheringState fromWebRTC(webrtc::PeerConnectionInterface::IceGatheringState state)
+static RtcPeerConnection::IceGatheringState fromWebRTC(webrtc::PeerConnectionInterface::IceGatheringState state)
 {
     switch (state)
     {
@@ -177,7 +177,7 @@ RtcPeerConnection::IceGatheringState fromWebRTC(webrtc::PeerConnectionInterface:
     OCTK_CHECK_NOTREACHED();
     return RtcPeerConnection::IceGatheringState::kNew;
 }
-RtcPeerConnection::SignalingState fromWebRTC(webrtc::PeerConnectionInterface::SignalingState state)
+static RtcPeerConnection::SignalingState fromWebRTC(webrtc::PeerConnectionInterface::SignalingState state)
 {
     switch (state)
     {
@@ -384,7 +384,7 @@ static RtcVideoTrack::ContentHint fromWebRTC(webrtc::VideoTrackInterface::Conten
 }
 
 
-webrtc::PeerConnectionInterface::CandidateNetworkPolicy toWebRTC(RtcCandidateNetworkPolicy policy)
+static webrtc::PeerConnectionInterface::CandidateNetworkPolicy toWebRTC(RtcCandidateNetworkPolicy policy)
 {
     switch (policy)
     {
@@ -396,7 +396,7 @@ webrtc::PeerConnectionInterface::CandidateNetworkPolicy toWebRTC(RtcCandidateNet
     OCTK_CHECK_NOTREACHED();
     return webrtc::PeerConnectionInterface::kCandidateNetworkPolicyAll;
 }
-webrtc::PeerConnectionInterface::TcpCandidatePolicy toWebRTC(RtcTcpCandidatePolicy policy)
+static webrtc::PeerConnectionInterface::TcpCandidatePolicy toWebRTC(RtcTcpCandidatePolicy policy)
 {
     switch (policy)
     {
@@ -409,7 +409,7 @@ webrtc::PeerConnectionInterface::TcpCandidatePolicy toWebRTC(RtcTcpCandidatePoli
     OCTK_CHECK_NOTREACHED();
     return webrtc::PeerConnectionInterface::TcpCandidatePolicy::kTcpCandidatePolicyDisabled;
 }
-webrtc::PeerConnectionInterface::IceTransportsType toWebRTC(RtcIceTransportsType type)
+static webrtc::PeerConnectionInterface::IceTransportsType toWebRTC(RtcIceTransportsType type)
 {
     switch (type)
     {
@@ -422,7 +422,7 @@ webrtc::PeerConnectionInterface::IceTransportsType toWebRTC(RtcIceTransportsType
     OCTK_CHECK_NOTREACHED();
     return webrtc::PeerConnectionInterface::IceTransportsType::kAll;
 }
-webrtc::PeerConnectionInterface::RtcpMuxPolicy toWebRTC(RtcRtcpMuxPolicy policy)
+static webrtc::PeerConnectionInterface::RtcpMuxPolicy toWebRTC(RtcRtcpMuxPolicy policy)
 {
     switch (policy)
     {
@@ -434,7 +434,7 @@ webrtc::PeerConnectionInterface::RtcpMuxPolicy toWebRTC(RtcRtcpMuxPolicy policy)
     OCTK_CHECK_NOTREACHED();
     return webrtc::PeerConnectionInterface::RtcpMuxPolicy::kRtcpMuxPolicyNegotiate;
 }
-webrtc::PeerConnectionInterface::BundlePolicy toWebRTC(RtcBundlePolicy policy)
+static webrtc::PeerConnectionInterface::BundlePolicy toWebRTC(RtcBundlePolicy policy)
 {
     switch (policy)
     {
@@ -446,7 +446,7 @@ webrtc::PeerConnectionInterface::BundlePolicy toWebRTC(RtcBundlePolicy policy)
     OCTK_CHECK_NOTREACHED();
     return webrtc::PeerConnectionInterface::BundlePolicy::kBundlePolicyBalanced;
 }
-webrtc::RtpTransceiverDirection toWebRTC(RtcRtpTransceiverDirection direction)
+static webrtc::RtpTransceiverDirection toWebRTC(RtcRtpTransceiverDirection direction)
 {
     switch (direction)
     {
@@ -459,7 +459,7 @@ webrtc::RtpTransceiverDirection toWebRTC(RtcRtpTransceiverDirection direction)
     OCTK_CHECK_NOTREACHED();
     return webrtc::RtpTransceiverDirection::kStopped;
 }
-webrtc::SdpSemantics toWebRTC(RtcSdpSemantics sdpSemantics)
+static webrtc::SdpSemantics toWebRTC(RtcSdpSemantics sdpSemantics)
 {
     switch (sdpSemantics)
     {
@@ -560,7 +560,7 @@ static webrtc::VideoRotation toWebRTC(RtcVideoFrame::Rotation rotation)
 }
 
 
-inline std::vector<std::string> split(std::string s, std::string delimiter)
+static inline std::vector<std::string> split(std::string s, std::string delimiter)
 {
     std::vector<std::string> tokens;
     size_t pos = 0;

@@ -85,9 +85,7 @@ octk_internal_extend_target(OpenCTKImgui
 	"-framework CoreVideo"
 	"-framework QuartzCore"
 	CONDITION OCTK_SYSTEM_MAC)
-if(NOT WIN32)
-	set(OpenGL_GL_PREFERENCE "GLVND")
-	find_package(OpenGL 3 QUIET)
+if(OCTK_FEATURE_IMGUI_USE_SDL_OPENGL3)
 	if(TARGET OpenGL::GL)
 		set(OpenGL_TARGET OpenGL::GL)
 	elseif(TARGET OpenGL::OpenGL)
@@ -101,8 +99,7 @@ if(NOT WIN32)
 		source/octk_imgui_application_sdlopengl3.hpp
 		LIBRARIES
 		${OpenGL_TARGET}
-		${OPENGL_LIBRARIES}
-		CONDITION OpenGL_FOUND)
+		${OPENGL_LIBRARIES})
 endif()
 
 
