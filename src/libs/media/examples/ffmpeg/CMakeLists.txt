@@ -24,7 +24,6 @@ octk_add_executable(OpenCTKMediaExpFFmpegAac
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
 	OCTK3rdparty::WrapFFmpeg
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(OpenCTKMediaExpFFmpegAacdec
@@ -34,7 +33,6 @@ octk_add_executable(OpenCTKMediaExpFFmpegAacdec
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
 	OCTK3rdparty::WrapFFmpeg
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(OpenCTKMediaExpFFmpegBuffer
@@ -44,7 +42,6 @@ octk_add_executable(OpenCTKMediaExpFFmpegBuffer
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
 	OCTK3rdparty::WrapFFmpeg
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(OpenCTKMediaExpFFmpegDemux
@@ -54,7 +51,6 @@ octk_add_executable(OpenCTKMediaExpFFmpegDemux
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
 	OCTK3rdparty::WrapFFmpeg
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(OpenCTKMediaExpFFmpegH264dec
@@ -64,7 +60,6 @@ octk_add_executable(OpenCTKMediaExpFFmpegH264dec
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
 	OCTK3rdparty::WrapFFmpeg
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(OpenCTKMediaExpFFmpegH264enc
@@ -74,6 +69,5 @@ octk_add_executable(OpenCTKMediaExpFFmpegH264enc
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
 	OCTK3rdparty::WrapFFmpeg
-    ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
