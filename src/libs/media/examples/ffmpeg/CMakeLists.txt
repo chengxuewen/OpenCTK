@@ -12,7 +12,6 @@ set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
 # Set example link libraries
 #-----------------------------------------------------------------------------------------------------------------------
 octk_find_package(WrapFFmpeg PROVIDED_TARGETS OCTK3rdparty::WrapFFmpeg)
-list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OCTK3rdparty::WrapFFmpeg)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -24,6 +23,7 @@ octk_add_executable(OpenCTKMediaExpFFmpegAac
     INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
+	OCTK3rdparty::WrapFFmpeg
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -33,6 +33,7 @@ octk_add_executable(OpenCTKMediaExpFFmpegAacdec
     INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
+	OCTK3rdparty::WrapFFmpeg
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -42,6 +43,7 @@ octk_add_executable(OpenCTKMediaExpFFmpegBuffer
     INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
+	OCTK3rdparty::WrapFFmpeg
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -51,6 +53,7 @@ octk_add_executable(OpenCTKMediaExpFFmpegDemux
     INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
+	OCTK3rdparty::WrapFFmpeg
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -60,6 +63,7 @@ octk_add_executable(OpenCTKMediaExpFFmpegH264dec
     INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
+	OCTK3rdparty::WrapFFmpeg
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -69,6 +73,7 @@ octk_add_executable(OpenCTKMediaExpFFmpegH264enc
     INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     LIBRARIES
+	OCTK3rdparty::WrapFFmpeg
     ${OCTK_EXAMPLE_LINK_LIBRARIES}
     OUTPUT_DIRECTORY
     ${OCTK_EXAMPLE_OUTPUT_DIR})

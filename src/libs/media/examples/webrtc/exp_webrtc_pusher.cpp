@@ -31,7 +31,7 @@
 #include <iostream>
 
 OCTK_DEFINE_LOGGER("exp", EXP_LOGGER)
-#define USE_SDL_RENDERER 1
+#define USE_SDL_RENDERER 0
 
 int main(int argc, char **argv)
 {

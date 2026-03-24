@@ -24,83 +24,84 @@
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
 if(TARGET OCTK3rdparty::WrapLibyuv)
-    set(OCTKWrapLibyuv_FOUND ON)
+    set(OpenCTKWrapLibyuv_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapLibyuv_NAME "libyuv")
-set(OCTKWrapLibyuv_PKG_NAME "${OCTKWrapLibyuv_NAME}.7z")
-set(OCTKWrapLibyuv_DIR_NAME "${OCTKWrapLibyuv_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapLibyuv_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapLibyuv_PKG_NAME}")
-set(OCTKWrapLibyuv_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapLibyuv_DIR_NAME}")
-set(OCTKWrapLibyuv_BUILD_DIR "${OCTKWrapLibyuv_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapLibyuv_SOURCE_DIR "${OCTKWrapLibyuv_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapLibyuv_INSTALL_DIR "${OCTKWrapLibyuv_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapLibyuv OUTPUT_DIR "${OCTKWrapLibyuv_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapLibyuv URL "${OCTKWrapLibyuv_URL_PATH}" OUTPUT_NAME "${OCTKWrapLibyuv_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapLibyuv_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapLibyuv_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} FetchContent failed.")
+# in arm64/aarch64-linux, need gcc10!
+set(OpenCTKWrapLibyuv_NAME "libyuv")
+set(OpenCTKWrapLibyuv_PKG_NAME "${OpenCTKWrapLibyuv_NAME}.7z")
+set(OpenCTKWrapLibyuv_DIR_NAME "${OpenCTKWrapLibyuv_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapLibyuv_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapLibyuv_PKG_NAME}")
+set(OpenCTKWrapLibyuv_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapLibyuv_DIR_NAME}")
+set(OpenCTKWrapLibyuv_BUILD_DIR "${OpenCTKWrapLibyuv_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapLibyuv_SOURCE_DIR "${OpenCTKWrapLibyuv_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapLibyuv_INSTALL_DIR "${OpenCTKWrapLibyuv_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapLibyuv OUTPUT_DIR "${OpenCTKWrapLibyuv_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapLibyuv URL "${OpenCTKWrapLibyuv_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapLibyuv_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapLibyuv_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapLibyuv_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapLibyuv_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapLibyuv_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapLibyuv_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapLibyuv_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapLibyuv_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapLibyuv_INSTALL_DIR}
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapLibyuv_INSTALL_DIR}
         -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-        ${OCTKWrapLibyuv_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapLibyuv_BUILD_DIR}"
+        ${OpenCTKWrapLibyuv_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapLibyuv_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapLibyuv_NAME} configure failed.")
     endif()
 
-    message(STATUS "${OCTKWrapLibyuv_NAME} configure success")
+    message(STATUS "${OpenCTKWrapLibyuv_NAME} configure success")
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS}
         --config ${CMAKE_BUILD_TYPE} --target install
-        WORKING_DIRECTORY "${OCTKWrapLibyuv_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapLibyuv_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapLibyuv_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapLibyuv_NAME} build success")
+    message(STATUS "${OpenCTKWrapLibyuv_NAME} build success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapLibyuv_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapLibyuv_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapLibyuv_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapLibyuv_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapLibyuv_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapLibyuv_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapLibyuv_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapLibyuv_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OCTK3rdparty::WrapLibyuv STATIC IMPORTED)
 if(WIN32)
-    set(OCTKWrapLibyuv_LIBRARY yuv.lib)
+    set(OpenCTKWrapLibyuv_LIBRARY yuv.lib)
 else()
-    set(OCTKWrapLibyuv_LIBRARY libyuv.a)
+    set(OpenCTKWrapLibyuv_LIBRARY libyuv.a)
 endif()
 set_target_properties(OCTK3rdparty::WrapLibyuv PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES
-    ${OCTKWrapLibyuv_INSTALL_DIR}/include
+    ${OpenCTKWrapLibyuv_INSTALL_DIR}/include
     IMPORTED_LOCATION
-    ${OCTKWrapLibyuv_INSTALL_DIR}/lib/${OCTKWrapLibyuv_LIBRARY})
+    ${OpenCTKWrapLibyuv_INSTALL_DIR}/lib/${OpenCTKWrapLibyuv_LIBRARY})
 find_package(JPEG)
 if(JPEG_FOUND)
     target_link_libraries(OCTK3rdparty::WrapLibyuv INTERFACE ${JPEG_LIBRARY})
 endif()
 if(NOT EXISTS "${OCTK_BUILD_DIR}/third_party/libyuv/include/libyuv")
     execute_process(
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapLibyuv_INSTALL_DIR}/include"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCTKWrapLibyuv_INSTALL_DIR}/include"
         "${OCTK_BUILD_DIR}/third_party/libyuv/include"
-        WORKING_DIRECTORY "${OCTKWrapLibyuv_ROOT_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapLibyuv_ROOT_DIR}"
         ERROR_QUIET)
 endif()
-set(OCTKWrapLibyuv_FOUND ON)
+set(OpenCTKWrapLibyuv_FOUND ON)

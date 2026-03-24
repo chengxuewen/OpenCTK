@@ -194,6 +194,7 @@ else()
 		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_IOS)
 	endif()
     target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_POSIX HAVE_PTHREAD)
+	target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE ${CMAKE_DL_LIBS})
 endif()
 target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE
     ABSL_FLAGS_STRIP_NAMES=0
