@@ -35,7 +35,7 @@ public:
     CameraCaptureV4L2();
     ~CameraCaptureV4L2() override;
 
-    int32_t startCapture(const Capability& capability) override;
+    Status startCapture(const Capability& capability) override;
     int32_t stopCapture() override;
 
     bool isCaptureStarted() override;

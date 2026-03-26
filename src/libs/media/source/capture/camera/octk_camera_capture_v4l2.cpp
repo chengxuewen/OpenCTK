@@ -21,33 +21,33 @@
 // downstream projects, e.g. Firefox, use.
 // TODO(apehrson): Remove them and their undefs when no longer needed.
 #ifndef V4L2_PIX_FMT_ABGR32
-#define ABGR32_OVERRIDE 1
-#define V4L2_PIX_FMT_ABGR32 v4l2_fourcc('A', 'R', '2', '4')
+#    define ABGR32_OVERRIDE     1
+#    define V4L2_PIX_FMT_ABGR32 v4l2_fourcc('A', 'R', '2', '4')
 #endif
 
 #ifndef V4L2_PIX_FMT_ARGB32
-#define ARGB32_OVERRIDE 1
-#define V4L2_PIX_FMT_ARGB32 v4l2_fourcc('B', 'A', '2', '4')
+#    define ARGB32_OVERRIDE     1
+#    define V4L2_PIX_FMT_ARGB32 v4l2_fourcc('B', 'A', '2', '4')
 #endif
 
 #ifndef V4L2_PIX_FMT_RGBA32
-#define RGBA32_OVERRIDE 1
-#define V4L2_PIX_FMT_RGBA32 v4l2_fourcc('A', 'B', '2', '4')
+#    define RGBA32_OVERRIDE     1
+#    define V4L2_PIX_FMT_RGBA32 v4l2_fourcc('A', 'B', '2', '4')
 #endif
 
 OCTK_BEGIN_NAMESPACE
 
 namespace detail
 {
-    inline std::string getFourccName(uint32_t fourcc)
-    {
-        std::string name;
-        name.push_back(static_cast<char>(fourcc & 0xFF));
-        name.push_back(static_cast<char>((fourcc >> 8) & 0xFF));
-        name.push_back(static_cast<char>((fourcc >> 16) & 0xFF));
-        name.push_back(static_cast<char>((fourcc >> 24) & 0xFF));
-        return name;
-    }
+inline std::string getFourccName(uint32_t fourcc)
+{
+    std::string name;
+    name.push_back(static_cast<char>(fourcc & 0xFF));
+    name.push_back(static_cast<char>((fourcc >> 8) & 0xFF));
+    name.push_back(static_cast<char>((fourcc >> 16) & 0xFF));
+    name.push_back(static_cast<char>((fourcc >> 24) & 0xFF));
+    return name;
+}
 } // namespace detail
 
 class CameraCaptureV4L2Private : public CameraCapturePrivate
@@ -55,7 +55,7 @@ class CameraCaptureV4L2Private : public CameraCapturePrivate
 public:
     struct Buffer
     {
-        void* start;
+        void *start;
         size_t length;
     };
     using Capability = CameraCapture::Capability;
@@ -157,7 +157,8 @@ bool CameraCaptureV4L2Private::allocateVideoBuffers()
             return false;
         }
 
-        mPoolBuffer[i].start = mmap(NULL, buffer.length, PROT_READ | PROT_WRITE, MAP_SHARED, mDeviceFd, buffer.m.offset);
+        mPoolBuffer[i]
+            .start = mmap(NULL, buffer.length, PROT_READ | PROT_WRITE, MAP_SHARED, mDeviceFd, buffer.m.offset);
 
         if (MAP_FAILED == mPoolBuffer[i].start)
         {
@@ -180,7 +181,7 @@ bool CameraCaptureV4L2Private::allocateVideoBuffers()
 
 bool CameraCaptureV4L2Private::captureProcess()
 {
-//    OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():enter";
+    //    OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():enter";
     OCTK_CHECK_RUNS_SERIALIZED(&mCaptureChecker);
 
     int retVal = 0;
@@ -193,13 +194,13 @@ bool CameraCaptureV4L2Private::captureProcess()
     timeout.tv_usec = 0;
 
     // mDeviceFd written only in StartCapture, when this thread isn't running.
-//    OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select start";
+    //    OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select start";
     retVal = select(mDeviceFd + 1, &rSet, NULL, NULL, &timeout);
-//    OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select finish";
+    //    OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select finish";
 
     {
         std::lock_guard<std::mutex> lock(mCaptureMutex);
-//        OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():mCaptureMutex";
+        //        OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():mCaptureMutex";
 
         if (mQuit)
         {
@@ -209,25 +210,25 @@ bool CameraCaptureV4L2Private::captureProcess()
         if (retVal < 0 && errno != EINTR) // continue if interrupted
         {
             // select failed
-//            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select failed";
+            //            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select failed";
             return false;
         }
         else if (retVal == 0)
         {
             // select timed out
-//            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select timed out";
+            //            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select timed out";
             return true;
         }
         else if (!FD_ISSET(mDeviceFd, &rSet))
         {
             // not event on camera handle
-//            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select not event";
+            //            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():select not event";
             return true;
         }
 
         if (mStreaming)
         {
-//            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():ioctl buffer----------";
+            //            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():ioctl buffer----------";
             struct v4l2_buffer buf;
             memset(&buf, 0, sizeof(struct v4l2_buffer));
             buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -237,15 +238,16 @@ bool CameraCaptureV4L2Private::captureProcess()
             {
                 if (errno != EINTR)
                 {
-                    OCTK_INFO() << "could not sync on a buffer on device "
-                                << strerror(errno);
+                    OCTK_INFO() << "could not sync on a buffer on device " << strerror(errno);
                     return true;
                 }
             }
 
             // convert to to I420 if needed
-//            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():incomingFrame";
-            this->incomingFrame(reinterpret_cast<uint8_t*>(mPoolBuffer[buf.index].start), buf.bytesused, mConfiguredCapability);
+            //            OCTK_TRACE() << "CameraCaptureV4L2Private::captureProcess():incomingFrame";
+            this->incomingFrame(reinterpret_cast<uint8_t *>(mPoolBuffer[buf.index].start),
+                                buf.bytesused,
+                                mConfiguredCapability);
             // enqueue the buffer again
             if (ioctl(mDeviceFd, VIDIOC_QBUF, &buf) == -1)
             {
@@ -275,16 +277,17 @@ CameraCaptureV4L2::~CameraCaptureV4L2()
     }
 }
 
-int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
+Status CameraCaptureV4L2::startCapture(const Capability &capability)
 {
     OCTK_D(CameraCaptureV4L2);
-    OCTK_DCHECK_RUN_ON(&d->mApiChecker);;
+    OCTK_DCHECK_RUN_ON(&d->mApiChecker);
+    ;
 
     if (d->mCaptureStarted)
     {
         if (capability == d->mRequestedCapability)
         {
-            return 0;
+            return Status::ok;
         }
         else
         {
@@ -310,31 +313,50 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
 
     if ((d->mDeviceFd = open(device, O_RDWR | O_NONBLOCK, 0)) < 0)
     {
-        OCTK_INFO() << "error in opening " << device << " errono = " << errno;
-        return -1;
+        const auto errstr = utils::fmt::format("error in opening {} errno:{}", device, errno);
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     // Supported video formats in preferred order.
     // If the requested resolution is larger than VGA, we prefer MJPEG. Go for
     // I420 otherwise.
-    unsigned int hdFmts[] =
-    {
-        V4L2_PIX_FMT_MJPEG,  V4L2_PIX_FMT_YUV420, V4L2_PIX_FMT_YVU420,
-        V4L2_PIX_FMT_YUYV,   V4L2_PIX_FMT_UYVY,   V4L2_PIX_FMT_NV12,
-        V4L2_PIX_FMT_ABGR32, V4L2_PIX_FMT_ARGB32, V4L2_PIX_FMT_RGBA32,
-        V4L2_PIX_FMT_BGR32,  V4L2_PIX_FMT_RGB32,  V4L2_PIX_FMT_BGR24,
-        V4L2_PIX_FMT_RGB24,  V4L2_PIX_FMT_RGB565, V4L2_PIX_FMT_JPEG,
+    unsigned int hdFmts[] = {
+        V4L2_PIX_FMT_MJPEG,
+        V4L2_PIX_FMT_YUV420,
+        V4L2_PIX_FMT_YVU420,
+        V4L2_PIX_FMT_YUYV,
+        V4L2_PIX_FMT_UYVY,
+        V4L2_PIX_FMT_NV12,
+        V4L2_PIX_FMT_ABGR32,
+        V4L2_PIX_FMT_ARGB32,
+        V4L2_PIX_FMT_RGBA32,
+        V4L2_PIX_FMT_BGR32,
+        V4L2_PIX_FMT_RGB32,
+        V4L2_PIX_FMT_BGR24,
+        V4L2_PIX_FMT_RGB24,
+        V4L2_PIX_FMT_RGB565,
+        V4L2_PIX_FMT_JPEG,
     };
-    unsigned int sdFmts[] =
-    {
-        V4L2_PIX_FMT_YUV420, V4L2_PIX_FMT_YVU420, V4L2_PIX_FMT_YUYV,
-        V4L2_PIX_FMT_UYVY,   V4L2_PIX_FMT_NV12,   V4L2_PIX_FMT_ABGR32,
-        V4L2_PIX_FMT_ARGB32, V4L2_PIX_FMT_RGBA32, V4L2_PIX_FMT_BGR32,
-        V4L2_PIX_FMT_RGB32,  V4L2_PIX_FMT_BGR24,  V4L2_PIX_FMT_RGB24,
-        V4L2_PIX_FMT_RGB565, V4L2_PIX_FMT_MJPEG,  V4L2_PIX_FMT_JPEG,
+    unsigned int sdFmts[] = {
+        V4L2_PIX_FMT_YUV420,
+        V4L2_PIX_FMT_YVU420,
+        V4L2_PIX_FMT_YUYV,
+        V4L2_PIX_FMT_UYVY,
+        V4L2_PIX_FMT_NV12,
+        V4L2_PIX_FMT_ABGR32,
+        V4L2_PIX_FMT_ARGB32,
+        V4L2_PIX_FMT_RGBA32,
+        V4L2_PIX_FMT_BGR32,
+        V4L2_PIX_FMT_RGB32,
+        V4L2_PIX_FMT_BGR24,
+        V4L2_PIX_FMT_RGB24,
+        V4L2_PIX_FMT_RGB565,
+        V4L2_PIX_FMT_MJPEG,
+        V4L2_PIX_FMT_JPEG,
     };
     const bool isHd = capability.width > 640 || capability.height > 480;
-    unsigned int* fmts = isHd ? hdFmts : sdFmts;
+    unsigned int *fmts = isHd ? hdFmts : sdFmts;
     static_assert(sizeof(hdFmts) == sizeof(sdFmts));
     constexpr int nFormats = sizeof(hdFmts) / sizeof(unsigned int);
 
@@ -347,9 +369,8 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
     OCTK_INFO() << "Video Capture enumerats supported image formats:";
     while (ioctl(d->mDeviceFd, VIDIOC_ENUM_FMT, &fmt) == 0)
     {
-        OCTK_INFO() << "  { pixelformat = "
-                    << detail::getFourccName(fmt.pixelformat)
-                    << ", description = '" << fmt.description << "' }";
+        OCTK_INFO() << "  { pixelformat = " << detail::getFourccName(fmt.pixelformat) << ", description = '"
+                    << fmt.description << "' }";
         // Match the preferred order.
         for (int i = 0; i < nFormats; i++)
         {
@@ -364,13 +385,13 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
 
     if (fmtsIdx == nFormats)
     {
-        OCTK_INFO() << "no supporting video formats found";
-        return -1;
+        const auto errstr = utils::fmt::format("no supporting video formats found");
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
     else
     {
-        OCTK_INFO() << "We prefer format "
-                    << detail::getFourccName(fmts[fmtsIdx]);
+        OCTK_INFO() << "We prefer format " << detail::getFourccName(fmts[fmtsIdx]);
     }
 
     struct v4l2_format video_fmt;
@@ -427,8 +448,7 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
     {
         d->mConfiguredCapability.videoType = VideoType::kABGR;
     }
-    else if (video_fmt.fmt.pix.pixelformat == V4L2_PIX_FMT_MJPEG ||
-             video_fmt.fmt.pix.pixelformat == V4L2_PIX_FMT_JPEG)
+    else if (video_fmt.fmt.pix.pixelformat == V4L2_PIX_FMT_MJPEG || video_fmt.fmt.pix.pixelformat == V4L2_PIX_FMT_JPEG)
     {
         d->mConfiguredCapability.videoType = VideoType::kMJPG;
     }
@@ -440,8 +460,9 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
     // set format and frame size now
     if (ioctl(d->mDeviceFd, VIDIOC_S_FMT, &video_fmt) < 0)
     {
-        OCTK_INFO() << "error in VIDIOC_S_FMT, errno = " << errno;
-        return -1;
+        const auto errstr = utils::fmt::format("error in VIDIOC_S_FMT, errno:{}", errno);
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     // initialize current width and height
@@ -492,8 +513,9 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
 
     if (!d->allocateVideoBuffers())
     {
-        OCTK_INFO() << "failed to allocate video capture buffers";
-        return -1;
+        const auto errstr = utils::fmt::format("failed to allocate video capture buffers");
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     // Needed to start UVC camera - from the uvcview application
@@ -501,8 +523,9 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
     type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     if (ioctl(d->mDeviceFd, VIDIOC_STREAMON, &type) == -1)
     {
-        OCTK_INFO() << "Failed to turn on stream";
-        return -1;
+        const auto errstr = utils::fmt::format("Failed to turn on stream");
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     d->mRequestedCapability = capability;
@@ -513,21 +536,23 @@ int32_t CameraCaptureV4L2::startCapture(const Capability &capability)
     if (!d->mCaptureThread.get())
     {
         d->mQuit = false;
-        d->mCaptureThread = PlatformThread::create([=]
-        {
-            while (d->captureProcess())
+        d->mCaptureThread = PlatformThread::create(
+            [=]
             {
-            }
-        });
+                while (d->captureProcess())
+                {
+                }
+            });
         d->mCaptureThread->start(PlatformThread::Priority::kHighest);
     }
-    return 0;
+    return Status::ok;
 }
 
 int32_t CameraCaptureV4L2::stopCapture()
 {
     OCTK_D(CameraCaptureV4L2);
-    OCTK_DCHECK_RUN_ON(&d->mApiChecker);;
+    OCTK_DCHECK_RUN_ON(&d->mApiChecker);
+    ;
 
     if (d->mCaptureThread.get())
     {
@@ -560,14 +585,16 @@ int32_t CameraCaptureV4L2::stopCapture()
 bool CameraCaptureV4L2::isCaptureStarted()
 {
     OCTK_D(CameraCaptureV4L2);
-    OCTK_DCHECK_RUN_ON(&d->mApiChecker);;
+    OCTK_DCHECK_RUN_ON(&d->mApiChecker);
+    ;
     return d->mCaptureStarted;
 }
 
 int32_t CameraCaptureV4L2::captureSettings(Capability &settings)
 {
     OCTK_D(CameraCaptureV4L2);
-    OCTK_DCHECK_RUN_ON(&d->mApiChecker);;
+    OCTK_DCHECK_RUN_ON(&d->mApiChecker);
+    ;
     settings = d->mRequestedCapability;
 
     return 0;
@@ -576,9 +603,10 @@ int32_t CameraCaptureV4L2::captureSettings(Capability &settings)
 bool CameraCaptureV4L2::init(const char *deviceUniqueIdUTF8)
 {
     OCTK_D(CameraCaptureV4L2);
-    OCTK_DCHECK_RUN_ON(&d->mApiChecker);;
+    OCTK_DCHECK_RUN_ON(&d->mApiChecker);
+    ;
 
-    int len = strlen((const char*)deviceUniqueIdUTF8);
+    int len = strlen((const char *)deviceUniqueIdUTF8);
     d->mDeviceUniqueId = new (std::nothrow) char[len + 1];
     if (d->mDeviceUniqueId)
     {
@@ -602,18 +630,18 @@ bool CameraCaptureV4L2::init(const char *deviceUniqueIdUTF8)
             {
                 if (cap.bus_info[0] != 0)
                 {
-                    if (strncmp((const char*)cap.bus_info,
-                                (const char*)deviceUniqueIdUTF8,
-                                strlen((const char*)deviceUniqueIdUTF8)) == 0)
+                    if (strncmp((const char *)cap.bus_info,
+                                (const char *)deviceUniqueIdUTF8,
+                                strlen((const char *)deviceUniqueIdUTF8)) == 0)
                     {
                         // match with device id
                         close(fd);
                         found = true;
-                        break;  // fd matches with device unique id supplied
+                        break; // fd matches with device unique id supplied
                     }
                 }
             }
-            close(fd);  // close since this is not the matching device
+            close(fd); // close since this is not the matching device
         }
     }
     if (!found)
@@ -621,24 +649,23 @@ bool CameraCaptureV4L2::init(const char *deviceUniqueIdUTF8)
         OCTK_INFO() << "no matching device found";
         return false;
     }
-    d->mDeviceId = n;  // store the device id
+    d->mDeviceId = n; // store the device id
     return true;
 }
 
 OCTK_END_NAMESPACE
 
 #ifdef ABGR32_OVERRIDE
-#undef ABGR32_OVERRIDE
-#undef V4L2_PIX_FMT_ABGR32
+#    undef ABGR32_OVERRIDE
+#    undef V4L2_PIX_FMT_ABGR32
 #endif
 
 #ifdef ARGB32_OVERRIDE
-#undef ARGB32_OVERRIDE
-#undef V4L2_PIX_FMT_ARGB32
+#    undef ARGB32_OVERRIDE
+#    undef V4L2_PIX_FMT_ARGB32
 #endif
 
 #ifdef RGBA32_OVERRIDE
-#undef RGBA32_OVERRIDE
-#undef V4L2_PIX_FMT_RGBA32
+#    undef RGBA32_OVERRIDE
+#    undef V4L2_PIX_FMT_RGBA32
 #endif
-

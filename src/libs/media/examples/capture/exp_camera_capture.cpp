@@ -48,6 +48,7 @@ int main()
     {
         OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
     }
+    OCTK_INFO("numberOfDevices={}", deviceInfo->numberOfDevices());
 
     char device_name[256];
     char unique_name[256];
@@ -56,6 +57,7 @@ int main()
     {
         OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
     }
+    OCTK_INFO("unique_name={}", unique_name);
     CameraCapture::Capability capability;
     auto capture = CameraCapture::create(unique_name);
     deviceInfo->getCapability(capture->currentDeviceName(), 0, capability);

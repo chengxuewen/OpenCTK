@@ -397,7 +397,7 @@ CameraCapturePipeWire::~CameraCapturePipeWire()
 }
 
 OCTK_NO_SANITIZE("cfi-icall")
-int32_t CameraCapturePipeWire::startCapture(const Capability &capability)
+Status CameraCapturePipeWire::startCapture(const Capability &capability)
 {
     OCTK_D(CameraCapturePipeWire);
     OCTK_DCHECK_RUN_ON(&d->mApiChecker);
@@ -406,7 +406,7 @@ int32_t CameraCapturePipeWire::startCapture(const Capability &capability)
     {
         if (capability == d->mRequestedCapability)
         {
-            return 0;
+            return Status::ok;
         }
         else
         {
@@ -432,8 +432,9 @@ int32_t CameraCapturePipeWire::startCapture(const Capability &capability)
 
     if (!d->stream_)
     {
-        OCTK_ERROR() << "Failed to create camera stream!";
-        return -1;
+        const auto errstr = utils::fmt::format("Failed to create camera stream!");
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     static const pw_stream_events stream_events{
@@ -463,13 +464,14 @@ int32_t CameraCapturePipeWire::startCapture(const Capability &capability)
         params.size());
     if (res != 0)
     {
-        OCTK_ERROR() << "Could not connect to camera stream: " << spa_strerror(res);
-        return -1;
+        const auto errstr = utils::fmt::format("Could not connect to camera stream:{}", spa_strerror(res));
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     d->mRequestedCapability = capability;
     d->initialized_ = true;
-    return 0;
+    return Status::ok;
 }
 
 int32_t CameraCapturePipeWire::stopCapture()

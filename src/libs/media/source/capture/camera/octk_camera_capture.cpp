@@ -435,12 +435,12 @@ void CameraCapture::deregisterCaptureDataCallback()
     //    _rawDataCallBack = NULL;
 }
 
-int32_t CameraCapture::startCapture(const Capability &capability)
+Status CameraCapture::startCapture(const Capability &capability)
 {
     OCTK_D(CameraCapture);
     OCTK_DCHECK_RUN_ON(&d->mApiChecker);
     d->mRequestedCapability = capability;
-    return -1;
+    return Status::ok;
 }
 
 int32_t CameraCapture::stopCapture()

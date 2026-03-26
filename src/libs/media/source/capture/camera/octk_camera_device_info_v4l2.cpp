@@ -38,33 +38,32 @@
 
 // These defines are here to support building on kernel 3.16 which some downstream projects, e.g. Firefox, use.
 #ifndef V4L2_PIX_FMT_ABGR32
-#define ABGR32_OVERRIDE 1
-#define V4L2_PIX_FMT_ABGR32 v4l2_fourcc('A', 'R', '2', '4')
+#    define ABGR32_OVERRIDE     1
+#    define V4L2_PIX_FMT_ABGR32 v4l2_fourcc('A', 'R', '2', '4')
 #endif
 
 #ifndef V4L2_PIX_FMT_ARGB32
-#define ARGB32_OVERRIDE 1
-#define V4L2_PIX_FMT_ARGB32 v4l2_fourcc('B', 'A', '2', '4')
+#    define ARGB32_OVERRIDE     1
+#    define V4L2_PIX_FMT_ARGB32 v4l2_fourcc('B', 'A', '2', '4')
 #endif
 
 #ifndef V4L2_PIX_FMT_RGBA32
-#define RGBA32_OVERRIDE 1
-#define V4L2_PIX_FMT_RGBA32 v4l2_fourcc('A', 'B', '2', '4')
+#    define RGBA32_OVERRIDE     1
+#    define V4L2_PIX_FMT_RGBA32 v4l2_fourcc('A', 'B', '2', '4')
 #endif
 
 OCTK_BEGIN_NAMESPACE
 
 namespace detail
 {
-    static bool isDeviceNameMatches(const char* name,
-                                    const char* deviceUniqueIdUTF8)
+static bool isDeviceNameMatches(const char *name, const char *deviceUniqueIdUTF8)
+{
+    if (strncmp(deviceUniqueIdUTF8, name, strlen(name)) == 0)
     {
-        if (strncmp(deviceUniqueIdUTF8, name, strlen(name)) == 0)
-        {
-            return true;
-        }
-        return false;
+        return true;
     }
+    return false;
+}
 } // namespace detail
 
 class CameraDeviceInfoV4L2Private : public CameraCapture::DeviceInfoPrivate
@@ -97,20 +96,38 @@ int32_t CameraDeviceInfoV4L2Private::fillCapabilities(int fd)
     video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     video_fmt.fmt.pix.sizeimage = 0;
 
-    unsigned int videoFormats[] =
-    {
-        V4L2_PIX_FMT_MJPEG,  V4L2_PIX_FMT_JPEG,   V4L2_PIX_FMT_YUV420,
-        V4L2_PIX_FMT_YVU420, V4L2_PIX_FMT_YUYV,   V4L2_PIX_FMT_UYVY,
-        V4L2_PIX_FMT_NV12,   V4L2_PIX_FMT_BGR24,  V4L2_PIX_FMT_RGB24,
-        V4L2_PIX_FMT_RGB565, V4L2_PIX_FMT_ABGR32, V4L2_PIX_FMT_ARGB32,
-        V4L2_PIX_FMT_RGBA32, V4L2_PIX_FMT_BGR32,  V4L2_PIX_FMT_RGB32,
+    unsigned int videoFormats[] = {
+        V4L2_PIX_FMT_MJPEG,
+        V4L2_PIX_FMT_JPEG,
+        V4L2_PIX_FMT_YUV420,
+        V4L2_PIX_FMT_YVU420,
+        V4L2_PIX_FMT_YUYV,
+        V4L2_PIX_FMT_UYVY,
+        V4L2_PIX_FMT_NV12,
+        V4L2_PIX_FMT_BGR24,
+        V4L2_PIX_FMT_RGB24,
+        V4L2_PIX_FMT_RGB565,
+        V4L2_PIX_FMT_ABGR32,
+        V4L2_PIX_FMT_ARGB32,
+        V4L2_PIX_FMT_RGBA32,
+        V4L2_PIX_FMT_BGR32,
+        V4L2_PIX_FMT_RGB32,
     };
     constexpr int totalFmts = sizeof(videoFormats) / sizeof(unsigned int);
 
     int sizes = 13;
-    unsigned int size[][2] = {{128, 96},   {160, 120},  {176, 144},  {320, 240},
-                              {352, 288},  {640, 480},  {704, 576},  {800, 600},
-                              {960, 720},  {1280, 720}, {1024, 768}, {1440, 1080},
+    unsigned int size[][2] = {{128, 96},
+                              {160, 120},
+                              {176, 144},
+                              {320, 240},
+                              {352, 288},
+                              {640, 480},
+                              {704, 576},
+                              {800, 600},
+                              {960, 720},
+                              {1280, 720},
+                              {1024, 768},
+                              {1440, 1080},
                               {1920, 1080}};
 
     for (int fmts = 0; fmts < totalFmts; fmts++)
@@ -140,8 +157,7 @@ int32_t CameraDeviceInfoV4L2Private::fillCapabilities(int fd)
                     {
                         cap.videoType = VideoType::kYV12;
                     }
-                    else if (videoFormats[fmts] == V4L2_PIX_FMT_MJPEG ||
-                             videoFormats[fmts] == V4L2_PIX_FMT_JPEG)
+                    else if (videoFormats[fmts] == V4L2_PIX_FMT_MJPEG || videoFormats[fmts] == V4L2_PIX_FMT_JPEG)
                     {
                         cap.videoType = VideoType::kMJPG;
                     }
@@ -209,10 +225,8 @@ int32_t CameraDeviceInfoV4L2Private::fillCapabilities(int fd)
                     }
 
                     mCapabilities.push_back(cap);
-                    OCTK_TRACE() << "Camera capability, width:" << cap.width
-                                 << " height:" << cap.height
-                                 << " type:" << static_cast<int32_t>(cap.videoType)
-                                 << " fps:" << cap.maxFPS;
+                    OCTK_TRACE() << "Camera capability, width:" << cap.width << " height:" << cap.height
+                                 << " type:" << static_cast<int32_t>(cap.videoType) << " fps:" << cap.maxFPS;
                 }
             }
         }
@@ -258,9 +272,13 @@ uint32_t CameraDeviceInfoV4L2::numberOfDevices()
     return count;
 }
 
-int32_t CameraDeviceInfoV4L2::getDeviceName(uint32_t deviceNumber, char *deviceNameUTF8, uint32_t deviceNameLength,
-                                            char *deviceUniqueIdUTF8, uint32_t deviceUniqueIdUTF8Length,
-                                            char *productUniqueIdUTF8, uint32_t productUniqueIdUTF8Length)
+Status CameraDeviceInfoV4L2::getDeviceName(uint32_t deviceNumber,
+                                           char *deviceNameUTF8,
+                                           uint32_t deviceNameLength,
+                                           char *deviceUniqueIdUTF8,
+                                           uint32_t deviceUniqueIdUTF8Length,
+                                           char *productUniqueIdUTF8,
+                                           uint32_t productUniqueIdUTF8Length)
 {
     // Travel through /dev/video [0-63]
     struct v4l2_capability cap;
@@ -296,16 +314,18 @@ int32_t CameraDeviceInfoV4L2::getDeviceName(uint32_t deviceNumber, char *deviceN
 
     if (!found)
     {
-        return -1;
+        return Error::create("device not found");
     }
 
     // query device capabilities
     if (ioctl(fd, VIDIOC_QUERYCAP, &cap) < 0)
     {
-        OCTK_INFO() << "error in querying the device capability for device "
-                    << device << ". errno = " << errno;
+        const auto errstr = utils::fmt::format("error in querying the device capability for device {}, errno:{}",
+                                               device,
+                                               errno);
+        OCTK_WARNING() << errstr;
         close(fd);
-        return -1;
+        return Error::create(errstr);
     }
 
     close(fd);
@@ -320,14 +340,15 @@ int32_t CameraDeviceInfoV4L2::getDeviceName(uint32_t deviceNumber, char *deviceN
     }
     else
     {
-        OCTK_INFO() << "buffer passed is too small";
-        return -1;
+        const auto errstr = "buffer passed is too small";
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     if (cap.bus_info[0] != 0) // may not available in all drivers
     {
         // copy device id
-        size_t len = strlen(reinterpret_cast<const char*>(cap.bus_info));
+        size_t len = strlen(reinterpret_cast<const char *>(cap.bus_info));
         if (deviceUniqueIdUTF8Length > len)
         {
             memset(deviceUniqueIdUTF8, 0, deviceUniqueIdUTF8Length);
@@ -335,12 +356,13 @@ int32_t CameraDeviceInfoV4L2::getDeviceName(uint32_t deviceNumber, char *deviceN
         }
         else
         {
-            OCTK_INFO() << "buffer passed is too small";
-            return -1;
+            const auto errstr = "buffer passed is too small";
+            OCTK_WARNING() << errstr;
+            return Error::create(errstr);
         }
     }
 
-    return 0;
+    return Status::ok;
 }
 
 int32_t CameraDeviceInfoV4L2::init()
@@ -362,8 +384,7 @@ int32_t CameraDeviceInfoV4L2::createCapabilityMap(const char *deviceUniqueIdUTF8
         OCTK_INFO() << "Device name too long";
         return -1;
     }
-    OCTK_INFO() << "CreateCapabilityMap called for device "
-                << deviceUniqueIdUTF8;
+    OCTK_INFO() << "CreateCapabilityMap called for device " << deviceUniqueIdUTF8;
 
     /* detect /dev/video [0-63] entries */
     for (int n = 0; n < 64; ++n)
@@ -387,27 +408,26 @@ int32_t CameraDeviceInfoV4L2::createCapabilityMap(const char *deviceUniqueIdUTF8
 
             if (cap.bus_info[0] != 0)
             {
-                if (strncmp(reinterpret_cast<const char*>(cap.bus_info),
+                if (strncmp(reinterpret_cast<const char *>(cap.bus_info),
                             deviceUniqueIdUTF8,
                             strlen(deviceUniqueIdUTF8)) == 0)
                 {
                     // match with device id
                     found = true;
-                    break;  // fd matches with device unique id supplied
+                    break; // fd matches with device unique id supplied
                 }
             }
             else
             {
                 // match for device name
-                if (detail::isDeviceNameMatches(reinterpret_cast<const char*>(cap.card),
-                                                deviceUniqueIdUTF8))
+                if (detail::isDeviceNameMatches(reinterpret_cast<const char *>(cap.card), deviceUniqueIdUTF8))
                 {
                     found = true;
                     break;
                 }
             }
         }
-        close(fd);  // close since this is not the matching device
+        close(fd); // close since this is not the matching device
     }
 
     if (!found)
@@ -425,7 +445,8 @@ int32_t CameraDeviceInfoV4L2::createCapabilityMap(const char *deviceUniqueIdUTF8
 
     // Store the new used device name
     d->mLastUsedDeviceNameLength = deviceUniqueIdUTF8Length;
-    d->mLastUsedDeviceName = reinterpret_cast<char*>(realloc(d->mLastUsedDeviceName, d->mLastUsedDeviceNameLength + 1));
+    d->mLastUsedDeviceName = reinterpret_cast<char *>(
+        realloc(d->mLastUsedDeviceName, d->mLastUsedDeviceNameLength + 1));
     memcpy(d->mLastUsedDeviceName, deviceUniqueIdUTF8, d->mLastUsedDeviceNameLength + 1);
 
     OCTK_INFO() << "CreateCapabilityMap " << d->mCapabilities.size();

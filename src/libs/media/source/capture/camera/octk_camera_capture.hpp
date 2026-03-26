@@ -28,6 +28,7 @@
 #include <octk_shared_pointer.hpp>
 #include <octk_video_frame.hpp>
 #include <octk_video_type.hpp>
+#include <octk_status.hpp>
 
 OCTK_BEGIN_NAMESPACE
 
@@ -103,13 +104,13 @@ public:
          * @param productUniqueIdUTF8Length
          * @return
          */
-        virtual int32_t getDeviceName(uint32_t deviceNumber,
-                                      char *deviceNameUTF8,
-                                      uint32_t deviceNameLength,
-                                      char *deviceUniqueIdUTF8,
-                                      uint32_t deviceUniqueIdUTF8Length,
-                                      char *productUniqueIdUTF8 = 0,
-                                      uint32_t productUniqueIdUTF8Length = 0) = 0;
+        virtual Status getDeviceName(uint32_t deviceNumber,
+                                     char *deviceNameUTF8,
+                                     uint32_t deviceNameLength,
+                                     char *deviceUniqueIdUTF8,
+                                     uint32_t deviceUniqueIdUTF8Length,
+                                     char *productUniqueIdUTF8 = 0,
+                                     uint32_t productUniqueIdUTF8Length = 0) = 0;
 
         /**
          * @brief Gets the capabilities of the named device.
@@ -207,7 +208,7 @@ public:
      * @param capability
      * @return
      */
-    virtual int32_t startCapture(const Capability &capability);
+    virtual Status startCapture(const Capability &capability);
 
     virtual int32_t stopCapture();
 

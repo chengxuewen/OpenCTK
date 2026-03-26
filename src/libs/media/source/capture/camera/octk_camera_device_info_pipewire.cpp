@@ -85,38 +85,43 @@ uint32_t CameraDeviceInfoPipeWire::numberOfDevices()
     return d->pipewire_session_->nodes().size();
 }
 
-int32_t CameraDeviceInfoPipeWire::getDeviceName(uint32_t deviceNumber,
-                                                char *deviceNameUTF8,
-                                                uint32_t deviceNameLength,
-                                                char *deviceUniqueIdUTF8,
-                                                uint32_t deviceUniqueIdUTF8Length,
-                                                char *productUniqueIdUTF8,
-                                                uint32_t productUniqueIdUTF8Length)
+Status CameraDeviceInfoPipeWire::getDeviceName(uint32_t deviceNumber,
+                                               char *deviceNameUTF8,
+                                               uint32_t deviceNameLength,
+                                               char *deviceUniqueIdUTF8,
+                                               uint32_t deviceUniqueIdUTF8Length,
+                                               char *productUniqueIdUTF8,
+                                               uint32_t productUniqueIdUTF8Length)
 {
     OCTK_D(CameraDeviceInfoPipeWire);
     OCTK_CHECK(d->pipewire_session_);
 
     if (deviceNumber >= this->numberOfDevices())
     {
-        return -1;
+        const auto errstr = "deviceNumber out of range";
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     const auto &node = d->pipewire_session_->nodes().at(deviceNumber);
 
     if (deviceNameLength <= node->display_name().length())
     {
-        OCTK_INFO() << "deviceNameUTF8 buffer passed is too small";
-        return -1;
+        const auto errstr = "deviceNameUTF8 buffer passed is too small";
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
     if (deviceUniqueIdUTF8Length <= node->unique_id().length())
     {
-        OCTK_INFO() << "deviceUniqueIdUTF8 buffer passed is too small";
-        return -1;
+        const auto errstr = "deviceUniqueIdUTF8 buffer passed is too small";
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
     if (productUniqueIdUTF8 && productUniqueIdUTF8Length <= node->model_id().length())
     {
-        OCTK_INFO() << "productUniqueIdUTF8 buffer passed is too small";
-        return -1;
+        const auto errstr = "productUniqueIdUTF8 buffer passed is too small";
+        OCTK_WARNING() << errstr;
+        return Error::create(errstr);
     }
 
     memset(deviceNameUTF8, 0, deviceNameLength);
@@ -131,7 +136,7 @@ int32_t CameraDeviceInfoPipeWire::getDeviceName(uint32_t deviceNumber,
         node->model_id().copy(productUniqueIdUTF8, productUniqueIdUTF8Length);
     }
 
-    return 0;
+    return Status::ok;
 }
 
 int32_t CameraDeviceInfoPipeWire::init()

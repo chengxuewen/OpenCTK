@@ -37,17 +37,17 @@ public:
 
     uint32_t numberOfDevices() override;
 
-    int32_t getDeviceName(uint32_t deviceNumber,
-                          char* deviceNameUTF8,
-                          uint32_t deviceNameLength,
-                          char* deviceUniqueIdUTF8,
-                          uint32_t deviceUniqueIdUTF8Length,
-                          char* productUniqueIdUTF8 = 0,
-                          uint32_t productUniqueIdUTF8Length = 0) override;
+    Status getDeviceName(uint32_t deviceNumber,
+                         char *deviceNameUTF8,
+                         uint32_t deviceNameLength,
+                         char *deviceUniqueIdUTF8,
+                         uint32_t deviceUniqueIdUTF8Length,
+                         char *productUniqueIdUTF8 = 0,
+                         uint32_t productUniqueIdUTF8Length = 0) override;
 
 protected:
     int32_t init() override;
-    int32_t createCapabilityMap(const char* deviceUniqueIdUTF8) override;
+    int32_t createCapabilityMap(const char *deviceUniqueIdUTF8) override;
 
 private:
     OCTK_DECLARE_PRIVATE(CameraDeviceInfoV4L2)
