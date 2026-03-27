@@ -31,7 +31,7 @@ OCTK_BEGIN_NAMESPACE
 enum class VideoType : uint32_t
 {
     // 13 Primary RGB formats: 4 32 bpp, 2 24 bpp, 3 16 bpp, 1 10 bpc 2 64 bpp
-    kRGB565 = OCTK_FOURCC('R', 'G', 'B', 'P'),  // rgb565 LE.
+    kRGB565 = OCTK_FOURCC('R', 'G', 'B', 'P'), // rgb565 LE.
     kRGB24 = OCTK_FOURCC('R', 'G', 'B', ' '),
     kBGR24 = OCTK_FOURCC('B', 'G', 'R', ' '),
     kARGB = OCTK_FOURCC('A', 'R', 'G', 'B'),
@@ -69,6 +69,8 @@ namespace utils
  * @return The required size in bytes to accommodate the specified video frame.
  */
 OCTK_MEDIA_API size_t videoTypeBufferSize(VideoType type, int width, int height);
+
+OCTK_MEDIA_API const char *videoTypeName(VideoType type);
 } // namespace utils
 
 OCTK_END_NAMESPACE

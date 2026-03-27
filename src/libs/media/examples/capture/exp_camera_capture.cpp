@@ -44,6 +44,17 @@ int main()
     {
         OCTK_FATAL("deviceInfo null");
     }
+    for (int i = 0; i < deviceInfo->numberOfDevices(); ++i)
+    {
+        char device_name[256];
+        char unique_name[256];
+        auto status = deviceInfo->getDeviceName(i, device_name, 256, unique_name, 256);
+        if (!status.isOk())
+        {
+            OCTK_FATAL("deviceInfo->getDeviceName({}) failed:{}", i, status.errorMessage());
+        }
+        OCTK_INFO("device{}: device_name={} unique_name={}", i, device_name, unique_name);
+    }
     if (deviceInfo->numberOfDevices() <= 0)
     {
         OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
@@ -52,10 +63,10 @@ int main()
 
     char device_name[256];
     char unique_name[256];
-    if (deviceInfo->getDeviceName(0, device_name, 256,
-                                  unique_name, 256))
+    const auto status = deviceInfo->getDeviceName(1, device_name, 256, unique_name, 256);
+    if (!status.isOk())
     {
-        OCTK_FATAL("deviceInfo->numberOfDevices() <= 0");
+        OCTK_FATAL("deviceInfo->getDeviceName() failed:{}", status.errorMessage());
     }
     OCTK_INFO("unique_name={}", unique_name);
     CameraCapture::Capability capability;

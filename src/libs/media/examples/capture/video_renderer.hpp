@@ -89,7 +89,7 @@ public:
                        {
                            if (!SDL_Init(SDL_INIT_VIDEO))
                            {
-                               OCTK_ERROR("SDL_Init failed, err:%s", SDL_GetError());
+                               OCTK_ERROR("SDL_Init failed, err:{}", SDL_GetError());
                                return;
                            }
 
@@ -99,14 +99,14 @@ public:
                                                          SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
                            if (!mSDLWindow)
                            {
-                               OCTK_ERROR("SDL_CreateWindow failed, err:%s", SDL_GetError());
+                               OCTK_ERROR("SDL_CreateWindow failed, err:{}", SDL_GetError());
                                return;
                            }
 
                            mSDLRender = SDL_CreateRenderer(mSDLWindow, "");
                            if (!mSDLRender)
                            {
-                               OCTK_ERROR("SDL_CreateRenderer failed, err:%s", SDL_GetError());
+                               OCTK_ERROR("SDL_CreateRenderer failed, err:{}", SDL_GetError());
                                return;
                            }
 
@@ -132,7 +132,7 @@ public:
                            }
                            if (!mSDLTexture)
                            {
-                               OCTK_ERROR("SDL_CreateTexture failed, err:%s", SDL_GetError());
+                               OCTK_ERROR("SDL_CreateTexture failed, err:{}", SDL_GetError());
                                return;
                            }
 
@@ -168,7 +168,7 @@ public:
                 case SDL_EVENT_WINDOW_RESIZED:
                 {
                     SDL_GetWindowSize(mSDLWindow, &mWindowWidth, &mWindowHeight);
-                    OCTK_DEBUG("SDL_EVENT_WINDOW_RESIZED width:%d, height:%d", mWindowWidth, mWindowHeight);
+                    OCTK_DEBUG("SDL_EVENT_WINDOW_RESIZED width:{}, height:{}", mWindowWidth, mWindowHeight);
                     break;
                 }
                 case Event_Quit:
@@ -185,7 +185,7 @@ public:
                     }
                     if (0)
                     {
-                        OCTK_TRACE("Event_Refresh width:%d, height:%d", mWindowWidth, mWindowHeight);
+                        OCTK_TRACE("Event_Refresh width:%d, height:{}", mWindowWidth, mWindowHeight);
                     }
                     if (VideoType::I420 == mVideoType)
                     {
@@ -238,7 +238,7 @@ public:
         const auto timestampMSecs = timestampUSecs / octk::DateTime::kUSecsPerMSec;
         if (0)
         {
-            OCTK_TRACE("VideoRenderer::onFrame:type=%d, width:%d, height:%d, ntp:%lld, ts:%lld(%s)",
+            OCTK_TRACE("VideoRenderer::onFrame:type={}, width:{}, height:{}, ntp:{}, ts:{}({})",
                        octk::utils::fmt::as_int(frameBuffer->type()),
                        frame.width(),
                        frame.height(),

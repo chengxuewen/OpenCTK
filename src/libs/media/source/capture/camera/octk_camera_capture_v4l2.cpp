@@ -73,7 +73,8 @@ public:
 
     std::mutex mCaptureMutex OCTK_ATTRIBUTE_ACQUIRED_BEFORE(mApiMutex);
     bool mQuit OCTK_ATTRIBUTE_GUARDED_BY(mCaptureMutex);
-    int32_t mDeviceId OCTK_ATTRIBUTE_GUARDED_BY(mApiChecker) = -1;
+    // int32_t mDeviceId OCTK_ATTRIBUTE_GUARDED_BY(mApiChecker) = -1;
+    std::string mDeviceId OCTK_ATTRIBUTE_GUARDED_BY(mApiChecker) = "";
     int32_t mDeviceFd OCTK_ATTRIBUTE_GUARDED_BY(mCaptureChecker) = -1;
 
     int32_t mBuffersAllocatedByDevice OCTK_ATTRIBUTE_GUARDED_BY(mCaptureMutex) = -1;
@@ -308,14 +309,18 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
 
     std::lock_guard<std::mutex> lock(d->mCaptureMutex);
     // first open /dev/video device
-    char device[20];
-    snprintf(device, sizeof(device), "/dev/video%d", d->mDeviceId);
+    // char device[20];
+    // snprintf(device, sizeof(device), "/dev/video%d", d->mDeviceId);
 
-    if ((d->mDeviceFd = open(device, O_RDWR | O_NONBLOCK, 0)) < 0)
+    if ((d->mDeviceFd = open(d->mDeviceId.c_str(), O_RDWR | O_NONBLOCK, 0)) < 0)
     {
-        const auto errstr = utils::fmt::format("error in opening {} errno:{}", device, errno);
+        const auto errstr = utils::fmt::format("error in opening {} errno:{}", d->mDeviceId, errno);
         OCTK_WARNING() << errstr;
         return Error::create(errstr);
+    }
+    else
+    {
+        OCTK_INFO() << utils::fmt::format("open {} success", d->mDeviceId);
     }
 
     // Supported video formats in preferred order.
@@ -460,7 +465,12 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
     // set format and frame size now
     if (ioctl(d->mDeviceFd, VIDIOC_S_FMT, &video_fmt) < 0)
     {
-        const auto errstr = utils::fmt::format("error in VIDIOC_S_FMT, errno:{}", errno);
+        char errnostr[256] = {0};
+        strerror_r(errno, errnostr, sizeof(errnostr));
+        const auto errstr = utils::fmt::format("error in VIDIOC_S_FMT, fmt:{}, errno:{}({})",
+                                               utils::videoTypeName(d->mConfiguredCapability.videoType),
+                                               errnostr,
+                                               errno);
         OCTK_WARNING() << errstr;
         return Error::create(errstr);
     }
@@ -600,13 +610,62 @@ int32_t CameraCaptureV4L2::captureSettings(Capability &settings)
     return 0;
 }
 
-bool CameraCaptureV4L2::init(const char *deviceUniqueIdUTF8)
+bool CameraCaptureV4L2::init(const char *deviceId)
 {
     OCTK_D(CameraCaptureV4L2);
     OCTK_DCHECK_RUN_ON(&d->mApiChecker);
-    ;
 
-    int len = strlen((const char *)deviceUniqueIdUTF8);
+    int fd = -1;
+    /* detect /dev/video [0-63] entries */
+    if ((fd = open(deviceId, O_RDONLY)) != -1)
+    {
+        // query device capabilities
+        struct v4l2_capability cap;
+        if (ioctl(fd, VIDIOC_QUERYCAP, &cap) == 0)
+        {
+            char cameraName[64];
+            memcpy(cameraName, cap.card, sizeof(cap.card));
+            d->mDeviceName = new (std::nothrow) char[sizeof(cameraName) + 1];
+            if (d->mDeviceName)
+            {
+                memcpy(d->mDeviceName, cameraName, strlen(cameraName));
+            }
+
+            if (cap.bus_info[0] != 0) // may not available in all drivers
+            {
+                // copy device unique id
+                size_t len = strlen(reinterpret_cast<const char *>(cap.bus_info));
+                d->mDeviceUniqueId = new (std::nothrow) char[len + 1];
+                if (d->mDeviceUniqueId)
+                {
+                    memcpy(d->mDeviceUniqueId, cap.bus_info, len);
+                }
+            }
+        }
+        close(fd);               // close since this is not the matching device
+        d->mDeviceId = deviceId; // store the device id
+        OCTK_INFO() << "store the device id:" << deviceId;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool CameraCaptureV4L2::init(const char *deviceNameUTF8, const char *deviceUniqueIdUTF8)
+{
+    OCTK_D(CameraCaptureV4L2);
+    OCTK_DCHECK_RUN_ON(&d->mApiChecker);
+
+    int len = strlen((const char *)deviceNameUTF8);
+    d->mDeviceName = new (std::nothrow) char[len + 1];
+    if (d->mDeviceUniqueId)
+    {
+        memcpy(d->mDeviceUniqueId, deviceNameUTF8, len + 1);
+    }
+
+    len = strlen((const char *)deviceUniqueIdUTF8);
     d->mDeviceUniqueId = new (std::nothrow) char[len + 1];
     if (d->mDeviceUniqueId)
     {
@@ -630,9 +689,13 @@ bool CameraCaptureV4L2::init(const char *deviceUniqueIdUTF8)
             {
                 if (cap.bus_info[0] != 0)
                 {
-                    if (strncmp((const char *)cap.bus_info,
-                                (const char *)deviceUniqueIdUTF8,
-                                strlen((const char *)deviceUniqueIdUTF8)) == 0)
+                    const bool deviceNameUTF8Equal = strncmp((const char *)cap.card,
+                                                             (const char *)deviceNameUTF8,
+                                                             strlen((const char *)deviceNameUTF8)) == 0;
+                    const bool deviceUniqueIdUTF8Equal = strncmp((const char *)cap.bus_info,
+                                                                 (const char *)deviceUniqueIdUTF8,
+                                                                 strlen((const char *)deviceUniqueIdUTF8)) == 0;
+                    if (deviceNameUTF8Equal && deviceUniqueIdUTF8Equal)
                     {
                         // match with device id
                         close(fd);
@@ -649,7 +712,8 @@ bool CameraCaptureV4L2::init(const char *deviceUniqueIdUTF8)
         OCTK_INFO() << "no matching device found";
         return false;
     }
-    d->mDeviceId = n; // store the device id
+    d->mDeviceId = utils::fmt::format("/dev/video{}", n); // store the device id
+    OCTK_INFO() << "store the device id:" << d->mDeviceId;
     return true;
 }
 

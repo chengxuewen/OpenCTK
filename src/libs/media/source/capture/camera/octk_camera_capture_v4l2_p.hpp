@@ -35,13 +35,14 @@ public:
     CameraCaptureV4L2();
     ~CameraCaptureV4L2() override;
 
-    Status startCapture(const Capability& capability) override;
+    Status startCapture(const Capability &capability) override;
     int32_t stopCapture() override;
 
     bool isCaptureStarted() override;
-    int32_t captureSettings(Capability& settings) override;
+    int32_t captureSettings(Capability &settings) override;
 
-    bool init(const char* deviceUniqueIdUTF8) override;
+    bool init(const char *deviceId) override;
+    bool init(const char *deviceNameUTF8, const char *deviceUniqueIdUTF8) override;
 
 private:
     OCTK_DECLARE_PRIVATE(CameraCaptureV4L2)

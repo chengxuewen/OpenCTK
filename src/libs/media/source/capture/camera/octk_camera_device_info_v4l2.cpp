@@ -226,7 +226,7 @@ int32_t CameraDeviceInfoV4L2Private::fillCapabilities(int fd)
 
                     mCapabilities.push_back(cap);
                     OCTK_TRACE() << "Camera capability, width:" << cap.width << " height:" << cap.height
-                                 << " type:" << static_cast<int32_t>(cap.videoType) << " fps:" << cap.maxFPS;
+                                 << " type:" << utils::videoTypeName(cap.videoType) << " fps:" << cap.maxFPS;
                 }
             }
         }
@@ -327,7 +327,6 @@ Status CameraDeviceInfoV4L2::getDeviceName(uint32_t deviceNumber,
         close(fd);
         return Error::create(errstr);
     }
-
     close(fd);
 
     char cameraName[64];

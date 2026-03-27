@@ -72,6 +72,8 @@ protected:
     // RaceChecker for members that can be accessed on the API thread while
     // capture is not happening, and on a callback thread otherwise.
     RaceChecker mCaptureChecker;
+    // current Device name;
+    char* mDeviceName OCTK_ATTRIBUTE_GUARDED_BY(mApiChecker) = nullptr;
     // current Device unique name;
     char* mDeviceUniqueId OCTK_ATTRIBUTE_GUARDED_BY(mApiChecker) = nullptr;
     std::mutex mApiMutex;

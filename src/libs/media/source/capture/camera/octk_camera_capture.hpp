@@ -186,7 +186,8 @@ public:
     };
 
     static DeviceInfo::SharedPtr createDeviceInfo(Options *options = nullptr);
-    static SharedPtr create(const char *deviceUniqueIdUTF8, Options *options = nullptr);
+    static SharedPtr create(const char *deviceId, Options *options = nullptr);
+    static SharedPtr create(const char *deviceNameUTF8, const char *deviceUniqueIdUTF8, Options *options = nullptr);
 
     explicit CameraCapture(CameraCapturePrivate *d);
     virtual ~CameraCapture();
@@ -258,9 +259,9 @@ public:
     static void test();
 
 protected:
-    virtual bool init(const char *deviceUniqueIdUTF8) = 0;
+    virtual bool init(const char *deviceId) = 0;
+    virtual bool init(const char *deviceNameUTF8, const char *deviceUniqueIdUTF8) = 0;
 
-protected:
     OCTK_DEFINE_DPTR(CameraCapture)
     OCTK_DECLARE_PRIVATE(CameraCapture)
     OCTK_DISABLE_COPY_MOVE(CameraCapture)

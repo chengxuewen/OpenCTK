@@ -256,11 +256,25 @@ CameraCapture::DeviceInfo::SharedPtr CameraCapture::createDeviceInfo(Options *op
     return nullptr;
 }
 
-CameraCapture::SharedPtr CameraCapture::create(const char *deviceUniqueIdUTF8, Options *options)
+CameraCapture::SharedPtr CameraCapture::create(const char *deviceId, Options *options)
 {
 #if defined(OCTK_OS_LINUX)
     auto capture = std::make_shared<CameraCaptureV4L2>();
-    if (capture->init(deviceUniqueIdUTF8))
+    if (capture->init(deviceId))
+    {
+        return capture;
+    }
+#endif
+    return nullptr;
+}
+
+CameraCapture::SharedPtr CameraCapture::create(const char *deviceNameUTF8,
+                                               const char *deviceUniqueIdUTF8,
+                                               Options *options)
+{
+#if defined(OCTK_OS_LINUX)
+    auto capture = std::make_shared<CameraCaptureV4L2>();
+    if (capture->init(deviceNameUTF8, deviceUniqueIdUTF8))
     {
         return capture;
     }
