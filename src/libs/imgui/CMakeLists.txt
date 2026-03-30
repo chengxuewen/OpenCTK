@@ -72,7 +72,7 @@ octk_add_library(Imgui
 	OCTK3rdparty::WrapSTB
 	PUBLIC_LIBRARIES
 	OCTK3rdparty::WrapImGui
-	OpenCTK::Graphics)
+	OpenCTK::Core)
 octk_internal_extend_target(OpenCTKImgui
 	SOURCES
 	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm

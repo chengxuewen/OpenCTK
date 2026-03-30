@@ -1,5 +1,0 @@
-#ifndef _OCTK_GRAPHICS_PCH_HPP
-#define _OCTK_GRAPHICS_PCH_HPP
-
-
-#endif // _OCTK_GRAPHICS_PCH_HPP
