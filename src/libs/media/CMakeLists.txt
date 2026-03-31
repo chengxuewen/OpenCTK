@@ -24,8 +24,8 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-#octk_find_package(WrapOpenh264 PROVIDED_TARGETS OCTK3rdparty::WrapOpenh264)
-octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
+#octk_find_package(WrapOpenh264 PROVIDED_TARGETS OpenCTKWrapOpenh264::WrapOpenh264)
+octk_find_package(WrapLibyuv PROVIDED_TARGETS OpenCTKWrapLibyuv::WrapLibyuv)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -246,8 +246,8 @@ octk_add_library(Media
 	PRECOMPILED_HEADER
 	source/octk_media_pch.hpp
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
-#	OCTK3rdparty::WrapOpenh264
+	OpenCTKWrapLibyuv::WrapLibyuv
+#	OpenCTKWrapOpenh264::WrapOpenh264
 	${OCTK_LIB_LINK_LIBRARIES}
 	PUBLIC_LIBRARIES
 	OpenCTK::Network)
@@ -262,11 +262,11 @@ octk_add_subdirectory(source/capture/portal OCTK_SYSTEM_LINUX)
 add_subdirectory(source/protocols/rtc)
 
 if(OCTK_FEATURE_MEDIA_USE_FFMPEG)
-	octk_find_package(WrapFFmpeg PROVIDED_TARGETS OCTK3rdparty::WrapFFmpeg)
+	octk_find_package(WrapFFmpeg PROVIDED_TARGETS OpenCTKWrapFFmpeg::WrapFFmpeg)
 	octk_internal_extend_target(OpenCTKMedia
 		#		SOURCES
 		LIBRARIES
-		OCTK3rdparty::WrapFFmpeg)
+		OpenCTKWrapFFmpeg::WrapFFmpeg)
 	octk_internal_extend_target(OpenCTKMedia # for static ffmpeg
 		CONDITION OCTK_SYSTEM_LINUX
 		LINK_OPTIONS "-Wl,-Bsymbolic")
@@ -275,10 +275,10 @@ if(OCTK_FEATURE_MEDIA_USE_FFMPEG)
 		LINK_OPTIONS "-Wl,-w")
 endif()
 if(OCTK_FEATURE_MEDIA_USE_LIBSRTP)
-	octk_find_package(WrapLibsrtp PROVIDED_TARGETS OCTK3rdparty::WrapLibsrtp)
+	octk_find_package(WrapLibsrtp PROVIDED_TARGETS OpenCTKWrapLibsrtp::WrapLibsrtp)
 	octk_internal_extend_target(OpenCTKMedia
 		LIBRARIES
-		OCTK3rdparty::WrapLibsrtp)
+		OpenCTKWrapLibsrtp::WrapLibsrtp)
 endif()
 
 

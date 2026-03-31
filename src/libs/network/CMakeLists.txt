@@ -24,7 +24,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-#octk_find_package(WrapOpenSSL PROVIDED_TARGETS OCTK3rdparty::WrapOpenSSL)
+#octk_find_package(WrapOpenSSL PROVIDED_TARGETS OpenCTKWrapOpenSSL::WrapOpenSSL)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -50,19 +50,19 @@ octk_add_library(Network
 	PUBLIC_LIBRARIES
 	OpenCTK::Core)
 if(OCTK_FEATURE_USE_BOOST_BACKEND)
-	octk_find_package(WrapBoostAsio PROVIDED_TARGETS OCTK3rdparty::WrapBoostAsio)
-	octk_find_package(WrapBoostBeast PROVIDED_TARGETS OCTK3rdparty::WrapBoostBeast)
+	octk_find_package(WrapBoostAsio PROVIDED_TARGETS OpenCTKWrapBoostAsio::WrapBoostAsio)
+	octk_find_package(WrapBoostBeast PROVIDED_TARGETS OpenCTKWrapBoostBeast::WrapBoostBeast)
 	octk_internal_extend_target(OpenCTKNetwork
 		SOURCES
 		LIBRARIES
-		OCTK3rdparty::WrapBoostAsio
-		OCTK3rdparty::WrapBoostBeast)
+		OpenCTKWrapBoostAsio::WrapBoostAsio
+		OpenCTKWrapBoostBeast::WrapBoostBeast)
 elseif(OCTK_FEATURE_HTTP_USE_LIBCPR_VCPKG)
-	octk_find_package(WrapLibcprVcpkg PROVIDED_TARGETS OCTK3rdparty::WrapLibcprVcpkg)
-	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OCTK3rdparty::WrapLibcprVcpkg)
+	octk_find_package(WrapLibcprVcpkg PROVIDED_TARGETS OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg)
+	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg)
 else()
-	octk_find_package(WrapLibcpr PROVIDED_TARGETS OCTK3rdparty::WrapLibcpr)
-	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OCTK3rdparty::WrapLibcpr)
+	octk_find_package(WrapLibcpr PROVIDED_TARGETS OpenCTKWrapLibcpr::WrapLibcpr)
+	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OpenCTKWrapLibcpr::WrapLibcpr)
 endif()
 
 

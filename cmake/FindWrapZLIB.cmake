@@ -23,28 +23,28 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapZLIB)
-	set(OCTKWrapZLIB_FOUND ON)
+if(TARGET OpenCTKWrapZLIB::WrapZLIB)
+	set(OpenCTKWrapZLIB_FOUND ON)
 	return()
 endif()
 
-set(OCTKWrapZLIB_NAME "zlib-1.3.1")
-set(OCTKWrapZLIB_DIR_NAME "${OCTKWrapZLIB_NAME}")
-set(OCTKWrapZLIB_PKG_NAME "${OCTKWrapZLIB_NAME}.tar.gz")
-set(OCTKWrapZLIB_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapZLIB_PKG_NAME}")
-set(OCTKWrapZLIB_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapZLIB_DIR_NAME}")
-set(OCTKWrapZLIB_BUILD_DIR "${OCTKWrapZLIB_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapZLIB_SOURCE_DIR "${OCTKWrapZLIB_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapZLIB_INSTALL_DIR "${OCTKWrapZLIB_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapZLIB OUTPUT_DIR "${OCTKWrapZLIB_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapZLIB URL "${OCTKWrapZLIB_URL_PATH}")
-if(NOT EXISTS "${OCTKWrapZLIB_STAMP_FILE_PATH}")
-	if(NOT EXISTS ${OCTKWrapZLIB_SOURCE_DIR})
-		message(FATAL_ERROR "${OCTKWrapZLIB_DIR_NAME} FetchContent failed.")
+set(OpenCTKWrapZLIB_NAME "zlib-1.3.1")
+set(OpenCTKWrapZLIB_DIR_NAME "${OpenCTKWrapZLIB_NAME}")
+set(OpenCTKWrapZLIB_PKG_NAME "${OpenCTKWrapZLIB_NAME}.tar.gz")
+set(OpenCTKWrapZLIB_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapZLIB_PKG_NAME}")
+set(OpenCTKWrapZLIB_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapZLIB_DIR_NAME}")
+set(OpenCTKWrapZLIB_BUILD_DIR "${OpenCTKWrapZLIB_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapZLIB_SOURCE_DIR "${OpenCTKWrapZLIB_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapZLIB_INSTALL_DIR "${OpenCTKWrapZLIB_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapZLIB OUTPUT_DIR "${OpenCTKWrapZLIB_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapZLIB URL "${OpenCTKWrapZLIB_URL_PATH}")
+if(NOT EXISTS "${OpenCTKWrapZLIB_STAMP_FILE_PATH}")
+	if(NOT EXISTS ${OpenCTKWrapZLIB_SOURCE_DIR})
+		message(FATAL_ERROR "${OpenCTKWrapZLIB_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(${OCTKWrapZLIB_BUILD_DIR})
+	octk_reset_dir(${OpenCTKWrapZLIB_BUILD_DIR})
 
-	message(STATUS "Configure ${OCTKWrapZLIB_DIR_NAME} lib...")
+	message(STATUS "Configure ${OpenCTKWrapZLIB_DIR_NAME} lib...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND}
 		-G ${CMAKE_GENERATOR}
@@ -52,39 +52,39 @@ if(NOT EXISTS "${OCTKWrapZLIB_STAMP_FILE_PATH}")
 		-DZLIB_BUILD_SHARED=OFF
 		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 		-DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-		-DCMAKE_INSTALL_PREFIX=${OCTKWrapZLIB_INSTALL_DIR}
-		${OCTKWrapZLIB_SOURCE_DIR}
-		WORKING_DIRECTORY "${OCTKWrapZLIB_BUILD_DIR}"
+		-DCMAKE_INSTALL_PREFIX=${OpenCTKWrapZLIB_INSTALL_DIR}
+		${OpenCTKWrapZLIB_SOURCE_DIR}
+		WORKING_DIRECTORY "${OpenCTKWrapZLIB_BUILD_DIR}"
 		RESULT_VARIABLE CONFIGURE_RESULT)
 	if(NOT CONFIGURE_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapZLIB_DIR_NAME} configure failed.")
+		message(FATAL_ERROR "${OpenCTKWrapZLIB_DIR_NAME} configure failed.")
 	endif()
-	message(STATUS "${OCTKWrapZLIB_DIR_NAME} configure success")
+	message(STATUS "${OpenCTKWrapZLIB_DIR_NAME} configure success")
 
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config
 		${CMAKE_BUILD_TYPE} --target install
-		WORKING_DIRECTORY "${OCTKWrapZLIB_BUILD_DIR}"
+		WORKING_DIRECTORY "${OpenCTKWrapZLIB_BUILD_DIR}"
 		RESULT_VARIABLE BUILD_RESULT)
 	if(NOT BUILD_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapZLIB_DIR_NAME} build failed.")
+		message(FATAL_ERROR "${OpenCTKWrapZLIB_DIR_NAME} build failed.")
 	endif()
-	message(STATUS "${OCTKWrapZLIB_DIR_NAME} build success")
+	message(STATUS "${OpenCTKWrapZLIB_DIR_NAME} build success")
 
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} --install ./
-		WORKING_DIRECTORY "${OCTKWrapZLIB_BUILD_DIR}"
+		WORKING_DIRECTORY "${OpenCTKWrapZLIB_BUILD_DIR}"
 		RESULT_VARIABLE INSTALL_RESULT)
 	if(NOT INSTALL_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapZLIB_DIR_NAME} install failed.")
+		message(FATAL_ERROR "${OpenCTKWrapZLIB_DIR_NAME} install failed.")
 	endif()
-	message(STATUS "${OCTKWrapZLIB_DIR_NAME} install success")
-	octk_make_stamp_file("${OCTKWrapZLIB_STAMP_FILE_PATH}")
+	message(STATUS "${OpenCTKWrapZLIB_DIR_NAME} install success")
+	octk_make_stamp_file("${OpenCTKWrapZLIB_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapZLIB INTERFACE IMPORTED)
+add_library(OpenCTKWrapZLIB::WrapZLIB INTERFACE IMPORTED)
 octk_pkgconf_check_modules(ZLIB REQUIRED
-	PATH "${OCTKWrapZLIB_INSTALL_DIR}/share/pkgconfig"
+	PATH "${OpenCTKWrapZLIB_INSTALL_DIR}/share/pkgconfig"
 	IMPORTED_TARGET zlib)
-target_link_libraries(OCTK3rdparty::WrapZLIB INTERFACE PkgConfig::ZLIB)
-set(OCTKWrapZLIB_FOUND ON)
+target_link_libraries(OpenCTKWrapZLIB::WrapZLIB INTERFACE PkgConfig::ZLIB)
+set(OpenCTKWrapZLIB_FOUND ON)

@@ -29,9 +29,11 @@ set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Set example link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapImGui PROVIDED_TARGETS OCTK3rdparty::WrapImGui)
-octk_find_package(WrapGLFW PROVIDED_TARGETS OCTK3rdparty::WrapGLFW)
-octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
+octk_find_package(WrapImGui PROVIDED_TARGETS OpenCTKWrapImGui::WrapImGui)
+octk_find_package(WrapSDL3 PROVIDED_TARGETS OpenCTKWrapSDL3::WrapSDL3)
+if(OCTK_FEATURE_IMGUI_USE_GLFW)
+	octk_find_package(WrapGLFW PROVIDED_TARGETS OpenCTKWrapGLFW::WrapGLFW)
+endif()
 
 if(APPLE)
 	list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES
@@ -64,7 +66,7 @@ octk_add_executable(OpenCTKImguiExpImage
 	INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_SOURCE_DIR}
 	LIBRARIES
-	OCTK3rdparty::WrapSDL
+	OpenCTKWrapSDL3::WrapSDL3
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -74,7 +76,7 @@ octk_add_executable(OpenCTKImguiExpRwbmp
 	INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_SOURCE_DIR}
 	LIBRARIES
-	OCTK3rdparty::WrapSDL
+	OpenCTKWrapSDL3::WrapSDL3
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -109,207 +111,215 @@ octk_add_executable(OpenCTKImguiExpVersion
 if(APPLE)
 	octk_add_executable(OpenCTKImguiExpAppleMetal
 		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.mm
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_apple_metal/main.mm
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.mm
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
+		${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_apple_metal/main.mm
 		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
+		${OpenCTKWrapImGui_SOURCE_DIR}
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends
 		LIBRARIES
 		"-framework AppKit"
 		"-framework Metal"
 		"-framework MetalKit"
 		"-framework QuartzCore"
 		"-framework GameController"
-		OCTK3rdparty::WrapImGui
+		OpenCTKWrapImGui::WrapImGui
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
 	octk_add_executable(OpenCTKImguiExpAppleOpengl2
 		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.mm
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_apple_opengl2/main.mm
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_osx.mm
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_apple_opengl2/main.mm
 		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
+		${OpenCTKWrapImGui_SOURCE_DIR}
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends
 		LIBRARIES
 		"-framework Cocoa"
 		"-framework OpenGL"
 		"-framework GameController"
-		OCTK3rdparty::WrapImGui
+		OpenCTKWrapImGui::WrapImGui
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
 	octk_add_executable(OpenCTKImguiExpSdl3Metal
 		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_metal/main.mm
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_metal/main.mm
 		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
+		${OpenCTKWrapImGui_SOURCE_DIR}
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends
 		LIBRARIES
-		OCTK3rdparty::WrapSDL
-		OCTK3rdparty::WrapImGui
+		OpenCTKWrapSDL3::WrapSDL3
+		OpenCTKWrapImGui::WrapImGui
 		"-framework Metal"
 		"-framework MetalKit"
 		"-framework QuartzCore"
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
-	octk_add_executable(OpenCTKImguiExpGlfwMetal
-		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_metal/main.mm
-		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
-		LIBRARIES
-		OCTK3rdparty::WrapGLFW
-		OCTK3rdparty::WrapImGui
-		"-framework Metal"
-		"-framework MetalKit"
-		"-framework Cocoa"
-		"-framework IOKit"
-		"-framework CoreVideo"
-		"-framework QuartzCore"
-		${OCTK_EXAMPLE_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_EXAMPLE_OUTPUT_DIR})
+	if(OCTK_FEATURE_IMGUI_USE_GLFW)
+		octk_add_executable(OpenCTKImguiExpGlfwMetal
+			SOURCES
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_metal/main.mm
+			INCLUDE_DIRECTORIES
+			${OpenCTKWrapImGui_SOURCE_DIR}
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends
+			LIBRARIES
+			OpenCTKWrapGLFW::WrapGLFW
+			OpenCTKWrapImGui::WrapImGui
+			"-framework Metal"
+			"-framework MetalKit"
+			"-framework Cocoa"
+			"-framework IOKit"
+			"-framework CoreVideo"
+			"-framework QuartzCore"
+			${OCTK_EXAMPLE_LINK_LIBRARIES}
+			OUTPUT_DIRECTORY
+			${OCTK_EXAMPLE_OUTPUT_DIR})
+	endif()
 endif()
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL 2 QUIET)
 if(OpenGL_FOUND)
-	octk_add_executable(OpenCTKImguiExpGlfwOpengl2
-		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.h
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_opengl2/main.cpp
-		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
-		LIBRARIES
-		OpenGL::GL
-		OCTK3rdparty::WrapGLFW
-		OCTK3rdparty::WrapImGui
-		${OCTK_EXAMPLE_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_EXAMPLE_OUTPUT_DIR})
+	if(OCTK_FEATURE_IMGUI_USE_GLFW)
+		octk_add_executable(OpenCTKImguiExpGlfwOpengl2
+			SOURCES
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl2.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_opengl2/main.cpp
+			INCLUDE_DIRECTORIES
+			${OpenCTKWrapImGui_SOURCE_DIR}
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends
+			LIBRARIES
+			OpenGL::GL
+			OpenCTKWrapGLFW::WrapGLFW
+			OpenCTKWrapImGui::WrapImGui
+			${OCTK_EXAMPLE_LINK_LIBRARIES}
+			OUTPUT_DIRECTORY
+			${OCTK_EXAMPLE_OUTPUT_DIR})
+	endif()
 endif()
 find_package(OpenGL 3 QUIET)
 if(OpenGL_FOUND)
-	octk_add_executable(OpenCTKImguiExpGlfwOpengl3
-		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_opengl3/main.cpp
-		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
-		LIBRARIES
-		OpenGL::GL
-		OCTK3rdparty::WrapGLFW
-		OCTK3rdparty::WrapImGui
-		${OCTK_EXAMPLE_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_EXAMPLE_OUTPUT_DIR})
+	if(OCTK_FEATURE_IMGUI_USE_GLFW)
+		octk_add_executable(OpenCTKImguiExpGlfwOpengl3
+			SOURCES
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_opengl3/main.cpp
+			INCLUDE_DIRECTORIES
+			${OpenCTKWrapImGui_SOURCE_DIR}
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends
+			LIBRARIES
+			OpenGL::GL
+			OpenCTKWrapGLFW::WrapGLFW
+			OpenCTKWrapImGui::WrapImGui
+			${OCTK_EXAMPLE_LINK_LIBRARIES}
+			OUTPUT_DIRECTORY
+			${OCTK_EXAMPLE_OUTPUT_DIR})
+	endif()
 	octk_add_executable(OpenCTKImguiExpSdl3Opengl3
 		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_opengl3/main.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_opengl3/main.cpp
 		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
+		${OpenCTKWrapImGui_SOURCE_DIR}
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends
 		LIBRARIES
 		OpenGL::GL
-		OCTK3rdparty::WrapSDL
-		OCTK3rdparty::WrapImGui
+		OpenCTKWrapSDL3::WrapSDL3
+		OpenCTKWrapImGui::WrapImGui
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})
 endif()
 octk_add_executable(OpenCTKImguiExpSdl3SdlGPU3
 	SOURCES
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.h
-	${OCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_sdlgpu3/main.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_sdlgpu3/main.cpp
 	INCLUDE_DIRECTORIES
-	${OCTKWrapImGui_SOURCE_DIR}
-	${OCTKWrapImGui_SOURCE_DIR}/backends
+	${OpenCTKWrapImGui_SOURCE_DIR}
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends
 	LIBRARIES
-	OCTK3rdparty::WrapSDL
-	OCTK3rdparty::WrapImGui
+	OpenCTKWrapSDL3::WrapSDL3
+	OpenCTKWrapImGui::WrapImGui
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
 octk_add_executable(OpenCTKImguiExpSdl3SdlRenderer3
 	SOURCES
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
-	${OCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_sdlrenderer3/main.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_sdlrenderer3/main.cpp
 	INCLUDE_DIRECTORIES
-	${OCTKWrapImGui_SOURCE_DIR}
-	${OCTKWrapImGui_SOURCE_DIR}/backends
+	${OpenCTKWrapImGui_SOURCE_DIR}
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends
 	LIBRARIES
-	OCTK3rdparty::WrapSDL
-	OCTK3rdparty::WrapImGui
+	OpenCTKWrapSDL3::WrapSDL3
+	OpenCTKWrapImGui::WrapImGui
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
 find_package(Vulkan QUIET)
 if(Vulkan_FOUND)
-	octk_add_executable(OpenCTKImguiExpGlfwVulkan
-		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.h
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_vulkan/main.cpp
-		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
-		LIBRARIES
-		Vulkan::Vulkan
-		OCTK3rdparty::WrapGLFW
-		OCTK3rdparty::WrapImGui
-		${OCTK_EXAMPLE_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_EXAMPLE_OUTPUT_DIR})
+	if(OCTK_FEATURE_IMGUI_USE_GLFW)
+		octk_add_executable(OpenCTKImguiExpGlfwVulkan
+			SOURCES
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_glfw.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.h
+			${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_glfw_vulkan/main.cpp
+			INCLUDE_DIRECTORIES
+			${OpenCTKWrapImGui_SOURCE_DIR}
+			${OpenCTKWrapImGui_SOURCE_DIR}/backends
+			LIBRARIES
+			Vulkan::Vulkan
+			OpenCTKWrapGLFW::WrapGLFW
+			OpenCTKWrapImGui::WrapImGui
+			${OCTK_EXAMPLE_LINK_LIBRARIES}
+			OUTPUT_DIRECTORY
+			${OCTK_EXAMPLE_OUTPUT_DIR})
+	endif()
 	octk_add_executable(OpenCTKImguiExpSdl3Vulkan
 		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.h
-		${OCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_vulkan/main.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_vulkan.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/examples/example_sdl3_vulkan/main.cpp
 		INCLUDE_DIRECTORIES
-		${OCTKWrapImGui_SOURCE_DIR}
-		${OCTKWrapImGui_SOURCE_DIR}/backends
+		${OpenCTKWrapImGui_SOURCE_DIR}
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends
 		LIBRARIES
 		Vulkan::Vulkan
-		OCTK3rdparty::WrapSDL
-		OCTK3rdparty::WrapImGui
+		OpenCTKWrapSDL3::WrapSDL3
+		OpenCTKWrapImGui::WrapImGui
 		${OCTK_EXAMPLE_LINK_LIBRARIES}
 		OUTPUT_DIRECTORY
 		${OCTK_EXAMPLE_OUTPUT_DIR})

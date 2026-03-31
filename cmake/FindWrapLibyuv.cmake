@@ -23,7 +23,7 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapLibyuv)
+if(TARGET OpenCTKWrapLibyuv::WrapLibyuv)
     set(OpenCTKWrapLibyuv_FOUND ON)
     return()
 endif()
@@ -82,20 +82,20 @@ if(NOT EXISTS "${OpenCTKWrapLibyuv_STAMP_FILE_PATH}")
     octk_make_stamp_file("${OpenCTKWrapLibyuv_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapLibyuv STATIC IMPORTED)
+add_library(OpenCTKWrapLibyuv::WrapLibyuv STATIC IMPORTED)
 if(WIN32)
     set(OpenCTKWrapLibyuv_LIBRARY yuv.lib)
 else()
     set(OpenCTKWrapLibyuv_LIBRARY libyuv.a)
 endif()
-set_target_properties(OCTK3rdparty::WrapLibyuv PROPERTIES
+set_target_properties(OpenCTKWrapLibyuv::WrapLibyuv PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES
     ${OpenCTKWrapLibyuv_INSTALL_DIR}/include
     IMPORTED_LOCATION
     ${OpenCTKWrapLibyuv_INSTALL_DIR}/lib/${OpenCTKWrapLibyuv_LIBRARY})
 find_package(JPEG)
 if(JPEG_FOUND)
-    target_link_libraries(OCTK3rdparty::WrapLibyuv INTERFACE ${JPEG_LIBRARY})
+    target_link_libraries(OpenCTKWrapLibyuv::WrapLibyuv INTERFACE ${JPEG_LIBRARY})
 endif()
 if(NOT EXISTS "${OCTK_BUILD_DIR}/third_party/libyuv/include/libyuv")
     execute_process(

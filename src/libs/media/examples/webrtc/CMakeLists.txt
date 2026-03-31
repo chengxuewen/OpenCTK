@@ -30,7 +30,7 @@ set(OCTK_EXAMPLE_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_EXAMPLESDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Set example link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
+octk_find_package(WrapSDL3 PROVIDED_TARGETS OpenCTKWrapSDL3::WrapSDL3)
 list(APPEND OCTK_EXAMPLE_LINK_LIBRARIES OpenCTK::Media)
 
 
@@ -44,7 +44,7 @@ octk_add_executable(OpenCTKMediaExpWebrtcPuller
 	INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_SOURCE_DIR}
 	LIBRARIES
-	OCTK3rdparty::WrapSDL
+	OpenCTKWrapSDL3::WrapSDL3
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})
@@ -55,7 +55,7 @@ octk_add_executable(OpenCTKMediaExpWebrtcPusher
 	INCLUDE_DIRECTORIES
 	${CMAKE_CURRENT_SOURCE_DIR}
 	LIBRARIES
-	OCTK3rdparty::WrapSDL
+	OpenCTKWrapSDL3::WrapSDL3
 	${OCTK_EXAMPLE_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_EXAMPLE_OUTPUT_DIR})

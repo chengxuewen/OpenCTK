@@ -47,7 +47,7 @@ function(octk_add_resources target)
         set(${target}_resources_mark_stamp_cache "${RESOURCES_MARK_STAMP}" CACHE STRING "" FORCE)
         if ("${OCTK_RCC_EXECUTABLE}" STREQUAL "")
             execute_process(
-                COMMAND ${OCTKPython_EXECUTABLE} ${OCTK_RCC_PYSCRIPT} -o ${CMAKE_CURRENT_BINARY_DIR} -n ${arg_NAME} -r ${RESOURCES_ABSOLUTE_PATHS}
+                COMMAND ${OpenCTKPython_EXECUTABLE} ${OCTK_RCC_PYSCRIPT} -o ${CMAKE_CURRENT_BINARY_DIR} -n ${arg_NAME} -r ${RESOURCES_ABSOLUTE_PATHS}
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 RESULT_VARIABLE EXECUTE_RESULT)
         else()

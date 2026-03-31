@@ -23,8 +23,8 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapWebRTC)
-	set(OCTKWrapWebRTC_FOUND ON)
+if(TARGET OpenCTKWrapWebRTC::WrapWebRTC)
+	set(OpenCTKWrapWebRTC_FOUND ON)
 	return()
 endif()
 
@@ -35,54 +35,54 @@ if(NOT OCTK_3RDPARTY_WEBRTC_MILESTONE)
     message(STATUS "3rdparty webrtc OCTK_3RDPARTY_WEBRTC_MILESTONE not set.")
 endif()
 if(EXISTS "${OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR}" AND EXISTS "${OCTK_3RDPARTY_WEBRTC_LIBRARY}")
-	set(OCTKWrapWebRTC_INCLUDE_DIR "${OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR}")
-	set(OCTKWrapWebRTC_LIBRARY "${OCTK_3RDPARTY_WEBRTC_LIBRARY}")
+	set(OpenCTKWrapWebRTC_INCLUDE_DIR "${OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR}")
+	set(OpenCTKWrapWebRTC_LIBRARY "${OCTK_3RDPARTY_WEBRTC_LIBRARY}")
 elseif(EXISTS "${OCTK_3RDPARTY_WEBRTC_PATH}")
-	get_filename_component(OCTKWrapWebRTC_DIR_NAME "${OCTK_3RDPARTY_WEBRTC_PATH}" NAME_WE)
-	set(OCTKWrapWebRTC_URL_PATH "${OCTK_3RDPARTY_WEBRTC_PATH}")
-	set(OCTKWrapWebRTC_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapWebRTC_DIR_NAME}")
-	set(OCTKWrapWebRTC_BUILD_DIR "${OCTKWrapWebRTC_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-	set(OCTKWrapWebRTC_SOURCE_DIR "${OCTKWrapWebRTC_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-	set(OCTKWrapWebRTC_INSTALL_DIR "${OCTKWrapWebRTC_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-	octk_stamp_file_info(OCTKWrapWebRTC OUTPUT_DIR "${OCTKWrapWebRTC_ROOT_DIR}")
-	octk_fetch_3rdparty(OCTKWrapWebRTC URL "${OCTKWrapWebRTC_URL_PATH}")
-	if(NOT EXISTS "${OCTKWrapWebRTC_STAMP_FILE_PATH}")
-		if(NOT EXISTS ${OCTKWrapWebRTC_SOURCE_DIR})
-			message(FATAL_ERROR "${OCTKWrapWebRTC_DIR_NAME} FetchContent failed.")
+	get_filename_component(OpenCTKWrapWebRTC_DIR_NAME "${OCTK_3RDPARTY_WEBRTC_PATH}" NAME_WE)
+	set(OpenCTKWrapWebRTC_URL_PATH "${OCTK_3RDPARTY_WEBRTC_PATH}")
+	set(OpenCTKWrapWebRTC_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapWebRTC_DIR_NAME}")
+	set(OpenCTKWrapWebRTC_BUILD_DIR "${OpenCTKWrapWebRTC_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+	set(OpenCTKWrapWebRTC_SOURCE_DIR "${OpenCTKWrapWebRTC_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+	set(OpenCTKWrapWebRTC_INSTALL_DIR "${OpenCTKWrapWebRTC_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+	octk_stamp_file_info(OpenCTKWrapWebRTC OUTPUT_DIR "${OpenCTKWrapWebRTC_ROOT_DIR}")
+	octk_fetch_3rdparty(OpenCTKWrapWebRTC URL "${OpenCTKWrapWebRTC_URL_PATH}")
+	if(NOT EXISTS "${OpenCTKWrapWebRTC_STAMP_FILE_PATH}")
+		if(NOT EXISTS ${OpenCTKWrapWebRTC_SOURCE_DIR})
+			message(FATAL_ERROR "${OpenCTKWrapWebRTC_DIR_NAME} FetchContent failed.")
 		endif()
-		octk_make_stamp_file("${OCTKWrapWebRTC_STAMP_FILE_PATH}")
+		octk_make_stamp_file("${OpenCTKWrapWebRTC_STAMP_FILE_PATH}")
 	endif()
-	set(OCTKWrapWebRTC_INCLUDE_DIR "${OCTKWrapWebRTC_INSTALL_DIR}/include")
+	set(OpenCTKWrapWebRTC_INCLUDE_DIR "${OpenCTKWrapWebRTC_INSTALL_DIR}/include")
 	if(CMAKE_BUILD_TYPE MATCHES "Debug")
-		set(OCTKWrapWebRTC_LIBRARY_DIR "${OCTKWrapWebRTC_INSTALL_DIR}/debug")
+		set(OpenCTKWrapWebRTC_LIBRARY_DIR "${OpenCTKWrapWebRTC_INSTALL_DIR}/debug")
 	else()
-		set(OCTKWrapWebRTC_LIBRARY_DIR "${OCTKWrapWebRTC_INSTALL_DIR}/release")
+		set(OpenCTKWrapWebRTC_LIBRARY_DIR "${OpenCTKWrapWebRTC_INSTALL_DIR}/release")
 	endif()
 	if(WIN32)
-		set(OCTKWrapWebRTC_LIBRARY "${OCTKWrapWebRTC_LIBRARY_DIR}/webrtc.lib")
+		set(OpenCTKWrapWebRTC_LIBRARY "${OpenCTKWrapWebRTC_LIBRARY_DIR}/webrtc.lib")
 	else()
-		set(OCTKWrapWebRTC_LIBRARY "${OCTKWrapWebRTC_LIBRARY_DIR}/libwebrtc.a")
+		set(OpenCTKWrapWebRTC_LIBRARY "${OpenCTKWrapWebRTC_LIBRARY_DIR}/libwebrtc.a")
 	endif()
 else()
 	message(FATAL_ERROR "3rdparty webrtc OCTK_3RDPARTY_WEBRTC_PATH or "
 		"OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR/OCTK_3RDPARTY_WEBRTC_LIBRARY not set.")
 endif()
 # add wrap lib
-add_library(OCTK3rdparty::WrapWebRTC STATIC IMPORTED)
+add_library(OpenCTKWrapWebRTC::WrapWebRTC STATIC IMPORTED)
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE _DEBUG)
+    target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE _DEBUG)
     if(OCTK_CXX_COMPILER_USING_LIBSTDCXX)
-        target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE _GLIBCXX_ASSERTIONS=1)
+        target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE _GLIBCXX_ASSERTIONS=1)
 		if(OCTK_FEATURE_MEDIA_USE_WEBRTC_GLIBCXX_DEBUG)
-			target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE _GLIBCXX_DEBUG=1)
+			target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE _GLIBCXX_DEBUG=1)
 		endif()
     endif()
 endif()
 if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-    target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE NDEBUG)
+    target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE NDEBUG)
 endif()
 if(WIN32)
-	target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE
+	target_link_libraries(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE
 		advapi32.lib
 		comdlg32.lib
 		dbghelp.lib
@@ -117,7 +117,7 @@ if(WIN32)
 		d3d11.lib # D3D11CreateDevice
 		dxgi.lib # CreateDXGIFactory1
 		ws2_32.lib)
-	target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE
+	target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE
 		# _CRT_SECURE_NO_WARNINGS
 		# _HAS_NODISCARD
 		# _CRT_NONSTDC_NO_WARNINGS
@@ -146,7 +146,7 @@ if(WIN32)
 		NOGDI)
 else()
 	if(APPLE)
-		target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE
+		target_link_libraries(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE
 			"-framework AppKit"
 			"-framework CoreAudio"
 			"-framework CoreVideo"
@@ -157,10 +157,10 @@ else()
 			"-framework AudioToolbox"
 			"-framework ScreenCaptureKit"
 			"-framework ApplicationServices")
-		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_MAC)
+		target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE WEBRTC_MAC)
 	elseif(OCTK_SYSTEM_LINUX)
         find_package(X11 REQUIRED)
-        target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE X11::X11)
+        target_link_libraries(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE X11::X11)
         octk_pkgconf_check_modules(gio REQUIRED
             PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
             IMPORTED_TARGET
@@ -181,35 +181,35 @@ else()
             PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
             IMPORTED_TARGET
             gthread-2.0)
-        target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE
+        target_link_libraries(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE
             PkgConfig::gio
             PkgConfig::glib
             PkgConfig::gmodule
             PkgConfig::gobject
             PkgConfig::gthread)
-        target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_LINUX)
+        target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE WEBRTC_LINUX)
 	elseif(OCTK_SYSTEM_ANDROID)
-		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_ANDROID WEBRTC_LINUX)
+		target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE WEBRTC_ANDROID WEBRTC_LINUX)
 	elseif(OCTK_SYSTEM_IOS)
-		target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_IOS)
+		target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE WEBRTC_IOS)
 	endif()
-    target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE WEBRTC_POSIX HAVE_PTHREAD)
-	target_link_libraries(OCTK3rdparty::WrapWebRTC INTERFACE ${CMAKE_DL_LIBS})
+    target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE WEBRTC_POSIX HAVE_PTHREAD)
+	target_link_libraries(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE ${CMAKE_DL_LIBS})
 endif()
-target_compile_definitions(OCTK3rdparty::WrapWebRTC INTERFACE
+target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE
     ABSL_FLAGS_STRIP_NAMES=0
     ABSL_ALLOCATOR_NOTHROW=1
     WEBRTC_USE_H264)
-set_target_properties(OCTK3rdparty::WrapWebRTC PROPERTIES
+set_target_properties(OpenCTKWrapWebRTC::WrapWebRTC PROPERTIES
 	INTERFACE_INCLUDE_DIRECTORIES
-	"${OCTKWrapWebRTC_INCLUDE_DIR}"
+	"${OpenCTKWrapWebRTC_INCLUDE_DIR}"
 	IMPORTED_LOCATION
-	"${OCTKWrapWebRTC_LIBRARY}")
-target_include_directories(OCTK3rdparty::WrapWebRTC
+	"${OpenCTKWrapWebRTC_LIBRARY}")
+target_include_directories(OpenCTKWrapWebRTC::WrapWebRTC
 	SYSTEM BEFORE INTERFACE
-	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party"
-	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party/abseil-cpp"
-	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party/libyuv/include"
-	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party/jsoncpp/generated"
-	"${OCTKWrapWebRTC_INCLUDE_DIR}/third_party/jsoncpp/source/include")
-set(OCTKWrapWebRTC_FOUND ON)
+	"${OpenCTKWrapWebRTC_INCLUDE_DIR}/third_party"
+	"${OpenCTKWrapWebRTC_INCLUDE_DIR}/third_party/abseil-cpp"
+	"${OpenCTKWrapWebRTC_INCLUDE_DIR}/third_party/libyuv/include"
+	"${OpenCTKWrapWebRTC_INCLUDE_DIR}/third_party/jsoncpp/generated"
+	"${OpenCTKWrapWebRTC_INCLUDE_DIR}/third_party/jsoncpp/source/include")
+set(OpenCTKWrapWebRTC_FOUND ON)

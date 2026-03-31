@@ -23,66 +23,66 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapJson)
-    set(OCTKWrapJson_FOUND ON)
+if(TARGET OpenCTKWrapJson::WrapJson)
+    set(OpenCTKWrapJson_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapJson_NAME "json-3.12.0")
-set(OCTKWrapJson_PKG_NAME "${OCTKWrapJson_NAME}.7z")
-set(OCTKWrapJson_DIR_NAME "${OCTKWrapJson_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapJson_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapJson_PKG_NAME}")
-set(OCTKWrapJson_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapJson_DIR_NAME}")
-set(OCTKWrapJson_BUILD_DIR "${OCTKWrapJson_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapJson_SOURCE_DIR "${OCTKWrapJson_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapJson_INSTALL_DIR "${OCTKWrapJson_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapJson OUTPUT_DIR "${OCTKWrapJson_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapJson URL "${OCTKWrapJson_URL_PATH}" OUTPUT_NAME "${OCTKWrapJson_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapJson_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapJson_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapJson_DIR_NAME} FetchContent failed.")
+set(OpenCTKWrapJson_NAME "json-3.12.0")
+set(OpenCTKWrapJson_PKG_NAME "${OpenCTKWrapJson_NAME}.7z")
+set(OpenCTKWrapJson_DIR_NAME "${OpenCTKWrapJson_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapJson_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapJson_PKG_NAME}")
+set(OpenCTKWrapJson_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapJson_DIR_NAME}")
+set(OpenCTKWrapJson_BUILD_DIR "${OpenCTKWrapJson_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapJson_SOURCE_DIR "${OpenCTKWrapJson_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapJson_INSTALL_DIR "${OpenCTKWrapJson_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapJson OUTPUT_DIR "${OpenCTKWrapJson_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapJson URL "${OpenCTKWrapJson_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapJson_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapJson_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapJson_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapJson_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapJson_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapJson_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapJson_DIR_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapJson_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
         -DJSON_BuildTests=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapJson_INSTALL_DIR}
-        ${OCTKWrapJson_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapJson_BUILD_DIR}"
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapJson_INSTALL_DIR}
+        ${OpenCTKWrapJson_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapJson_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapJson_DIR_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapJson_DIR_NAME} configure failed.")
     endif()
-    message(STATUS "${OCTKWrapJson_DIR_NAME} configure success")
+    message(STATUS "${OpenCTKWrapJson_DIR_NAME} configure success")
     
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config 
         ${CMAKE_BUILD_TYPE} --target install
-        WORKING_DIRECTORY "${OCTKWrapJson_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapJson_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapJson_DIR_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapJson_DIR_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapJson_DIR_NAME} build success")
+    message(STATUS "${OpenCTKWrapJson_DIR_NAME} build success")
     
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapJson_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapJson_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapJson_DIR_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapJson_DIR_NAME} install failed.")
     endif()        
-    message(STATUS "${OCTKWrapJson_DIR_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapJson_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapJson_DIR_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapJson_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapJson INTERFACE IMPORTED)
-set(nlohmann_json_DIR "${OCTKWrapJson_INSTALL_DIR}/share/cmake/nlohmann_json")
-find_package(nlohmann_json PATHS "${OCTKWrapJson_INSTALL_DIR}" NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapJson INTERFACE nlohmann_json::nlohmann_json)
-set(OCTKWrapJson_FOUND ON)
+add_library(OpenCTKWrapJson::WrapJson INTERFACE IMPORTED)
+set(nlohmann_json_DIR "${OpenCTKWrapJson_INSTALL_DIR}/share/cmake/nlohmann_json")
+find_package(nlohmann_json PATHS "${OpenCTKWrapJson_INSTALL_DIR}" NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapJson::WrapJson INTERFACE nlohmann_json::nlohmann_json)
+set(OpenCTKWrapJson_FOUND ON)

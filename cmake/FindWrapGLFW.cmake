@@ -23,64 +23,64 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapGLFW)
-	set(OCTKWrapGLFW_FOUND ON)
+if(TARGET OpenCTKWrapGLFW::WrapGLFW)
+	set(OpenCTKWrapGLFW_FOUND ON)
 	return()
 endif()
 
-set(OCTKWrapGLFW_NAME "glfw-3.4")
-set(OCTKWrapGLFW_DIR_NAME "${OCTKWrapGLFW_NAME}")
-set(OCTKWrapGLFW_PKG_NAME "${OCTKWrapGLFW_NAME}.tar.gz")
-set(OCTKWrapGLFW_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapGLFW_PKG_NAME}")
-set(OCTKWrapGLFW_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapGLFW_DIR_NAME}")
-set(OCTKWrapGLFW_BUILD_DIR "${OCTKWrapGLFW_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapGLFW_SOURCE_DIR "${OCTKWrapGLFW_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapGLFW_INSTALL_DIR "${OCTKWrapGLFW_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapGLFW OUTPUT_DIR "${OCTKWrapGLFW_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapGLFW URL "${OCTKWrapGLFW_URL_PATH}")
-if(NOT EXISTS "${OCTKWrapGLFW_STAMP_FILE_PATH}")
-	if(NOT EXISTS ${OCTKWrapGLFW_SOURCE_DIR})
-		message(FATAL_ERROR "${OCTKWrapGLFW_DIR_NAME} FetchContent failed.")
+set(OpenCTKWrapGLFW_NAME "glfw-3.4")
+set(OpenCTKWrapGLFW_DIR_NAME "${OpenCTKWrapGLFW_NAME}")
+set(OpenCTKWrapGLFW_PKG_NAME "${OpenCTKWrapGLFW_NAME}.tar.gz")
+set(OpenCTKWrapGLFW_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapGLFW_PKG_NAME}")
+set(OpenCTKWrapGLFW_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapGLFW_DIR_NAME}")
+set(OpenCTKWrapGLFW_BUILD_DIR "${OpenCTKWrapGLFW_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapGLFW_SOURCE_DIR "${OpenCTKWrapGLFW_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapGLFW_INSTALL_DIR "${OpenCTKWrapGLFW_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapGLFW OUTPUT_DIR "${OpenCTKWrapGLFW_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapGLFW URL "${OpenCTKWrapGLFW_URL_PATH}")
+if(NOT EXISTS "${OpenCTKWrapGLFW_STAMP_FILE_PATH}")
+	if(NOT EXISTS ${OpenCTKWrapGLFW_SOURCE_DIR})
+		message(FATAL_ERROR "${OpenCTKWrapGLFW_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(${OCTKWrapGLFW_BUILD_DIR})
+	octk_reset_dir(${OpenCTKWrapGLFW_BUILD_DIR})
 
-	message(STATUS "Configure ${OCTKWrapGLFW_DIR_NAME} lib...")
+	message(STATUS "Configure ${OpenCTKWrapGLFW_DIR_NAME} lib...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND}
 		-G ${CMAKE_GENERATOR}
 		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 		-DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-		-DCMAKE_INSTALL_PREFIX=${OCTKWrapGLFW_INSTALL_DIR}
-		${OCTKWrapGLFW_SOURCE_DIR}
-		WORKING_DIRECTORY "${OCTKWrapGLFW_BUILD_DIR}"
+		-DCMAKE_INSTALL_PREFIX=${OpenCTKWrapGLFW_INSTALL_DIR}
+		${OpenCTKWrapGLFW_SOURCE_DIR}
+		WORKING_DIRECTORY "${OpenCTKWrapGLFW_BUILD_DIR}"
 		RESULT_VARIABLE CONFIGURE_RESULT)
 	if(NOT CONFIGURE_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapGLFW_DIR_NAME} configure failed.")
+		message(FATAL_ERROR "${OpenCTKWrapGLFW_DIR_NAME} configure failed.")
 	endif()
-	message(STATUS "${OCTKWrapGLFW_DIR_NAME} configure success")
+	message(STATUS "${OpenCTKWrapGLFW_DIR_NAME} configure success")
 
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config
 		${CMAKE_BUILD_TYPE} --target install
-		WORKING_DIRECTORY "${OCTKWrapGLFW_BUILD_DIR}"
+		WORKING_DIRECTORY "${OpenCTKWrapGLFW_BUILD_DIR}"
 		RESULT_VARIABLE BUILD_RESULT)
 	if(NOT BUILD_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapGLFW_DIR_NAME} build failed.")
+		message(FATAL_ERROR "${OpenCTKWrapGLFW_DIR_NAME} build failed.")
 	endif()
-	message(STATUS "${OCTKWrapGLFW_DIR_NAME} build success")
+	message(STATUS "${OpenCTKWrapGLFW_DIR_NAME} build success")
 
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} --install ./
-		WORKING_DIRECTORY "${OCTKWrapGLFW_BUILD_DIR}"
+		WORKING_DIRECTORY "${OpenCTKWrapGLFW_BUILD_DIR}"
 		RESULT_VARIABLE INSTALL_RESULT)
 	if(NOT INSTALL_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapGLFW_DIR_NAME} install failed.")
+		message(FATAL_ERROR "${OpenCTKWrapGLFW_DIR_NAME} install failed.")
 	endif()
-	message(STATUS "${OCTKWrapGLFW_DIR_NAME} install success")
-	octk_make_stamp_file("${OCTKWrapGLFW_STAMP_FILE_PATH}")
+	message(STATUS "${OpenCTKWrapGLFW_DIR_NAME} install success")
+	octk_make_stamp_file("${OpenCTKWrapGLFW_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapGLFW INTERFACE IMPORTED)
-find_package(glfw3 PATHS ${OCTKWrapGLFW_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapGLFW INTERFACE glfw)
-set(OCTKWrapGLFW_FOUND ON)
+add_library(OpenCTKWrapGLFW::WrapGLFW INTERFACE IMPORTED)
+find_package(glfw3 PATHS ${OpenCTKWrapGLFW_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapGLFW::WrapGLFW INTERFACE glfw)
+set(OpenCTKWrapGLFW_FOUND ON)

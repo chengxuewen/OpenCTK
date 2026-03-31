@@ -25,14 +25,14 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapWebRTC PROVIDED_TARGETS OCTK3rdparty::WrapWebRTC)
+octk_find_package(WrapWebRTC PROVIDED_TARGETS OpenCTKWrapWebRTC::WrapWebRTC)
 octk_internal_extend_target(OpenCTKMedia
     SOURCES
     ${ROOT_DIR}/octk_webrtc_backend.cpp
     ${ROOT_DIR}/octk_webrtc_backend_p.hpp
 	${ROOT_DIR}/octk_webrtc_logger_p.hpp
 	LIBRARIES
-	OCTK3rdparty::WrapWebRTC)
+	OpenCTKWrapWebRTC::WrapWebRTC)
 if(OCTK_FEATURE_MEDIA_USE_CODEC_JETSON)
 	add_subdirectory(${ROOT_DIR}/codecs/jetson)
 endif()

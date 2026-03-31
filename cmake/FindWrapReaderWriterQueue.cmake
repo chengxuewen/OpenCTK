@@ -23,61 +23,61 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapReaderWriterQueue)
-    set(OCTKWrapReaderWriterQueue_FOUND ON)
+if(TARGET OpenCTKWrapReaderWriterQueue::WrapReaderWriterQueue)
+    set(OpenCTKWrapReaderWriterQueue_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapReaderWriterQueue_NAME "readerwriterqueue-1.0.7")
-set(OCTKWrapReaderWriterQueue_PKG_NAME "${OCTKWrapReaderWriterQueue_NAME}.tar.gz")
-set(OCTKWrapReaderWriterQueue_DIR_NAME "${OCTKWrapReaderWriterQueue_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapReaderWriterQueue_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapReaderWriterQueue_PKG_NAME}")
-set(OCTKWrapReaderWriterQueue_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapReaderWriterQueue_DIR_NAME}")
-set(OCTKWrapReaderWriterQueue_BUILD_DIR "${OCTKWrapReaderWriterQueue_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapReaderWriterQueue_SOURCE_DIR "${OCTKWrapReaderWriterQueue_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapReaderWriterQueue_INSTALL_DIR "${OCTKWrapReaderWriterQueue_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapReaderWriterQueue OUTPUT_DIR "${OCTKWrapReaderWriterQueue_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapReaderWriterQueue URL "${OCTKWrapReaderWriterQueue_URL_PATH}" OUTPUT_NAME "${OCTKWrapReaderWriterQueue_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapReaderWriterQueue_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapReaderWriterQueue_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapReaderWriterQueue_NAME} FetchContent failed.")
+set(OpenCTKWrapReaderWriterQueue_NAME "readerwriterqueue-1.0.7")
+set(OpenCTKWrapReaderWriterQueue_PKG_NAME "${OpenCTKWrapReaderWriterQueue_NAME}.tar.gz")
+set(OpenCTKWrapReaderWriterQueue_DIR_NAME "${OpenCTKWrapReaderWriterQueue_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapReaderWriterQueue_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapReaderWriterQueue_PKG_NAME}")
+set(OpenCTKWrapReaderWriterQueue_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapReaderWriterQueue_DIR_NAME}")
+set(OpenCTKWrapReaderWriterQueue_BUILD_DIR "${OpenCTKWrapReaderWriterQueue_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapReaderWriterQueue_SOURCE_DIR "${OpenCTKWrapReaderWriterQueue_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapReaderWriterQueue_INSTALL_DIR "${OpenCTKWrapReaderWriterQueue_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapReaderWriterQueue OUTPUT_DIR "${OpenCTKWrapReaderWriterQueue_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapReaderWriterQueue URL "${OpenCTKWrapReaderWriterQueue_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapReaderWriterQueue_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapReaderWriterQueue_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapReaderWriterQueue_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapReaderWriterQueue_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapReaderWriterQueue_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapReaderWriterQueue_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapReaderWriterQueue_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapReaderWriterQueue_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapReaderWriterQueue_INSTALL_DIR}
-        ${OCTKWrapReaderWriterQueue_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapReaderWriterQueue_BUILD_DIR}"
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapReaderWriterQueue_INSTALL_DIR}
+        ${OpenCTKWrapReaderWriterQueue_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapReaderWriterQueue_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapReaderWriterQueue_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapReaderWriterQueue_NAME} configure failed.")
     endif()
-    message(STATUS "${OCTKWrapReaderWriterQueue_NAME} configure success")
+    message(STATUS "${OpenCTKWrapReaderWriterQueue_NAME} configure success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
-        WORKING_DIRECTORY "${OCTKWrapReaderWriterQueue_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapReaderWriterQueue_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapReaderWriterQueue_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapReaderWriterQueue_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapReaderWriterQueue_NAME} build success")
+    message(STATUS "${OpenCTKWrapReaderWriterQueue_NAME} build success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapReaderWriterQueue_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapReaderWriterQueue_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapReaderWriterQueue_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapReaderWriterQueue_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapReaderWriterQueue_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapReaderWriterQueue_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapReaderWriterQueue_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapReaderWriterQueue_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapReaderWriterQueue INTERFACE IMPORTED)
-find_package(readerwriterqueue PATHS ${OCTKWrapReaderWriterQueue_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapReaderWriterQueue INTERFACE readerwriterqueue::readerwriterqueue)
-set(OCTKWrapReaderWriterQueue_FOUND ON)
+add_library(OpenCTKWrapReaderWriterQueue::WrapReaderWriterQueue INTERFACE IMPORTED)
+find_package(readerwriterqueue PATHS ${OpenCTKWrapReaderWriterQueue_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapReaderWriterQueue::WrapReaderWriterQueue INTERFACE readerwriterqueue::readerwriterqueue)
+set(OpenCTKWrapReaderWriterQueue_FOUND ON)

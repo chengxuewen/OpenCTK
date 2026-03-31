@@ -23,8 +23,8 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if (TARGET OCTK3rdparty::WrapBoostBeast)
-	set(OCTKWrapBoostBeast_FOUND ON)
+if (TARGET OpenCTKWrapBoostBeast::WrapBoostBeast)
+	set(OpenCTKWrapBoostBeast_FOUND ON)
 	return()
 endif ()
 
@@ -32,9 +32,9 @@ include(InstallVcpkg)
 octk_vcpkg_install_package(boost-beast
 	NOT_IMPORT
 	TARGET
-	OCTK3rdparty::WrapBoostBeast
+	OpenCTKWrapBoostBeast::WrapBoostBeast
 	PREFIX
-	OCTKWrapBoostBeast)
-find_package(boost_beast PATHS ${OCTKWrapBoostBeast_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapBoostBeast INTERFACE Boost::beast)
-set(OCTKWrapBoostBeast_FOUND ON)
+	OpenCTKWrapBoostBeast)
+find_package(boost_beast PATHS ${OpenCTKWrapBoostBeast_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapBoostBeast::WrapBoostBeast INTERFACE Boost::beast)
+set(OpenCTKWrapBoostBeast_FOUND ON)

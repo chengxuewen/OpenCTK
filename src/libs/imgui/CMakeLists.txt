@@ -24,11 +24,10 @@
 #-----------------------------------------------------------------------------------------------------------------------
 # Add lib link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
-octk_find_package(WrapImGui PROVIDED_TARGETS OCTK3rdparty::WrapImGui)
-octk_find_package(WrapGLFW PROVIDED_TARGETS OCTK3rdparty::WrapGLFW)
-octk_find_package(WrapSDL PROVIDED_TARGETS OCTK3rdparty::WrapSDL)
-octk_find_package(WrapSTB PROVIDED_TARGETS OCTK3rdparty::WrapSTB)
+octk_find_package(WrapLibyuv PROVIDED_TARGETS OpenCTKWrapLibyuv::WrapLibyuv)
+octk_find_package(WrapImGui PROVIDED_TARGETS OpenCTKWrapImGui::WrapImGui)
+octk_find_package(WrapSDL3 PROVIDED_TARGETS OpenCTKWrapSDL3::WrapSDL3)
+octk_find_package(WrapSTB PROVIDED_TARGETS OpenCTKWrapSTB::WrapSTB)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -37,13 +36,13 @@ octk_find_package(WrapSTB PROVIDED_TARGETS OCTK3rdparty::WrapSTB)
 octk_add_library(Imgui
 	EXCEPTIONS
 	SOURCES
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.h
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3_shaders.h
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3_shaders.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
 	source/octk_imgui.cpp
 	source/octk_imgui.hpp
 	source/octk_imgui_application.cpp
@@ -61,22 +60,21 @@ octk_add_library(Imgui
 	PRECOMPILED_HEADER
 	source/octk_imgui_pch.hpp
 	EXTERNAL_HEADERS_DIRS
-	${OCTKWrapImGui_INSTALL_DIR}/include
+	${OpenCTKWrapImGui_INSTALL_DIR}/include
 	INCLUDE_DIRECTORIES
-	${OCTKWrapImGui_SOURCE_DIR}
-	${OCTKWrapImGui_SOURCE_DIR}/backends
+	${OpenCTKWrapImGui_SOURCE_DIR}
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
-	OCTK3rdparty::WrapGLFW
-	OCTK3rdparty::WrapSDL
-	OCTK3rdparty::WrapSTB
+	OpenCTKWrapLibyuv::WrapLibyuv
+	OpenCTKWrapSDL3::WrapSDL3
+	OpenCTKWrapSTB::WrapSTB
 	PUBLIC_LIBRARIES
-	OCTK3rdparty::WrapImGui
+	OpenCTKWrapImGui::WrapImGui
 	OpenCTK::Core)
 octk_internal_extend_target(OpenCTKImgui
 	SOURCES
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
-	${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
+	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
 	LIBRARIES
 	"-framework Cocoa"
 	"-framework IOKit"
@@ -85,6 +83,15 @@ octk_internal_extend_target(OpenCTKImgui
 	"-framework CoreVideo"
 	"-framework QuartzCore"
 	CONDITION OCTK_SYSTEM_MAC)
+if(OCTK_FEATURE_IMGUI_USE_GLFW)
+	octk_find_package(WrapGLFW PROVIDED_TARGETS OpenCTKWrapGLFW::WrapGLFW)
+	octk_internal_extend_target(OpenCTKImgui
+		SOURCES
+		${OpenCTKWrapGLFW_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+		${OpenCTKWrapGLFW_SOURCE_DIR}/backends/imgui_impl_glfw.h
+		LIBRARIES
+		OpenCTKWrapGLFW::WrapGLFW)
+endif()
 if(OCTK_FEATURE_IMGUI_USE_SDL_OPENGL3)
 	if(TARGET OpenGL::GL)
 		set(OpenGL_TARGET OpenGL::GL)
@@ -93,8 +100,8 @@ if(OCTK_FEATURE_IMGUI_USE_SDL_OPENGL3)
 	endif()
 	octk_internal_extend_target(OpenCTKImgui
 		SOURCES
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
 		source/octk_imgui_application_sdlopengl3.cpp
 		source/octk_imgui_application_sdlopengl3.hpp
 		LIBRARIES

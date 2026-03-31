@@ -23,70 +23,70 @@
 
 
 function(octk_vcpkg_install)
-	if(EXISTS "${OCTKVcpkg_EXECUTABLE}" AND EXISTS "${OCTKVcpkgTools_EXECUTABLE}")
-		set(OCTKVcpkg_FOUND ON)
+	if(EXISTS "${OpenCTKVcpkg_EXECUTABLE}" AND EXISTS "${OpenCTKVcpkgTools_EXECUTABLE}")
+		set(OpenCTKVcpkg_FOUND ON)
 		return()
     endif()
 
-    set(OCTKVcpkg_NAME "vcpkg")
-    set(OCTKVcpkg_ROOT_DIR "${OCTK_TOP_LEVEL_SOURCE_DIR}/vcpkg" CACHE INTERNAL "" FORCE)
-    set(OCTKVcpkg_INSTALL_DIR "${OCTKVcpkg_ROOT_DIR}/installed" CACHE INTERNAL "" FORCE)
-    set(OCTKVcpkgTools_ROOT_DIR "${OCTK_TOP_LEVEL_SOURCE_DIR}/vcpkg-tools" CACHE INTERNAL "" FORCE)
-    set(OCTKVcpkgTools_INSTALL_DIR "${OCTKVcpkgTools_ROOT_DIR}/installed" CACHE INTERNAL "" FORCE)
+    set(OpenCTKVcpkg_NAME "vcpkg")
+    set(OpenCTKVcpkg_ROOT_DIR "${OCTK_TOP_LEVEL_SOURCE_DIR}/vcpkg" CACHE INTERNAL "" FORCE)
+    set(OpenCTKVcpkg_INSTALL_DIR "${OpenCTKVcpkg_ROOT_DIR}/installed" CACHE INTERNAL "" FORCE)
+    set(OpenCTKVcpkgTools_ROOT_DIR "${OCTK_TOP_LEVEL_SOURCE_DIR}/vcpkg-tools" CACHE INTERNAL "" FORCE)
+    set(OpenCTKVcpkgTools_INSTALL_DIR "${OpenCTKVcpkgTools_ROOT_DIR}/installed" CACHE INTERNAL "" FORCE)
     find_package(Git REQUIRED)
     if(GIT_EXECUTABLE)
         if(WIN32)
-            set(OCTKVcpkg_EXECUTABLE_NAME "vcpkg.exe")
-            set(OCTKVcpkg_BOOTSTRAP_NAME "bootstrap-vcpkg.bat")
+            set(OpenCTKVcpkg_EXECUTABLE_NAME "vcpkg.exe")
+            set(OpenCTKVcpkg_BOOTSTRAP_NAME "bootstrap-vcpkg.bat")
         else()
-            set(OCTKVcpkg_EXECUTABLE_NAME "vcpkg")
-            set(OCTKVcpkg_BOOTSTRAP_NAME "./bootstrap-vcpkg.sh")
+            set(OpenCTKVcpkg_EXECUTABLE_NAME "vcpkg")
+            set(OpenCTKVcpkg_BOOTSTRAP_NAME "./bootstrap-vcpkg.sh")
         endif()
-        if(NOT EXISTS "${OCTKVcpkg_ROOT_DIR}/${OCTKVcpkg_BOOTSTRAP_NAME}")
-            if(EXISTS "${OCTKVcpkg_ROOT_DIR}")
+        if(NOT EXISTS "${OpenCTKVcpkg_ROOT_DIR}/${OpenCTKVcpkg_BOOTSTRAP_NAME}")
+            if(EXISTS "${OpenCTKVcpkg_ROOT_DIR}")
                 execute_process(
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory "${OCTKVcpkg_ROOT_DIR}"
-                    COMMAND ${CMAKE_COMMAND} -E echo "rmdir ${OCTKVcpkg_ROOT_DIR}"
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory "${OpenCTKVcpkg_ROOT_DIR}"
+                    COMMAND ${CMAKE_COMMAND} -E echo "rmdir ${OpenCTKVcpkg_ROOT_DIR}"
                     WORKING_DIRECTORY "${OCTK_TOP_LEVEL_SOURCE_DIR}"
                     RESULT_VARIABLE RMDIR_RESULT)
                 if(NOT (RMDIR_RESULT MATCHES 0))
-                    message(FATAL_ERROR "${OCTKVcpkg_ROOT_DIR} dir remove failed.")
+                    message(FATAL_ERROR "${OpenCTKVcpkg_ROOT_DIR} dir remove failed.")
                 endif()
             endif()
-            message(STATUS "Start clone ${OCTKVcpkg_NAME} in ${OCTK_TOP_LEVEL_SOURCE_DIR}.")
+            message(STATUS "Start clone ${OpenCTKVcpkg_NAME} in ${OCTK_TOP_LEVEL_SOURCE_DIR}.")
             execute_process(
                 COMMAND "${GIT_EXECUTABLE}" clone https://github.com/microsoft/vcpkg.git --depth 1
                 WORKING_DIRECTORY "${OCTK_TOP_LEVEL_SOURCE_DIR}"
                 RESULT_VARIABLE CLONE_RESULT
                 COMMAND_ECHO STDOUT)
             if(NOT (CLONE_RESULT MATCHES 0))
-                message(FATAL_ERROR "${OCTKVcpkg_NAME} clone failed.")
+                message(FATAL_ERROR "${OpenCTKVcpkg_NAME} clone failed.")
             endif()
         endif()
-        set(OCTKVcpkg_EXECUTABLE "${OCTKVcpkg_ROOT_DIR}/${OCTKVcpkg_EXECUTABLE_NAME}" CACHE INTERNAL "" FORCE)
-        if(NOT EXISTS "${OCTKVcpkg_ROOT_DIR}/${OCTKVcpkg_EXECUTABLE_NAME}")
+        set(OpenCTKVcpkg_EXECUTABLE "${OpenCTKVcpkg_ROOT_DIR}/${OpenCTKVcpkg_EXECUTABLE_NAME}" CACHE INTERNAL "" FORCE)
+        if(NOT EXISTS "${OpenCTKVcpkg_ROOT_DIR}/${OpenCTKVcpkg_EXECUTABLE_NAME}")
             execute_process(
-                COMMAND "${OCTKVcpkg_BOOTSTRAP_NAME}"
-                WORKING_DIRECTORY "${OCTKVcpkg_ROOT_DIR}"
+                COMMAND "${OpenCTKVcpkg_BOOTSTRAP_NAME}"
+                WORKING_DIRECTORY "${OpenCTKVcpkg_ROOT_DIR}"
                 RESULT_VARIABLE INIT_RESULT
                 COMMAND_ECHO STDOUT)
             if(NOT (INIT_RESULT MATCHES 0))
-                message(FATAL_ERROR "${OCTKVcpkg_NAME} init failed.")
+                message(FATAL_ERROR "${OpenCTKVcpkg_NAME} init failed.")
             endif()
         endif()
-        if(NOT EXISTS "${OCTKVcpkgTools_ROOT_DIR}/.git")
+        if(NOT EXISTS "${OpenCTKVcpkgTools_ROOT_DIR}/.git")
             execute_process(
-                COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKVcpkg_ROOT_DIR}" "${OCTKVcpkgTools_ROOT_DIR}"
+                COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCTKVcpkg_ROOT_DIR}" "${OpenCTKVcpkgTools_ROOT_DIR}"
                 WORKING_DIRECTORY "${OCTK_TOP_LEVEL_SOURCE_DIR}"
                 RESULT_VARIABLE COPY_RESULT
                 COMMAND_ECHO STDOUT)
             if(NOT (COPY_RESULT MATCHES 0))
-                message(FATAL_ERROR "${OCTKVcpkg_NAME} copy to vcpkg-tools failed.")
+                message(FATAL_ERROR "${OpenCTKVcpkg_NAME} copy to vcpkg-tools failed.")
             endif()
         endif()
-        set(OCTKVcpkgTools_EXECUTABLE "${OCTKVcpkgTools_ROOT_DIR}/${OCTKVcpkg_EXECUTABLE_NAME}" CACHE INTERNAL "" FORCE)
+        set(OpenCTKVcpkgTools_EXECUTABLE "${OpenCTKVcpkgTools_ROOT_DIR}/${OpenCTKVcpkg_EXECUTABLE_NAME}" CACHE INTERNAL "" FORCE)
     endif()
-    set(OCTKVcpkg_FOUND ON)
+    set(OpenCTKVcpkg_FOUND ON)
 endfunction()
 
 
@@ -157,11 +157,11 @@ function(octk_vcpkg_install_package NAME)
         else()
             octk_vcpkg_install()
             if(${arg_TOOLS})
-                set(Vcpkg_EXECUTABLE ${OCTKVcpkgTools_EXECUTABLE})
-                set(Vcpkg_ROOT_DIR ${OCTKVcpkgTools_ROOT_DIR})
+                set(Vcpkg_EXECUTABLE ${OpenCTKVcpkgTools_EXECUTABLE})
+                set(Vcpkg_ROOT_DIR ${OpenCTKVcpkgTools_ROOT_DIR})
             else()
-                set(Vcpkg_EXECUTABLE ${OCTKVcpkg_EXECUTABLE})
-                set(Vcpkg_ROOT_DIR ${OCTKVcpkg_ROOT_DIR})
+                set(Vcpkg_EXECUTABLE ${OpenCTKVcpkg_EXECUTABLE})
+                set(Vcpkg_ROOT_DIR ${OpenCTKVcpkg_ROOT_DIR})
             endif()
 
             unset(${arg_PREFIX}_COMPONENTS_CONFIG)

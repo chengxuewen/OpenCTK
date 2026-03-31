@@ -23,8 +23,8 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::FFmpeg)
-    set(OCTKWrapFFmpegTools_FOUND ON)
+if(TARGET OpenCTKFFmpeg::FFmpeg)
+    set(OpenCTKWrapFFmpegTools_FOUND ON)
 	return()
 endif()
 
@@ -34,26 +34,26 @@ octk_vcpkg_install_package(ffmpeg
 	PACK_NAME
 	ffmpeg-tools
 	TARGET
-	OCTK3rdparty::WrapFFmpegTools
+	OpenCTKWrapFFmpeg::WrapFFmpegTools
 	PREFIX
-	OCTKWrapFFmpegTools
+	OpenCTKWrapFFmpegTools
 	COMPONENTS
 	ffmpeg ffplay ffprobe)
 
 if(NOT EXISTS "${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ffmpeg")
 	execute_process(
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg"
 		"${OCTK_BUILD_DIR}/${OCTK_DEFAULT_LIBEXEC}/ffmpeg"
-        WORKING_DIRECTORY "${OCTKWrapFFmpegTools_ROOT_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapFFmpegTools_ROOT_DIR}"
 		ERROR_QUIET)
 endif()
 
-set(OCTKFFprobe_EXECUTABLE "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffprobe${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
-set(OCTKFFmpeg_EXECUTABLE "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffmpeg${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
-set(OCTKFFplay_EXECUTABLE "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffplay${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
+set(OpenCTKFFprobe_EXECUTABLE "${OpenCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffprobe${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
+set(OpenCTKFFmpeg_EXECUTABLE "${OpenCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffmpeg${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
+set(OpenCTKFFplay_EXECUTABLE "${OpenCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/ffplay${OCTK_EXECUTABLE_SUFFIX}" CACHE INTERNAL "" FORCE)
 octk_install(
-    DIRECTORY "${OCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/"
+    DIRECTORY "${OpenCTKWrapFFmpegTools_INSTALL_DIR}/tools/ffmpeg/"
 	DESTINATION "${OCTK_DEFAULT_LIBEXEC}/ffmpeg"
 	PATTERN "ff*${MSRTC_EXECUTABLE_SUFFIX}"
 	PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-set(OCTKWrapFFmpegTools_FOUND ON)
+set(OpenCTKWrapFFmpegTools_FOUND ON)

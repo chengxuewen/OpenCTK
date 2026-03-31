@@ -23,28 +23,28 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapSpdlog)
-    set(OCTKWrapSpdlog_FOUND ON)
+if(TARGET OpenCTKWrapSpdlog::WrapSpdlog)
+    set(OpenCTKWrapSpdlog_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapSpdlog_NAME "spdlog-1.15.3")
-set(OCTKWrapSpdlog_PKG_NAME "${OCTKWrapSpdlog_NAME}.tar.gz")
-set(OCTKWrapSpdlog_DIR_NAME "${OCTKWrapSpdlog_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapSpdlog_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapSpdlog_PKG_NAME}")
-set(OCTKWrapSpdlog_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapSpdlog_DIR_NAME}")
-set(OCTKWrapSpdlog_BUILD_DIR "${OCTKWrapSpdlog_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapSpdlog_SOURCE_DIR "${OCTKWrapSpdlog_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapSpdlog_INSTALL_DIR "${OCTKWrapSpdlog_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapSpdlog OUTPUT_DIR "${OCTKWrapSpdlog_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapSpdlog URL "${OCTKWrapSpdlog_URL_PATH}" OUTPUT_NAME "${OCTKWrapSpdlog_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapSpdlog_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapSpdlog_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapSpdlog_DIR_NAME} FetchContent failed.")
+set(OpenCTKWrapSpdlog_NAME "spdlog-1.15.3")
+set(OpenCTKWrapSpdlog_PKG_NAME "${OpenCTKWrapSpdlog_NAME}.tar.gz")
+set(OpenCTKWrapSpdlog_DIR_NAME "${OpenCTKWrapSpdlog_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapSpdlog_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapSpdlog_PKG_NAME}")
+set(OpenCTKWrapSpdlog_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapSpdlog_DIR_NAME}")
+set(OpenCTKWrapSpdlog_BUILD_DIR "${OpenCTKWrapSpdlog_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapSpdlog_SOURCE_DIR "${OpenCTKWrapSpdlog_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapSpdlog_INSTALL_DIR "${OpenCTKWrapSpdlog_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapSpdlog OUTPUT_DIR "${OpenCTKWrapSpdlog_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapSpdlog URL "${OpenCTKWrapSpdlog_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapSpdlog_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapSpdlog_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapSpdlog_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapSpdlog_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapSpdlog_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapSpdlog_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapSpdlog_DIR_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapSpdlog_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
@@ -52,37 +52,37 @@ if(NOT EXISTS "${OCTKWrapSpdlog_STAMP_FILE_PATH}")
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapSpdlog_INSTALL_DIR}
-        ${OCTKWrapSpdlog_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapSpdlog_BUILD_DIR}"
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapSpdlog_INSTALL_DIR}
+        ${OpenCTKWrapSpdlog_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapSpdlog_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapSpdlog_DIR_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapSpdlog_DIR_NAME} configure failed.")
     endif()
-    message(STATUS "${OCTKWrapSpdlog_DIR_NAME} configure success")
+    message(STATUS "${OpenCTKWrapSpdlog_DIR_NAME} configure success")
     
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
         --config ${CMAKE_BUILD_TYPE} --target install
-        WORKING_DIRECTORY "${OCTKWrapSpdlog_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapSpdlog_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapSpdlog_DIR_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapSpdlog_DIR_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapSpdlog_DIR_NAME} build success")
+    message(STATUS "${OpenCTKWrapSpdlog_DIR_NAME} build success")
     
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapSpdlog_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapSpdlog_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapSpdlog_DIR_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapSpdlog_DIR_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapSpdlog_DIR_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapSpdlog_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapSpdlog_DIR_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapSpdlog_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapSpdlog INTERFACE IMPORTED)
-find_package(spdlog PATHS ${OCTKWrapSpdlog_INSTALL_DIR} REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapSpdlog INTERFACE spdlog::spdlog_header_only)
-set(OCTKWrapSpdlog_FOUND ON)
+add_library(OpenCTKWrapSpdlog::WrapSpdlog INTERFACE IMPORTED)
+find_package(spdlog PATHS ${OpenCTKWrapSpdlog_INSTALL_DIR} REQUIRED)
+target_link_libraries(OpenCTKWrapSpdlog::WrapSpdlog INTERFACE spdlog::spdlog_header_only)
+set(OpenCTKWrapSpdlog_FOUND ON)

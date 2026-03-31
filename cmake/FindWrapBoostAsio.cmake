@@ -23,8 +23,8 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if (TARGET OCTK3rdparty::WrapBoostAsio)
-	set(OCTKWrapBoostAsio_FOUND ON)
+if (TARGET OpenCTKWrapBoostAsio::WrapBoostAsio)
+	set(OpenCTKWrapBoostAsio_FOUND ON)
 	return()
 endif ()
 
@@ -32,9 +32,9 @@ include(InstallVcpkg)
 octk_vcpkg_install_package(boost-asio
 	NOT_IMPORT
 	TARGET
-	OCTK3rdparty::WrapBoostAsio
+	OpenCTKWrapBoostAsio::WrapBoostAsio
 	PREFIX
-	OCTKWrapBoostAsio)
-find_package(boost_asio PATHS ${OCTKWrapBoostAsio_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapBoostAsio INTERFACE Boost::asio)
-set(OCTKWrapBoostAsio_FOUND ON)
+	OpenCTKWrapBoostAsio)
+find_package(boost_asio PATHS ${OpenCTKWrapBoostAsio_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapBoostAsio::WrapBoostAsio INTERFACE Boost::asio)
+set(OpenCTKWrapBoostAsio_FOUND ON)

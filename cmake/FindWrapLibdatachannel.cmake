@@ -23,7 +23,7 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapLibdatachannel)
+if(TARGET OpenCTKWrapLibdatachannel::WrapLibdatachannel)
 	set(OCTKWrapLibdatachannel_FOUND ON)
 	return()
 endif()
@@ -31,14 +31,14 @@ endif()
 octk_vcpkg_install_package(libdatachannel
 	NOT_IMPORT
 	TARGET
-	OCTK3rdparty::WrapLibdatachannel
+	OpenCTKWrapLibdatachannel::WrapLibdatachannel
 	PREFIX
-	OCTKWrapLibdatachannel
+	OpenCTKWrapLibdatachannel
 	COMPONENTS
 	srtp stdcall ws)
 set(CMAKE_PREFIX_PATH_CACHE ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH ${OCTKWrapLibdatachannel_INSTALL_DIR})
 find_package(LibDataChannel REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapLibdatachannel INTERFACE LibDataChannel::LibDataChannel)
+target_link_libraries(OpenCTKWrapLibdatachannel::WrapLibdatachannel INTERFACE LibDataChannel::LibDataChannel)
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH_CACHE})
 set(OCTKWrapLibdatachannel_FOUND ON)

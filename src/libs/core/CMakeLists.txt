@@ -48,19 +48,19 @@ endif()
 find_package(Threads REQUIRED)
 list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
-octk_find_package(WrapFmt PROVIDED_TARGETS OCTK3rdparty::WrapFmt)
-octk_find_package(WrapJson PROVIDED_TARGETS OCTK3rdparty::WrapJson)
-octk_find_package(WrapSpdlog PROVIDED_TARGETS OCTK3rdparty::WrapSpdlog)
-octk_find_package(WrapYamlCpp PROVIDED_TARGETS OCTK3rdparty::WrapYamlCpp)
-octk_find_package(WrapAnyLite PROVIDED_TARGETS OCTK3rdparty::WrapAnyLite)
-octk_find_package(WrapVariant PROVIDED_TARGETS OCTK3rdparty::WrapVariant)
-octk_find_package(WrapExpected PROVIDED_TARGETS OCTK3rdparty::WrapExpected)
-octk_find_package(WrapOptional PROVIDED_TARGETS OCTK3rdparty::WrapOptional)
-octk_find_package(WrapFunction2 PROVIDED_TARGETS OCTK3rdparty::WrapFunction2)
-octk_find_package(WrapFilesystem PROVIDED_TARGETS OCTK3rdparty::WrapFilesystem)
-octk_find_package(WrapStringViewLite PROVIDED_TARGETS OCTK3rdparty::WrapStringViewLite)
-octk_find_package(WrapConcurrentQueue PROVIDED_TARGETS OCTK3rdparty::WrapConcurrentQueue)
-octk_find_package(WrapReaderWriterQueue PROVIDED_TARGETS OCTK3rdparty::WrapReaderWriterQueue)
+octk_find_package(WrapFmt PROVIDED_TARGETS OpenCTKWrapFmt::WrapFmt)
+octk_find_package(WrapJson PROVIDED_TARGETS OpenCTKWrapJson::WrapJson)
+octk_find_package(WrapSpdlog PROVIDED_TARGETS OpenCTKWrapSpdlog::WrapSpdlog)
+octk_find_package(WrapYamlCpp PROVIDED_TARGETS OpenCTKWrapYamlCpp::WrapYamlCpp)
+octk_find_package(WrapAnyLite PROVIDED_TARGETS OpenCTKWrapAnyLite::WrapAnyLite)
+octk_find_package(WrapVariant PROVIDED_TARGETS OpenCTKWrapVariant::WrapVariant)
+octk_find_package(WrapExpected PROVIDED_TARGETS OpenCTKWrapExpected::WrapExpected)
+octk_find_package(WrapOptional PROVIDED_TARGETS OpenCTKWrapOptional::WrapOptional)
+octk_find_package(WrapFunction2 PROVIDED_TARGETS OpenCTKWrapFunction2::WrapFunction2)
+octk_find_package(WrapFilesystem PROVIDED_TARGETS OpenCTKWrapFilesystem::WrapFilesystem)
+octk_find_package(WrapStringViewLite PROVIDED_TARGETS OpenCTKWrapStringViewLite::WrapStringViewLite)
+octk_find_package(WrapConcurrentQueue PROVIDED_TARGETS OpenCTKWrapConcurrentQueue::WrapConcurrentQueue)
+octk_find_package(WrapReaderWriterQueue PROVIDED_TARGETS OpenCTKWrapReaderWriterQueue::WrapReaderWriterQueue)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -239,32 +239,32 @@ octk_add_library(Core
 	PRECOMPILED_HEADER
 	source/octk_pch.hpp
 	EXTERNAL_HEADERS_DIRS
-	${OCTKWrapFmt_INSTALL_DIR}/include
-	${OCTKWrapJson_INSTALL_DIR}/include
-	${OCTKWrapYamlCpp_INSTALL_DIR}/include
-	${OCTKWrapVariant_INSTALL_DIR}/include
-	${OCTKWrapAnyLite_INSTALL_DIR}/include
-	${OCTKWrapOptional_INSTALL_DIR}/include
-	${OCTKWrapExpected_INSTALL_DIR}/include
-	${OCTKWrapFilesystem_INSTALL_DIR}/include
-	${OCTKWrapStringviewLite_INSTALL_DIR}/include
-	${OCTKWrapConcurrentQueue_INSTALL_DIR}/include
-	${OCTKWrapReaderWriterQueue_INSTALL_DIR}/include
+	${OpenCTKWrapFmt_INSTALL_DIR}/include
+	${OpenCTKWrapJson_INSTALL_DIR}/include
+	${OpenCTKWrapYamlCpp_INSTALL_DIR}/include
+	${OpenCTKWrapVariant_INSTALL_DIR}/include
+	${OpenCTKWrapAnyLite_INSTALL_DIR}/include
+	${OpenCTKWrapOptional_INSTALL_DIR}/include
+	${OpenCTKWrapExpected_INSTALL_DIR}/include
+	${OpenCTKWrapFilesystem_INSTALL_DIR}/include
+	${OpenCTKWrapStringViewLite_INSTALL_DIR}/include
+	${OpenCTKWrapConcurrentQueue_INSTALL_DIR}/include
+	${OpenCTKWrapReaderWriterQueue_INSTALL_DIR}/include
 	LIBRARIES
-	OCTK3rdparty::WrapSpdlog
+	OpenCTKWrapSpdlog::WrapSpdlog
 	PUBLIC_LIBRARIES
-	OCTK3rdparty::WrapFmt
-	OCTK3rdparty::WrapJson
-	OCTK3rdparty::WrapYamlCpp
-	OCTK3rdparty::WrapVariant
-	OCTK3rdparty::WrapAnyLite
-	OCTK3rdparty::WrapExpected
-	OCTK3rdparty::WrapOptional
-	OCTK3rdparty::WrapFunction2
-	OCTK3rdparty::WrapFilesystem
-	OCTK3rdparty::WrapStringViewLite
-	OCTK3rdparty::WrapConcurrentQueue
-	OCTK3rdparty::WrapReaderWriterQueue
+	OpenCTKWrapFmt::WrapFmt
+	OpenCTKWrapJson::WrapJson
+	OpenCTKWrapYamlCpp::WrapYamlCpp
+	OpenCTKWrapVariant::WrapVariant
+	OpenCTKWrapAnyLite::WrapAnyLite
+	OpenCTKWrapExpected::WrapExpected
+	OpenCTKWrapOptional::WrapOptional
+	OpenCTKWrapFunction2::WrapFunction2
+	OpenCTKWrapFilesystem::WrapFilesystem
+	OpenCTKWrapStringViewLite::WrapStringViewLite
+	OpenCTKWrapConcurrentQueue::WrapConcurrentQueue
+	OpenCTKWrapReaderWriterQueue::WrapReaderWriterQueue
 	${OCTK_LIB_LINK_LIBRARIES})
 octk_internal_extend_target(OpenCTKCore
 	SOURCES

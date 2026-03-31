@@ -23,62 +23,62 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapAnyLite)
-    set(OCTKWrapAnyLite_FOUND ON)
+if(TARGET OpenCTKWrapAnyLite::WrapAnyLite)
+    set(OpenCTKWrapAnyLite_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapAnyLite_NAME "any-lite-master")
-set(OCTKWrapAnyLite_PKG_NAME "${OCTKWrapAnyLite_NAME}.zip")
-set(OCTKWrapAnyLite_DIR_NAME "${OCTKWrapAnyLite_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapAnyLite_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapAnyLite_PKG_NAME}")
-set(OCTKWrapAnyLite_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapAnyLite_DIR_NAME}")
-set(OCTKWrapAnyLite_BUILD_DIR "${OCTKWrapAnyLite_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapAnyLite_SOURCE_DIR "${OCTKWrapAnyLite_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapAnyLite_INSTALL_DIR "${OCTKWrapAnyLite_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapAnyLite OUTPUT_DIR "${OCTKWrapAnyLite_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapAnyLite URL "${OCTKWrapAnyLite_URL_PATH}" OUTPUT_NAME "${OCTKWrapAnyLite_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapAnyLite_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapAnyLite_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapAnyLite_NAME} FetchContent failed.")
+set(OpenCTKWrapAnyLite_NAME "any-lite-master")
+set(OpenCTKWrapAnyLite_PKG_NAME "${OpenCTKWrapAnyLite_NAME}.zip")
+set(OpenCTKWrapAnyLite_DIR_NAME "${OpenCTKWrapAnyLite_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapAnyLite_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapAnyLite_PKG_NAME}")
+set(OpenCTKWrapAnyLite_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapAnyLite_DIR_NAME}")
+set(OpenCTKWrapAnyLite_BUILD_DIR "${OpenCTKWrapAnyLite_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapAnyLite_SOURCE_DIR "${OpenCTKWrapAnyLite_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapAnyLite_INSTALL_DIR "${OpenCTKWrapAnyLite_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapAnyLite OUTPUT_DIR "${OpenCTKWrapAnyLite_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapAnyLite URL "${OpenCTKWrapAnyLite_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapAnyLite_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapAnyLite_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapAnyLite_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapAnyLite_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapAnyLite_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapAnyLite_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapAnyLite_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapAnyLite_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
         -DANY_LITE_OPT_BUILD_TESTS=OFF
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapAnyLite_INSTALL_DIR}
-        ${OCTKWrapAnyLite_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapAnyLite_BUILD_DIR}"
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapAnyLite_INSTALL_DIR}
+        ${OpenCTKWrapAnyLite_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapAnyLite_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapAnyLite_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapAnyLite_NAME} configure failed.")
     endif()
-    message(STATUS "${OCTKWrapAnyLite_NAME} configure success")
+    message(STATUS "${OpenCTKWrapAnyLite_NAME} configure success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
-        WORKING_DIRECTORY "${OCTKWrapAnyLite_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapAnyLite_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapAnyLite_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapAnyLite_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapAnyLite_NAME} build success")
+    message(STATUS "${OpenCTKWrapAnyLite_NAME} build success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapAnyLite_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapAnyLite_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapAnyLite_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapAnyLite_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapAnyLite_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapAnyLite_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapAnyLite_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapAnyLite_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapAnyLite INTERFACE IMPORTED)
-find_package(any-lite PATHS ${OCTKWrapAnyLite_INSTALL_DIR} REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapAnyLite INTERFACE nonstd::any-lite)
-set(OCTKWrapAnyLite_FOUND ON)
+add_library(OpenCTKWrapAnyLite::WrapAnyLite INTERFACE IMPORTED)
+find_package(any-lite PATHS ${OpenCTKWrapAnyLite_INSTALL_DIR} REQUIRED)
+target_link_libraries(OpenCTKWrapAnyLite::WrapAnyLite INTERFACE nonstd::any-lite)
+set(OpenCTKWrapAnyLite_FOUND ON)

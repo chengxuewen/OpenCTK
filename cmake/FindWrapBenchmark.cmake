@@ -23,28 +23,28 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapBenchmark)
-    set(OCTKWrapBenchmark_FOUND ON)
+if(TARGET OpenCTKWrapBenchmark::WrapBenchmark)
+    set(OpenCTKWrapBenchmark_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapBenchmark_NAME "benchmark-1.8.4")
-set(OCTKWrapBenchmark_PKG_NAME "${OCTKWrapBenchmark_NAME}.tar.gz")
-set(OCTKWrapBenchmark_DIR_NAME "${OCTKWrapBenchmark_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapBenchmark_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapBenchmark_PKG_NAME}")
-set(OCTKWrapBenchmark_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapBenchmark_DIR_NAME}")
-set(OCTKWrapBenchmark_BUILD_DIR "${OCTKWrapBenchmark_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapBenchmark_SOURCE_DIR "${OCTKWrapBenchmark_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapBenchmark_INSTALL_DIR "${OCTKWrapBenchmark_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapBenchmark OUTPUT_DIR "${OCTKWrapBenchmark_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapBenchmark URL "${OCTKWrapBenchmark_URL_PATH}" OUTPUT_NAME "${OCTKWrapBenchmark_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapBenchmark_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapBenchmark_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapBenchmark_DIR_NAME} FetchContent failed.")
+set(OpenCTKWrapBenchmark_NAME "benchmark-1.8.4")
+set(OpenCTKWrapBenchmark_PKG_NAME "${OpenCTKWrapBenchmark_NAME}.tar.gz")
+set(OpenCTKWrapBenchmark_DIR_NAME "${OpenCTKWrapBenchmark_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapBenchmark_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapBenchmark_PKG_NAME}")
+set(OpenCTKWrapBenchmark_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapBenchmark_DIR_NAME}")
+set(OpenCTKWrapBenchmark_BUILD_DIR "${OpenCTKWrapBenchmark_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapBenchmark_SOURCE_DIR "${OpenCTKWrapBenchmark_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapBenchmark_INSTALL_DIR "${OpenCTKWrapBenchmark_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapBenchmark OUTPUT_DIR "${OpenCTKWrapBenchmark_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapBenchmark URL "${OpenCTKWrapBenchmark_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapBenchmark_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapBenchmark_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapBenchmark_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapBenchmark_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapBenchmark_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapBenchmark_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapBenchmark_DIR_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapBenchmark_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
@@ -53,37 +53,37 @@ if(NOT EXISTS "${OCTKWrapBenchmark_STAMP_FILE_PATH}")
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapBenchmark_INSTALL_DIR}
-        ${OCTKWrapBenchmark_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapBenchmark_BUILD_DIR}"
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapBenchmark_INSTALL_DIR}
+        ${OpenCTKWrapBenchmark_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapBenchmark_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapBenchmark_DIR_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapBenchmark_DIR_NAME} configure failed.")
     endif()
-    message(STATUS "${OCTKWrapBenchmark_DIR_NAME} configure success")
+    message(STATUS "${OpenCTKWrapBenchmark_DIR_NAME} configure success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config 
         ${CMAKE_BUILD_TYPE} --target install
-        WORKING_DIRECTORY "${OCTKWrapBenchmark_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapBenchmark_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapBenchmark_DIR_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapBenchmark_DIR_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapBenchmark_DIR_NAME} build success")
+    message(STATUS "${OpenCTKWrapBenchmark_DIR_NAME} build success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapBenchmark_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapBenchmark_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapBenchmark_DIR_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapBenchmark_DIR_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapBenchmark_DIR_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapBenchmark_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapBenchmark_DIR_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapBenchmark_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapBenchmark INTERFACE IMPORTED)
-find_package(benchmark HINTS ${OCTKWrapBenchmark_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapBenchmark INTERFACE benchmark::benchmark benchmark::benchmark_main)
-set(OCTKWrapBenchmark_FOUND ON)
+add_library(OpenCTKWrapBenchmark::WrapBenchmark INTERFACE IMPORTED)
+find_package(benchmark HINTS ${OpenCTKWrapBenchmark_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapBenchmark::WrapBenchmark INTERFACE benchmark::benchmark benchmark::benchmark_main)
+set(OpenCTKWrapBenchmark_FOUND ON)

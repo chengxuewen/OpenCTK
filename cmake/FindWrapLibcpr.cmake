@@ -23,70 +23,74 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapLibcpr)
-	set(OCTKWrapLibcpr_FOUND ON)
+if(TARGET OpenCTKWrapLibcpr::WrapLibcpr)
+	set(OpenCTKWrapLibcpr_FOUND ON)
 	return()
 endif()
 
-octk_find_package(WrapMbedTLS PROVIDED_TARGETS OCTK3rdparty::WrapMbedTLS)
-octk_find_package(WrapLibcurl PROVIDED_TARGETS OCTK3rdparty::WrapLibcurl)
-set(OCTKWrapLibcpr_NAME "cpr-1.9.9")
-set(OCTKWrapLibcpr_PKG_NAME "${OCTKWrapLibcpr_NAME}.tar.gz")
-set(OCTKWrapLibcpr_DIR_NAME "${OCTKWrapLibcpr_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapLibcpr_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapLibcpr_PKG_NAME}")
-set(OCTKWrapLibcpr_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapLibcpr_DIR_NAME}")
-set(OCTKWrapLibcpr_BUILD_DIR "${OCTKWrapLibcpr_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapLibcpr_SOURCE_DIR "${OCTKWrapLibcpr_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapLibcpr_INSTALL_DIR "${OCTKWrapLibcpr_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapLibcpr OUTPUT_DIR "${OCTKWrapLibcpr_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapLibcpr URL "${OCTKWrapLibcpr_URL_PATH}" OUTPUT_NAME "${OCTKWrapLibcpr_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapLibcpr_STAMP_FILE_PATH}")
-	if(NOT EXISTS ${OCTKWrapLibcpr_SOURCE_DIR})
-		message(FATAL_ERROR "${OCTKWrapLibcpr_DIR_NAME} FetchContent failed.")
+octk_find_package(WrapMbedTLS PROVIDED_TARGETS OpenCTKWrapMbedTLS::WrapMbedTLS)
+octk_find_package(WrapLibcurl PROVIDED_TARGETS OpenCTKWrapLibcurl::WrapLibcurl)
+set(OpenCTKWrapLibcpr_NAME "cpr-1.9.9")
+set(OpenCTKWrapLibcpr_PKG_NAME "${OpenCTKWrapLibcpr_NAME}.tar.gz")
+set(OpenCTKWrapLibcpr_DIR_NAME "${OpenCTKWrapLibcpr_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapLibcpr_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapLibcpr_PKG_NAME}")
+set(OpenCTKWrapLibcpr_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapLibcpr_DIR_NAME}")
+set(OpenCTKWrapLibcpr_BUILD_DIR "${OpenCTKWrapLibcpr_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapLibcpr_SOURCE_DIR "${OpenCTKWrapLibcpr_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapLibcpr_INSTALL_DIR "${OpenCTKWrapLibcpr_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapLibcpr OUTPUT_DIR "${OpenCTKWrapLibcpr_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapLibcpr URL "${OpenCTKWrapLibcpr_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapLibcpr_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapLibcpr_STAMP_FILE_PATH}")
+	if(NOT EXISTS ${OpenCTKWrapLibcpr_SOURCE_DIR})
+		message(FATAL_ERROR "${OpenCTKWrapLibcpr_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(${OCTKWrapLibcpr_BUILD_DIR})
+	octk_reset_dir(${OpenCTKWrapLibcpr_BUILD_DIR})
 
-	message(STATUS "Configure ${OCTKWrapLibcpr_DIR_NAME} lib...")
+	message(STATUS "Configure ${OpenCTKWrapLibcpr_DIR_NAME} lib...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND}
 		-G ${CMAKE_GENERATOR}
-		-DCPR_FORCE_USE_SYSTEM_CURL=ON
 		-DCPR_FORCE_MBEDTLS_BACKEND=ON
+		-DCPR_FORCE_USE_SYSTEM_CURL=ON
+		-DCURL_INCLUDE_DIR=${OpenCTKWrapLibcurl_INCLUDE_DIR}
+		-DCURL_LIBRARY=${OpenCTKWrapLibcurl_LIBRARY}
 		-DCMAKE_POSITION_INDEPENDENT_CODE=ON
 		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 		-DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-		-DCMAKE_PREFIX_PATH=${OCTKWrapLibcurl_INSTALL_DIR}
-		-DCMAKE_INSTALL_PREFIX=${OCTKWrapLibcpr_INSTALL_DIR}
-		${OCTKWrapLibcpr_SOURCE_DIR}
-		WORKING_DIRECTORY "${OCTKWrapLibcpr_BUILD_DIR}"
+		-DCMAKE_PREFIX_PATH=${OpenCTKWrapLibcurl_INSTALL_DIR}
+		-DCMAKE_INSTALL_PREFIX=${OpenCTKWrapLibcpr_INSTALL_DIR}
+		${OpenCTKWrapLibcpr_SOURCE_DIR}
+		WORKING_DIRECTORY "${OpenCTKWrapLibcpr_BUILD_DIR}"
 		RESULT_VARIABLE CONFIGURE_RESULT)
 	if(NOT CONFIGURE_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapLibcpr_DIR_NAME} configure failed.")
+		message(FATAL_ERROR "${OpenCTKWrapLibcpr_DIR_NAME} configure failed.")
 	endif()
-	message(STATUS "${OCTKWrapLibcpr_DIR_NAME} configure success")
+	message(STATUS "${OpenCTKWrapLibcpr_DIR_NAME} configure success")
 
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config
 		${CMAKE_BUILD_TYPE} --target install
-		WORKING_DIRECTORY "${OCTKWrapLibcpr_BUILD_DIR}"
+		WORKING_DIRECTORY "${OpenCTKWrapLibcpr_BUILD_DIR}"
 		RESULT_VARIABLE BUILD_RESULT)
 	if(NOT BUILD_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapLibcpr_DIR_NAME} build failed.")
+		message(FATAL_ERROR "${OpenCTKWrapLibcpr_DIR_NAME} build failed.")
 	endif()
-	message(STATUS "${OCTKWrapLibcpr_DIR_NAME} build success")
+	message(STATUS "${OpenCTKWrapLibcpr_DIR_NAME} build success")
 
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} --install ./
-		WORKING_DIRECTORY "${OCTKWrapLibcpr_BUILD_DIR}"
+		WORKING_DIRECTORY "${OpenCTKWrapLibcpr_BUILD_DIR}"
 		RESULT_VARIABLE INSTALL_RESULT)
 	if(NOT INSTALL_RESULT MATCHES 0)
-		message(FATAL_ERROR "${OCTKWrapLibcpr_DIR_NAME} install failed.")
+		message(FATAL_ERROR "${OpenCTKWrapLibcpr_DIR_NAME} install failed.")
 	endif()
-	message(STATUS "${OCTKWrapLibcpr_DIR_NAME} install success")
-	octk_make_stamp_file("${OCTKWrapLibcpr_STAMP_FILE_PATH}")
+	message(STATUS "${OpenCTKWrapLibcpr_DIR_NAME} install success")
+	octk_make_stamp_file("${OpenCTKWrapLibcpr_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapLibcpr INTERFACE IMPORTED)
-find_package(cpr PATHS ${OCTKWrapLibcpr_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapLibcpr INTERFACE cpr::cpr)
-set(OCTKWrapLibcpr_FOUND ON)
+add_library(OpenCTKWrapLibcpr::WrapLibcpr INTERFACE IMPORTED)
+set(CURL_INCLUDE_DIR ${OpenCTKWrapLibcurl_INCLUDE_DIR})
+set(CURL_LIBRARY ${OpenCTKWrapLibcurl_LIBRARY})
+find_package(cpr PATHS ${OpenCTKWrapLibcpr_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapLibcpr::WrapLibcpr INTERFACE cpr::cpr OpenCTKWrapMbedTLS::WrapMbedTLS)
+set(OpenCTKWrapLibcpr_FOUND ON)

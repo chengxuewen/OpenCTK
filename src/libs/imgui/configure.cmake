@@ -32,3 +32,6 @@ octk_configure_feature("IMGUI_USE_SDL_OPENGL3" PUBLIC
 	LABEL "Enable this to build ImGui with SDL OpenGL 3"
 	DISABLE NOT OCTK_IMGUI_OpenGL_FOUND
 	CONDITION ON)
+octk_configure_feature("IMGUI_USE_GLFW" PUBLIC
+	LABEL "Enable this to build ImGui with GLFW"
+	CONDITION OFF)

@@ -23,13 +23,13 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapFFmpeg)
-	set(OCTKWrapFFmpeg_FOUND ON)
+if(TARGET OpenCTKWrapFFmpeg::WrapFFmpeg)
+	set(OpenCTKWrapFFmpeg_FOUND ON)
 	return()
 endif()
 
 include(InstallVcpkg)
-list(APPEND OCTKWrapFFmpeg_COMPONENTS
+list(APPEND OpenCTKWrapFFmpeg_COMPONENTS
 	swresample
 	avresample
 	avdevice
@@ -45,43 +45,43 @@ list(APPEND OCTKWrapFFmpeg_COMPONENTS
 	soxr
 	vpx)
 if(WIN32)
-	list(APPEND OCTKWrapFFmpeg_COMPONENTS nvcodec amf)
+	list(APPEND OpenCTKWrapFFmpeg_COMPONENTS nvcodec amf)
 elseif(NOT OCTK_SYSTEM_DARWIN)
-	list(APPEND OCTKWrapFFmpeg_COMPONENTS nvcodec amf)
+	list(APPEND OpenCTKWrapFFmpeg_COMPONENTS nvcodec amf)
 endif()
 if(NOT OCTK_VCPKG_TRIPLET_ARCH_ARM AND NOT OCTK_SYSTEM_DARWIN)
-	list(APPEND OCTKWrapFFmpeg_COMPONENTS qsv) # ((x86 | x64) & (android | linux)) | (windows & !uwp)
+	list(APPEND OpenCTKWrapFFmpeg_COMPONENTS qsv) # ((x86 | x64) & (android | linux)) | (windows & !uwp)
 endif()
 octk_vcpkg_install_package(ffmpeg
 	NOT_IMPORT
 	TARGET
-	OCTK3rdparty::WrapFFmpeg
+	OpenCTKWrapFFmpeg::WrapFFmpeg
 	PREFIX
-	OCTKWrapFFmpeg
+	OpenCTKWrapFFmpeg
 	COMPONENTS
-	${OCTKWrapFFmpeg_COMPONENTS})
+	${OpenCTKWrapFFmpeg_COMPONENTS})
 
 
-if(EXISTS "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND UNIX)
+if(EXISTS "${OpenCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND UNIX)
 	set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
-	set(CMAKE_MODULE_PATH "${OCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
-	set(FFMPEG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}")
+	set(CMAKE_MODULE_PATH "${OpenCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
+	set(FFMPEG_DIR "${OpenCTKWrapFFmpeg_INSTALL_DIR}")
 	find_package(FFMPEG REQUIRED)
 	foreach(library IN LISTS FFMPEG_LIBRARIES)
 		if(EXISTS "${library}")
-			target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE ${library})
+			target_link_libraries(OpenCTKWrapFFmpeg::WrapFFmpeg INTERFACE ${library})
 		endif()
 	endforeach()
-	target_include_directories(OCTK3rdparty::WrapFFmpeg INTERFACE ${FFMPEG_INCLUDE_DIRS})
+	target_include_directories(OpenCTKWrapFFmpeg::WrapFFmpeg INTERFACE ${FFMPEG_INCLUDE_DIRS})
 	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_CACHE})
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/debug/lib")
+		set(OpenCTKWrapFFmpeg_PKGCONFIG_DIR "${OpenCTKWrapFFmpeg_INSTALL_DIR}/debug/lib")
 	else()
-		set(OCTKWrapFFmpeg_PKGCONFIG_DIR "${OCTKWrapFFmpeg_INSTALL_DIR}/lib")
+		set(OpenCTKWrapFFmpeg_PKGCONFIG_DIR "${OpenCTKWrapFFmpeg_INSTALL_DIR}/lib")
 	endif()
 	octk_pkgconf_check_modules(FFmpeg REQUIRED
-		PATH "${OCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
+		PATH "${OpenCTKWrapFFmpeg_PKGCONFIG_DIR}/pkgconfig"
 		IMPORTED_TARGET
 		libswresample
 		libavdevice
@@ -90,12 +90,12 @@ else()
 		libavcodec
 		libavutil
 		libswscale)
-	target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
+	target_link_libraries(OpenCTKWrapFFmpeg::WrapFFmpeg INTERFACE PkgConfig::FFmpeg)
 endif()
 if(WIN32)
-	target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE bcrypt.lib)
+	target_link_libraries(OpenCTKWrapFFmpeg::WrapFFmpeg INTERFACE bcrypt.lib)
 endif()
 find_package(Threads REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapFFmpeg INTERFACE Threads::Threads)
-set(OCTKWrapFFmpeg_FOUND ON)
+target_link_libraries(OpenCTKWrapFFmpeg::WrapFFmpeg INTERFACE Threads::Threads)
+set(OpenCTKWrapFFmpeg_FOUND ON)
 

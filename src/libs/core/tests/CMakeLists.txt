@@ -30,8 +30,8 @@ set(OCTK_TEST_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_TESTSDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Add tests link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-#octk_find_package(WrapAbseil PROVIDED_TARGETS OCTK3rdparty::WrapAbseil)
-set(OCTK_TEST_LINK_LIBRARIES OpenCTK::CorePrivate OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
+#octk_find_package(WrapAbseil PROVIDED_TARGETS OpenCTKWrapAbseil::WrapAbseil)
+set(OCTK_TEST_LINK_LIBRARIES OpenCTK::CorePrivate OpenCTKWrapGTest::WrapGTest OpenCTKWrapBenchmark::WrapBenchmark)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -247,11 +247,11 @@ octk_add_test(OpenCTKCoreTstFunctionView
 #	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(OpenCTKCoreTstInlinedVector
 #	SOURCES
-#	${OCTKWrapAbseil_SOURCE_DIR}/absl/container/internal/test_instance_tracker.cc
+#	${OpenCTKWrapAbseil_SOURCE_DIR}/absl/container/internal/test_instance_tracker.cc
 #	tst_inlined_vector.cpp
 #	INCLUDE_DIRECTORIES
 #	LIBRARIES
-#	OCTK3rdparty::WrapAbseil
+#	OpenCTKWrapAbseil::WrapAbseil
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})

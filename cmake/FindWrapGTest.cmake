@@ -23,28 +23,28 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapGTest)
-    set(OCTKWrapGTest_FOUND ON)
+if(TARGET OpenCTKWrapGTest::WrapGTest)
+    set(OpenCTKWrapGTest_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapGTest_NAME "googletest-release-1.12.1")
-set(OCTKWrapGTest_PKG_NAME "${OCTKWrapGTest_NAME}.tar.gz")
-set(OCTKWrapGTest_DIR_NAME "${OCTKWrapGTest_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapGTest_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapGTest_PKG_NAME}")
-set(OCTKWrapGTest_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapGTest_DIR_NAME}")
-set(OCTKWrapGTest_BUILD_DIR "${OCTKWrapGTest_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapGTest_SOURCE_DIR "${OCTKWrapGTest_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapGTest_INSTALL_DIR "${OCTKWrapGTest_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapGTest OUTPUT_DIR "${OCTKWrapGTest_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapGTest URL "${OCTKWrapGTest_URL_PATH}" OUTPUT_NAME "${OCTKWrapGTest_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapGTest_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapGTest_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapGTest_DIR_NAME} FetchContent failed.")
+set(OpenCTKWrapGTest_NAME "googletest-release-1.12.1")
+set(OpenCTKWrapGTest_PKG_NAME "${OpenCTKWrapGTest_NAME}.tar.gz")
+set(OpenCTKWrapGTest_DIR_NAME "${OpenCTKWrapGTest_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapGTest_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapGTest_PKG_NAME}")
+set(OpenCTKWrapGTest_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapGTest_DIR_NAME}")
+set(OpenCTKWrapGTest_BUILD_DIR "${OpenCTKWrapGTest_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapGTest_SOURCE_DIR "${OpenCTKWrapGTest_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapGTest_INSTALL_DIR "${OpenCTKWrapGTest_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapGTest OUTPUT_DIR "${OpenCTKWrapGTest_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapGTest URL "${OpenCTKWrapGTest_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapGTest_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapGTest_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapGTest_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapGTest_DIR_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapGTest_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapGTest_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapGTest_DIR_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapGTest_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
@@ -53,37 +53,37 @@ if(NOT EXISTS "${OCTKWrapGTest_STAMP_FILE_PATH}")
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapGTest_INSTALL_DIR}
-        ${OCTKWrapGTest_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapGTest_BUILD_DIR}"
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapGTest_INSTALL_DIR}
+        ${OpenCTKWrapGTest_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapGTest_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapGTest_DIR_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapGTest_DIR_NAME} configure failed.")
     endif()
-    message(STATUS "${OCTKWrapGTest_DIR_NAME} configure success")
+    message(STATUS "${OpenCTKWrapGTest_DIR_NAME} configure success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config 
         ${CMAKE_BUILD_TYPE} --target install
-        WORKING_DIRECTORY "${OCTKWrapGTest_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapGTest_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapGTest_DIR_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapGTest_DIR_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapGTest_DIR_NAME} build success")
+    message(STATUS "${OpenCTKWrapGTest_DIR_NAME} build success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapGTest_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapGTest_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapGTest_DIR_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapGTest_DIR_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapGTest_DIR_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapGTest_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapGTest_DIR_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapGTest_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapGTest INTERFACE IMPORTED)
-find_package(GTest PATHS ${OCTKWrapGTest_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapGTest INTERFACE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
-set(OCTKWrapGTest_FOUND ON)
+add_library(OpenCTKWrapGTest::WrapGTest INTERFACE IMPORTED)
+find_package(GTest PATHS ${OpenCTKWrapGTest_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapGTest::WrapGTest INTERFACE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
+set(OpenCTKWrapGTest_FOUND ON)

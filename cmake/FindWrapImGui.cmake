@@ -23,51 +23,51 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapImGui)
-	set(OCTKWrapImGui_FOUND ON)
+if(TARGET OpenCTKWrapImGui::WrapImGui)
+	set(OpenCTKWrapImGui_FOUND ON)
 	return()
 endif()
 
-set(OCTKWrapImGui_NAME "imgui-1.92.2b-docking")
-set(OCTKWrapImGui_DIR_NAME "${OCTKWrapImGui_NAME}")
-set(OCTKWrapImGui_PKG_NAME "${OCTKWrapImGui_NAME}.7z")
-set(OCTKWrapImGui_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapImGui_PKG_NAME}")
-set(OCTKWrapImGui_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapImGui_DIR_NAME}")
-set(OCTKWrapImGui_BUILD_DIR "${OCTKWrapImGui_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapImGui_SOURCE_DIR "${OCTKWrapImGui_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapImGui_INSTALL_DIR "${OCTKWrapImGui_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapImGui OUTPUT_DIR "${OCTKWrapImGui_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapImGui URL "${OCTKWrapImGui_URL_PATH}")
-if(NOT EXISTS "${OCTKWrapImGui_STAMP_FILE_PATH}")
-	if(NOT EXISTS ${OCTKWrapImGui_SOURCE_DIR})
-		message(FATAL_ERROR "${OCTKWrapImGui_DIR_NAME} FetchContent failed.")
+set(OpenCTKWrapImGui_NAME "imgui-1.92.2b-docking")
+set(OpenCTKWrapImGui_DIR_NAME "${OpenCTKWrapImGui_NAME}")
+set(OpenCTKWrapImGui_PKG_NAME "${OpenCTKWrapImGui_NAME}.7z")
+set(OpenCTKWrapImGui_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapImGui_PKG_NAME}")
+set(OpenCTKWrapImGui_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapImGui_DIR_NAME}")
+set(OpenCTKWrapImGui_BUILD_DIR "${OpenCTKWrapImGui_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapImGui_SOURCE_DIR "${OpenCTKWrapImGui_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapImGui_INSTALL_DIR "${OpenCTKWrapImGui_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapImGui OUTPUT_DIR "${OpenCTKWrapImGui_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapImGui URL "${OpenCTKWrapImGui_URL_PATH}")
+if(NOT EXISTS "${OpenCTKWrapImGui_STAMP_FILE_PATH}")
+	if(NOT EXISTS ${OpenCTKWrapImGui_SOURCE_DIR})
+		message(FATAL_ERROR "${OpenCTKWrapImGui_DIR_NAME} FetchContent failed.")
 	endif()
-	octk_make_stamp_file("${OCTKWrapImGui_STAMP_FILE_PATH}")
+	octk_make_stamp_file("${OpenCTKWrapImGui_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapImGui INTERFACE IMPORTED)
+add_library(OpenCTKWrapImGui::WrapImGui INTERFACE IMPORTED)
 if(NOT TARGET ImGui)
 	add_library(ImGui STATIC
-		${OCTKWrapImGui_SOURCE_DIR}/imgui.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/imgui.h
-		${OCTKWrapImGui_SOURCE_DIR}/imgui_demo.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/imgui_draw.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/imgui_internal.h
-		${OCTKWrapImGui_SOURCE_DIR}/imgui_tables.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/imgui_widgets.cpp
-		${OCTKWrapImGui_SOURCE_DIR}/imstb_rectpack.h
-		${OCTKWrapImGui_SOURCE_DIR}/imstb_textedit.h
-		${OCTKWrapImGui_SOURCE_DIR}/imstb_truetype.h)
+		${OpenCTKWrapImGui_SOURCE_DIR}/imgui.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/imgui.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/imgui_demo.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/imgui_draw.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/imgui_internal.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/imgui_tables.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/imgui_widgets.cpp
+		${OpenCTKWrapImGui_SOURCE_DIR}/imstb_rectpack.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/imstb_textedit.h
+		${OpenCTKWrapImGui_SOURCE_DIR}/imstb_truetype.h)
 endif()
-target_link_libraries(OCTK3rdparty::WrapImGui INTERFACE ImGui)
+target_link_libraries(OpenCTKWrapImGui::WrapImGui INTERFACE ImGui)
 execute_process(
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imgui_internal.h"
-	"${OCTKWrapImGui_INSTALL_DIR}/include/imgui/imgui_internal.h"
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imconfig.h"
-	"${OCTKWrapImGui_INSTALL_DIR}/include/imgui/imconfig.h"
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OCTKWrapImGui_SOURCE_DIR}/imgui.h"
-	"${OCTKWrapImGui_INSTALL_DIR}/include/imgui/imgui.h"
-	WORKING_DIRECTORY "${OCTKWrapImGui_ROOT_DIR}"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OpenCTKWrapImGui_SOURCE_DIR}/imgui_internal.h"
+	"${OpenCTKWrapImGui_INSTALL_DIR}/include/imgui/imgui_internal.h"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OpenCTKWrapImGui_SOURCE_DIR}/imconfig.h"
+	"${OpenCTKWrapImGui_INSTALL_DIR}/include/imgui/imconfig.h"
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OpenCTKWrapImGui_SOURCE_DIR}/imgui.h"
+	"${OpenCTKWrapImGui_INSTALL_DIR}/include/imgui/imgui.h"
+	WORKING_DIRECTORY "${OpenCTKWrapImGui_ROOT_DIR}"
 	ERROR_QUIET)
-target_include_directories(OCTK3rdparty::WrapImGui INTERFACE "${OCTKWrapImGui_INSTALL_DIR}/include")
-set(OCTKWrapImGui_FOUND ON)
+target_include_directories(OpenCTKWrapImGui::WrapImGui INTERFACE "${OpenCTKWrapImGui_INSTALL_DIR}/include")
+set(OpenCTKWrapImGui_FOUND ON)

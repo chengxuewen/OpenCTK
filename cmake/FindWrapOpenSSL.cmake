@@ -23,8 +23,8 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapOpenSSL)
-	set(OCTKWrapOpenSSL_FOUND ON)
+if(TARGET OpenCTKWrapOpenSSL::WrapOpenSSL)
+	set(OpenCTKWrapOpenSSL_FOUND ON)
 	return()
 endif()
 
@@ -33,50 +33,50 @@ if(ON)
 	octk_vcpkg_install_package(openssl
 		NOT_IMPORT
 		TARGET
-		OCTK3rdparty::WrapOpenSSL
+		OpenCTKWrapOpenSSL::WrapOpenSSL
 		PREFIX
-		OCTKWrapOpenSSL)
+		OpenCTKWrapOpenSSL)
 else()
-	set(OCTKWrapOpenSSL_NAME "openssl")
-	set(OCTKWrapOpenSSL_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapOpenSSL_NAME}")
+	set(OpenCTKWrapOpenSSL_NAME "openssl")
+	set(OpenCTKWrapOpenSSL_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapOpenSSL_NAME}")
 	if(WIN32)
-		set(OCTKWrapOpenSSL_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-static-md)
+		set(OpenCTKWrapOpenSSL_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET}-static-md)
 	else()
-		set(OCTKWrapOpenSSL_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
+		set(OpenCTKWrapOpenSSL_VCPKG_TRIPLET ${OCTK_VCPKG_TRIPLET})
 	endif()
-	set(OCTKWrapOpenSSL_INSTALL_DIR "${OCTKWrapOpenSSL_ROOT_DIR}/installed/${OCTKWrapOpenSSL_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
-	if(NOT EXISTS "${OCTKWrapOpenSSL_INSTALL_DIR}")
+	set(OpenCTKWrapOpenSSL_INSTALL_DIR "${OpenCTKWrapOpenSSL_ROOT_DIR}/installed/${OpenCTKWrapOpenSSL_VCPKG_TRIPLET}" CACHE INTERNAL "" FORCE)
+	if(NOT EXISTS "${OpenCTKWrapOpenSSL_INSTALL_DIR}")
 		execute_process(
-			COMMAND ${OCTKVcpkg_EXECUTABLE} list ${OCTKWrapOpenSSL_NAME}:${OCTKWrapOpenSSL_VCPKG_TRIPLET}
-			WORKING_DIRECTORY "${OCTKVcpkg_ROOT_DIR}"
+			COMMAND ${OpenCTKVcpkg_EXECUTABLE} list ${OpenCTKWrapOpenSSL_NAME}:${OpenCTKWrapOpenSSL_VCPKG_TRIPLET}
+			WORKING_DIRECTORY "${OpenCTKVcpkg_ROOT_DIR}"
 			OUTPUT_VARIABLE FIND_OUTPUT
 			RESULT_VARIABLE FIND_RESULT)
 		if("X${FIND_OUTPUT}" STREQUAL "X")
-			message(STATUS "${OCTKWrapOpenSSL_NAME} not installed, start install...")
-			set(OCTKWrapOpenSSL_VCPKG_CONFIGS ${OCTKWrapOpenSSL_NAME}:${OCTKWrapOpenSSL_VCPKG_TRIPLET})
-			message(STATUS "${OCTKWrapOpenSSL_NAME} vcpkg install configs: ${OCTKWrapOpenSSL_VCPKG_CONFIGS}")
+			message(STATUS "${OpenCTKWrapOpenSSL_NAME} not installed, start install...")
+			set(OpenCTKWrapOpenSSL_VCPKG_CONFIGS ${OpenCTKWrapOpenSSL_NAME}:${OpenCTKWrapOpenSSL_VCPKG_TRIPLET})
+			message(STATUS "${OpenCTKWrapOpenSSL_NAME} vcpkg install configs: ${OpenCTKWrapOpenSSL_VCPKG_CONFIGS}")
 			execute_process(
-				COMMAND "${OCTKVcpkg_EXECUTABLE}" install ${OCTKWrapOpenSSL_VCPKG_CONFIGS} --recurse
-				WORKING_DIRECTORY "${OCTKVcpkg_ROOT_DIR}"
+				COMMAND "${OpenCTKVcpkg_EXECUTABLE}" install ${OpenCTKWrapOpenSSL_VCPKG_CONFIGS} --recurse
+				WORKING_DIRECTORY "${OpenCTKVcpkg_ROOT_DIR}"
 				RESULT_VARIABLE INSTALL_RESULT
 				COMMAND_ECHO STDOUT)
 			if(NOT (INSTALL_RESULT MATCHES 0))
-				message(FATAL_ERROR "${OCTKWrapOpenSSL_NAME} install failed.")
+				message(FATAL_ERROR "${OpenCTKWrapOpenSSL_NAME} install failed.")
 			endif()
 		endif()
 
 		execute_process(
-			COMMAND "${OCTKVcpkg_EXECUTABLE}" export ${OCTKWrapOpenSSL_NAME}:${OCTKWrapOpenSSL_VCPKG_TRIPLET}
-			--raw --output=${OCTKWrapOpenSSL_NAME} --output-dir=${PROJECT_BINARY_DIR}/3rdparty
-			WORKING_DIRECTORY "${OCTKVcpkg_ROOT_DIR}"
+			COMMAND "${OpenCTKVcpkg_EXECUTABLE}" export ${OpenCTKWrapOpenSSL_NAME}:${OpenCTKWrapOpenSSL_VCPKG_TRIPLET}
+			--raw --output=${OpenCTKWrapOpenSSL_NAME} --output-dir=${PROJECT_BINARY_DIR}/3rdparty
+			WORKING_DIRECTORY "${OpenCTKVcpkg_ROOT_DIR}"
 			RESULT_VARIABLE EXPORT_RESULT
 			COMMAND_ECHO STDOUT)
 		if(NOT (EXPORT_RESULT MATCHES 0))
-			message(FATAL_ERROR "${OCTKWrapOpenSSL_NAME} export failed.")
+			message(FATAL_ERROR "${OpenCTKWrapOpenSSL_NAME} export failed.")
 		endif()
 	endif()
 endif()
-set(OPENSSL_ROOT_DIR ${OCTKWrapOpenSSL_INSTALL_DIR})
-find_package(OpenSSL PATHS ${OCTKWrapOpenSSL_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapOpenSSL INTERFACE OpenSSL::SSL OpenSSL::Crypto)
-set(OCTKWrapOpenSSL_FOUND ON)
+set(OPENSSL_ROOT_DIR ${OpenCTKWrapOpenSSL_INSTALL_DIR})
+find_package(OpenSSL PATHS ${OpenCTKWrapOpenSSL_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapOpenSSL::WrapOpenSSL INTERFACE OpenSSL::SSL OpenSSL::Crypto)
+set(OpenCTKWrapOpenSSL_FOUND ON)

@@ -30,8 +30,8 @@ set(OCTK_TEST_OUTPUT_DIR ${OCTK_BUILD_DIR}/${OCTK_INSTALL_TESTSDIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # Add tests link libraries
 #-----------------------------------------------------------------------------------------------------------------------
-octk_find_package(WrapLibyuv PROVIDED_TARGETS OCTK3rdparty::WrapLibyuv)
-set(OCTK_TEST_LINK_LIBRARIES OpenCTK::Media OpenCTK::MediaPrivate OCTK3rdparty::WrapGTest OCTK3rdparty::WrapBenchmark)
+octk_find_package(WrapLibyuv PROVIDED_TARGETS OpenCTKWrapLibyuv::WrapLibyuv)
+set(OCTK_TEST_LINK_LIBRARIES OpenCTK::Media OpenCTK::MediaPrivate OpenCTKWrapGTest::WrapGTest OpenCTKWrapBenchmark::WrapBenchmark)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ octk_add_test(OpenCTKMediaTstScalabilityModeUtils
 	tst_scalability_mode_utils.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -247,7 +247,7 @@ octk_add_test(OpenCTKMediaTstScalabilityStructure
 	tst_scalability_structure.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -256,7 +256,7 @@ octk_add_test(OpenCTKMediaTstScalabilityStructureFullSvc
 	tst_scalability_structure_full_svc.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -265,7 +265,7 @@ octk_add_test(OpenCTKMediaTstScalabilityStructureKeySvc
 	tst_scalability_structure_key_svc.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -274,7 +274,7 @@ octk_add_test(OpenCTKMediaTstScalabilityStructureL2T2KeyShift
 	tst_scalability_structure_l2t2_key_shift.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -283,7 +283,7 @@ octk_add_test(OpenCTKMediaTstSimulcastRateAllocator
 	tst_simulcast_rate_allocator.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -292,7 +292,7 @@ octk_add_test(OpenCTKMediaTstSimulcastToSvcConverter
 	tst_simulcast_to_svc_converter.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -301,7 +301,7 @@ octk_add_test(OpenCTKMediaTstSimulcastToSvcConverter
 #	tst_stable_target_rate_experiment.cpp
 #	INCLUDE_DIRECTORIES
 #	LIBRARIES
-#	OCTK3rdparty::WrapLibyuv
+#	OpenCTKWrapLibyuv::WrapLibyuv
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
@@ -310,7 +310,7 @@ octk_add_test(OpenCTKMediaTstStructParametersParser
 	tst_struct_parameters_parser.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -319,7 +319,7 @@ octk_add_test(OpenCTKMediaTstSvcRateAllocator
 	tst_svc_rate_allocator.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -328,7 +328,7 @@ octk_add_test(OpenCTKMediaTstVideoAdaptationCounters
 	tst_video_adaptation_counters.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -337,7 +337,7 @@ octk_add_test(OpenCTKMediaTstVideoBitrateAllocation
 	tst_video_bitrate_allocation.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -346,7 +346,7 @@ octk_add_test(OpenCTKMediaTstVideoFrameBufferPool
 	tst_video_frame_buffer_pool.cpp
 	INCLUDE_DIRECTORIES
 	LIBRARIES
-	OCTK3rdparty::WrapLibyuv
+	OpenCTKWrapLibyuv::WrapLibyuv
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
@@ -355,7 +355,7 @@ octk_add_test(OpenCTKMediaTstVideoFrameBufferPool
 #	tst_video_source_restrictions.cpp
 #	INCLUDE_DIRECTORIES
 #	LIBRARIES
-#	OCTK3rdparty::WrapLibyuv
+#	OpenCTKWrapLibyuv::WrapLibyuv
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})

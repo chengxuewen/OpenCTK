@@ -615,8 +615,8 @@ endif()
 if(OCTK_BUILD_TESTS)
 	include(CTest)
 	enable_testing()
-	octk_find_package(WrapGTest PROVIDED_TARGETS OCTK3rdparty::WrapGTest)
-	octk_find_package(WrapBenchmark PROVIDED_TARGETS OCTK3rdparty::WrapBenchmark)
+	octk_find_package(WrapGTest PROVIDED_TARGETS OpenCTKWrapGTest::WrapGTest)
+	octk_find_package(WrapBenchmark PROVIDED_TARGETS OpenCTKWrapBenchmark::WrapBenchmark)
 endif()
 
 

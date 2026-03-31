@@ -51,127 +51,127 @@ macro(octk_pkgconf_check_modules PREFIX)
 	set(ENV{PKG_CONFIG_PATH} "${PKG_CONFIG_PATH_CACHE}")
 endmacro()
 
-if(TARGET OCTK3rdparty::Pkgconf)
-	set(OCTKPkgconf_FOUND ON)
+if(TARGET OpenCTKPkgconf::Pkgconf)
+	set(OpenCTKPkgconf_FOUND ON)
 	return()
 endif()
 
-set(OCTKPkgconf_NAME "pkgconf-2.5.1")
-set(OCTKPkgconf_PKG_NAME "${OCTKPkgconf_NAME}.7z")
-set(OCTKPkgconf_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKPkgconf_PKG_NAME}")
-set(OCTKPkgconf_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKPkgconf_NAME}")
-set(OCTKPkgconf_BUILD_DIR "${OCTKPkgconf_ROOT_DIR}/build")
-set(OCTKPkgconf_SOURCE_DIR "${OCTKPkgconf_ROOT_DIR}/source")
-set(OCTKPkgconf_INSTALL_DIR "${OCTKPkgconf_ROOT_DIR}/install")
-octk_stamp_file_info(OCTKPkgconf OUTPUT_DIR "${OCTKPkgconf_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKPkgconf URL "${OCTKPkgconf_URL_PATH}")
-if(NOT EXISTS "${OCTKPkgconf_STAMP_FILE_PATH}")
-	if(NOT EXISTS ${OCTKPkgconf_SOURCE_DIR})
-		message(FATAL_ERROR "${OCTKPkgconf_NAME} FetchContent failed.")
+set(OpenCTKPkgconf_NAME "pkgconf-2.5.1")
+set(OpenCTKPkgconf_PKG_NAME "${OpenCTKPkgconf_NAME}.7z")
+set(OpenCTKPkgconf_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKPkgconf_PKG_NAME}")
+set(OpenCTKPkgconf_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKPkgconf_NAME}")
+set(OpenCTKPkgconf_BUILD_DIR "${OpenCTKPkgconf_ROOT_DIR}/build")
+set(OpenCTKPkgconf_SOURCE_DIR "${OpenCTKPkgconf_ROOT_DIR}/source")
+set(OpenCTKPkgconf_INSTALL_DIR "${OpenCTKPkgconf_ROOT_DIR}/install")
+octk_stamp_file_info(OpenCTKPkgconf OUTPUT_DIR "${OpenCTKPkgconf_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKPkgconf URL "${OpenCTKPkgconf_URL_PATH}")
+if(NOT EXISTS "${OpenCTKPkgconf_STAMP_FILE_PATH}")
+	if(NOT EXISTS ${OpenCTKPkgconf_SOURCE_DIR})
+		message(FATAL_ERROR "${OpenCTKPkgconf_NAME} FetchContent failed.")
 	endif()
-	octk_reset_dir(${OCTKPkgconf_BUILD_DIR})
+	octk_reset_dir(${OpenCTKPkgconf_BUILD_DIR})
 
 	if(WIN32)
 		include(InstallPython)
-		message(STATUS "meson setup ${OCTKPkgconf_NAME} lib...")
+		message(STATUS "meson setup ${OpenCTKPkgconf_NAME} lib...")
 		execute_process(
-			COMMAND ${OCTKPython_EXECUTABLE} ${OCTKMeson_FILE} setup ../build -Dtests=disabled
-			--prefix=${OCTKPkgconf_INSTALL_DIR}
-			WORKING_DIRECTORY "${OCTKPkgconf_SOURCE_DIR}"
+			COMMAND ${OpenCTKPython_EXECUTABLE} ${OCTKMeson_FILE} setup ../build -Dtests=disabled
+			--prefix=${OpenCTKPkgconf_INSTALL_DIR}
+			WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 			RESULT_VARIABLE SETUP_RESULT)
 		if(SETUP_RESULT MATCHES 0)
-			message(STATUS "meson compile ${OCTKPkgconf_NAME} lib...")
+			message(STATUS "meson compile ${OpenCTKPkgconf_NAME} lib...")
 			execute_process(
-				COMMAND ${OCTKPython_EXECUTABLE} ${OCTKMeson_FILE} compile -C ../build
-				WORKING_DIRECTORY "${OCTKPkgconf_SOURCE_DIR}"
+				COMMAND ${OpenCTKPython_EXECUTABLE} ${OCTKMeson_FILE} compile -C ../build
+				WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 				RESULT_VARIABLE COMPILE_RESULT)
 			if(COMPILE_RESULT MATCHES 0)
 				execute_process(
-					COMMAND ${OCTKPython_EXECUTABLE} ${OCTKMeson_FILE} install -C ../build
-					WORKING_DIRECTORY "${OCTKPkgconf_SOURCE_DIR}"
+					COMMAND ${OpenCTKPython_EXECUTABLE} ${OCTKMeson_FILE} install -C ../build
+					WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 					RESULT_VARIABLE INSTALL_RESULT)
 				if(INSTALL_RESULT MATCHES 0)
-					octk_make_stamp_file("${OCTKPkgconf_STAMP_FILE_PATH}")
-					message(STATUS "${OCTKPkgconf_NAME} meson install success")
+					octk_make_stamp_file("${OpenCTKPkgconf_STAMP_FILE_PATH}")
+					message(STATUS "${OpenCTKPkgconf_NAME} meson install success")
 				else()
-					message(WARNING "${OCTKPkgconf_NAME} meson install failed.")
+					message(WARNING "${OpenCTKPkgconf_NAME} meson install failed.")
 				endif()
-				message(STATUS "${OCTKPkgconf_NAME} meson compile success")
+				message(STATUS "${OpenCTKPkgconf_NAME} meson compile success")
 			else()
-				message(WARNING "${OCTKPkgconf_NAME} meson compile failed.")
+				message(WARNING "${OpenCTKPkgconf_NAME} meson compile failed.")
 			endif()
-			message(STATUS "${OCTKPkgconf_NAME} meson setup success")
+			message(STATUS "${OpenCTKPkgconf_NAME} meson setup success")
 		else()
-			message(WARNING "${OCTKPkgconf_NAME} meson setup failed.")
+			message(WARNING "${OpenCTKPkgconf_NAME} meson setup failed.")
 		endif()
 	else()
-		message(STATUS "Autogen ${OCTKPkgconf_NAME} lib...")
+		message(STATUS "Autogen ${OpenCTKPkgconf_NAME} lib...")
 		execute_process(
 			COMMAND ./autogen.sh
-			WORKING_DIRECTORY "${OCTKPkgconf_SOURCE_DIR}"
+			WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 			RESULT_VARIABLE AUTOGEN_RESULT)
 		if(AUTOGEN_RESULT MATCHES 0)
-			message(STATUS "Configure ${OCTKPkgconf_NAME} lib...")
+			message(STATUS "Configure ${OpenCTKPkgconf_NAME} lib...")
 			execute_process(
-				COMMAND ./configure --prefix=${OCTKPkgconf_INSTALL_DIR}
-				WORKING_DIRECTORY "${OCTKPkgconf_SOURCE_DIR}"
+				COMMAND ./configure --prefix=${OpenCTKPkgconf_INSTALL_DIR}
+				WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 				RESULT_VARIABLE CONFIGURE_RESULT)
 			if(CONFIGURE_RESULT MATCHES 0)
 				execute_process(
 					COMMAND make -j${OCTK_NUMBER_OF_ASYNC_JOBS}
-					WORKING_DIRECTORY "${OCTKPkgconf_SOURCE_DIR}"
+					WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 					RESULT_VARIABLE BUILD_RESULT)
 				if(BUILD_RESULT MATCHES 0)
 					execute_process(
 						COMMAND make install
-						WORKING_DIRECTORY "${OCTKPkgconf_SOURCE_DIR}"
+						WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 						RESULT_VARIABLE INSTALL_RESULT)
 					if(INSTALL_RESULT MATCHES 0)
-						message(STATUS "${OCTKPkgconf_NAME} install success")
-						octk_make_stamp_file("${OCTKPkgconf_STAMP_FILE_PATH}")
+						message(STATUS "${OpenCTKPkgconf_NAME} install success")
+						octk_make_stamp_file("${OpenCTKPkgconf_STAMP_FILE_PATH}")
 					else()
-						message(FATAL_ERROR "${OCTKPkgconf_NAME} install failed.")
+						message(FATAL_ERROR "${OpenCTKPkgconf_NAME} install failed.")
 					endif()
-					message(STATUS "${OCTKPkgconf_NAME} build success")
+					message(STATUS "${OpenCTKPkgconf_NAME} build success")
 				else()
-					message(FATAL_ERROR "${OCTKPkgconf_NAME} build failed.")
+					message(FATAL_ERROR "${OpenCTKPkgconf_NAME} build failed.")
 				endif()
-				message(STATUS "${OCTKPkgconf_NAME} configure success")
+				message(STATUS "${OpenCTKPkgconf_NAME} configure success")
 			else()
-				message(FATAL_ERROR "${OCTKPkgconf_NAME} configure failed.")
+				message(FATAL_ERROR "${OpenCTKPkgconf_NAME} configure failed.")
 			endif()
-			message(STATUS "${OCTKPkgconf_NAME} autogen success")
+			message(STATUS "${OpenCTKPkgconf_NAME} autogen success")
 		else()
-			message(FATAL_ERROR "${OCTKPkgconf_NAME} autogen failed.")
+			message(FATAL_ERROR "${OpenCTKPkgconf_NAME} autogen failed.")
 		endif()
 	endif()
-	if(NOT EXISTS "${OCTKPkgconf_STAMP_FILE_PATH}")
+	if(NOT EXISTS "${OpenCTKPkgconf_STAMP_FILE_PATH}")
 		include(InstallVcpkg)
 		octk_vcpkg_install_package(pkgconf
 			NOT_IMPORT TOOLS
 			TARGET
-			OCTK3rdparty::Pkgconf
+			OpenCTKPkgconf::Pkgconf
 			PREFIX
-			OCTKPkgconfVcpkg
+			OpenCTKPkgconfVcpkg
 			OUTPUT_DIR
-			${OCTKPkgconf_ROOT_DIR})
-		octk_reset_dir(${OCTKPkgconf_INSTALL_DIR})
+			${OpenCTKPkgconf_ROOT_DIR})
+		octk_reset_dir(${OpenCTKPkgconf_INSTALL_DIR})
 		execute_process(
-			COMMAND ${CMAKE_COMMAND} -E copy_directory "${OCTKPkgconfVcpkg_INSTALL_DIR}/tools/pkgconf"
-			"${OCTKPkgconf_INSTALL_DIR}/bin"
-			WORKING_DIRECTORY "${OCTKPkgconf_ROOT_DIR}"
+			COMMAND ${CMAKE_COMMAND} -E copy_directory "${OpenCTKPkgconfVcpkg_INSTALL_DIR}/tools/pkgconf"
+			"${OpenCTKPkgconf_INSTALL_DIR}/bin"
+			WORKING_DIRECTORY "${OpenCTKPkgconf_ROOT_DIR}"
 			RESULT_VARIABLE COPYDIR_RESULT)
 		if(COPYDIR_RESULT MATCHES 0)
-			message(STATUS "${OCTKPkgconf_NAME} install success")
-			octk_make_stamp_file("${OCTKPkgconf_STAMP_FILE_PATH}")
+			message(STATUS "${OpenCTKPkgconf_NAME} install success")
+			octk_make_stamp_file("${OpenCTKPkgconf_STAMP_FILE_PATH}")
 		else()
-			message(FATAL_ERROR "${OCTKPkgconf_NAME} vcpkg install dir copy failed.")
+			message(FATAL_ERROR "${OpenCTKPkgconf_NAME} vcpkg install dir copy failed.")
 		endif()
 	endif()
 endif()
-set(OCTKPkgconf_EXECUTABLE "${OCTKPkgconf_INSTALL_DIR}/bin/pkgconf"
+set(OpenCTKPkgconf_EXECUTABLE "${OpenCTKPkgconf_INSTALL_DIR}/bin/pkgconf"
 	CACHE INTERNAL "PkgConf executable path." FORCE)
-set(PKG_CONFIG_EXECUTABLE "${OCTKPkgconf_EXECUTABLE}"
+set(PKG_CONFIG_EXECUTABLE "${OpenCTKPkgconf_EXECUTABLE}"
 	CACHE INTERNAL "PKG_CONFIG_EXECUTABLE executable path." FORCE)
-message(STATUS "Set PkgConf executable path ${OCTKPkgconf_EXECUTABLE}")
-set(OCTKPkgconf_FOUND ON)
+message(STATUS "Set PkgConf executable path ${OpenCTKPkgconf_EXECUTABLE}")
+set(OpenCTKPkgconf_FOUND ON)

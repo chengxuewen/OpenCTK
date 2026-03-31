@@ -23,8 +23,8 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapLibcprVcpkg)
-    set(OCTKWrapLibcprVcpkg_FOUND ON)
+if(TARGET OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg)
+    set(OpenCTKWrapLibcprVcpkg_FOUND ON)
     return()
 endif()
 
@@ -32,16 +32,16 @@ include(InstallVcpkg)
 octk_vcpkg_install_package(cpr
     NOT_IMPORT
     TARGET
-    OCTK3rdparty::WrapLibcprVcpkg
+    OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg
     PREFIX
-	OCTKWrapLibcprVcpkg
+	OpenCTKWrapLibcprVcpkg
     COMPONENTS
     ssl)
-set(CPR_ROOT_DIR ${OCTKWrapLibcprVcpkg_INSTALL_DIR})
-set(OPENSSL_ROOT_DIR ${OCTKWrapLibcprVcpkg_INSTALL_DIR})
-find_package(cpr PATHS ${OCTKWrapLibcprVcpkg_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
+set(CPR_ROOT_DIR ${OpenCTKWrapLibcprVcpkg_INSTALL_DIR})
+set(OPENSSL_ROOT_DIR ${OpenCTKWrapLibcprVcpkg_INSTALL_DIR})
+find_package(cpr PATHS ${OpenCTKWrapLibcprVcpkg_INSTALL_DIR} NO_DEFAULT_PATH REQUIRED)
 get_target_property(cpr_IMPORTED_LOCATION_RELEASE cpr::cpr IMPORTED_LOCATION_RELEASE)
 set_target_properties(cpr::cpr PROPERTIES IMPORTED_LOCATION_MINSIZEREL ${cpr_IMPORTED_LOCATION_RELEASE})
 set_target_properties(cpr::cpr PROPERTIES IMPORTED_LOCATION_RELWITHDEBINFO ${cpr_IMPORTED_LOCATION_RELEASE})
-target_link_libraries(OCTK3rdparty::WrapLibcprVcpkg INTERFACE cpr::cpr)
-set(OCTKWrapLibcprVcpkg_FOUND ON)
+target_link_libraries(OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg INTERFACE cpr::cpr)
+set(OpenCTKWrapLibcprVcpkg_FOUND ON)

@@ -23,28 +23,28 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-if(TARGET OCTK3rdparty::WrapAbseil)
-    set(OCTKWrapAbseil_FOUND ON)
+if(TARGET OpenCTKWrapAbseil::WrapAbseil)
+    set(OpenCTKWrapAbseil_FOUND ON)
     return()
 endif()
 
-set(OCTKWrapAbseil_NAME "abseil-cpp-20220623.2")
-set(OCTKWrapAbseil_PKG_NAME "${OCTKWrapAbseil_NAME}.tar.gz")
-set(OCTKWrapAbseil_DIR_NAME "${OCTKWrapAbseil_NAME}-${OCTK_LOWER_BUILD_TYPE}")
-set(OCTKWrapAbseil_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OCTKWrapAbseil_PKG_NAME}")
-set(OCTKWrapAbseil_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OCTKWrapAbseil_DIR_NAME}")
-set(OCTKWrapAbseil_BUILD_DIR "${OCTKWrapAbseil_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
-set(OCTKWrapAbseil_SOURCE_DIR "${OCTKWrapAbseil_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
-set(OCTKWrapAbseil_INSTALL_DIR "${OCTKWrapAbseil_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
-octk_stamp_file_info(OCTKWrapAbseil OUTPUT_DIR "${OCTKWrapAbseil_ROOT_DIR}")
-octk_fetch_3rdparty(OCTKWrapAbseil URL "${OCTKWrapAbseil_URL_PATH}" OUTPUT_NAME "${OCTKWrapAbseil_DIR_NAME}")
-if(NOT EXISTS "${OCTKWrapAbseil_STAMP_FILE_PATH}")
-    if(NOT EXISTS ${OCTKWrapAbseil_SOURCE_DIR})
-        message(FATAL_ERROR "${OCTKWrapAbseil_NAME} FetchContent failed.")
+set(OpenCTKWrapAbseil_NAME "abseil-cpp-20220623.2")
+set(OpenCTKWrapAbseil_PKG_NAME "${OpenCTKWrapAbseil_NAME}.tar.gz")
+set(OpenCTKWrapAbseil_DIR_NAME "${OpenCTKWrapAbseil_NAME}-${OCTK_LOWER_BUILD_TYPE}")
+set(OpenCTKWrapAbseil_URL_PATH "${PROJECT_SOURCE_DIR}/3rdparty/${OpenCTKWrapAbseil_PKG_NAME}")
+set(OpenCTKWrapAbseil_ROOT_DIR "${PROJECT_BINARY_DIR}/3rdparty/${OpenCTKWrapAbseil_DIR_NAME}")
+set(OpenCTKWrapAbseil_BUILD_DIR "${OpenCTKWrapAbseil_ROOT_DIR}/build" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapAbseil_SOURCE_DIR "${OpenCTKWrapAbseil_ROOT_DIR}/source" CACHE INTERNAL "" FORCE)
+set(OpenCTKWrapAbseil_INSTALL_DIR "${OpenCTKWrapAbseil_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
+octk_stamp_file_info(OpenCTKWrapAbseil OUTPUT_DIR "${OpenCTKWrapAbseil_ROOT_DIR}")
+octk_fetch_3rdparty(OpenCTKWrapAbseil URL "${OpenCTKWrapAbseil_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapAbseil_DIR_NAME}")
+if(NOT EXISTS "${OpenCTKWrapAbseil_STAMP_FILE_PATH}")
+    if(NOT EXISTS ${OpenCTKWrapAbseil_SOURCE_DIR})
+        message(FATAL_ERROR "${OpenCTKWrapAbseil_NAME} FetchContent failed.")
     endif()
-    octk_reset_dir(${OCTKWrapAbseil_BUILD_DIR})
+    octk_reset_dir(${OpenCTKWrapAbseil_BUILD_DIR})
 
-    message(STATUS "Configure ${OCTKWrapAbseil_NAME} lib...")
+    message(STATUS "Configure ${OpenCTKWrapAbseil_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
@@ -53,40 +53,40 @@ if(NOT EXISTS "${OCTKWrapAbseil_STAMP_FILE_PATH}")
         -DABSL_MSVC_STATIC_RUNTIME=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-        -DCMAKE_INSTALL_PREFIX=${OCTKWrapAbseil_INSTALL_DIR}
-        ${OCTKWrapAbseil_SOURCE_DIR}
-        WORKING_DIRECTORY "${OCTKWrapAbseil_BUILD_DIR}"
+        -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapAbseil_INSTALL_DIR}
+        ${OpenCTKWrapAbseil_SOURCE_DIR}
+        WORKING_DIRECTORY "${OpenCTKWrapAbseil_BUILD_DIR}"
         RESULT_VARIABLE CONFIGURE_RESULT)
     if(NOT CONFIGURE_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapAbseil_NAME} configure failed.")
+        message(FATAL_ERROR "${OpenCTKWrapAbseil_NAME} configure failed.")
     endif()
-    message(STATUS "${OCTKWrapAbseil_NAME} configure success")
+    message(STATUS "${OpenCTKWrapAbseil_NAME} configure success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config
         ${CMAKE_BUILD_TYPE} --target install
-        WORKING_DIRECTORY "${OCTKWrapAbseil_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapAbseil_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapAbseil_NAME} build failed.")
+        message(FATAL_ERROR "${OpenCTKWrapAbseil_NAME} build failed.")
     endif()
-    message(STATUS "${OCTKWrapAbseil_NAME} build success")
+    message(STATUS "${OpenCTKWrapAbseil_NAME} build success")
 
     execute_process(
         COMMAND ${CMAKE_COMMAND} --install ./
-        WORKING_DIRECTORY "${OCTKWrapAbseil_BUILD_DIR}"
+        WORKING_DIRECTORY "${OpenCTKWrapAbseil_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)
-        message(FATAL_ERROR "${OCTKWrapAbseil_NAME} install failed.")
+        message(FATAL_ERROR "${OpenCTKWrapAbseil_NAME} install failed.")
     endif()
-    message(STATUS "${OCTKWrapAbseil_NAME} install success")
-    octk_make_stamp_file("${OCTKWrapAbseil_STAMP_FILE_PATH}")
+    message(STATUS "${OpenCTKWrapAbseil_NAME} install success")
+    octk_make_stamp_file("${OpenCTKWrapAbseil_STAMP_FILE_PATH}")
 endif()
 # wrap lib
-add_library(OCTK3rdparty::WrapAbseil INTERFACE IMPORTED)
-set(absl_DIR "${OCTKWrapAbseil_INSTALL_DIR}/lib/cmake/absl")
-find_package(absl PATHS "${OCTKWrapAbseil_INSTALL_DIR}" NO_DEFAULT_PATH REQUIRED)
-target_link_libraries(OCTK3rdparty::WrapAbseil INTERFACE
+add_library(OpenCTKWrapAbseil::WrapAbseil INTERFACE IMPORTED)
+set(absl_DIR "${OpenCTKWrapAbseil_INSTALL_DIR}/lib/cmake/absl")
+find_package(absl PATHS "${OpenCTKWrapAbseil_INSTALL_DIR}" NO_DEFAULT_PATH REQUIRED)
+target_link_libraries(OpenCTKWrapAbseil::WrapAbseil INTERFACE
     absl::atomic_hook
     absl::errno_saver
     absl::log_severity
@@ -224,5 +224,5 @@ target_link_libraries(OCTK3rdparty::WrapAbseil INTERFACE
     absl::variant
     absl::compare
     absl::utility)
-target_include_directories(OCTK3rdparty::WrapAbseil INTERFACE "${OCTKWrapAbseil_INSTALL_DIR}/include")
-set(OCTKWrapAbseil_FOUND ON)
+target_include_directories(OpenCTKWrapAbseil::WrapAbseil INTERFACE "${OpenCTKWrapAbseil_INSTALL_DIR}/include")
+set(OpenCTKWrapAbseil_FOUND ON)
