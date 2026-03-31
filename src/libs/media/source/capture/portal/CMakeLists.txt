@@ -25,6 +25,9 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
+octk_pkgconf_check_modules(GIOUnix QUIET
+	PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+	IMPORTED_TARGET gio-unix-2.0)
 octk_internal_extend_target(OpenCTKMedia
 	SOURCES
 	${ROOT_DIR}/octk_camera_portal.cpp
@@ -34,7 +37,9 @@ octk_internal_extend_target(OpenCTKMedia
 	${ROOT_DIR}/octk_scoped_glib_p.hpp
 	${ROOT_DIR}/octk_xdg_desktop_portal_utils.cpp
 	${ROOT_DIR}/octk_xdg_desktop_portal_utils_p.hpp
-	${ROOT_DIR}/octk_xdg_session_detail_p.hpp)
+	${ROOT_DIR}/octk_xdg_session_detail_p.hpp
+	LIBRARIES
+	PkgConfig::GIOUnix)
 if (OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
 	octk_internal_extend_target(OpenCTKMedia
 		SOURCES

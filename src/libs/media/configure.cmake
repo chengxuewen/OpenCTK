@@ -38,12 +38,12 @@ octk_pkgconf_check_modules(PipeWire QUIET
 octk_configure_feature("MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE" PUBLIC
 	LABEL "Enable this to build enable capture video libpipewire"
 	DISABLE NOT PipeWire_FOUND
-	CONDITION ON)
+	CONDITION OFF)
 
 octk_configure_feature("MEDIA_ENABLE_CAPTURE_CAMERA_LIBARGUS" PUBLIC
 	LABEL "Enable this to build enable capture video libargus"
 	DISABLE NOT EXISTS "/usr/src/jetson_multimedia_api"
-	CONDITION ON)
+	CONDITION OFF)
 
 octk_configure_feature("MEDIA_USE_LIBSRTP" PUBLIC
 	LABEL "Enable this to build use libsrtp"
