@@ -50,6 +50,7 @@ list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 octk_find_package(WrapFmt PROVIDED_TARGETS OpenCTKWrapFmt::WrapFmt)
 octk_find_package(WrapJson PROVIDED_TARGETS OpenCTKWrapJson::WrapJson)
+octk_find_package(WrapJwtcpp PROVIDED_TARGETS OpenCTKWrapJwtcpp::WrapJwtcpp)
 octk_find_package(WrapSpdlog PROVIDED_TARGETS OpenCTKWrapSpdlog::WrapSpdlog)
 octk_find_package(WrapYamlCpp PROVIDED_TARGETS OpenCTKWrapYamlCpp::WrapYamlCpp)
 octk_find_package(WrapAnyLite PROVIDED_TARGETS OpenCTKWrapAnyLite::WrapAnyLite)
@@ -132,6 +133,7 @@ octk_add_library(Core
 	source/text/octk_bit_buffer.hpp
 	source/text/octk_format.hpp
 	source/text/octk_json.hpp
+	source/text/octk_jwt.hpp
 	source/text/octk_string.cpp
 	source/text/octk_string.hpp
 	source/text/octk_string_builder.cpp
@@ -241,6 +243,7 @@ octk_add_library(Core
 	EXTERNAL_HEADERS_DIRS
 	${OpenCTKWrapFmt_INSTALL_DIR}/include
 	${OpenCTKWrapJson_INSTALL_DIR}/include
+	${OpenCTKWrapJwtcpp_INSTALL_DIR}/include
 	${OpenCTKWrapYamlCpp_INSTALL_DIR}/include
 	${OpenCTKWrapVariant_INSTALL_DIR}/include
 	${OpenCTKWrapAnyLite_INSTALL_DIR}/include
@@ -255,6 +258,7 @@ octk_add_library(Core
 	PUBLIC_LIBRARIES
 	OpenCTKWrapFmt::WrapFmt
 	OpenCTKWrapJson::WrapJson
+	OpenCTKWrapJwtcpp::WrapJwtcpp
 	OpenCTKWrapYamlCpp::WrapYamlCpp
 	OpenCTKWrapVariant::WrapVariant
 	OpenCTKWrapAnyLite::WrapAnyLite
