@@ -28,6 +28,7 @@ if(TARGET OpenCTKWrapJwtcpp::WrapJwtcpp)
     return()
 endif()
 
+octk_find_package(WrapWolfSSL PROVIDED_TARGETS OpenCTKWrapWolfSSL::WrapWolfSSL)
 set(OpenCTKWrapJwtcpp_NAME "jwt-cpp-v0.7.2")
 set(OpenCTKWrapJwtcpp_PKG_NAME "${OpenCTKWrapJwtcpp_NAME}.7z")
 set(OpenCTKWrapJwtcpp_DIR_NAME "${OpenCTKWrapJwtcpp_NAME}-${OCTK_LOWER_BUILD_TYPE}")
@@ -48,9 +49,12 @@ if(NOT EXISTS "${OpenCTKWrapJwtcpp_STAMP_FILE_PATH}")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
         -G ${CMAKE_GENERATOR}
+        -DPKG_CONFIG_EXECUTABLE=${OpenCTKPkgconf_EXECUTABLE}
+        -DJWT_SSL_LIBRARY=wolfSSL
         -DJWT_BUILD_EXAMPLES=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
+        -DCMAKE_PREFIX_PATH=${OpenCTKWrapWolfSSL_INSTALL_DIR}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapJwtcpp_INSTALL_DIR}
         ${OpenCTKWrapJwtcpp_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapJwtcpp_BUILD_DIR}"

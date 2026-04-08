@@ -62,7 +62,7 @@ octk_vcpkg_install_package(ffmpeg
 	${OpenCTKWrapFFmpeg_COMPONENTS})
 
 
-if(EXISTS "${OpenCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND UNIX)
+if(EXISTS "${OpenCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg/FindFFMPEG.cmake" AND UNIX AND OFF)
 	set(CMAKE_MODULE_PATH_CACHE ${CMAKE_MODULE_PATH})
 	set(CMAKE_MODULE_PATH "${OpenCTKWrapFFmpeg_INSTALL_DIR}/share/ffmpeg")
 	set(FFMPEG_DIR "${OpenCTKWrapFFmpeg_INSTALL_DIR}")
