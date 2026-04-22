@@ -1,5 +1,0 @@
-#ifndef _OCTK_SERVICE_PCH_HPP
-#define _OCTK_SERVICE_PCH_HPP
-
-
-#endif // _OCTK_SERVICE_PCH_HPP

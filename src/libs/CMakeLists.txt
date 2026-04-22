@@ -25,4 +25,3 @@ add_subdirectory(core)
 octk_add_subdirectory(imgui OCTK_ENABLE_LIB_IMGUI)
 octk_add_subdirectory(network OCTK_ENABLE_LIB_NETWORK)
 octk_add_subdirectory(media OCTK_ENABLE_LIB_MEDIA) # depend network
-octk_add_subdirectory(service OCTK_ENABLE_LIB_SERVICE) # depend network
