@@ -27,6 +27,7 @@
 
 OCTK_BEGIN_NAMESPACE
 
+#if 1
 const char* const MediaStreamTrackInterface::kVideoKind = "video";
 const char* const MediaStreamTrackInterface::kAudioKind = "audio";
 
@@ -40,5 +41,6 @@ std::shared_ptr<AudioProcessorInterface> AudioTrackInterface::getAudioProcessor(
 //{
 //    return {};
 //}
+#endif
 
 OCTK_END_NAMESPACE

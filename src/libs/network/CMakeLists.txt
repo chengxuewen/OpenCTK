@@ -36,12 +36,12 @@ octk_add_library(Network
 	source/http/octk_http.cpp
 	source/http/octk_http.hpp
 	source/http/octk_http_p.hpp
-	source/ssl/octk_ssl_certificate.cpp
-	source/ssl/octk_ssl_certificate.hpp
-	source/ssl/octk_ssl_fingerprint.cpp
-	source/ssl/octk_ssl_fingerprint.hpp
-	source/ssl/octk_ssl_identity.cpp
-	source/ssl/octk_ssl_identity.hpp
+#	source/ssl/octk_ssl_certificate.cpp
+#	source/ssl/octk_ssl_certificate.hpp
+#	source/ssl/octk_ssl_fingerprint.cpp
+#	source/ssl/octk_ssl_fingerprint.hpp
+#	source/ssl/octk_ssl_identity.cpp
+#	source/ssl/octk_ssl_identity.hpp
 	source/octk_network_global.hpp
 	PRECOMPILED_HEADER
 	source/octk_network_pch.hpp

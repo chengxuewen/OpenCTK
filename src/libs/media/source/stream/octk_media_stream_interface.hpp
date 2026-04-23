@@ -106,6 +106,7 @@ private:
     OCTK_ATTRIBUTE_NO_UNIQUE_ADDRESS ContextChecker mContextChecker{ContextChecker::InitialState::kDetached};
 };
 
+#if 1
 // Base class for sources. A MediaStreamTrack has an underlying source that
 // provides media. A source can be shared by multiple tracks.
 class OCTK_MEDIA_API MediaSourceInterface : public NotifierInterface
@@ -407,6 +408,7 @@ public:
 protected:
     ~MediaStreamInterface() override = default;
 };
+#endif
 OCTK_END_NAMESPACE
 
 #endif // _OCTK_MEDIA_STREAM_INTERFACE_HPP

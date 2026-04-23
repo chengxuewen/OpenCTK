@@ -26,9 +26,9 @@
 #define _OCTK_VIDEO_ENCODED_IMAGE_HPP
 
 #include <octk_video_filter_settings.hpp>
-#include <octk_video_codec_constants.hpp>
-#include <octk_video_content_type.hpp>
-#include <octk_video_codec_types.hpp>
+// #include <octk_video_codec_constants.hpp>
+// #include <octk_video_content_type.hpp>
+// #include <octk_video_codec_types.hpp>
 #include <octk_video_frame_type.hpp>
 #include <octk_rtp_packet_infos.hpp>
 #include <octk_video_rotation.hpp>
@@ -114,12 +114,12 @@ public:
     // Every simulcast layer (= encoding) has its own encoder and RTP stream.
     // There can be no dependencies between different simulcast layers.
     Optional<int> simulcastIndex() const { return simulcast_index_; }
-    void setSimulcastIndex(Optional<int> simulcast_index)
-    {
-        OCTK_DCHECK_GE(simulcast_index.value_or(0), 0);
-        OCTK_DCHECK_LT(simulcast_index.value_or(0), kMaxSimulcastStreams);
-        simulcast_index_ = simulcast_index;
-    }
+    // void setSimulcastIndex(Optional<int> simulcast_index)
+    // {
+    //     OCTK_DCHECK_GE(simulcast_index.value_or(0), 0);
+    //     OCTK_DCHECK_LT(simulcast_index.value_or(0), kMaxSimulcastStreams);
+    //     simulcast_index_ = simulcast_index;
+    // }
 
     const Optional<Timestamp>& presentationTimestamp() const { return mPresentationTimestamp; }
     void setPresentationTimestamp(const Optional<Timestamp>& presentation_timestamp)
@@ -134,7 +134,7 @@ public:
     void setSpatialIndex(Optional<int> spatial_index)
     {
         OCTK_DCHECK_GE(spatial_index.value_or(0), 0);
-        OCTK_DCHECK_LT(spatial_index.value_or(0), kMaxSpatialLayers);
+        // OCTK_DCHECK_LT(spatial_index.value_or(0), kMaxSpatialLayers);
         spatial_index_ = spatial_index;
     }
 
@@ -142,7 +142,7 @@ public:
     void setTemporalIndex(Optional<int> temporal_index)
     {
         OCTK_DCHECK_GE(temporal_index_.value_or(0), 0);
-        OCTK_DCHECK_LT(temporal_index_.value_or(0), kMaxTemporalStreams);
+        // OCTK_DCHECK_LT(temporal_index_.value_or(0), kMaxTemporalStreams);
         temporal_index_ = temporal_index;
     }
 

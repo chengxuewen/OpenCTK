@@ -38,141 +38,141 @@ octk_add_library(Media
 #	source/codecs/video/backends/h264/octk_video_decoder_openh264_p.hpp
 #	source/codecs/video/backends/h264/octk_video_encoder_openh264.cpp
 #	source/codecs/video/backends/h264/octk_video_encoder_openh264_p.hpp
-	source/codecs/video/formats/av1/octk_av1_profile.cpp
-	source/codecs/video/formats/av1/octk_av1_profile.hpp
-	source/codecs/video/formats/av1/octk_av1_svc_config.cpp
-	source/codecs/video/formats/av1/octk_av1_svc_config.hpp
-	source/codecs/video/formats/h264/octk_h264_bitstream_parser.cpp
-	source/codecs/video/formats/h264/octk_h264_bitstream_parser_p.hpp
-	source/codecs/video/formats/h264/octk_h264_codecs.cpp
-	source/codecs/video/formats/h264/octk_h264_codecs.hpp
-	source/codecs/video/formats/h264/octk_h264_common.cpp
-	source/codecs/video/formats/h264/octk_h264_common_p.hpp
-	source/codecs/video/formats/h264/octk_h264_pps_parser.cpp
-	source/codecs/video/formats/h264/octk_h264_pps_parser_p.hpp
-	source/codecs/video/formats/h264/octk_h264_profile.cpp
-	source/codecs/video/formats/h264/octk_h264_profile.hpp
-	source/codecs/video/formats/h264/octk_h264_sps_parser.cpp
-	source/codecs/video/formats/h264/octk_h264_sps_parser_p.hpp
-	source/codecs/video/formats/h264/octk_h264_sps_vui_rewriter.cpp
-	source/codecs/video/formats/h264/octk_h264_sps_vui_rewriter_p.hpp
-	source/codecs/video/formats/h264/octk_h264_types.hpp
-	source/codecs/video/formats/vp8/octk_vp8_constants.hpp
-	source/codecs/video/formats/vp8/octk_vp8_header_parser.cpp
-	source/codecs/video/formats/vp8/octk_vp8_header_parser.hpp
-	source/codecs/video/formats/vp8/octk_vp8_types.hpp
-	source/codecs/video/formats/vp9/octk_vp9_constants.hpp
-	source/codecs/video/formats/vp9/octk_vp9_profile.cpp
-	source/codecs/video/formats/vp9/octk_vp9_profile.hpp
-	source/codecs/video/formats/vp9/octk_vp9_svc_config.cpp
-	source/codecs/video/formats/vp9/octk_vp9_svc_config.hpp
-	source/codecs/video/formats/vp9/octk_vp9_types.hpp
-	source/codecs/video/formats/vp9/octk_vp9_uncompressed_header_parser.cpp
-	source/codecs/video/formats/vp9/octk_vp9_uncompressed_header_parser_p.hpp
-	source/codecs/video/svc/octk_scalability_mode.cpp
-	source/codecs/video/svc/octk_scalability_mode.hpp
-	source/codecs/video/svc/octk_scalability_mode_helper.cpp
-	source/codecs/video/svc/octk_scalability_mode_helper_p.hpp
-	source/codecs/video/svc/octk_scalability_mode_utils.cpp
-	source/codecs/video/svc/octk_scalability_mode_utils_p.hpp
-	source/codecs/video/svc/octk_scalability_structure.cpp
-	source/codecs/video/svc/octk_scalability_structure_full_svc.cpp
-	source/codecs/video/svc/octk_scalability_structure_full_svc_p.hpp
-	source/codecs/video/svc/octk_scalability_structure_key_svc.cpp
-	source/codecs/video/svc/octk_scalability_structure_key_svc_p.hpp
-	source/codecs/video/svc/octk_scalability_structure_l2t2_key_shift.cpp
-	source/codecs/video/svc/octk_scalability_structure_l2t2_key_shift_p.hpp
-	source/codecs/video/svc/octk_scalability_structure_p.hpp
-	source/codecs/video/svc/octk_scalability_structure_simulcast.cpp
-	source/codecs/video/svc/octk_scalability_structure_simulcast_p.hpp
-	source/codecs/video/svc/octk_scalable_video_controller_no_layering.cpp
-	source/codecs/video/svc/octk_scalable_video_controller_no_layering_p.hpp
-	source/codecs/video/svc/octk_scalable_video_controller_p.hpp
-	source/codecs/video/svc/octk_simulcast_to_svc_converter.cpp
-	source/codecs/video/svc/octk_simulcast_to_svc_converter_p.hpp
-	source/codecs/video/svc/octk_svc_rate_allocator.cpp
-	source/codecs/video/svc/octk_svc_rate_allocator_p.hpp
-	source/codecs/video/utility/octk_simulcast_rate_allocator.cpp
-	source/codecs/video/utility/octk_simulcast_rate_allocator.hpp
-	source/codecs/video/utility/octk_simulcast_stream.cpp
-	source/codecs/video/utility/octk_simulcast_stream.hpp
-	source/codecs/video/utility/octk_simulcast_utility.cpp
-	source/codecs/video/utility/octk_simulcast_utility_p.hpp
-	source/codecs/video/octk_chain_diff_calculator.cpp
-	source/codecs/video/octk_chain_diff_calculator_p.hpp
-	source/codecs/video/octk_frame_dependencies_calculator.cpp
-	source/codecs/video/octk_frame_dependencies_calculator_p.hpp
-	source/codecs/video/octk_sdp_video_format.cpp
-	source/codecs/video/octk_sdp_video_format.hpp
-	source/codecs/video/octk_video_bitstream_parser_p.hpp
-	source/codecs/video/octk_video_codec.cpp
-	source/codecs/video/octk_video_codec.hpp
-	source/codecs/video/octk_video_codec_constants.hpp
-	source/codecs/video/octk_video_codes_error.cpp
-	source/codecs/video/octk_video_codes_error.hpp
-	source/codecs/video/octk_video_decoder.cpp
-	source/codecs/video/octk_video_decoder.hpp
-	source/codecs/video/octk_video_decoder_factory.hpp
-	source/codecs/video/octk_video_encoder.cpp
-	source/codecs/video/octk_video_encoder.hpp
-	source/codecs/video/octk_video_encoder_factory.hpp
-	source/codecs/octk_codec_specific_info.cpp
-	source/codecs/octk_codec_specific_info.hpp
-	source/codecs/octk_codecs_constants.hpp
-	source/codecs/octk_dependency_descriptor.cpp
-	source/codecs/octk_dependency_descriptor_p.hpp
-	source/event_log/octk_media_event.cpp
-	source/event_log/octk_media_event.hpp
-	source/event_log/octk_media_event_log.cpp
-	source/event_log/octk_media_event_log.hpp
-	source/event_log/octk_media_event_log_factory.cpp
-	source/event_log/octk_media_event_log_factory.hpp
-	source/experiments/octk_balanced_degradation_settings.cpp
-	source/experiments/octk_balanced_degradation_settings_p.hpp
-	source/experiments/octk_field_trial_list.cpp
-	source/experiments/octk_field_trial_list_p.hpp
-	source/experiments/octk_field_trial_parser.cpp
-	source/experiments/octk_field_trial_parser_p.hpp
-	source/experiments/octk_field_trial_units.cpp
-	source/experiments/octk_field_trial_units_p.hpp
-	source/experiments/octk_field_trials.cpp
-	source/experiments/octk_field_trials_p.hpp
-	source/experiments/octk_field_trials_registry.cpp
-	source/experiments/octk_field_trials_registry_p.hpp
-	source/experiments/octk_field_trials_view.cpp
-	source/experiments/octk_field_trials_view.hpp
-	source/experiments/octk_rate_control_settings.cpp
-	source/experiments/octk_rate_control_settings_p.hpp
-	source/experiments/octk_stable_target_rate_experiment.cpp
-	source/experiments/octk_stable_target_rate_experiment_p.hpp
-	source/experiments/octk_struct_parameters_parser.cpp
-	source/experiments/octk_struct_parameters_parser_p.hpp
-	source/media_context/octk_media_context_factory.cpp
-	source/media_context/octk_media_context_factory.hpp
-	source/media_context/octk_media_context.hpp
-	source/protocols/rtp/octk_rtp_headers.cpp
-	source/protocols/rtp/octk_rtp_headers.hpp
-	source/protocols/rtp/octk_rtp_packet_info.cpp
-	source/protocols/rtp/octk_rtp_packet_info.hpp
-	source/protocols/rtp/octk_rtp_packet_infos.hpp
-	source/protocols/rtp/octk_rtp_video_header.cpp
-	source/protocols/rtp/octk_rtp_video_header.hpp
+#	source/codecs/video/formats/av1/octk_av1_profile.cpp
+#	source/codecs/video/formats/av1/octk_av1_profile.hpp
+#	source/codecs/video/formats/av1/octk_av1_svc_config.cpp
+#	source/codecs/video/formats/av1/octk_av1_svc_config.hpp
+#	source/codecs/video/formats/h264/octk_h264_bitstream_parser.cpp
+#	source/codecs/video/formats/h264/octk_h264_bitstream_parser_p.hpp
+#	source/codecs/video/formats/h264/octk_h264_codecs.cpp
+#	source/codecs/video/formats/h264/octk_h264_codecs.hpp
+#	source/codecs/video/formats/h264/octk_h264_common.cpp
+#	source/codecs/video/formats/h264/octk_h264_common_p.hpp
+#	source/codecs/video/formats/h264/octk_h264_pps_parser.cpp
+#	source/codecs/video/formats/h264/octk_h264_pps_parser_p.hpp
+#	source/codecs/video/formats/h264/octk_h264_profile.cpp
+#	source/codecs/video/formats/h264/octk_h264_profile.hpp
+#	source/codecs/video/formats/h264/octk_h264_sps_parser.cpp
+#	source/codecs/video/formats/h264/octk_h264_sps_parser_p.hpp
+#	source/codecs/video/formats/h264/octk_h264_sps_vui_rewriter.cpp
+#	source/codecs/video/formats/h264/octk_h264_sps_vui_rewriter_p.hpp
+#	source/codecs/video/formats/h264/octk_h264_types.hpp
+#	source/codecs/video/formats/vp8/octk_vp8_constants.hpp
+#	source/codecs/video/formats/vp8/octk_vp8_header_parser.cpp
+#	source/codecs/video/formats/vp8/octk_vp8_header_parser.hpp
+#	source/codecs/video/formats/vp8/octk_vp8_types.hpp
+#	source/codecs/video/formats/vp9/octk_vp9_constants.hpp
+#	source/codecs/video/formats/vp9/octk_vp9_profile.cpp
+#	source/codecs/video/formats/vp9/octk_vp9_profile.hpp
+#	source/codecs/video/formats/vp9/octk_vp9_svc_config.cpp
+#	source/codecs/video/formats/vp9/octk_vp9_svc_config.hpp
+#	source/codecs/video/formats/vp9/octk_vp9_types.hpp
+#	source/codecs/video/formats/vp9/octk_vp9_uncompressed_header_parser.cpp
+#	source/codecs/video/formats/vp9/octk_vp9_uncompressed_header_parser_p.hpp
+#	source/codecs/video/svc/octk_scalability_mode.cpp
+#	source/codecs/video/svc/octk_scalability_mode.hpp
+#	source/codecs/video/svc/octk_scalability_mode_helper.cpp
+#	source/codecs/video/svc/octk_scalability_mode_helper_p.hpp
+#	source/codecs/video/svc/octk_scalability_mode_utils.cpp
+#	source/codecs/video/svc/octk_scalability_mode_utils_p.hpp
+#	source/codecs/video/svc/octk_scalability_structure.cpp
+#	source/codecs/video/svc/octk_scalability_structure_full_svc.cpp
+#	source/codecs/video/svc/octk_scalability_structure_full_svc_p.hpp
+#	source/codecs/video/svc/octk_scalability_structure_key_svc.cpp
+#	source/codecs/video/svc/octk_scalability_structure_key_svc_p.hpp
+#	source/codecs/video/svc/octk_scalability_structure_l2t2_key_shift.cpp
+#	source/codecs/video/svc/octk_scalability_structure_l2t2_key_shift_p.hpp
+#	source/codecs/video/svc/octk_scalability_structure_p.hpp
+#	source/codecs/video/svc/octk_scalability_structure_simulcast.cpp
+#	source/codecs/video/svc/octk_scalability_structure_simulcast_p.hpp
+#	source/codecs/video/svc/octk_scalable_video_controller_no_layering.cpp
+#	source/codecs/video/svc/octk_scalable_video_controller_no_layering_p.hpp
+#	source/codecs/video/svc/octk_scalable_video_controller_p.hpp
+#	source/codecs/video/svc/octk_simulcast_to_svc_converter.cpp
+#	source/codecs/video/svc/octk_simulcast_to_svc_converter_p.hpp
+#	source/codecs/video/svc/octk_svc_rate_allocator.cpp
+#	source/codecs/video/svc/octk_svc_rate_allocator_p.hpp
+#	source/codecs/video/utility/octk_simulcast_rate_allocator.cpp
+#	source/codecs/video/utility/octk_simulcast_rate_allocator.hpp
+#	source/codecs/video/utility/octk_simulcast_stream.cpp
+#	source/codecs/video/utility/octk_simulcast_stream.hpp
+#	source/codecs/video/utility/octk_simulcast_utility.cpp
+#	source/codecs/video/utility/octk_simulcast_utility_p.hpp
+#	source/codecs/video/octk_chain_diff_calculator.cpp
+#	source/codecs/video/octk_chain_diff_calculator_p.hpp
+#	source/codecs/video/octk_frame_dependencies_calculator.cpp
+#	source/codecs/video/octk_frame_dependencies_calculator_p.hpp
+#	source/codecs/video/octk_sdp_video_format.cpp
+#	source/codecs/video/octk_sdp_video_format.hpp
+#	source/codecs/video/octk_video_bitstream_parser_p.hpp
+#	source/codecs/video/octk_video_codec.cpp
+#	source/codecs/video/octk_video_codec.hpp
+#	source/codecs/video/octk_video_codec_constants.hpp
+#	source/codecs/video/octk_video_codes_error.cpp
+#	source/codecs/video/octk_video_codes_error.hpp
+#	source/codecs/video/octk_video_decoder.cpp
+#	source/codecs/video/octk_video_decoder.hpp
+#	source/codecs/video/octk_video_decoder_factory.hpp
+#	source/codecs/video/octk_video_encoder.cpp
+#	source/codecs/video/octk_video_encoder.hpp
+#	source/codecs/video/octk_video_encoder_factory.hpp
+#	source/codecs/octk_codec_specific_info.cpp
+#	source/codecs/octk_codec_specific_info.hpp
+#	source/codecs/octk_codecs_constants.hpp
+#	source/codecs/octk_dependency_descriptor.cpp
+#	source/codecs/octk_dependency_descriptor_p.hpp
+#	source/event_log/octk_media_event.cpp
+#	source/event_log/octk_media_event.hpp
+#	source/event_log/octk_media_event_log.cpp
+#	source/event_log/octk_media_event_log.hpp
+#	source/event_log/octk_media_event_log_factory.cpp
+#	source/event_log/octk_media_event_log_factory.hpp
+#	source/experiments/octk_balanced_degradation_settings.cpp
+#	source/experiments/octk_balanced_degradation_settings_p.hpp
+#	source/experiments/octk_field_trial_list.cpp
+#	source/experiments/octk_field_trial_list_p.hpp
+#	source/experiments/octk_field_trial_parser.cpp
+#	source/experiments/octk_field_trial_parser_p.hpp
+#	source/experiments/octk_field_trial_units.cpp
+#	source/experiments/octk_field_trial_units_p.hpp
+#	source/experiments/octk_field_trials.cpp
+#	source/experiments/octk_field_trials_p.hpp
+#	source/experiments/octk_field_trials_registry.cpp
+#	source/experiments/octk_field_trials_registry_p.hpp
+#	source/experiments/octk_field_trials_view.cpp
+#	source/experiments/octk_field_trials_view.hpp
+#	source/experiments/octk_rate_control_settings.cpp
+#	source/experiments/octk_rate_control_settings_p.hpp
+#	source/experiments/octk_stable_target_rate_experiment.cpp
+#	source/experiments/octk_stable_target_rate_experiment_p.hpp
+#	source/experiments/octk_struct_parameters_parser.cpp
+#	source/experiments/octk_struct_parameters_parser_p.hpp
+#	source/media_context/octk_media_context_factory.cpp
+#	source/media_context/octk_media_context_factory.hpp
+#	source/media_context/octk_media_context.hpp
+#	source/protocols/rtp/octk_rtp_headers.cpp
+#	source/protocols/rtp/octk_rtp_headers.hpp
+#	source/protocols/rtp/octk_rtp_packet_info.cpp
+#	source/protocols/rtp/octk_rtp_packet_info.hpp
+#	source/protocols/rtp/octk_rtp_packet_infos.hpp
+#	source/protocols/rtp/octk_rtp_video_header.cpp
+#	source/protocols/rtp/octk_rtp_video_header.hpp
 	source/stream/octk_media_stream_interface.cpp
 	source/stream/octk_media_stream_interface.hpp
 	source/stream/octk_media_stream_track.hpp
 	source/video/octk_color_space.cpp
 	source/video/octk_color_space.hpp
-	source/video/octk_encoded_frame.cpp
-	source/video/octk_encoded_frame.hpp
-	source/video/octk_encoded_image.cpp
-	source/video/octk_encoded_image.hpp
+#	source/video/octk_encoded_frame.cpp
+#	source/video/octk_encoded_frame.hpp
+#	source/video/octk_encoded_image.cpp
+#	source/video/octk_encoded_image.hpp
 	source/video/octk_frame_instrumentation_data.hpp
 	source/video/octk_frame_utils.cpp
 	source/video/octk_frame_utils.hpp
 	source/video/octk_framerate_controller.cpp
 	source/video/octk_framerate_controller.hpp
-	source/video/octk_generic_frame_info.cpp
-	source/video/octk_generic_frame_info.hpp
+#	source/video/octk_generic_frame_info.cpp
+#	source/video/octk_generic_frame_info.hpp
 	source/video/octk_hdr_metadata.cpp
 	source/video/octk_hdr_metadata.hpp
 	source/video/octk_i010_buffer.cpp
@@ -198,11 +198,11 @@ octk_add_library(Media
 	source/video/octk_video_adaptation_reason.hpp
 	source/video/octk_video_adapter.cpp
 	source/video/octk_video_adapter.hpp
-	source/video/octk_video_bitrate_allocation.cpp
-	source/video/octk_video_bitrate_allocation.hpp
-	source/video/octk_video_bitrate_allocator.cpp
-	source/video/octk_video_bitrate_allocator.hpp
-	source/video/octk_video_bitrate_allocator_factory.hpp
+#	source/video/octk_video_bitrate_allocation.cpp
+#	source/video/octk_video_bitrate_allocation.hpp
+#	source/video/octk_video_bitrate_allocator.cpp
+#	source/video/octk_video_bitrate_allocator.hpp
+#	source/video/octk_video_bitrate_allocator_factory.hpp
 	source/video/octk_video_broadcaster.cpp
 	source/video/octk_video_broadcaster.hpp
 	source/video/octk_video_codec_types.hpp
@@ -215,8 +215,8 @@ octk_add_library(Media
 	source/video/octk_video_frame_buffer.hpp
 	source/video/octk_video_frame_buffer_pool.cpp
 	source/video/octk_video_frame_buffer_pool.hpp
-	source/video/octk_video_frame_metadata.cpp
-	source/video/octk_video_frame_metadata.hpp
+#	source/video/octk_video_frame_metadata.cpp
+#	source/video/octk_video_frame_metadata.hpp
 	source/video/octk_video_frame_type.hpp
 	source/video/octk_video_rotation.hpp
 	source/video/octk_video_sink_interface.hpp
@@ -251,35 +251,34 @@ octk_add_library(Media
 	${OCTK_LIB_LINK_LIBRARIES}
 	PUBLIC_LIBRARIES
 	OpenCTK::Network)
-if(OCTK_BUILD_TESTS)
-	add_subdirectory(source/test)
-	add_subdirectory(source/codecs/video/test)
-endif()
-add_subdirectory(source/capture/custom)
-octk_add_subdirectory(source/capture/desktop OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_DESKTOP)
+#if(OCTK_BUILD_TESTS)
+#	add_subdirectory(source/test)
+#	add_subdirectory(source/codecs/video/test)
+#endif()
 octk_add_subdirectory(source/capture/camera OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA)
 octk_add_subdirectory(source/capture/portal OCTK_SYSTEM_LINUX)
+add_subdirectory(source/capture/custom)
 add_subdirectory(source/protocols/rtc)
 
-if(OCTK_FEATURE_MEDIA_USE_FFMPEG)
-	octk_find_package(WrapFFmpeg PROVIDED_TARGETS OpenCTKWrapFFmpeg::WrapFFmpeg)
-	octk_internal_extend_target(OpenCTKMedia
-		#		SOURCES
-		LIBRARIES
-		OpenCTKWrapFFmpeg::WrapFFmpeg)
-	octk_internal_extend_target(OpenCTKMedia # for static ffmpeg
-		CONDITION OCTK_SYSTEM_LINUX
-		LINK_OPTIONS "-Wl,-Bsymbolic")
-	octk_internal_extend_target(OpenCTKMedia # for static ffmpeg
-		CONDITION OCTK_SYSTEM_DARWIN
-		LINK_OPTIONS "-Wl,-w")
-endif()
-if(OCTK_FEATURE_MEDIA_USE_LIBSRTP)
-	octk_find_package(WrapLibsrtp PROVIDED_TARGETS OpenCTKWrapLibsrtp::WrapLibsrtp)
-	octk_internal_extend_target(OpenCTKMedia
-		LIBRARIES
-		OpenCTKWrapLibsrtp::WrapLibsrtp)
-endif()
+#if(OCTK_FEATURE_MEDIA_USE_FFMPEG)
+#	octk_find_package(WrapFFmpeg PROVIDED_TARGETS OpenCTKWrapFFmpeg::WrapFFmpeg)
+#	octk_internal_extend_target(OpenCTKMedia
+#		#		SOURCES
+#		LIBRARIES
+#		OpenCTKWrapFFmpeg::WrapFFmpeg)
+#	octk_internal_extend_target(OpenCTKMedia # for static ffmpeg
+#		CONDITION OCTK_SYSTEM_LINUX
+#		LINK_OPTIONS "-Wl,-Bsymbolic")
+#	octk_internal_extend_target(OpenCTKMedia # for static ffmpeg
+#		CONDITION OCTK_SYSTEM_DARWIN
+#		LINK_OPTIONS "-Wl,-w")
+#endif()
+#if(OCTK_FEATURE_MEDIA_USE_LIBSRTP)
+#	octk_find_package(WrapLibsrtp PROVIDED_TARGETS OpenCTKWrapLibsrtp::WrapLibsrtp)
+#	octk_internal_extend_target(OpenCTKMedia
+#		LIBRARIES
+#		OpenCTKWrapLibsrtp::WrapLibsrtp)
+#endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -58,11 +58,7 @@ octk_internal_extend_target(OpenCTKMedia
 	${ROOT_DIR}/octk_rtc_stats_report.cpp
 	${ROOT_DIR}/octk_rtc_stats_report.hpp
 	${ROOT_DIR}/octk_rtc_types.hpp
-	${ROOT_DIR}/octk_rtc_video_codec_factory.hpp
-	${ROOT_DIR}/octk_rtc_video_decoder.hpp
 	${ROOT_DIR}/octk_rtc_video_device.hpp
-	${ROOT_DIR}/octk_rtc_video_encoder.cpp
-	${ROOT_DIR}/octk_rtc_video_encoder.hpp
 	${ROOT_DIR}/octk_rtc_video_frame.cpp
 	${ROOT_DIR}/octk_rtc_video_frame.hpp
 	${ROOT_DIR}/octk_rtc_video_track.hpp)

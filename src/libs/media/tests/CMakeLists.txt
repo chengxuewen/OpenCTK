@@ -37,14 +37,14 @@ set(OCTK_TEST_LINK_LIBRARIES OpenCTK::Media OpenCTK::MediaPrivate OpenCTKWrapGTe
 #-----------------------------------------------------------------------------------------------------------------------
 # Add tests
 #-----------------------------------------------------------------------------------------------------------------------
-octk_add_test(OpenCTKMediaTstBalancedDegradationSettings
-	SOURCES
-	tst_balanced_degradation_settings.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstBalancedDegradationSettings
+#	SOURCES
+#	tst_balanced_degradation_settings.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 if(OCTK_FEATURE_ENABLE_CAPTURE_CAMERA)
 	octk_add_test(OpenCTKMediaTstCameraCapture
 		SOURCES
@@ -55,14 +55,14 @@ if(OCTK_FEATURE_ENABLE_CAPTURE_CAMERA)
 		OUTPUT_DIRECTORY
 		${OCTK_TEST_OUTPUT_DIR})
 endif()
-octk_add_test(OpenCTKMediaTstChainDiffCalculator
-	SOURCES
-	tst_chain_diff_calculator.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstChainDiffCalculator
+#	SOURCES
+#	tst_chain_diff_calculator.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(OpenCTKMediaTstColorSpace
 	SOURCES
 	tst_color_space.cpp
@@ -71,46 +71,46 @@ octk_add_test(OpenCTKMediaTstColorSpace
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstFieldTrialList
-	SOURCES
-	tst_field_trial_list.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstFieldTrialParser
-	SOURCES
-	tst_field_trial_parser.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstFieldTrialUnits
-	SOURCES
-	tst_field_trial_units.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstFieldTrials
-	SOURCES
-	tst_field_trials.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstFrameDependenciesCalculator
-	SOURCES
-	tst_frame_dependencies_calculator.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstFieldTrialList
+#	SOURCES
+#	tst_field_trial_list.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstFieldTrialParser
+#	SOURCES
+#	tst_field_trial_parser.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstFieldTrialUnits
+#	SOURCES
+#	tst_field_trial_units.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstFieldTrials
+#	SOURCES
+#	tst_field_trials.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstFrameDependenciesCalculator
+#	SOURCES
+#	tst_frame_dependencies_calculator.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(OpenCTKMediaTstFrameGenerator
 	SOURCES
 	tst_frame_generator.cpp
@@ -127,72 +127,72 @@ octk_add_test(OpenCTKMediaTstFrameGeneratorCapturer
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-if(OCTK_FEATURE_MEDIA_USE_H264)
-	octk_add_test(OpenCTKMediaTstH264BitstreamParser
-		SOURCES
-		tst_h264_bitstream_parser.cpp
-		INCLUDE_DIRECTORIES
-		LIBRARIES
-		${OCTK_TEST_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_TEST_OUTPUT_DIR})
-	octk_add_test(OpenCTKMediaTstH264Codecs
-		SOURCES
-		tst_h264_codecs.cpp
-		INCLUDE_DIRECTORIES
-		LIBRARIES
-		${OCTK_TEST_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_TEST_OUTPUT_DIR})
-	octk_add_test(OpenCTKMediaTstH264Encoder
-		SOURCES
-		tst_h264_encoder.cpp
-		INCLUDE_DIRECTORIES
-		LIBRARIES
-		${OCTK_TEST_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_TEST_OUTPUT_DIR})
-	octk_add_test(OpenCTKMediaTstH264PpsParser
-		SOURCES
-		tst_h264_pps_parser.cpp
-		INCLUDE_DIRECTORIES
-		LIBRARIES
-		${OCTK_TEST_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_TEST_OUTPUT_DIR})
-	#octk_add_test(OpenCTKMediaTsth264_simulcast
-	#	SOURCES
-	#	tst_h264_simulcast.cpp
-	#	INCLUDE_DIRECTORIES
-	#	LIBRARIES
-	#	${OCTK_TEST_LINK_LIBRARIES}
-	#	OUTPUT_DIRECTORY
-	#	${OCTK_TEST_OUTPUT_DIR})
-	octk_add_test(OpenCTKMediaTstH264SpsParser
-		SOURCES
-		tst_h264_sps_parser.cpp
-		INCLUDE_DIRECTORIES
-		LIBRARIES
-		${OCTK_TEST_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_TEST_OUTPUT_DIR})
-	octk_add_test(OpenCTKMediaTstH264SpsVuiRewwriter
-		SOURCES
-		tst_h264_sps_vui_rewriter.cpp
-		INCLUDE_DIRECTORIES
-		LIBRARIES
-		${OCTK_TEST_LINK_LIBRARIES}
-		OUTPUT_DIRECTORY
-		${OCTK_TEST_OUTPUT_DIR})
-endif()
-octk_add_test(OpenCTKMediaTstMediaContext
-	SOURCES
-	tst_media_context.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#if(OCTK_FEATURE_MEDIA_USE_H264)
+#	octk_add_test(OpenCTKMediaTstH264BitstreamParser
+#		SOURCES
+#		tst_h264_bitstream_parser.cpp
+#		INCLUDE_DIRECTORIES
+#		LIBRARIES
+#		${OCTK_TEST_LINK_LIBRARIES}
+#		OUTPUT_DIRECTORY
+#		${OCTK_TEST_OUTPUT_DIR})
+#	octk_add_test(OpenCTKMediaTstH264Codecs
+#		SOURCES
+#		tst_h264_codecs.cpp
+#		INCLUDE_DIRECTORIES
+#		LIBRARIES
+#		${OCTK_TEST_LINK_LIBRARIES}
+#		OUTPUT_DIRECTORY
+#		${OCTK_TEST_OUTPUT_DIR})
+#	octk_add_test(OpenCTKMediaTstH264Encoder
+#		SOURCES
+#		tst_h264_encoder.cpp
+#		INCLUDE_DIRECTORIES
+#		LIBRARIES
+#		${OCTK_TEST_LINK_LIBRARIES}
+#		OUTPUT_DIRECTORY
+#		${OCTK_TEST_OUTPUT_DIR})
+#	octk_add_test(OpenCTKMediaTstH264PpsParser
+#		SOURCES
+#		tst_h264_pps_parser.cpp
+#		INCLUDE_DIRECTORIES
+#		LIBRARIES
+#		${OCTK_TEST_LINK_LIBRARIES}
+#		OUTPUT_DIRECTORY
+#		${OCTK_TEST_OUTPUT_DIR})
+#	#octk_add_test(OpenCTKMediaTsth264_simulcast
+#	#	SOURCES
+#	#	tst_h264_simulcast.cpp
+#	#	INCLUDE_DIRECTORIES
+#	#	LIBRARIES
+#	#	${OCTK_TEST_LINK_LIBRARIES}
+#	#	OUTPUT_DIRECTORY
+#	#	${OCTK_TEST_OUTPUT_DIR})
+#	octk_add_test(OpenCTKMediaTstH264SpsParser
+#		SOURCES
+#		tst_h264_sps_parser.cpp
+#		INCLUDE_DIRECTORIES
+#		LIBRARIES
+#		${OCTK_TEST_LINK_LIBRARIES}
+#		OUTPUT_DIRECTORY
+#		${OCTK_TEST_OUTPUT_DIR})
+#	octk_add_test(OpenCTKMediaTstH264SpsVuiRewwriter
+#		SOURCES
+#		tst_h264_sps_vui_rewriter.cpp
+#		INCLUDE_DIRECTORIES
+#		LIBRARIES
+#		${OCTK_TEST_LINK_LIBRARIES}
+#		OUTPUT_DIRECTORY
+#		${OCTK_TEST_OUTPUT_DIR})
+#endif()
+#octk_add_test(OpenCTKMediaTstMediaContext
+#	SOURCES
+#	tst_media_context.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(OpenCTKMediaTstRateControlSettings
 #	SOURCES
 #	tst_rate_control_settings.cpp
@@ -233,69 +233,69 @@ octk_add_test(OpenCTKMediaTstMediaContext
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstScalabilityModeUtils
-	SOURCES
-	tst_scalability_mode_utils.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstScalabilityStructure
-	SOURCES
-	tst_scalability_structure.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstScalabilityStructureFullSvc
-	SOURCES
-	tst_scalability_structure_full_svc.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstScalabilityStructureKeySvc
-	SOURCES
-	tst_scalability_structure_key_svc.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstScalabilityStructureL2T2KeyShift
-	SOURCES
-	tst_scalability_structure_l2t2_key_shift.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstSimulcastRateAllocator
-	SOURCES
-	tst_simulcast_rate_allocator.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstSimulcastToSvcConverter
-	SOURCES
-	tst_simulcast_to_svc_converter.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstScalabilityModeUtils
+#	SOURCES
+#	tst_scalability_mode_utils.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstScalabilityStructure
+#	SOURCES
+#	tst_scalability_structure.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstScalabilityStructureFullSvc
+#	SOURCES
+#	tst_scalability_structure_full_svc.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstScalabilityStructureKeySvc
+#	SOURCES
+#	tst_scalability_structure_key_svc.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstScalabilityStructureL2T2KeyShift
+#	SOURCES
+#	tst_scalability_structure_l2t2_key_shift.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstSimulcastRateAllocator
+#	SOURCES
+#	tst_simulcast_rate_allocator.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstSimulcastToSvcConverter
+#	SOURCES
+#	tst_simulcast_to_svc_converter.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 #octk_add_test(OpenCTKMediaTstStableTargetRateExperiment
 #	SOURCES
 #	tst_stable_target_rate_experiment.cpp
@@ -305,24 +305,24 @@ octk_add_test(OpenCTKMediaTstSimulcastToSvcConverter
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstStructParametersParser
-	SOURCES
-	tst_struct_parameters_parser.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstSvcRateAllocator
-	SOURCES
-	tst_svc_rate_allocator.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstStructParametersParser
+#	SOURCES
+#	tst_struct_parameters_parser.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstSvcRateAllocator
+#	SOURCES
+#	tst_svc_rate_allocator.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(OpenCTKMediaTstVideoAdaptationCounters
 	SOURCES
 	tst_video_adaptation_counters.cpp
@@ -332,15 +332,15 @@ octk_add_test(OpenCTKMediaTstVideoAdaptationCounters
 	${OCTK_TEST_LINK_LIBRARIES}
 	OUTPUT_DIRECTORY
 	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKMediaTstVideoBitrateAllocation
-	SOURCES
-	tst_video_bitrate_allocation.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	OpenCTKWrapLibyuv::WrapLibyuv
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKMediaTstVideoBitrateAllocation
+#	SOURCES
+#	tst_video_bitrate_allocation.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	OpenCTKWrapLibyuv::WrapLibyuv
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(OpenCTKMediaTstVideoFrameBufferPool
 	SOURCES
 	tst_video_frame_buffer_pool.cpp

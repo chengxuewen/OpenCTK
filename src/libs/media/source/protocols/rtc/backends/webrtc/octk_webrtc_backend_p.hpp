@@ -27,7 +27,6 @@
 #include <private/octk_media_config_p.hpp>
 #include <private/octk_webrtc_logger_p.hpp>
 #include <octk_rtc_peerconnection_factory.hpp>
-#include <octk_rtc_video_codec_factory.hpp>
 #include <octk_rtc_peerconnection.hpp>
 #include <octk_rtc_dtls_transport.hpp>
 #include <octk_rtc_configuration.hpp>
