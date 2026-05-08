@@ -341,6 +341,8 @@ octk_option(OCTK_BUILD_WARNINGS_ARE_ERRORS "Enable this to build with warnings a
 octk_option(OCTK_BUILD_BENCHMARKS "Enable this to build the benchmarks" ${OCTK_DEFAULT_BUILD_BENCHMARKS}
 	SET OCTK_DEFAULT_BUILD_TESTS)
 octk_option(OCTK_BUILD_DOCS "Enable this to build the documentation" OFF)
+octk_option(OCTK_BUILD_LIBS "Enable this to build libs" ON
+	OR_CONDITION OCTK_BUILD_ALL)
 octk_option(OCTK_BUILD_APPS "Enable this to build apps" ON
 	OR_CONDITION OCTK_BUILD_ALL)
 octk_option(OCTK_BUILD_TESTS "Enable this to build tests" ${OCTK_DEFAULT_BUILD_TESTS}
@@ -621,5 +623,4 @@ endif()
 #-----------------------------------------------------------------------------------------------------------------------
 # add subdirectory
 #-----------------------------------------------------------------------------------------------------------------------
-add_subdirectory(src/tools)
-add_subdirectory(src/libs)
+octk_add_subdirectory(src/libs OCTK_BUILD_LIBS)
