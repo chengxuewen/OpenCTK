@@ -70,7 +70,8 @@ void RtcEngine::registerFactory(StringView backendName, Creater creater)
     const auto iter = map->find(backendName.data());
     if (map->end() != iter)
     {
-        OCTK_FATAL("RtcEngine::registerFactory: backendName %s already registered.", backendName.data());
+        OCTK_WARNING("RtcEngine::registerFactory: backendName {} already registered, skipping.", backendName.data());
+        return;
     }
     OCTK_DEBUG("RtcEngine register {} factory", backendName.data());
     if (creater.initializeFunc)
