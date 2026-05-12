@@ -131,7 +131,16 @@ bool CameraCaptureV4L2Private::allocateVideoBuffers()
 
     if (ioctl(mDeviceFd, VIDIOC_REQBUFS, &rbuffer) < 0)
     {
-        OCTK_INFO() << "Could not get buffers from device. errno = " << errno;
+        int savedErrno = errno;
+        if (savedErrno == EBUSY)
+        {
+            OCTK_WARNING() << mDeviceId << " is busy (EBUSY on REQBUFS), may be in use by another process";
+        }
+        else
+        {
+            OCTK_INFO() << "Could not get buffers from device. errno = " << savedErrno
+                        << " (" << strerror(savedErrno) << ")";
+        }
         return false;
     }
 
@@ -318,9 +327,18 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
         OCTK_WARNING() << errstr;
         return Error::create(errstr);
     }
-    else
+
     {
-        OCTK_INFO() << utils::fmt::format("open {} success", d->mDeviceId);
+        struct v4l2_capability cap;
+        memset(&cap, 0, sizeof(cap));
+        if (ioctl(d->mDeviceFd, VIDIOC_QUERYCAP, &cap) < 0 || !(cap.device_caps & V4L2_CAP_VIDEO_CAPTURE))
+        {
+            const auto errstr = utils::fmt::format("{} is not a valid video capture device", d->mDeviceId);
+            OCTK_WARNING() << errstr;
+            close(d->mDeviceFd);
+            d->mDeviceFd = -1;
+            return Error::create(errstr);
+        }
     }
 
     // Supported video formats in preferred order.
@@ -465,13 +483,12 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
     // set format and frame size now
     if (ioctl(d->mDeviceFd, VIDIOC_S_FMT, &video_fmt) < 0)
     {
-        char errnostr[256] = {0};
-        strerror_r(errno, errnostr, sizeof(errnostr));
+        int savedErrno = errno;
         const auto errstr = utils::fmt::format("error in VIDIOC_S_FMT, fmt:{}, errno:{}({})",
                                                utils::videoTypeName(d->mConfiguredCapability.videoType),
-                                               errnostr,
-                                               errno);
-        OCTK_WARNING() << errstr;
+                                               strerror(savedErrno),
+                                               savedErrno);
+        OCTK_ERROR() << errstr;
         return Error::create(errstr);
     }
 
@@ -523,7 +540,7 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
 
     if (!d->allocateVideoBuffers())
     {
-        const auto errstr = utils::fmt::format("failed to allocate video capture buffers");
+        const auto errstr = utils::fmt::format("failed to allocate video capture buffers for {}", d->mDeviceId);
         OCTK_WARNING() << errstr;
         return Error::create(errstr);
     }
@@ -533,7 +550,12 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
     type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     if (ioctl(d->mDeviceFd, VIDIOC_STREAMON, &type) == -1)
     {
-        const auto errstr = utils::fmt::format("Failed to turn on stream");
+        int savedErrno = errno;
+        const auto errstr = utils::fmt::format("Failed to turn on stream for {} (errno:{} {}{})",
+                                               d->mDeviceId,
+                                               savedErrno,
+                                               strerror(savedErrno),
+                                               savedErrno == EBUSY ? ", EBUSY: may be in use by another process" : "");
         OCTK_WARNING() << errstr;
         return Error::create(errstr);
     }
