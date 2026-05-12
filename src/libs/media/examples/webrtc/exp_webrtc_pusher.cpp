@@ -150,7 +150,7 @@ int main(int argc, char **argv)
         // std::cout << offerJson.dump() << std::endl;
         OCTK_LOGGING_INFO(EXP_LOGGER(), "offerJson:{}", offerJson.dump().c_str());
 #if 1
-        const std::string ipaddr("http://192.168.110.64");
+        const std::string ipaddr("http://192.168.2.134:5005");
 #else
         const std::string ipaddr("http://127.0.0.1");
 #endif

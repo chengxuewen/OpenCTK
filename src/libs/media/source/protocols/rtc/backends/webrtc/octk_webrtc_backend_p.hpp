@@ -3124,9 +3124,6 @@ public:
     }
 
 protected:
-    void createAudioDeviceModule_w();
-
-    void destroyAudioDeviceModule_w();
 
     // webrtc::scoped_refptr<libwebrtc::LocalAudioSource> CreateAudioSourceWithOptions(webrtc::AudioOptions *options,
     //                                                                                 bool is_custom_source = false);

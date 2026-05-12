@@ -1544,7 +1544,6 @@ Status RtcPeerConnectionFactoryWebRTC::terminate()
             [this]
             {
                 mWebRTCAudioDeviceModule = nullptr;
-                // DestroyAudioDeviceModule_w();
             });
     }
 
@@ -1588,41 +1587,11 @@ Status RtcPeerConnectionFactoryWebRTC::initialize(const Settings &settings)
                             return;
                         }
 
-                        if (!mWebRTCAudioDeviceModule)
-                        {
-                            mWebRTCTaskQueueFactory = webrtc::CreateDefaultTaskQueueFactory();
-                            mWebRTCWorkerThread->BlockingCall(
-                                [&]
-                                {
-                                    if (!mWebRTCAudioDeviceModule)
-                                    {
-                                        // mWebRTCAudioDeviceModule = webrtc::AudioDeviceModule::Create(
-                                        //     webrtc::AudioDeviceModule::kPlatformDefaultAudio,
-                                        //     mWebRTCTaskQueueFactory.get());
-                                    }
-                                    // CreateAudioDeviceModule_w();
-                                });
-                        }
-
-                        // if (!audio_processing_impl_)
-                        // {
-                        //     worker_thread_->BlockingCall([this]
-                        //                                  { audio_processing_impl_ =
-                        //                                  //new RefCountedObject<RTCAudioProcessingImpl>(); });
-                        // }
-                        //
-                        // if (!audio_transport_factory_)
-                        // {
-                        //     worker_thread_->BlockingCall(
-                        //         [this] { audio_transport_factory_ = //
-                        //         webrtc::make_ref_counted<CustomAudioTransportFactory>(); });
-                        // }
-
                         mWebRTCPeerConnectionFactory = webrtc::CreatePeerConnectionFactory(
                             mWebRTCNetworkThread.get(),                             // network_thread
                             mWebRTCWorkerThread.get(),                              // worker_thread
                             mWebRTCSignalingThread.get(),                           // signaling_thread
-                            mWebRTCAudioDeviceModule,                               // default_adm
+                            nullptr,                                                // default_adm
                             webrtc::CreateBuiltinAudioEncoderFactory(),             // audio_encoder_factory
                             webrtc::CreateBuiltinAudioDecoderFactory(),             // audio_decoder_factory
                             detail::ExternalVideoEncoderFactory::Create(mSettings), // video_encoder_factory
@@ -1857,23 +1826,6 @@ RtcRtpCapabilities::SharedPtr RtcPeerConnectionFactoryWebRTC::getRtpReceiverCapa
     auto rtpCapabilities = mWebRTCPeerConnectionFactory->GetRtpReceiverCapabilities(utils::toWebRTC(mediaType));
     return utils::make_shared<RtcRtpCapabilitiesWebRTC>(rtpCapabilities);
 }
-//
-// void RtcPeerConnectionFactoryWebRTC::createAudioDeviceModule_w()
-// {
-//     // if (!mWebRTCAudioDeviceModule)
-//     // {
-//     //     mWebRTCAudioDeviceModule = webrtc::AudioDeviceModule::Create(webrtc::AudioDeviceModule::kPlatformDefaultAudio,
-//     //                                                                  mWebRTCTaskQueueFactory.get());
-//     // }
-// }
-//
-// void RtcPeerConnectionFactoryWebRTC::destroyAudioDeviceModule_w()
-// {
-//     // if (mWebRTCAudioDeviceModule)
-//     // {
-//     //     mWebRTCAudioDeviceModule = nullptr;
-//     // }
-// }
 
 OCTK_RTC_ENGINE_REGISTER_FACTORY(
     RtcPeerConnectionFactoryWebRTC,

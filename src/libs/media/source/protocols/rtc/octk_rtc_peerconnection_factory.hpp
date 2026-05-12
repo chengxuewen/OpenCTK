@@ -51,7 +51,6 @@ public:
 
     struct Settings final
     {
-        // codecs
         bool useHardwareCodec{true};
     };
 
