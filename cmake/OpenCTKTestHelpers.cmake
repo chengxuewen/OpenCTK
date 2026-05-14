@@ -57,6 +57,17 @@ function(octk_add_test NAME)
         set_property(TARGET ${TEST_NAME} PROPERTY INTERFACE_C_EXTENSIONS OFF)
     endif()
     add_test(NAME ${NAME} COMMAND ${NAME} WORKING_DIRECTORY ${ARG_OUTPUT_DIRECTORY})
+
+    # Auto-derive FOLDER from directory hierarchy
+    get_target_property(_octk_folder ${NAME} FOLDER)
+    if(NOT _octk_folder)
+        file(RELATIVE_PATH _dir "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+        if(_dir MATCHES "^src/(.+)$")
+            set_target_properties(${NAME} PROPERTIES FOLDER "OpenCTK/${CMAKE_MATCH_1}")
+        else()
+            set_target_properties(${NAME} PROPERTIES FOLDER "OpenCTK/${_dir}")
+        endif()
+    endif()
 endfunction()
 
 

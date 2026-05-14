@@ -46,6 +46,7 @@ if(NOT EXISTS "${OpenCTKWrapImGui_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OpenCTKWrapImGui::WrapImGui INTERFACE IMPORTED)
+set_target_properties(OpenCTKWrapImGui::WrapImGui PROPERTIES FOLDER "OpenCTK/3rdparty")
 if(NOT TARGET ImGui)
 	add_library(ImGui STATIC
 		${OpenCTKWrapImGui_SOURCE_DIR}/imgui.cpp
@@ -59,6 +60,7 @@ if(NOT TARGET ImGui)
 		${OpenCTKWrapImGui_SOURCE_DIR}/imstb_textedit.h
 		${OpenCTKWrapImGui_SOURCE_DIR}/imstb_truetype.h)
 endif()
+set_target_properties(ImGui PROPERTIES FOLDER "OpenCTK/3rdparty")
 target_link_libraries(OpenCTKWrapImGui::WrapImGui INTERFACE ImGui)
 execute_process(
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${OpenCTKWrapImGui_SOURCE_DIR}/imgui_internal.h"

@@ -300,6 +300,17 @@ function(octk_add_executable name)
                 "$<TARGET_PROPERTY:${lib},${prop_prefix}_plugins>")
         endforeach()
     endif()
+
+    # Auto-derive FOLDER from directory hierarchy
+    get_target_property(_octk_folder ${name} FOLDER)
+    if(NOT _octk_folder)
+        file(RELATIVE_PATH _dir "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+        if(_dir MATCHES "^src/(.+)$")
+            set_target_properties(${name} PROPERTIES FOLDER "OpenCTK/${CMAKE_MATCH_1}")
+        else()
+            set_target_properties(${name} PROPERTIES FOLDER "OpenCTK/${_dir}")
+        endif()
+    endif()
 endfunction()
 
 

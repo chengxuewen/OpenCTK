@@ -769,6 +769,17 @@ function(octk_add_library name)
 
     octk_describe_module(${target})
     octk_add_list_file_finalizer(octk_finalize_module ${target} ${arg_INTERNAL_LIBRARY} ${arg_NO_PRIVATE_LIBRARY} ${header_library})
+
+    # Auto-derive FOLDER from directory hierarchy
+    get_target_property(_octk_folder ${target} FOLDER)
+    if(NOT _octk_folder)
+        file(RELATIVE_PATH _dir "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+        if(_dir MATCHES "^src/(.+)$")
+            set_target_properties(${target} PROPERTIES FOLDER "OpenCTK/${CMAKE_MATCH_1}")
+        else()
+            set_target_properties(${target} PROPERTIES FOLDER "OpenCTK/${_dir}")
+        endif()
+    endif()
 endfunction()
 
 

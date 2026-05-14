@@ -179,7 +179,8 @@ macro(octk_find_package)
 
                 set_target_properties(${octk_find_package_target_name} PROPERTIES
                     INTERFACE_OCTK_PACKAGE_NAME ${ARGV0}
-                    INTERFACE_OCTK_PACKAGE_IS_OPTIONAL ${arg_MARK_OPTIONAL})
+                    INTERFACE_OCTK_PACKAGE_IS_OPTIONAL ${arg_MARK_OPTIONAL}
+                    FOLDER "OpenCTK/3rdparty")
                 if(package_version)
                     set_target_properties(${octk_find_package_target_name}
                         PROPERTIES INTERFACE_OCTK_PACKAGE_VERSION ${ARGV1})

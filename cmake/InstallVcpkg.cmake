@@ -235,6 +235,7 @@ function(octk_vcpkg_install_package NAME)
     endif()
 
     add_library(${arg_TARGET} INTERFACE IMPORTED GLOBAL)
+    set_target_properties(${arg_TARGET} PROPERTIES FOLDER "OpenCTK/3rdparty")
     #	message(${arg_PREFIX}_NAME=${${arg_PREFIX}_NAME})
     #	message(arg_NOT_IMPORT=${arg_NOT_IMPORT})
     #	message(arg_PREFIX=${arg_PREFIX})
