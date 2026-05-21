@@ -239,7 +239,11 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED ON)
 #-----------------------------------------------------------------------------------------------------------------------
 # Specify the C++ standard and flags
 #-----------------------------------------------------------------------------------------------------------------------
-if(CMAKE_CXX_STANDARD)
+if(INPUT_OCTK_FEATURE_CXX_STANDARD)
+	set(OCTK_CMAKE_CXX_STANDARD ${INPUT_OCTK_FEATURE_CXX_STANDARD} CACHE STRING "C++ standard" FORCE)
+elseif(OCTK_FEATURE_CXX_STANDARD)
+	set(OCTK_CMAKE_CXX_STANDARD ${OCTK_FEATURE_CXX_STANDARD} CACHE STRING "C++ standard" FORCE)
+elseif(CMAKE_CXX_STANDARD)
 	set(OCTK_CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD} CACHE STRING "C++ standard" FORCE)
 else()
 	set(OCTK_CMAKE_CXX_STANDARD 11 CACHE STRING "C++ standard")
@@ -619,6 +623,49 @@ if(OCTK_BUILD_TESTS)
 	octk_find_package(WrapBenchmark PROVIDED_TARGETS OpenCTKWrapBenchmark::WrapBenchmark)
 endif()
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Top-level OpenCTK0Config.cmake for find_package(OpenCTK COMPONENTS ...)
+# (umbrella config, delegates to per-module Config files)
+#-----------------------------------------------------------------------------------------------------------------------
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/OpenCTKConfig.cmake.in"
+    "${OCTK_CONFIG_BUILD_DIR}/${OCTK_CMAKE_INSTALL_NAMESPACE}Config.cmake"
+    INSTALL_DESTINATION "${OCTK_CONFIG_INSTALL_DIR}")
+write_basic_package_version_file(
+    "${OCTK_CONFIG_BUILD_DIR}/${OCTK_CMAKE_INSTALL_NAMESPACE}ConfigVersionImpl.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+octk_internal_write_octk_package_version_file(
+    "${OCTK_CMAKE_INSTALL_NAMESPACE}"
+    "${OCTK_CONFIG_BUILD_DIR}/${OCTK_CMAKE_INSTALL_NAMESPACE}ConfigVersion.cmake")
+octk_install(FILES
+    "${OCTK_CONFIG_BUILD_DIR}/${OCTK_CMAKE_INSTALL_NAMESPACE}Config.cmake"
+    "${OCTK_CONFIG_BUILD_DIR}/${OCTK_CMAKE_INSTALL_NAMESPACE}ConfigVersion.cmake"
+    "${OCTK_CONFIG_BUILD_DIR}/${OCTK_CMAKE_INSTALL_NAMESPACE}ConfigVersionImpl.cmake"
+    DESTINATION "${OCTK_CONFIG_INSTALL_DIR}")
+
+# Also generate version-less OpenCTKConfig.cmake for find_package(OpenCTK ...)
+# Must be in OpenCTK/ subdirectory per CMake find_package search convention
+file(MAKE_DIRECTORY "${OCTK_CONFIG_BUILD_DIR}/OpenCTK")
+file(WRITE "${OCTK_CONFIG_BUILD_DIR}/OpenCTK/OpenCTKConfig.cmake"
+    "include(\"\${CMAKE_CURRENT_LIST_DIR}/../${OCTK_CMAKE_INSTALL_NAMESPACE}Config.cmake\")\n")
+file(WRITE "${OCTK_CONFIG_BUILD_DIR}/OpenCTK/OpenCTKConfigVersion.cmake"
+    "set(PACKAGE_VERSION \"${PROJECT_VERSION}\")\n"
+    "if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)\n"
+    "  set(PACKAGE_VERSION_COMPATIBLE FALSE)\n"
+    "else()\n"
+    "  set(PACKAGE_VERSION_COMPATIBLE TRUE)\n"
+    "  if(PACKAGE_VERSION STREQUAL PACKAGE_FIND_VERSION)\n"
+    "    set(PACKAGE_VERSION_EXACT TRUE)\n"
+    "  endif()\n"
+    "endif()\n")
+
+octk_install(FILES
+    "${OCTK_CONFIG_BUILD_DIR}/OpenCTK/OpenCTKConfig.cmake"
+    "${OCTK_CONFIG_BUILD_DIR}/OpenCTK/OpenCTKConfigVersion.cmake"
+    DESTINATION "${OCTK_CONFIG_INSTALL_DIR}/OpenCTK")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # add subdirectory

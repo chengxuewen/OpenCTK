@@ -2,7 +2,64 @@
 
 cmake_minimum_required(VERSION @min_new_policy_version@...@max_new_policy_version@)
 
+# Helper functions required by install-tree Config files (normally defined in build-time cmake modules).
+# QExt pattern: these must be inlined because build-time cmake modules are NOT installed.
+if(NOT COMMAND __octk_internal_promote_target_to_global)
+    function(__octk_internal_promote_target_to_global target)
+        get_property(_is_global TARGET ${target} PROPERTY IMPORTED_GLOBAL)
+        if(NOT _is_global)
+            message(DEBUG "Promoting target to global: '${target}'")
+            set_property(TARGET ${target} PROPERTY IMPORTED_GLOBAL TRUE)
+        endif()
+    endfunction()
+endif()
+if(NOT COMMAND __octk_internal_promote_target_to_global_checked)
+    function(__octk_internal_promote_target_to_global_checked target)
+        if(OCTK_PROMOTE_TO_GLOBAL_TARGETS AND CMAKE_VERSION VERSION_LESS 3.21)
+            __octk_internal_promote_target_to_global(${target})
+        endif()
+    endfunction()
+endif()
+if(NOT COMMAND _octk_internal_suggest_dependency_debugging)
+    function(_octk_internal_suggest_dependency_debugging dep_target var_name)
+    endfunction()
+endif()
+if(NOT COMMAND octk_make_features_available)
+    function(octk_make_features_available target)
+    endfunction()
+endif()
+if(NOT COMMAND _octk_internal_find_third_party_dependencies)
+    function(_octk_internal_find_third_party_dependencies dep_target deps_var)
+    endfunction()
+endif()
+if(NOT COMMAND _octk_internal_find_tool_dependencies)
+    function(_octk_internal_find_tool_dependencies dep_target deps_var)
+    endfunction()
+endif()
+if(NOT COMMAND _octk_internal_find_octk_dependencies)
+    function(_octk_internal_find_octk_dependencies dep_target deps_var paths_var)
+        set(_deps "${${deps_var}}")
+        if(NOT _deps)
+            return()
+        endif()
+        set(_paths "${${paths_var}}")
+        foreach(_dep_entry IN LISTS _deps)
+            string(REPLACE "\\;" ";" _dep_parts "${_dep_entry}")
+            list(GET _dep_parts 0 _dep_pkg)
+            list(GET _dep_parts 1 _dep_ver)
+            find_dependency(${_dep_pkg} ${_dep_ver}
+                PATHS ${_paths}
+                ${__octk_use_no_default_path_for_octk_packages}
+            )
+        endforeach()
+    endfunction()
+endif()
+
 include(CMakeFindDependencyMacro)
+
+# Create stub targets for OpenCTK 3rdparty libraries referenced by
+# installed INTERFACE_LINK_LIBRARIES. Auto-generated at build time.
+@octk_3rdparty_stubs@
 
 get_filename_component(_import_prefix "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(_import_prefix "${_import_prefix}" REALPATH)

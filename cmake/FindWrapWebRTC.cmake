@@ -68,7 +68,7 @@ else()
 		"OCTK_3RDPARTY_WEBRTC_INCLUDE_DIR/OCTK_3RDPARTY_WEBRTC_LIBRARY not set.")
 endif()
 # add wrap lib
-add_library(OpenCTKWrapWebRTC::WrapWebRTC STATIC IMPORTED)
+add_library(OpenCTKWrapWebRTC::WrapWebRTC STATIC IMPORTED GLOBAL)
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
     target_compile_definitions(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE _DEBUG)
     if(OCTK_CXX_COMPILER_USING_LIBSTDCXX)
