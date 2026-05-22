@@ -38,6 +38,24 @@ set(OpenCTKWrapSDL3_SOURCE_DIR "${OpenCTKWrapSDL3_ROOT_DIR}/source" CACHE INTERN
 set(OpenCTKWrapSDL3_INSTALL_DIR "${OpenCTKWrapSDL3_ROOT_DIR}/install" CACHE INTERNAL "" FORCE)
 octk_stamp_file_info(OpenCTKWrapSDL3 OUTPUT_DIR "${OpenCTKWrapSDL3_ROOT_DIR}")
 octk_fetch_3rdparty(OpenCTKWrapSDL3 URL "${OpenCTKWrapSDL3_URL_PATH}" OUTPUT_NAME "${OpenCTKWrapSDL3_DIR_NAME}")
+# When video frame rendering is needed, X11/Wayland dev packages are required.
+# Check .pc file existence to verify dev packages are installed before building SDL3.
+if(OCTK_SYSTEM_LINUX)
+    set(_sdl_pkg_path "/usr/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig")
+    set(_sdl_missing_pkgs "")
+    foreach(_pkg IN ITEMS x11 xext xrandr xi xcursor xfixes xinerama xrender)
+        if(NOT EXISTS "${_sdl_pkg_path}/${_pkg}.pc")
+            list(APPEND _sdl_missing_pkgs "lib${_pkg}-dev")
+        endif()
+    endforeach()
+    if(_sdl_missing_pkgs)
+        message(FATAL_ERROR
+            "SDL3 requires X11 development packages for video frame rendering.\n"
+            "Missing .pc files at ${_sdl_pkg_path}/: ${_sdl_missing_pkgs}\n"
+            "Install them with:\n"
+            "  sudo apt install libx11-dev libxext-dev libxrandr-dev libxi-dev libxcursor-dev libxfixes-dev libxinerama-dev libxrender-dev")
+    endif()
+endif()
 if(NOT EXISTS "${OpenCTKWrapSDL3_STAMP_FILE_PATH}")
     if(NOT EXISTS ${OpenCTKWrapSDL3_SOURCE_DIR})
         message(FATAL_ERROR "${OpenCTKWrapSDL3_NAME} FetchContent failed.")

@@ -86,6 +86,11 @@ if(NOT EXISTS "${OpenCTKWrapJwtcpp_STAMP_FILE_PATH}")
 endif()
 # wrap lib
 add_library(OpenCTKWrapJwtcpp::WrapJwtcpp INTERFACE IMPORTED)
+# jwt-cpp-config.cmake calls pkg_check_modules(wolfssl ...), need PKG_CONFIG_PATH
+# to include wolfssl install's pkgconfig dir.
+set(_jwtcpp_saved_pkg_config_path "$ENV{PKG_CONFIG_PATH}")
+set(ENV{PKG_CONFIG_PATH} "${OpenCTKWrapWolfSSL_INSTALL_DIR}/lib/pkgconfig")
 find_package(jwt-cpp PATHS "${OpenCTKWrapJwtcpp_INSTALL_DIR}" NO_DEFAULT_PATH REQUIRED)
+set(ENV{PKG_CONFIG_PATH} "${_jwtcpp_saved_pkg_config_path}")
 target_link_libraries(OpenCTKWrapJwtcpp::WrapJwtcpp INTERFACE jwt-cpp::jwt-cpp)
 set(OpenCTKWrapJwtcpp_FOUND ON)

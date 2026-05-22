@@ -71,12 +71,35 @@ if(NOT EXISTS "${OpenCTKPkgconf_STAMP_FILE_PATH}")
 	endif()
 	octk_reset_dir(${OpenCTKPkgconf_BUILD_DIR})
 
-	if(WIN32)
+	set(OpenCTKPkgconf_MESON_BUILD ON)
+	find_program(AUTOCONF autoconf
+    	HINTS /usr/local/bin
+    	PATHS /usr/bin)
+	if(AUTOCONF)
+    	execute_process(
+    	COMMAND ${AUTOCONF} --version
+    		OUTPUT_VARIABLE AUTOCONF_VERSION_OUTPUT
+    		OUTPUT_STRIP_TRAILING_WHITESPACE
+    		ERROR_QUIET)
+		string(REGEX MATCH "[0-9]+\\.[0-9]+(\\.[0-9]+)?" AUTOCONF_VERSION "${AUTOCONF_VERSION_OUTPUT}")
+		if(AUTOCONF_VERSION)
+    		if(${AUTOCONF_VERSION} VERSION_GREATER_EQUAL "2.71")
+				find_program(AUTOMAKE automake
+    				HINTS /usr/local/bin
+    				PATHS /usr/bin)
+				if(AUTOMAKE)
+					set(OpenCTKPkgconf_MESON_BUILD OFF)
+				endif()
+			endif()
+		endif()
+	endif()
+
+	if(OpenCTKPkgconf_MESON_BUILD)
 		include(InstallPython)
 		message(STATUS "meson setup ${OpenCTKPkgconf_NAME} lib...")
 		execute_process(
 			COMMAND ${OpenCTKPython_EXECUTABLE} ${OCTKMeson_FILE} setup ../build -Dtests=disabled
-			--prefix=${OpenCTKPkgconf_INSTALL_DIR}
+			--prefix=${OpenCTKPkgconf_INSTALL_DIR} --libdir=lib
 			WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 			RESULT_VARIABLE SETUP_RESULT)
 		if(SETUP_RESULT MATCHES 0)
@@ -174,4 +197,7 @@ set(OpenCTKPkgconf_EXECUTABLE "${OpenCTKPkgconf_INSTALL_DIR}/bin/pkgconf"
 set(PKG_CONFIG_EXECUTABLE "${OpenCTKPkgconf_EXECUTABLE}"
 	CACHE INTERNAL "PKG_CONFIG_EXECUTABLE executable path." FORCE)
 message(STATUS "Set PkgConf executable path ${OpenCTKPkgconf_EXECUTABLE}")
+# Ensure pkgconf binary can find its own libpkgconf.so at runtime.
+# Meson may not set RPATH, so prepend install lib dir to LD_LIBRARY_PATH.
+set(ENV{LD_LIBRARY_PATH} "${OpenCTKPkgconf_INSTALL_DIR}/lib:$ENV{LD_LIBRARY_PATH}")
 set(OpenCTKPkgconf_FOUND ON)
