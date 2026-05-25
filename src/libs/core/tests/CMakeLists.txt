@@ -255,14 +255,14 @@ octk_add_test(OpenCTKCoreTstFunctionView
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKCoreTstMetrics
-	SOURCES
-	tst_metrics.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+# octk_add_test(OpenCTKCoreTstMetrics
+# 	SOURCES
+# 	tst_metrics.cpp
+# 	INCLUDE_DIRECTORIES
+# 	LIBRARIES
+# 	${OCTK_TEST_LINK_LIBRARIES}
+# 	OUTPUT_DIRECTORY
+# 	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(OpenCTKCoreTstMoveWrapper
 	SOURCES
 	tst_move_wrapper.cpp

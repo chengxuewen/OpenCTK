@@ -162,23 +162,23 @@ else()
         find_package(X11 REQUIRED)
         target_link_libraries(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE X11::X11)
         octk_pkgconf_check_modules(gio REQUIRED
-            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
             IMPORTED_TARGET
             gio-2.0)
         octk_pkgconf_check_modules(glib REQUIRED
-            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
             IMPORTED_TARGET
             glib-2.0)
         octk_pkgconf_check_modules(gmodule REQUIRED
-            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
             IMPORTED_TARGET
             gmodule-2.0)
         octk_pkgconf_check_modules(gobject REQUIRED
-            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
             IMPORTED_TARGET
             gobject-2.0)
         octk_pkgconf_check_modules(gthread REQUIRED
-            PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+            PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
             IMPORTED_TARGET
             gthread-2.0)
         target_link_libraries(OpenCTKWrapWebRTC::WrapWebRTC INTERFACE

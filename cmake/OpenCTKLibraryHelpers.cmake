@@ -491,6 +491,8 @@ function(octk_add_library name)
     #        message(dir=${dir})
     #    endforeach()
     # octk_internal_add_repo_local_defines("${target}")
+
+# target_compile_definitions("${target}" PUBLIC _GLIBCXX_DEBUG=1)
     octk_internal_extend_target("${target}"
         ${header_library}
         SOURCES

@@ -216,7 +216,7 @@ RtcVideoGenerator::SharedPtr RtcVideoGenerator::create(int fps,
                                                                                     false);
         trackSource->addOrUpdateSink(videoGenerator->dFunc(), VideoSinkWants());
         videoGenerator->dFunc()->mGeneratorSource = std::move(trackSource);
-        videoGenerator->dFunc()->mGeneratorSource->start();
+       videoGenerator->dFunc()->mGeneratorSource->start();
         return videoGenerator;
     }
     OCTK_ERROR("createSquareGenerator: invalid parameter");

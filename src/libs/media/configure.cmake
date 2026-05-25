@@ -33,7 +33,7 @@ octk_configure_feature("MEDIA_ENABLE_CAPTURE_CAMERA" PUBLIC
 	CONDITION OFF)
 
 octk_pkgconf_check_modules(PipeWire QUIET
-	PATH "/usr/lib/${OCTK_SYSTEM_PROCESSOR}-linux-gnu/pkgconfig"
+	PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
 	IMPORTED_TARGET libpipewire-0.3 gio-unix-2.0 libspa-0.2)
 octk_configure_feature("MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE" PUBLIC
 	LABEL "Enable this to build enable capture video libpipewire"
@@ -74,4 +74,4 @@ octk_configure_definition("OCTK_3RDPARTY_WEBRTC_MILESTONE"
 
 octk_configure_feature("MEDIA_USE_WEBRTC_GLIBCXX_DEBUG" PUBLIC
     LABEL "Enable this to build use webrtc lib with GLIBCXX_DEBUG macro"
-	CONDITION OCTK_SYSTEM_LINUX AND OCTK_PROCESSOR_X64 AND OCTK_BUILD_DEBUG)
+	CONDITION OFF)

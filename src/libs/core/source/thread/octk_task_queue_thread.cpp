@@ -25,6 +25,7 @@
 #include <octk_task_queue_thread.hpp>
 #include <octk_date_time.hpp>
 #include <octk_timestamp.hpp>
+#include <octk_semaphore.hpp>
 #include <octk_mutex.hpp>
 
 #include <set>
@@ -86,18 +87,18 @@ TaskQueueThreadPrivate::TaskQueueThreadPrivate(TaskQueueThread *p)
 
 void TaskQueueThreadPrivate::init()
 {
-    RecursiveMutex::Condition started;
+    Semaphore started;
     RecursiveMutex::UniqueLock lock(mMutex);
     mThread = std::thread(
         [this, &started]()
         {
             OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "TaskQueueThreadPrivate: thread started");
             TaskQueueThread::CurrentSetter currentSetter(mPPtr);
-            started.notify_all();
+            started.release();
             mPPtr->processTasks();
             OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "TaskQueueThreadPrivate: thread finished");
         });
-    started.wait(lock);
+    started.acquire();
     OCTK_LOGGING_TRACE(OCTK_TASK_QUEUE_LOGGER(), "TaskQueueThreadPrivate: constructor done");
 }
 
