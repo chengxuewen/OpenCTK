@@ -28,6 +28,7 @@
 #include <octk_video_frame_buffer.hpp>
 #include <octk_video_rotation.hpp>
 #include <octk_aligned_malloc.hpp>
+#include <octk_shared_pointer.hpp>
 
 #include <stdint.h>
 #include <memory>
@@ -38,6 +39,8 @@ OCTK_BEGIN_NAMESPACE
 class OCTK_MEDIA_API I420Buffer : public I420BufferInterface
 {
 public:
+    OCTK_DEFINE_SHARED_PTR(I420Buffer)
+
     I420Buffer(int width, int height);
     I420Buffer(int width, int height, int stride_y, int stride_u, int stride_v);
     ~I420Buffer() override;

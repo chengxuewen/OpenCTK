@@ -784,10 +784,9 @@ void RtcPeerConnectionWebRTC::close()
 {
     if (mWebRTCPeerConnection.get())
     {
-        mWebRTCPeerConnection = nullptr;
-        mDataChannel = nullptr;
+        mWebRTCPeerConnection->Close();
         mLocalStreams.clear();
-        for (auto stream : mRemoteStreams)
+        for (auto &stream : mRemoteStreams)
         {
             if (mObserver)
             {
@@ -803,6 +802,9 @@ void RtcPeerConnectionWebRTC::close()
                });*/
         }
         mRemoteStreams.clear();
+
+        mWebRTCPeerConnection = nullptr;
+        mDataChannel = nullptr;
     }
 }
 
@@ -1530,23 +1532,20 @@ void RtcPeerConnectionWebRTC::OnSignalingChange(webrtc::PeerConnectionInterface:
 ***********************************************************************************************************************/
 Status RtcPeerConnectionFactoryWebRTC::terminate()
 {
-    mWebRTCWorkerThread->BlockingCall(
-        [&]
+    if (mWebRTCWorkerThread)
+    {
+        mWebRTCWorkerThread->BlockingCall([&]()
         {
             // audio_device_impl_ = nullptr;
             // video_device_impl_ = nullptr;
             // audio_processing_impl_ = nullptr;
-        });
-    mWebRTCPeerConnectionFactory = NULL;
-    if (mWebRTCAudioDeviceModule)
-    {
-        mWebRTCWorkerThread->BlockingCall(
-            [this]
+            if (mWebRTCAudioDeviceModule)
             {
                 mWebRTCAudioDeviceModule = nullptr;
-            });
+            }
+        });
     }
-
+    mWebRTCPeerConnectionFactory = NULL;
     return Status::ok;
 }
 

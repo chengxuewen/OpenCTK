@@ -40,8 +40,8 @@ int main(int argc, char **argv)
     OCTK_LOGGING_INFO(EXP_LOGGER(), "octk_media_exp_webrtc_pusher");
 
     octk::Status status;
-    const auto width = 1280;
-    const auto height = 720;
+    const auto width = 1920;
+    const auto height = 1080;
     auto renderer = octk::utils::make_shared<VideoRenderer>(VideoRenderer::VideoType::I420,
                                                             "SDLRendererVideoSink",
                                                             width,
@@ -109,11 +109,11 @@ int main(int argc, char **argv)
     std::cout << offerJson.dump() << std::endl;
     OCTK_LOGGING_INFO(EXP_LOGGER(), "offer:{}", offer.sdp.c_str());
 #if 1
-    const std::string ipaddr("http://192.168.100.47");
+    const std::string ipaddr("http://192.168.2.134:5005");
 #else
     const std::string ipaddr("http://127.0.0.1");
 #endif
-    auto response = octk::http::post(octk::http::Url{ipaddr + "/index/api/webrtc?app=live&stream=test&type=play"},
+    auto response = octk::http::post(octk::http::Url{ipaddr + "/index/api/webrtc?app=msrtv302&stream=video0&type=play"},
                                      octk::http::Header{{"Content-Type", "text/plain;charset=UTF-8"}},
                                      octk::http::Body{offer.sdp});
     OCTK_LOGGING_INFO(EXP_LOGGER(), "status_code:{}", response->statusCode());

@@ -67,10 +67,10 @@ public:
     {
         switch (mVideoRotation)
         {
-            case VideoRotation::kAngle0: return Rotation::kAngle0;
-            case VideoRotation::kAngle90: return Rotation::kAngle90;
-            case VideoRotation::kAngle180: return Rotation::kAngle180;
-            case VideoRotation::kAngle270: return Rotation::kAngle270;
+        case VideoRotation::kAngle0: return Rotation::kAngle0;
+        case VideoRotation::kAngle90: return Rotation::kAngle90;
+        case VideoRotation::kAngle180: return Rotation::kAngle180;
+        case VideoRotation::kAngle270: return Rotation::kAngle270;
         }
         return Rotation::kAngle0;
     }
@@ -216,7 +216,7 @@ RtcVideoGenerator::SharedPtr RtcVideoGenerator::create(int fps,
                                                                                     false);
         trackSource->addOrUpdateSink(videoGenerator->dFunc(), VideoSinkWants());
         videoGenerator->dFunc()->mGeneratorSource = std::move(trackSource);
-       videoGenerator->dFunc()->mGeneratorSource->start();
+        videoGenerator->dFunc()->mGeneratorSource->start();
         return videoGenerator;
     }
     OCTK_ERROR("createSquareGenerator: invalid parameter");

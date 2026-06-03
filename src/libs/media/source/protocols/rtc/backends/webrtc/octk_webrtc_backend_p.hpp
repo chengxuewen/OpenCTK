@@ -740,7 +740,8 @@ public:
     private:
         const webrtc::Attribute mWebRTCAttr;
     };
-    RtcStatsWebRTC(std::unique_ptr<webrtc::RTCStats> stats) { }
+
+    RtcStatsWebRTC(std::unique_ptr<webrtc::RTCStats> stats) : mWebRTCStats(std::move(stats)) { }
     ~RtcStatsWebRTC() override { }
 
     StringView id() const override { return mWebRTCStats->id(); }
