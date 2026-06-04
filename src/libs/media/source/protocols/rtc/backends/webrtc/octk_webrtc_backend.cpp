@@ -691,6 +691,10 @@ RtcPeerConnectionWebRTC::RtcPeerConnectionWebRTC(
 RtcPeerConnectionWebRTC::~RtcPeerConnectionWebRTC()
 {
     OCTK_TRACE() << "RtcPeerConnectionWebRTC: dtor" << this;
+    if (mWebRTCPeerConnection)
+    {
+        mWebRTCPeerConnection->Close();
+    }
 }
 
 Status RtcPeerConnectionWebRTC::initialize()
@@ -1536,15 +1540,15 @@ Status RtcPeerConnectionFactoryWebRTC::terminate()
     {
         mWebRTCWorkerThread->BlockingCall([&]()
         {
-            // audio_device_impl_ = nullptr;
-            // video_device_impl_ = nullptr;
-            // audio_processing_impl_ = nullptr;
             if (mWebRTCAudioDeviceModule)
             {
                 mWebRTCAudioDeviceModule = nullptr;
             }
         });
+        mWebRTCWorkerThread->Stop();
     }
+    if (mWebRTCNetworkThread) { mWebRTCNetworkThread->Stop(); }
+    if (mWebRTCSignalingThread) { mWebRTCSignalingThread->Stop(); }
     mWebRTCPeerConnectionFactory = NULL;
     return Status::ok;
 }
