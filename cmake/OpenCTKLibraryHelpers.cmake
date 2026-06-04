@@ -282,8 +282,8 @@ function(octk_add_library name)
             LIBRARY_OUTPUT_DIRECTORY "${OCTK_BUILD_DIR}/${OCTK_INSTALL_LIBDIR}"
             RUNTIME_OUTPUT_DIRECTORY "${OCTK_BUILD_DIR}/${OCTK_INSTALL_BINDIR}"
             ARCHIVE_OUTPUT_DIRECTORY "${OCTK_BUILD_DIR}/${OCTK_INSTALL_LIBDIR}"
-            VERSION ${PROJECT_VERSION}
-            SOVERSION ${PROJECT_VERSION_MAJOR})
+            VERSION ${OCTK_VERSION}
+            SOVERSION ${OCTK_VERSION_MAJOR})
         octk_set_target_info_properties(${target} ${ARGN})
         octk_handle_multi_config_output_dirs("${target}")
 
@@ -703,6 +703,24 @@ function(octk_add_library name)
     if(BUILD_SHARED_LIBS)
         octk_apply_rpaths(TARGET "${target}" INSTALL_PATH "${OCTK_INSTALL_LIBDIR}" RELATIVE_RPATH)
         octk_internal_apply_staging_prefix_build_rpath_workaround()
+
+        if(UNIX)
+            get_target_property(_octk_output_name ${target} OUTPUT_NAME)
+            if(NOT _octk_output_name)
+                set(_octk_output_name ${target})
+            endif()
+            set(_octk_soname "lib${_octk_output_name}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+            set(_octk_soname_ver "${_octk_soname}.${OCTK_VERSION}")
+            set(_octk_soname_major_minor "${_octk_soname}.${OCTK_VERSION_MAJOR}.${OCTK_VERSION_MINOR}")
+
+            add_custom_command(TARGET ${target} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E create_symlink
+                    "${_octk_soname_ver}"
+                    "${_octk_soname_major_minor}"
+                WORKING_DIRECTORY "$<TARGET_FILE_DIR:${target}>"
+                COMMENT "Creating version symlink: ${_octk_soname_major_minor}"
+            )
+        endif()
     endif()
 
     if(ANDROID AND NOT arg_HEADER_LIBRARY)
