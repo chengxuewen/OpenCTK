@@ -50,6 +50,7 @@ list(APPEND OCTK_LIB_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 octk_find_package(WrapFmt PROVIDED_TARGETS OpenCTKWrapFmt::WrapFmt)
 octk_find_package(WrapJson PROVIDED_TARGETS OpenCTKWrapJson::WrapJson)
+octk_find_package(WrapCLI11 PROVIDED_TARGETS OpenCTKWrapCLI11::WrapCLI11)
 octk_find_package(WrapJwtcpp PROVIDED_TARGETS OpenCTKWrapJwtcpp::WrapJwtcpp)
 octk_find_package(WrapSpdlog PROVIDED_TARGETS OpenCTKWrapSpdlog::WrapSpdlog)
 octk_find_package(WrapYamlCpp PROVIDED_TARGETS OpenCTKWrapYamlCpp::WrapYamlCpp)
@@ -181,6 +182,7 @@ octk_add_library(Core
 	source/time/octk_elapsed_timer.hpp
 	source/tools/octk_algorithm.hpp
 	source/tools/octk_any.hpp
+	source/tools/octk_argopt.hpp
 	source/tools/octk_assert.cpp
 	source/tools/octk_assert.hpp
 	source/tools/octk_buffer.hpp
@@ -258,6 +260,7 @@ octk_add_library(Core
 	PUBLIC_LIBRARIES
 	OpenCTKWrapFmt::WrapFmt
 	OpenCTKWrapJson::WrapJson
+	OpenCTKWrapCLI11::WrapCLI11
 	OpenCTKWrapJwtcpp::WrapJwtcpp
 	OpenCTKWrapYamlCpp::WrapYamlCpp
 	OpenCTKWrapVariant::WrapVariant
