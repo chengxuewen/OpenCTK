@@ -46,7 +46,7 @@ function(octk_internal_sync_headers target)
 
     # private headers
     unset(headers)
-    set(private_root_dir "${CMAKE_CURRENT_SOURCE_DIR}/include/private")
+    set(private_root_dir "${CMAKE_CURRENT_SOURCE_DIR}/include/detail")
     octk_internal_detect_headers("${private_root_dir}" headers SUFFIXS "h" "hpp")
     list(APPEND private_headers ${headers})
     foreach(header ${headers})
@@ -92,7 +92,7 @@ function(octk_internal_sync_headers target)
 
     # public sub headers
     file(GLOB_RECURSE sub_relfiles LIST_DIRECTORIES true RELATIVE ${public_root_dir} ${public_root_dir}/*)
-    list(REMOVE_ITEM sub_relfiles private)
+    list(REMOVE_ITEM sub_relfiles detail)
     foreach(child ${sub_relfiles})
         if(IS_DIRECTORY ${public_root_dir}/${child})
             list(APPEND public_reldirs "${child}")
@@ -280,7 +280,7 @@ function(octk_compute_injection_forwarding_header target)
     endif()
 
     if(arg_PRIVATE)
-        set(fwd "${PROJECT_VERSION}/${library_include_name}/private/${dst_file}")
+        set(fwd "${PROJECT_VERSION}/${library_include_name}/detail/${dst_file}")
     else()
         set(fwd "${dst_file}")
     endif()

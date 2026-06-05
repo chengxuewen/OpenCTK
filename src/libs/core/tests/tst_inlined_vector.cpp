@@ -15,10 +15,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <octk_inlined_vector.hpp>
-#include <octk_memory.hpp>
-#include <octk_checks.hpp>
-#include <octk_assert.hpp>
+#include <openctk/core/inlined_vector.hpp>
+#include <openctk/core/memory.hpp>
+#include <openctk/core/checks.hpp>
+#include <openctk/core/assert.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

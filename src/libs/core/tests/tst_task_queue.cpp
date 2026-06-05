@@ -8,15 +8,15 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_task_queue_for_test.hpp>
-#include <octk_task_queue_factory.hpp>
-#include <octk_function_view.hpp>
-#include <octk_scope_guard.hpp>
-#include <octk_task_event.hpp>
-#include <octk_task_queue.hpp>
-#include <octk_date_time.hpp>
-#include <octk_memory.hpp>
-#include <octk_sleep.hpp>
+#include <openctk/core/task_queue_for_test.hpp>
+#include <openctk/core/task_queue_factory.hpp>
+#include <openctk/core/function_view.hpp>
+#include <openctk/core/scope_guard.hpp>
+#include <openctk/core/task_event.hpp>
+#include <openctk/core/task_queue.hpp>
+#include <openctk/core/date_time.hpp>
+#include <openctk/core/memory.hpp>
+#include <openctk/core/sleep.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

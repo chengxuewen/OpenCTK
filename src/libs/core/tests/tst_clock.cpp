@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_clock.hpp>
-#include <octk_time_delta.hpp>
+#include <openctk/core/clock.hpp>
+#include <openctk/core/time_delta.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

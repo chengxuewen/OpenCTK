@@ -24,9 +24,9 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_field_trials_p.hpp>
-#include <octk_string_encode.hpp>
-#include <octk_logging.hpp>
-#include <octk_checks.hpp>
+#include <openctk/core/string_encode.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/checks.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

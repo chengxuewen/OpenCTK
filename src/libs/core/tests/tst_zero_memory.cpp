@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_zero_memory.hpp>
-#include <octk_array_view.hpp>
+#include <openctk/core/zero_memory.hpp>
+#include <openctk/core/array_view.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -27,13 +27,13 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 octk_internal_extend_target(OpenCTKMedia
 	SOURCES
-	${ROOT_DIR}/octk_create_frame_generator.cpp
-	${ROOT_DIR}/octk_create_frame_generator.hpp
-	${ROOT_DIR}/octk_create_frame_generator_capturer.cpp
-	${ROOT_DIR}/octk_create_frame_generator_capturer.hpp
-	${ROOT_DIR}/octk_custom_video_capturer.cpp
-	${ROOT_DIR}/octk_custom_video_capturer.hpp
-	${ROOT_DIR}/octk_frame_generator.cpp
-	${ROOT_DIR}/octk_frame_generator.hpp
-	${ROOT_DIR}/octk_frame_generator_capturer.cpp
-	${ROOT_DIR}/octk_frame_generator_capturer.hpp)
+	${ROOT_DIR}/create_frame_generator.cpp
+	${ROOT_DIR}/create_frame_generator.hpp
+	${ROOT_DIR}/create_frame_generator_capturer.cpp
+	${ROOT_DIR}/create_frame_generator_capturer.hpp
+	${ROOT_DIR}/custom_video_capturer.cpp
+	${ROOT_DIR}/custom_video_capturer.hpp
+	${ROOT_DIR}/frame_generator.cpp
+	${ROOT_DIR}/frame_generator.hpp
+	${ROOT_DIR}/frame_generator_capturer.cpp
+	${ROOT_DIR}/frame_generator_capturer.hpp)

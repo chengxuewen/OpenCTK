@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_data_rate.hpp>
-#include <octk_checks.hpp>
+#include <openctk/core/data_rate.hpp>
+#include <openctk/core/checks.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

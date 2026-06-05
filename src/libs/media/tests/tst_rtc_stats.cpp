@@ -8,8 +8,8 @@
 *  be found in the AUTHORS file in the root of the source tree.
 */
 
-#include <octk_rtc_stats.hpp>
-#include <octk_json.hpp>
+#include <openctk/core/rtc_stats.hpp>
+#include <openctk/core/json.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

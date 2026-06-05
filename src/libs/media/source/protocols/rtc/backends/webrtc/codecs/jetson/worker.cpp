@@ -1,6 +1,6 @@
 #include "worker.h"
 
-#include <private/octk_webrtc_logger_p.hpp>
+#include <openctk/media/detail/webrtc_logger_p.hpp>
 
 Worker::Worker(std::string name, std::function<void()> executing_function)
     : abort_(false)

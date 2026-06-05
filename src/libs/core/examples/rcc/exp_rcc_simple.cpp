@@ -1,5 +1,5 @@
 // #include <utk_resource.h>
-#include <octk_logging.hpp>
+#include <openctk/core/logging.hpp>
 
 #include <stdio.h>
 

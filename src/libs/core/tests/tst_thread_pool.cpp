@@ -22,10 +22,10 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_elapsed_timer.hpp>
-#include <octk_thread_pool.hpp>
-#include <octk_semaphore.hpp>
-#include <octk_logging.hpp>
+#include <openctk/core/elapsed_timer.hpp>
+#include <openctk/core/thread_pool.hpp>
+#include <openctk/core/semaphore.hpp>
+#include <openctk/core/logging.hpp>
 
 #include <list>
 #include <atomic>

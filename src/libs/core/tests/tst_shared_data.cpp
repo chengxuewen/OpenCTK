@@ -23,7 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_shared_data.hpp>
+#include <openctk/core/shared_data.hpp>
 
 #include <thread>
 #include <memory>

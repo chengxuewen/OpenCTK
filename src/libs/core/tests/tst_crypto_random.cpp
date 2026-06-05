@@ -8,9 +8,9 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_crypto_random.hpp>
-#include <octk_memory.hpp>
-#include <octk_buffer.hpp>
+#include <openctk/core/crypto_random.hpp>
+#include <openctk/core/memory.hpp>
+#include <openctk/core/buffer.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

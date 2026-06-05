@@ -23,7 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_signals.hpp>
+#include <openctk/core/signals.hpp>
 
 #include <list>
 #include <atomic>

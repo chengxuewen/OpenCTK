@@ -22,7 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_enum_flags.hpp>
+#include <openctk/core/enum_flags.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

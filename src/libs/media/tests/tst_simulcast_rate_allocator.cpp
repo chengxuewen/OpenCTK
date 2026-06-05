@@ -8,9 +8,9 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_simulcast_rate_allocator.hpp>
-#include <octk_checks.hpp>
-#include <octk_checks.hpp>
+#include <openctk/core/simulcast_rate_allocator.hpp>
+#include <openctk/core/checks.hpp>
+#include <openctk/core/checks.hpp>
 
 #include <limits>
 #include <memory>

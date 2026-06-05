@@ -31,20 +31,21 @@
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
 octk_add_library(Network
+	LIBRARY_INCLUDE_NAME "openctk/network"
 	EXCEPTIONS
 	SOURCES
-	source/http/octk_http.cpp
-	source/http/octk_http.hpp
-	source/http/octk_http_p.hpp
-#	source/ssl/octk_ssl_certificate.cpp
-#	source/ssl/octk_ssl_certificate.hpp
-#	source/ssl/octk_ssl_fingerprint.cpp
-#	source/ssl/octk_ssl_fingerprint.hpp
-#	source/ssl/octk_ssl_identity.cpp
-#	source/ssl/octk_ssl_identity.hpp
-	source/octk_network_global.hpp
+	source/http/http.cpp
+	source/http/http.hpp
+	source/http/http_p.hpp
+#	source/ssl/ssl_certificate.cpp
+#	source/ssl/ssl_certificate.hpp
+#	source/ssl/ssl_fingerprint.cpp
+#	source/ssl/ssl_fingerprint.hpp
+#	source/ssl/ssl_identity.cpp
+#	source/ssl/ssl_identity.hpp
+	source/network_global.hpp
 	PRECOMPILED_HEADER
-	source/octk_network_pch.hpp
+	source/network_pch.hpp
 	LIBRARIES
 	OpenCTK::CorePrivate
 	PUBLIC_LIBRARIES

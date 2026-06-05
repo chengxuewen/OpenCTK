@@ -9,7 +9,7 @@
  */
 
 #include <private/octk_frame_dependencies_calculator_p.hpp>
-#include <octk_generic_frame_info.hpp>
+#include <openctk/core/generic_frame_info.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

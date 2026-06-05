@@ -23,7 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_metrics.hpp>
+#include <openctk/core/metrics.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -34,6 +34,7 @@ octk_find_package(WrapSTB PROVIDED_TARGETS OpenCTKWrapSTB::WrapSTB)
 # Add lib target
 #-----------------------------------------------------------------------------------------------------------------------
 octk_add_library(Imgui
+	LIBRARY_INCLUDE_NAME "openctk/imgui"
 	EXCEPTIONS
 	SOURCES
 	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
@@ -43,22 +44,22 @@ octk_add_library(Imgui
 	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3_shaders.h
 	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
 	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
-	source/octk_imgui.cpp
-	source/octk_imgui.hpp
-	source/octk_imgui_application.cpp
-	source/octk_imgui_application.hpp
-	source/octk_imgui_application_p.hpp
-	source/octk_imgui_application_sdlgpu3.cpp
-	source/octk_imgui_application_sdlgpu3.hpp
-	source/octk_imgui_application_sdlrenderer3.cpp
-	source/octk_imgui_application_sdlrenderer3.hpp
-	source/octk_imgui_constants.hpp
-	source/octk_imgui_global.hpp
-	source/octk_imgui_theme.cpp
-	source/octk_imgui_theme.hpp
-	source/octk_sdl_p.hpp
+	source/imgui.cpp
+	source/imgui.hpp
+	source/imgui_application.cpp
+	source/imgui_application.hpp
+	source/imgui_application_p.hpp
+	source/imgui_application_sdlgpu3.cpp
+	source/imgui_application_sdlgpu3.hpp
+	source/imgui_application_sdlrenderer3.cpp
+	source/imgui_application_sdlrenderer3.hpp
+	source/imgui_constants.hpp
+	source/imgui_global.hpp
+	source/imgui_theme.cpp
+	source/imgui_theme.hpp
+	source/sdl_p.hpp
 	PRECOMPILED_HEADER
-	source/octk_imgui_pch.hpp
+	source/imgui_pch.hpp
 	EXTERNAL_HEADERS_DIRS
 	${OpenCTKWrapImGui_INSTALL_DIR}/include
 	INCLUDE_DIRECTORIES
@@ -102,15 +103,19 @@ if(OCTK_FEATURE_IMGUI_USE_SDL_OPENGL3)
 		SOURCES
 		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
-		source/octk_imgui_application_sdlopengl3.cpp
-		source/octk_imgui_application_sdlopengl3.hpp
+		source/imgui_application_sdlopengl3.cpp
+		source/imgui_application_sdlopengl3.hpp
 		LIBRARIES
 		${OpenGL_TARGET}
 		${OPENGL_LIBRARIES})
 endif()
 
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+octk_install_public_wrap_headers(OpenCTKImgui
+    WRAPS
+    OpenCTKWrapImGui::WrapImGui|imgui
+)
 # Add lib examples and tests
 #-----------------------------------------------------------------------------------------------------------------------
 octk_add_subdirectory(examples OCTK_BUILD_EXAMPLES)

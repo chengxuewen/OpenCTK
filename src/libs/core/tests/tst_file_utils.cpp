@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_file_utils.hpp>
-#include <octk_checks.hpp>
+#include <openctk/core/file_utils.hpp>
+#include <openctk/core/checks.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

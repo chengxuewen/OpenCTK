@@ -24,14 +24,14 @@
 ***********************************************************************************************************************/
 
 #include <test/octk_video_codec_test_p.hpp>
-#include <octk_color_space.hpp>
-#include <octk_encoded_image.hpp>
-#include <octk_video_frame.hpp>
-#include <octk_video_codec.hpp>
-#include <octk_video_encoder.hpp>
-#include <octk_video_decoder.hpp>
-#include <octk_h264_codecs.hpp>
-#include <octk_yuv.hpp>
+#include <openctk/core/color_space.hpp>
+#include <openctk/core/encoded_image.hpp>
+#include <openctk/core/video_frame.hpp>
+#include <openctk/core/video_codec.hpp>
+#include <openctk/core/video_encoder.hpp>
+#include <openctk/core/video_decoder.hpp>
+#include <openctk/core/h264_codecs.hpp>
+#include <openctk/core/yuv.hpp>
 
 #include <stdint.h>
 #include <memory>

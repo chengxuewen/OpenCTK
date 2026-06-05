@@ -1,5 +1,5 @@
 #include "jetson_encoder.h"
-#include <private/octk_webrtc_logger_p.hpp>
+#include <openctk/media/detail/webrtc_logger_p.hpp>
 
 #include <Error.h>
 #include <NvBuffer.h>

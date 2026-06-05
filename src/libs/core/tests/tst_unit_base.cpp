@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_unit_base.hpp>
-#include <octk_assert.hpp>
+#include <openctk/core/unit_base.hpp>
+#include <openctk/core/assert.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

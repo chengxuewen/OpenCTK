@@ -23,9 +23,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_platform_thread.hpp>
-#include <octk_semaphore.hpp>
-#include <octk_logging.hpp>
+#include <openctk/core/platform_thread.hpp>
+#include <openctk/core/semaphore.hpp>
+#include <openctk/core/logging.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -11,11 +11,11 @@
 #include <private/octk_simulcast_to_svc_converter_p.hpp>
 #include <private/octk_scalability_structure_p.hpp>
 #include <private/octk_scalable_video_controller_p.hpp>
-#include <octk_video_codec.hpp>
-#include <octk_video_codec_types.hpp>
-#include <octk_encoded_image.hpp>
-#include <octk_codec_specific_info.hpp>
-#include <octk_video_bitrate_allocation.hpp>
+#include <openctk/core/video_codec.hpp>
+#include <openctk/core/video_codec_types.hpp>
+#include <openctk/core/encoded_image.hpp>
+#include <openctk/core/codec_specific_info.hpp>
+#include <openctk/core/video_bitrate_allocation.hpp>
 
 #include <cstddef>
 #include <vector>

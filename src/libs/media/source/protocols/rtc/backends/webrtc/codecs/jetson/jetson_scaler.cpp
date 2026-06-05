@@ -1,6 +1,6 @@
 #include "jetson_scaler.h"
 
-#include <private/octk_webrtc_logger_p.hpp>
+#include <openctk/media/detail/webrtc_logger_p.hpp>
 
 #include <chrono>
 

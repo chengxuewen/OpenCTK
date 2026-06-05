@@ -23,7 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_exception.hpp>
+#include <openctk/core/exception.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -23,7 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_function_view.hpp>
+#include <openctk/core/function_view.hpp>
 
 #include <memory>
 #include <utility>

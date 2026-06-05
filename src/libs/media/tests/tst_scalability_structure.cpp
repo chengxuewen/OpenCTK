@@ -28,8 +28,8 @@
 #include <private/octk_scalability_mode_utils_p.hpp>
 #include <private/octk_scalability_structure_p.hpp>
 #include <private/octk_dependency_descriptor_p.hpp>
-#include <octk_video_bitrate_allocation.hpp>
-#include <octk_optional.hpp>
+#include <openctk/core/video_bitrate_allocation.hpp>
+#include <openctk/core/optional.hpp>
 
 #include <stddef.h>
 #include <stdint.h>

@@ -23,8 +23,8 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_camera_capture.hpp>
-#include <octk_date_time.hpp>
+#include <openctk/core/camera_capture.hpp>
+#include <openctk/core/date_time.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

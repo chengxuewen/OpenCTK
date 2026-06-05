@@ -1,6 +1,6 @@
-#include <octk_imgui_application.hpp>
-#include <octk_imgui_theme.hpp>
-#include <octk_logging.hpp>
+#include <openctk/core/imgui_application.hpp>
+#include <openctk/core/imgui_theme.hpp>
+#include <openctk/core/logging.hpp>
 
 #include <iostream>
 #include <thread>

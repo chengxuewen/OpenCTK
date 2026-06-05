@@ -25,15 +25,15 @@
 
 #include <test/octk_explicit_key_value_config_p.hpp>
 #include <private/octk_svc_rate_allocator_p.hpp>
-#include <octk_video_bitrate_allocation.hpp>
-#include <octk_video_bitrate_allocator.hpp>
-#include <octk_video_codec_constants.hpp>
-#include <octk_video_codec_types.hpp>
-#include <octk_inlined_vector.hpp>
-#include <octk_vp9_svc_config.hpp>
-#include <octk_av1_svc_config.hpp>
-#include <octk_video_codec.hpp>
-#include <octk_optional.hpp>
+#include <openctk/core/video_bitrate_allocation.hpp>
+#include <openctk/core/video_bitrate_allocator.hpp>
+#include <openctk/core/video_codec_constants.hpp>
+#include <openctk/core/video_codec_types.hpp>
+#include <openctk/core/inlined_vector.hpp>
+#include <openctk/core/vp9_svc_config.hpp>
+#include <openctk/core/av1_svc_config.hpp>
+#include <openctk/core/video_codec.hpp>
+#include <openctk/core/optional.hpp>
 
 #include <algorithm>
 #include <cstddef>

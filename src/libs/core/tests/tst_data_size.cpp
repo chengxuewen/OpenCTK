@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_data_size.hpp>
+#include <openctk/core/data_size.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

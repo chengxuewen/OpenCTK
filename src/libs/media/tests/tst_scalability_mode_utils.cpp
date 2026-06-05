@@ -24,7 +24,7 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_scalability_mode_utils_p.hpp>
-#include <octk_scalability_mode.hpp>
+#include <openctk/core/scalability_mode.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

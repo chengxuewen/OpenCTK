@@ -1,6 +1,6 @@
 #include "jetson_video_encoder.h"
 #include "v4l2_frame_buffer.h"
-#include <private/octk_webrtc_logger_p.hpp>
+#include <openctk/media/detail/webrtc_logger_p.hpp>
 
 #include <modules/video_coding/include/video_codec_interface.h>
 

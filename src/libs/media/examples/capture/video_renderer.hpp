@@ -25,11 +25,11 @@
 #ifndef _VIDEO_RENDERER_HPP
 #define _VIDEO_RENDERER_HPP
 
-#include <octk_video_sink_interface.hpp>
-#include <octk_platform_thread.hpp>
-#include <octk_i420_buffer.hpp>
-#include <octk_video_frame.hpp>
-#include <octk_date_time.hpp>
+#include <openctk/core/video_sink_interface.hpp>
+#include <openctk/core/platform_thread.hpp>
+#include <openctk/core/i420_buffer.hpp>
+#include <openctk/core/video_frame.hpp>
+#include <openctk/core/date_time.hpp>
 
 #include <SDL3/SDL.h>
 

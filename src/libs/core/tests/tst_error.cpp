@@ -22,7 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_error.hpp>
+#include <openctk/core/error.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

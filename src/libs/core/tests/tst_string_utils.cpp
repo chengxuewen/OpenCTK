@@ -23,8 +23,8 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_string_utils.hpp>
-#include <octk_string_view.hpp>
+#include <openctk/core/string_utils.hpp>
+#include <openctk/core/string_view.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

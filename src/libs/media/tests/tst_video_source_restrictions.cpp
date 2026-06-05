@@ -8,7 +8,7 @@
 *  be found in the AUTHORS file in the root of the source tree.
 */
 
-#include <octk_video_source_restrictions.hpp>
+#include <openctk/core/video_source_restrictions.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

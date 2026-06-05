@@ -22,8 +22,8 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_desktop_capture_source.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/desktop_capture_source.hpp>
+#include <openctk/core/memory.hpp>
 
 #include "video_renderer.hpp"
 

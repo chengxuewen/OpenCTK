@@ -7,7 +7,7 @@
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
-#include <octk_frequency.hpp>
+#include <openctk/core/frequency.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

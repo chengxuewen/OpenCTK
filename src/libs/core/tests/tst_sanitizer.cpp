@@ -23,8 +23,8 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_sanitizer.hpp>
-#include <octk_logging.hpp>
+#include <openctk/core/sanitizer.hpp>
+#include <openctk/core/logging.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

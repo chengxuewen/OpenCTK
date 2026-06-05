@@ -7,31 +7,31 @@
 *  in the file PATENTS.  All contributing project authors may
 *  be found in the AUTHORS file in the root of the source tree.
 */
-#include <octk_video_stream_encoder_interface.hpp>
-#include <octk_video_stream_encoder_observer.hpp>
-#include <octk_video_encoder.hpp>
-#include <octk_data_rate.hpp>
-#include <octk_optional.hpp>
-//// #include <octk_task_event.hpp>
-#include <octk_task_queue.hpp>
-#include <octk_task_queue_factory.hpp>
-#include <octk_video_frame_buffer.hpp>
-#include <octk_i420_buffer.hpp>
-#include <octk_nv12_buffer.hpp>
-#include <octk_mutex.hpp>
-#include <octk_logging.hpp>
-#include <octk_memory.hpp>
-#include <octk_variant.hpp>
-#include <octk_rtp_parameters.hpp>
-#include <octk_scoped_refptr.hpp>
-#include <octk_utility.hpp>
-#include <octk_video_fr
-#include <octk_video_encoder_config.hpp>
-#include <octk_video_adaptation_reason.hpp>
-#include <octk_video_bitrate_allocation.hpp>
-#include <octk_video_source_interface.hpp>
-#include <octk_video_source_restrictions.hpp>
-#include <octk_video_stream_encoder.hpp>
+#include <openctk/core/video_stream_encoder_interface.hpp>
+#include <openctk/core/video_stream_encoder_observer.hpp>
+#include <openctk/core/video_encoder.hpp>
+#include <openctk/core/data_rate.hpp>
+#include <openctk/core/optional.hpp>
+//// #include <openctk/core/task_event.hpp>
+#include <openctk/core/task_queue.hpp>
+#include <openctk/core/task_queue_factory.hpp>
+#include <openctk/core/video_frame_buffer.hpp>
+#include <openctk/core/i420_buffer.hpp>
+#include <openctk/core/nv12_buffer.hpp>
+#include <openctk/core/mutex.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/memory.hpp>
+#include <openctk/core/variant.hpp>
+#include <openctk/core/rtp_parameters.hpp>
+#include <openctk/core/scoped_refptr.hpp>
+#include <openctk/core/utility.hpp>
+// #include <octk_video_fr  -- broken include, removed
+#include <openctk/core/video_encoder_config.hpp>
+#include <openctk/core/video_adaptation_reason.hpp>
+#include <openctk/core/video_bitrate_allocation.hpp>
+#include <openctk/core/video_source_interface.hpp>
+#include <openctk/core/video_source_restrictions.hpp>
+#include <openctk/core/video_stream_encoder.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

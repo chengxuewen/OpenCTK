@@ -22,13 +22,13 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_task_queue_thread.hpp>
-#include <octk_repeating_task.hpp>
-#include <octk_elapsed_timer.hpp>
-#include <octk_semaphore.hpp>
-#include <octk_logging.hpp>
-#include <octk_memory.hpp>
-#include <octk_utility.hpp>
+#include <openctk/core/task_queue_thread.hpp>
+#include <openctk/core/repeating_task.hpp>
+#include <openctk/core/elapsed_timer.hpp>
+#include <openctk/core/semaphore.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/memory.hpp>
+#include <openctk/core/utility.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

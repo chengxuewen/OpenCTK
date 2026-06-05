@@ -1,5 +1,5 @@
 
-#include <octk_mutex.hpp>
+#include <openctk/core/mutex.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

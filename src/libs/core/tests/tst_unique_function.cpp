@@ -23,9 +23,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_unique_function.hpp>
-#include <octk_function_view.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/unique_function.hpp>
+#include <openctk/core/function_view.hpp>
+#include <openctk/core/memory.hpp>
 
 #include <memory>
 #include <utility>

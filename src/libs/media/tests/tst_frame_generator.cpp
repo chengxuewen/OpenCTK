@@ -9,10 +9,10 @@
  */
 
 #include <test/octk_file_utils_p.hpp>
-#include <octk_create_frame_generator.hpp>
-#include <octk_video_frame_buffer.hpp>
-#include <octk_frame_generator.hpp>
-#include <octk_shared_ref_ptr.hpp>
+#include <openctk/core/create_frame_generator.hpp>
+#include <openctk/core/video_frame_buffer.hpp>
+#include <openctk/core/frame_generator.hpp>
+#include <openctk/core/shared_ref_ptr.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

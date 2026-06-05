@@ -26,8 +26,8 @@
 #include <test/octk_scalability_structure_test_helpers_p.hpp>
 #include <private/octk_scalability_structure_key_svc_p.hpp>
 #include <private/octk_dependency_descriptor_p.hpp>
-#include <octk_generic_frame_info.hpp>
-#include <octk_array_view.hpp>
+#include <openctk/core/generic_frame_info.hpp>
+#include <openctk/core/array_view.hpp>
 
 #include <vector>
 

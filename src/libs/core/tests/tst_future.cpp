@@ -23,9 +23,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_elapsed_timer.hpp>
-#include <octk_logging.hpp>
-#include <octk_future.hpp>
+#include <openctk/core/elapsed_timer.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/future.hpp>
 
 #include <list>
 #include <atomic>

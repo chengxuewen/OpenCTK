@@ -8,9 +8,9 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_string_view.hpp>
-#include <octk_array_view.hpp>
-#include <octk_buffer.hpp>
+#include <openctk/core/string_view.hpp>
+#include <openctk/core/array_view.hpp>
+#include <openctk/core/buffer.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

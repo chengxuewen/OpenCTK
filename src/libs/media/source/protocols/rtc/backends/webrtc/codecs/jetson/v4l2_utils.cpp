@@ -1,5 +1,5 @@
 #include "v4l2_utils.h"
-#include <private/octk_webrtc_logger_p.hpp>
+#include <openctk/media/detail/webrtc_logger_p.hpp>
 
 #include <errno.h>
 #include <fcntl.h>

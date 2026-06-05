@@ -22,7 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_shared_pointer.hpp>
+#include <openctk/core/shared_pointer.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

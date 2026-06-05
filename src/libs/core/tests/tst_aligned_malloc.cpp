@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_aligned_malloc.hpp>
+#include <openctk/core/aligned_malloc.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

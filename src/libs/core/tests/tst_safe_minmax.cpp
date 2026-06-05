@@ -11,7 +11,7 @@
 #include "../source/global/octk_macros.hpp"
 
 
-#include <octk_safe_minmax.hpp>
+#include <openctk/core/safe_minmax.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

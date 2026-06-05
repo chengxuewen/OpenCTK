@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include <octk_utility.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/utility.hpp>
+#include <openctk/core/memory.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

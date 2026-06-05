@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_ntp_time.hpp>
-#include <octk_clock.hpp>
+#include <openctk/core/ntp_time.hpp>
+#include <openctk/core/clock.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

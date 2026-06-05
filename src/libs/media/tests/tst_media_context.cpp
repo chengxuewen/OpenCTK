@@ -23,13 +23,13 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_media_context.hpp>
-#include <octk_media_context_factory.hpp>
-#include <octk_string_view.hpp>
-#include <octk_field_trials_view.hpp>
-#include <octk_invocable.hpp>
-#include <octk_clock.hpp>
-#include <octk_optional.hpp>
+#include <openctk/core/media_context.hpp>
+#include <openctk/core/media_context_factory.hpp>
+#include <openctk/core/string_view.hpp>
+#include <openctk/core/field_trials_view.hpp>
+#include <openctk/core/invocable.hpp>
+#include <openctk/core/clock.hpp>
+#include <openctk/core/optional.hpp>
 
 #include <memory>
 #include <string>

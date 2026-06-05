@@ -25,9 +25,9 @@
 
 #include <private/octk_h264_pps_parser_p.hpp>
 #include <private/octk_h264_common_p.hpp>
-#include <octk_bit_buffer.hpp>
-#include <octk_buffer.hpp>
-#include <octk_checks.hpp>
+#include <openctk/core/bit_buffer.hpp>
+#include <openctk/core/buffer.hpp>
+#include <openctk/core/checks.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -2,7 +2,7 @@
 // Created by cxw on 25-8-11.
 //
 
-#include <octk_numeric.hpp>
+#include <openctk/core/numeric.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

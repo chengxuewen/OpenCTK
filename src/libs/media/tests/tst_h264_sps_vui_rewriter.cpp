@@ -25,9 +25,9 @@
 
 #include <private/octk_h264_sps_vui_rewriter_p.hpp>
 #include <private/octk_h264_common_p.hpp>
-#include <octk_bit_buffer.hpp>
-#include <octk_logging.hpp>
-#include <octk_buffer.hpp>
+#include <openctk/core/bit_buffer.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/buffer.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

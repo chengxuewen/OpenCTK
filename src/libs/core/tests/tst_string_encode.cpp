@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_string_encode.hpp>
-#include <octk_string_utils.hpp>
+#include <openctk/core/string_encode.hpp>
+#include <openctk/core/string_utils.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

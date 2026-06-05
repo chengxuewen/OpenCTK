@@ -22,9 +22,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_elapsed_timer.hpp>
-#include <octk_concurrent.hpp>
-#include <octk_logging.hpp>
+#include <openctk/core/elapsed_timer.hpp>
+#include <openctk/core/concurrent.hpp>
+#include <openctk/core/logging.hpp>
 
 #include <list>
 #include <atomic>

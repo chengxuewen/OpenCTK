@@ -23,8 +23,8 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_type_traits.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/type_traits.hpp>
+#include <openctk/core/memory.hpp>
 
 #include <thread>
 #include <memory>

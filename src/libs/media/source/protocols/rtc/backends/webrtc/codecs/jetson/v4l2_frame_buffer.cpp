@@ -1,5 +1,5 @@
 #include "v4l2_frame_buffer.h"
-#include <private/octk_webrtc_logger_p.hpp>
+#include <openctk/media/detail/webrtc_logger_p.hpp>
 
 #include <third_party/libyuv/include/libyuv.h>
 

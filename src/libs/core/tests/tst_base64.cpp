@@ -8,8 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_logging.hpp>
-#include <octk_base64.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/base64.hpp>
 #include "tst_base64.hpp"
 
 #include <gmock/gmock.h>

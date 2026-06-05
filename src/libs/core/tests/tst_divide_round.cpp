@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_divide_round.hpp>
+#include <openctk/core/divide_round.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

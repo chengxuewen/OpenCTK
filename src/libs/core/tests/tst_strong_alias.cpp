@@ -8,8 +8,8 @@
 *  in the file PATENTS.  All contributing project authors may
 *  be found in the AUTHORS file in the root of the source tree.
 */
-#include <octk_strong_alias.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/strong_alias.hpp>
+#include <openctk/core/memory.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

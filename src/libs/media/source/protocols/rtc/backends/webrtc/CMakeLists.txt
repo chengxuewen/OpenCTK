@@ -28,9 +28,9 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 octk_find_package(WrapWebRTC PROVIDED_TARGETS OpenCTKWrapWebRTC::WrapWebRTC)
 octk_internal_extend_target(OpenCTKMedia
     SOURCES
-    ${ROOT_DIR}/octk_webrtc_backend.cpp
-    ${ROOT_DIR}/octk_webrtc_backend_p.hpp
-	${ROOT_DIR}/octk_webrtc_logger_p.hpp
+    ${ROOT_DIR}/webrtc_backend.cpp
+    ${ROOT_DIR}/webrtc_backend_p.hpp
+	${ROOT_DIR}/webrtc_logger_p.hpp
 	LIBRARIES
 	OpenCTKWrapWebRTC::WrapWebRTC)
 if(OCTK_FEATURE_MEDIA_USE_CODEC_JETSON)

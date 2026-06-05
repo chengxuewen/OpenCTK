@@ -6,8 +6,8 @@
 #include <atomic>
 #include <string>
 
-#include <octk_concurrent_queue.hpp>
-#include <octk_reader_writer_queue.hpp>
+#include <openctk/core/concurrent_queue.hpp>
+#include <openctk/core/reader_writer_queue.hpp>
 
 template <typename T>
 #if 0

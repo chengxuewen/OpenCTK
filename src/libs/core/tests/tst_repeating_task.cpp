@@ -22,13 +22,13 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_repeating_task.hpp>
-#include <octk_task_queue.hpp>
-#include <octk_time_delta.hpp>
-#include <octk_timestamp.hpp>
-#include <octk_optional.hpp>
-#include <octk_memory.hpp>
-#include <octk_clock.hpp>
+#include <openctk/core/repeating_task.hpp>
+#include <openctk/core/task_queue.hpp>
+#include <openctk/core/time_delta.hpp>
+#include <openctk/core/timestamp.hpp>
+#include <openctk/core/optional.hpp>
+#include <openctk/core/memory.hpp>
+#include <openctk/core/clock.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <octk_logging.hpp>
+#include <openctk/core/logging.hpp>
 
 int main()
 {

@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_string_to_number.hpp>
+#include <openctk/core/string_to_number.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -23,7 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_macros.hpp>
+#include <openctk/core/macros.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

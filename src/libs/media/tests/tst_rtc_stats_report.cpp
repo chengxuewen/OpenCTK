@@ -8,7 +8,7 @@
 *  be found in the AUTHORS file in the root of the source tree.
 */
 
-#include <octk_rtc_stats_report.hpp>
+#include <openctk/core/rtc_stats_report.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

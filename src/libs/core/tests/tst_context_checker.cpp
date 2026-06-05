@@ -22,14 +22,14 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_task_queue_thread.hpp>
-#include <octk_context_checker.hpp>
-#include <octk_platform_thread.hpp>
-#include <octk_function_view.hpp>
-#include <octk_date_time.hpp>
-#include <octk_semaphore.hpp>
-#include <octk_checks.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/task_queue_thread.hpp>
+#include <openctk/core/context_checker.hpp>
+#include <openctk/core/platform_thread.hpp>
+#include <openctk/core/function_view.hpp>
+#include <openctk/core/date_time.hpp>
+#include <openctk/core/semaphore.hpp>
+#include <openctk/core/checks.hpp>
+#include <openctk/core/memory.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

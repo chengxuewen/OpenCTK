@@ -8,12 +8,12 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_crypto_random.hpp>
-#include <octk_task_thread.hpp>
-#include <octk_task_event.hpp>
-#include <octk_time_delta.hpp>
-#include <octk_fake_clock.hpp>
-#include <octk_date_time.hpp>
+#include <openctk/core/crypto_random.hpp>
+#include <openctk/core/task_thread.hpp>
+#include <openctk/core/task_event.hpp>
+#include <openctk/core/time_delta.hpp>
+#include <openctk/core/fake_clock.hpp>
+#include <openctk/core/date_time.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

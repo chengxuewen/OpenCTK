@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <octk_scope_guard.hpp>
-#include <octk_utility.hpp>
+#include <openctk/core/scope_guard.hpp>
+#include <openctk/core/utility.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

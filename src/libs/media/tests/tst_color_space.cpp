@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_color_space.hpp>
+#include <openctk/core/color_space.hpp>
 
 #include <cstdint>
 

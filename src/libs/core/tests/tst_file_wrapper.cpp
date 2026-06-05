@@ -24,8 +24,8 @@
 ***********************************************************************************************************************/
 
 #include <test/octk_file_utils_p.hpp>
-#include <octk_file_wrapper.hpp>
-#include <octk_checks.hpp>
+#include <openctk/core/file_wrapper.hpp>
+#include <openctk/core/checks.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -1,9 +1,9 @@
 #include <iostream>
 #include <utility>
 
-#include <octk_logging.hpp>
-#include <octk_variant.hpp>
-#include <octk_string_utils.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/variant.hpp>
+#include <openctk/core/string_utils.hpp>
 
 OCTK_DEFINE_LOGGER("my_log", MY_LOGGER)
 

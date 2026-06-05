@@ -24,8 +24,8 @@
 ***********************************************************************************************************************/
 
 #include <private/octk_video_encoder_openh264_p.hpp>
-#include <octk_media_context_factory.hpp>
-#include <octk_video_encoder.hpp>
+#include <openctk/core/media_context_factory.hpp>
+#include <openctk/core/video_encoder.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

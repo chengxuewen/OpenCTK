@@ -23,7 +23,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_string_builder.hpp>
+#include <openctk/core/string_builder.hpp>
 
 #include <string.h>
 

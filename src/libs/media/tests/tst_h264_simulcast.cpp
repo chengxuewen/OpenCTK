@@ -24,7 +24,7 @@
 ***********************************************************************************************************************/
 
 #include <test/octk_simulcast_test_fixture_p.hpp>
-#include <octk_h264_codecs.hpp>
+#include <openctk/core/h264_codecs.hpp>
 
 #include <memory>
 

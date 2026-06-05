@@ -300,7 +300,7 @@ function(octk_internal_get_package_name_of_target target package_name_out_var)
     # their builds not to contain stale FooDependencies.cmakes files without the
     # _octk_package_name property.
     set(package_name "")
-    set(package_name_default "${OCTK_CMAKE_INSTALL_NAMESPACE}${target}")
+    set(package_name_default "${OCTK_NAMESPACE}${target}")
     set(target_namespaced "${OCTK_CMAKE_EXPORT_NAMESPACE}::${target}")
     #    message(target_namespaced=${target_namespaced})
     if(TARGET "${target_namespaced}")

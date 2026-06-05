@@ -22,8 +22,8 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_result.hpp>
-#include <octk_error.hpp>
+#include <openctk/core/result.hpp>
+#include <openctk/core/error.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

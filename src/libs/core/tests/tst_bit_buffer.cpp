@@ -23,9 +23,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_bit_buffer.hpp>
-#include <octk_optional.hpp>
-#include <octk_bits.hpp>
+#include <openctk/core/bit_buffer.hpp>
+#include <openctk/core/optional.hpp>
+#include <openctk/core/bits.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

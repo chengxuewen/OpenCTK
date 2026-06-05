@@ -22,11 +22,11 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_frame_generator_capturer_video_track_source.hpp>
-#include <octk_frame_generator_capturer.hpp>
-#include <octk_frame_generator.hpp>
-#include <octk_memory.hpp>
-#include <octk_clock.hpp>
+#include <openctk/core/frame_generator_capturer_video_track_source.hpp>
+#include <openctk/core/frame_generator_capturer.hpp>
+#include <openctk/core/frame_generator.hpp>
+#include <openctk/core/memory.hpp>
+#include <openctk/core/clock.hpp>
 
 #include "video_renderer.hpp"
 

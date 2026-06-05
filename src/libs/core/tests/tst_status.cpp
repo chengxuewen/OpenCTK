@@ -22,7 +22,7 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_status.hpp>
+#include <openctk/core/status.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

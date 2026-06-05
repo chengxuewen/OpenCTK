@@ -69,23 +69,23 @@ get_filename_component(_import_prefix "${_import_prefix}" REALPATH)
 # Extra cmake code end
 
 # Find required dependencies, if any.
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@Dependencies.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@Dependencies.cmake")
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@Dependencies.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@Dependencies.cmake")
     _octk_internal_suggest_dependency_debugging(@name@
         __octk_@name@_pkg ${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE)
 endif()
 
 # If *ConfigDependencies.cmake exists, the variable value will be defined there.
 # Don't override it in that case.
-if(NOT DEFINED "@OCTK_CMAKE_INSTALL_NAMESPACE@@name@_FOUND")
-    set("@OCTK_CMAKE_INSTALL_NAMESPACE@@name@_FOUND" TRUE)
+if(NOT DEFINED "OpenCTK@name@_FOUND")
+    set("OpenCTK@name@_FOUND" TRUE)
 endif()
 
-if (NOT OCTK_NO_CREATE_TARGETS AND @OCTK_CMAKE_INSTALL_NAMESPACE@@name@_FOUND)
-    include("${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@Targets.cmake")
-    include("${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@AdditionalTargetInfo.cmake")
+if (NOT OCTK_NO_CREATE_TARGETS AND OpenCTK@name@_FOUND)
+    include("${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@Targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@AdditionalTargetInfo.cmake")
     if(NOT OCTK_NO_CREATE_VERSIONLESS_TARGETS)
-        include("${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@VersionlessTargets.cmake")
+        include("${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@VersionlessTargets.cmake")
     endif()
 
     # DEPRECATED
@@ -152,16 +152,16 @@ if (TARGET @OCTK_CMAKE_EXPORT_NAMESPACE@::@name@)
 
     octk_make_features_available(@OCTK_CMAKE_EXPORT_NAMESPACE@::@name@)
 
-    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@Plugins.cmake")
-        include("${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@Plugins.cmake")
+    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@Plugins.cmake")
+        include("${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@Plugins.cmake")
     endif()
 
     list(APPEND OCTK_ALL_LIBRARIES_FOUND_VIA_FIND_PACKAGE "@name@")
 
-    get_target_property(_octk_library_target_type "@OCTK_CMAKE_INSTALL_NAMESPACE@::@name@" TYPE)
+    get_target_property(_octk_library_target_type "OpenCTK::@name@" TYPE)
     if(NOT _octk_library_target_type STREQUAL "INTERFACE_LIBRARY")
         get_target_property(_octk_library_plugin_types
-                            @OCTK_CMAKE_INSTALL_NAMESPACE@::@name@ LIBRARY_PLUGIN_TYPES)
+                            OpenCTK::@name@ LIBRARY_PLUGIN_TYPES)
         if(_octk_library_plugin_types)
             list(APPEND OCTK_ALL_PLUGIN_TYPES_FOUND_VIA_FIND_PACKAGE "${_octk_library_plugin_types}")
         endif()
@@ -169,21 +169,21 @@ if (TARGET @OCTK_CMAKE_EXPORT_NAMESPACE@::@name@)
 
 
     # Load Module's BuildInternals should any exist
-    if (@OCTK_CMAKE_INSTALL_NAMESPACE@BuildInternals_DIR AND
-        EXISTS "${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@BuildInternals.cmake")
-        include("${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@BuildInternals.cmake")
+    if (OpenCTKBuildInternals_DIR AND
+        EXISTS "${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@BuildInternals.cmake")
+        include("${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@BuildInternals.cmake")
     endif()
 else()
 
-    set(@OCTK_CMAKE_INSTALL_NAMESPACE@@name@_FOUND FALSE)
-    if(NOT DEFINED @OCTK_CMAKE_INSTALL_NAMESPACE@@name@_NOT_FOUND_MESSAGE)
-        set(@OCTK_CMAKE_INSTALL_NAMESPACE@@name@_NOT_FOUND_MESSAGE
+    set(OpenCTK@name@_FOUND FALSE)
+    if(NOT DEFINED OpenCTK@name@_NOT_FOUND_MESSAGE)
+        set(OpenCTK@name@_NOT_FOUND_MESSAGE
             "Target \"@OCTK_CMAKE_EXPORT_NAMESPACE@::@name@\" was not found.")
 
         if(OCTK_NO_CREATE_TARGETS)
-            string(APPEND @OCTK_CMAKE_INSTALL_NAMESPACE@@name@_NOT_FOUND_MESSAGE
+            string(APPEND OpenCTK@name@_NOT_FOUND_MESSAGE
                 "Possibly due to OCTK_NO_CREATE_TARGETS being set to TRUE and thus "
-                "${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@@name@Targets.cmake was not "
+                "${CMAKE_CURRENT_LIST_DIR}/OpenCTK@name@Targets.cmake was not "
                 "included to define the target.")
         endif()
     endif()

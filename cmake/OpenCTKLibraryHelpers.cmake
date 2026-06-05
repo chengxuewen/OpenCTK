@@ -171,7 +171,7 @@ function(octk_add_library name)
         _octk_target_base_name "${name}"
         _octk_library_interface_name "${arg_LIBRARY_INTERFACE_NAME}"
         _octk_package_version "${PROJECT_VERSION}"
-        _octk_package_name "${OCTK_CMAKE_INSTALL_NAMESPACE}${name}")
+        _octk_package_name "${OCTK_NAMESPACE}${name}")
     set(export_properties
         "_octk_library_interface_name"
         "_octk_package_version"
@@ -200,8 +200,8 @@ function(octk_add_library name)
     if(NOT arg_CONFIG_LIBRARY_NAME)
         string(TOLOWER "${name}" arg_CONFIG_LIBRARY_NAME)
     endif()
-    set(library_config_header "octk_${arg_CONFIG_LIBRARY_NAME}_config.hpp")
-    set(library_config_private_header "octk_${arg_CONFIG_LIBRARY_NAME}_config_p.hpp")
+    set(library_config_header "${lower_name}_config.hpp")
+    set(library_config_private_header "${lower_name}_config_p.hpp")
 
     # Library define needs to take into account the config library name.
     string(TOUPPER "${arg_CONFIG_LIBRARY_NAME}" library_define_infix)
@@ -264,7 +264,7 @@ function(octk_add_library name)
             _octk_target_base_name "${name}Private"
             _octk_config_library_name ${arg_CONFIG_LIBRARY_NAME}Private
             _octk_package_version "${PROJECT_VERSION}"
-            _octk_package_name "${OCTK_CMAKE_INSTALL_NAMESPACE}${name}Private"
+            _octk_package_name "${OCTK_NAMESPACE}${name}Private"
             _octk_is_private_library TRUE
             _octk_public_library_target_name "${target}")
         set(export_properties
@@ -311,8 +311,9 @@ function(octk_add_library name)
         if(is_framework)
             set_target_properties(${target} PROPERTIES OUTPUT_NAME ${fw_name})
         else()
+            string(TOLOWER "${name}" lower_name)
             set_target_properties(${target} PROPERTIES
-                OUTPUT_NAME "${OCTK_CMAKE_INSTALL_NAMESPACE}${name}${OCTK_LIBINFIX}")
+                OUTPUT_NAME "${OCTK_CMAKE_INSTALL_NAMESPACE}${lower_name}${OCTK_LIBINFIX}")
         endif()
 
         octk_set_common_target_properties(${target})
@@ -357,7 +358,7 @@ function(octk_add_library name)
                 "${generate_private_cpp_export}")
         endif()
 
-        set(library_depends_header "${library_build_interface_include_dir}/octk_${lower_name}_depends.hpp")
+        set(library_depends_header "${library_build_interface_include_dir}/${lower_name}_depends.hpp")
         if(is_framework)
             if(NOT is_interface_lib)
                 set(public_headers_to_copy "${library_headers_public}" "${library_depends_header}")
@@ -537,8 +538,8 @@ function(octk_add_library name)
     if(EXISTS "${configure_file}" AND NOT arg_NO_CONFIG_HEADER_FILE)
         octk_configure_library_begin(
             LIBRARY "${target}"
-            PUBLIC_FILE "include/${library_config_header}"
-            PRIVATE_FILE "include/private/${library_config_private_header}"
+            PUBLIC_FILE "include/${library_include_name}/${library_config_header}"
+            PRIVATE_FILE "include/${library_include_name}/detail/${library_config_private_header}"
             PUBLIC_DEPENDENCIES ${arg_FEATURE_DEPENDENCIES}
             PRIVATE_DEPENDENCIES ${arg_FEATURE_DEPENDENCIES})
         octk_configure_reset(${arg_CONFIGURE_RESET})
@@ -550,9 +551,9 @@ function(octk_add_library name)
         octk_configure_library_end("${target}")
 
         set_property(TARGET "${target}" APPEND PROPERTY
-            PUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/${library_config_header}")
+            PUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/${library_include_name}/${library_config_header}")
         set_property(TARGET "${target}" APPEND PROPERTY
-            PRIVATE_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/private/${library_config_private_header}")
+            PRIVATE_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/${library_include_name}/detail/${library_config_private_header}")
     endif()
 
     if(NOT arg_HEADER_LIBRARY)
@@ -583,7 +584,7 @@ function(octk_add_library name)
     endif()
 
     # Handle creation of cmake files for consumers of find_package().
-    set(path_suffix "${OCTK_CMAKE_INSTALL_NAMESPACE}${name}")
+    set(path_suffix "${OCTK_NAMESPACE}${name}")
     octk_path_join(config_build_dir ${OCTK_CONFIG_BUILD_DIR} ${path_suffix})
     octk_path_join(config_install_dir ${OCTK_CONFIG_INSTALL_DIR} ${path_suffix})
 
@@ -964,7 +965,7 @@ function(octk_internal_library_info result target)
     set("${result}_versioned_inner_include_dir"
         "${${result}_versioned_include_dir}/${${result}_include_name}")
     set("${result}_private_include_dir"
-        "${${result}_versioned_inner_include_dir}/private")
+        "${${result}_versioned_inner_include_dir}/detail")
 
     # Library build interface directories
     set(repo_build_interface_include_dir "${OCTK_BUILD_DIR}/include")
@@ -1433,7 +1434,7 @@ function(octk_internal_create_library_depends_file target)
             if(dep_seen EQUAL -1 AND ${dep} IN_LIST OCTK_KNOWN_LIBRARIES_WITH_TOOLS)
                 octk_internal_get_package_version_of_target("${dep}" dep_package_version)
                 list(APPEND tool_deps_seen ${dep})
-                list(APPEND tool_deps "${OCTK_CMAKE_INSTALL_NAMESPACE}${dep}Tools\;${dep_package_version}")
+                list(APPEND tool_deps "${OCTK_NAMESPACE}${dep}Tools\;${dep_package_version}")
             endif()
         endif()
     endforeach()
@@ -1444,11 +1445,11 @@ function(octk_internal_create_library_depends_file target)
     if(${target} IN_LIST OCTK_KNOWN_LIBRARIES_WITH_TOOLS)
         octk_internal_get_package_version_of_target("${target}" main_library_tool_package_version)
         list(APPEND main_library_tool_deps
-            "${OCTK_CMAKE_INSTALL_NAMESPACE}${target}Tools\;${main_library_tool_package_version}")
+            "${OCTK_NAMESPACE}${target}Tools\;${main_library_tool_package_version}")
     endif()
 
     foreach(dep ${target_deps})
-        if(NOT dep MATCHES ".+_private$" AND dep MATCHES "${OCTK_CMAKE_INSTALL_NAMESPACE}(.+)")
+        if(NOT dep MATCHES ".+_private$" AND dep MATCHES "${OCTK_NAMESPACE}(.+)")
             # target_deps contains elements that are a pair of target name and version, e.g. 'Core\;1.1'
             # After the extracting from the target_deps list, the element becomes a list itself,
             # because it loses escape symbol before the semicolon, so ${CMAKE_MATCH_1} is the list: Core;1.1.
@@ -1472,7 +1473,7 @@ function(octk_internal_create_library_depends_file target)
         octk_internal_write_depends_file(${target} ${library_include_name} ${octkdeps})
     endif()
     if(third_party_deps OR main_library_tool_deps OR target_deps)
-        set(path_suffix "${OCTK_CMAKE_INSTALL_NAMESPACE}${name}")
+        set(path_suffix "${OCTK_NAMESPACE}${name}")
         octk_path_join(config_build_dir ${OCTK_CONFIG_BUILD_DIR} ${path_suffix})
         octk_path_join(config_install_dir ${OCTK_CONFIG_INSTALL_DIR} ${path_suffix})
 
@@ -1486,11 +1487,11 @@ function(octk_internal_create_library_depends_file target)
         # Configure and install ModuleDependencies file.
         configure_file(
             "${OCTK_CMAKE_DIR}/OpenCTKModuleDependencies.cmake.in"
-            "${config_build_dir}/${OCTK_CMAKE_INSTALL_NAMESPACE}${name}Dependencies.cmake"
+            "${config_build_dir}/${path_suffix}Dependencies.cmake"
             @ONLY)
 
         octk_install(FILES
-            "${config_build_dir}/${OCTK_CMAKE_INSTALL_NAMESPACE}${name}Dependencies.cmake"
+            "${config_build_dir}/${path_suffix}Dependencies.cmake"
             DESTINATION "${config_install_dir}"
             COMPONENT Devel)
 
@@ -1509,7 +1510,7 @@ endfunction()
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_internal_write_depends_file target include_name) # TODO
     get_target_property(_dep_lower_name ${target} _octk_target_base_lower_name)
-    set(outfile "${OCTK_BUILD_DIR}/include/${include_name}/octk_${_dep_lower_name}_depends.hpp")
+    set(outfile "${OCTK_BUILD_DIR}/include/${include_name}/${_dep_lower_name}_depends.hpp")
     set(contents "/* This file was generated by cmake with the info from ${target} target. */\n")
     string(APPEND contents "#ifdef __cplusplus /* create empty PCH in C mode */\n")
     foreach(m ${ARGN})
@@ -1542,7 +1543,7 @@ function(octk_internal_remove_dependency_duplicates out_deps deps)
 
                 # Skip over OCTK6 dependency, because we will manually handle it in the Dependencies
                 # file before everything else, to ensure that find_package(OCTK6Core)-style works.
-                if(dep_name STREQUAL "${OCTK_CMAKE_INSTALL_NAMESPACE}")
+                if(dep_name STREQUAL "${OCTK_NAMESPACE}")
                     continue()
                 endif()
                 list(APPEND ${out_deps} "${dep_name}\;${dep_ver}")

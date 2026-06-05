@@ -10,20 +10,16 @@ endif()
 
 # For each requested component, find the per-module Config file
 foreach(_component ${OpenCTK_FIND_COMPONENTS})
-    set(_config_name "${CMAKE_CURRENT_LIST_DIR}/@OCTK_CMAKE_INSTALL_NAMESPACE@${_component}/@OCTK_CMAKE_INSTALL_NAMESPACE@${_component}Config.cmake")
+    set(_config_name "${_octk_cmake_dir}/OpenCTK${_component}/OpenCTK${_component}Config.cmake")
     if(EXISTS "${_config_name}")
         include("${_config_name}")
     else()
-        find_package(@OCTK_CMAKE_INSTALL_NAMESPACE@${_component}
+        find_package(OpenCTK${_component}
             ${OpenCTK_FIND_VERSION}
-            PATHS
-                ${_octk_cmake_dir}
-                ${_octk_additional_packages_prefix_paths}
-                ${OCTK_EXAMPLES_CMAKE_PREFIX_PATH}
-            ${__octk_use_no_default_path_for_octk_packages}
-        )
+            PATHS ${_octk_cmake_dir}
+            NO_DEFAULT_PATH)
     endif()
-    if(NOT @OCTK_CMAKE_INSTALL_NAMESPACE@${_component}_FOUND)
+    if(NOT openctk_${_component}_FOUND)
         set(OpenCTK_${_component}_FOUND FALSE)
     else()
         set(OpenCTK_${_component}_FOUND TRUE)

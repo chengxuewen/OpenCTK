@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_fake_clock.hpp>
+#include <openctk/core/fake_clock.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

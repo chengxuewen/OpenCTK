@@ -22,9 +22,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <octk_camera_capture.hpp>
-#include <octk_logging.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/camera_capture.hpp>
+#include <openctk/core/logging.hpp>
+#include <openctk/core/memory.hpp>
 
 #include "video_renderer.hpp"
 

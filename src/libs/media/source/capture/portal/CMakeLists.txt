@@ -35,21 +35,21 @@ else()
 endif()
 octk_internal_extend_target(OpenCTKMedia
 	SOURCES
-	${ROOT_DIR}/octk_camera_portal.cpp
-	${ROOT_DIR}/octk_camera_portal_p.hpp
-	${ROOT_DIR}/octk_portal_request_response_p.hpp
-	${ROOT_DIR}/octk_scoped_glib.cpp
-	${ROOT_DIR}/octk_scoped_glib_p.hpp
-	${ROOT_DIR}/octk_xdg_desktop_portal_utils.cpp
-	${ROOT_DIR}/octk_xdg_desktop_portal_utils_p.hpp
-	${ROOT_DIR}/octk_xdg_session_detail_p.hpp
+	${ROOT_DIR}/camera_portal.cpp
+	${ROOT_DIR}/camera_portal_p.hpp
+	${ROOT_DIR}/portal_request_response_p.hpp
+	${ROOT_DIR}/scoped_glib.cpp
+	${ROOT_DIR}/scoped_glib_p.hpp
+	${ROOT_DIR}/xdg_desktop_portal_utils.cpp
+	${ROOT_DIR}/xdg_desktop_portal_utils_p.hpp
+	${ROOT_DIR}/xdg_session_detail_p.hpp
 	LIBRARIES
 	PkgConfig::GIOUnix)
 if (OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
 	octk_internal_extend_target(OpenCTKMedia
 		SOURCES
-		octk_pipewire_utils.cpp
-		octk_pipewire_utils_p.hpp
+		pipewire_utils.cpp
+		pipewire_utils_p.hpp
 		LIBRARIES
 		PkgConfig::PipeWire)
 endif ()

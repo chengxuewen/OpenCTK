@@ -8,12 +8,12 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <octk_yuv.hpp>
-#include <octk_i420_buffer.hpp>
-#include <octk_video_frame.hpp>
-#include <octk_file_utils.hpp>
-#include <octk_frame_utils.hpp>
-#include <octk_memory.hpp>
+#include <openctk/core/yuv.hpp>
+#include <openctk/core/i420_buffer.hpp>
+#include <openctk/core/video_frame.hpp>
+#include <openctk/core/file_utils.hpp>
+#include <openctk/core/frame_utils.hpp>
+#include <openctk/core/memory.hpp>
 
 #include <libyuv.h>
 
