@@ -19,7 +19,7 @@ foreach(_component ${OpenCTK_FIND_COMPONENTS})
             PATHS ${_octk_cmake_dir}
             NO_DEFAULT_PATH)
     endif()
-    if(NOT openctk_${_component}_FOUND)
+    if(NOT OpenCTK${_component}_FOUND)
         set(OpenCTK_${_component}_FOUND FALSE)
     else()
         set(OpenCTK_${_component}_FOUND TRUE)
