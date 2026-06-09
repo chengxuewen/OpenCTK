@@ -21,6 +21,13 @@
 #
 ########################################################################################################################
 
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # This function creates a CMake target for a generic console or GUI binary.
 # Please consider to use a more specific version target like the one created
@@ -251,7 +258,7 @@ function(octk_add_executable name)
             # Normalize module by stripping any leading "OpenCTK::", because properties are set on the
             # versioned target (either IMGui when building the module, or OCTK6::IMGui when it's
             # imported).
-            if(lib MATCHES "OpenCTK::([-_A-Za-z0-9]+)")
+            if(lib MATCHES "${_octk_namespace}::([-_A-Za-z0-9]+)")
                 set(new_lib "${OCTK_CMAKE_EXPORT_NAMESPACE}::${CMAKE_MATCH_1}")
                 if(TARGET "${new_lib}")
                     set(lib "${new_lib}")
@@ -306,9 +313,9 @@ function(octk_add_executable name)
     if(NOT _octk_folder)
         file(RELATIVE_PATH _dir "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
         if(_dir MATCHES "^src/(.+)$")
-            set_target_properties(${name} PROPERTIES FOLDER "OpenCTK/${CMAKE_MATCH_1}")
+            set_target_properties(${name} PROPERTIES FOLDER "${_octk_namespace}/${CMAKE_MATCH_1}")
         else()
-            set_target_properties(${name} PROPERTIES FOLDER "OpenCTK/${_dir}")
+            set_target_properties(${name} PROPERTIES FOLDER "${_octk_namespace}/${_dir}")
         endif()
     endif()
 endfunction()

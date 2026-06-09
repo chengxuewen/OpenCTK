@@ -20,6 +20,13 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
+# Determine the namespace to use for target naming (OCTK_ALT_NAMESPACE override supported)
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------

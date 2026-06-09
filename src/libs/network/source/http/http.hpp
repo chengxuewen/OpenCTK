@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <network_global.hpp>
+#include <openctk/network/network_global.hpp>
 #include <openctk/core/string_view.hpp>
 #include <openctk/core/thread_pool.hpp>
 #include <openctk/core/memory.hpp>

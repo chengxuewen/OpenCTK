@@ -20,6 +20,13 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
+# Determine the namespace to use for target naming (OCTK_ALT_NAMESPACE override supported)
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
 
 function(octk_internal_collect_direct_target_dependencies target targets_out_var)
     __octk_internal_walk_libs("${target}" "${targets_out_var}" _rcc_objects
@@ -84,8 +91,8 @@ function(octk_internal_generate_pkg_config_file target)
     # TODO: Handle macOS framework builds
     octk_internal_collect_direct_target_dependencies(${target} loose_target_requires)
     foreach(dep IN LISTS loose_target_requires)
-        if(dep MATCHES "^OpenCTK::")
-            string(REGEX REPLACE "OpenCTK" "${OCTK_CMAKE_EXPORT_NAMESPACE}" dep ${dep})
+        if(dep MATCHES "^${_octk_namespace}::")
+            string(REGEX REPLACE "${_octk_namespace}" "${OCTK_CMAKE_EXPORT_NAMESPACE}" dep ${dep})
         else()
             # TODO: Figure out a way to get non-OpenCTK requirements PkgConfig files.
             continue()

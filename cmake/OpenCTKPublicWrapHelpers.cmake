@@ -20,6 +20,13 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
+# Determine the namespace to use for target naming (OCTK_ALT_NAMESPACE override supported)
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Install third-party PUBLIC_LIBRARIES headers under the OpenCTK namespace
@@ -49,16 +56,16 @@ function(octk_install_public_wrap_headers target)
         list(GET pair_list 0 wrap_target)
         list(GET pair_list 1 shortname)
 
-        # Get wrap's install directory variable name from the target name
-        # e.g., OpenCTKWrapFmt::WrapFmt → variable: OpenCTKWrapFmt_INSTALL_DIR
-        string(REGEX REPLACE "OpenCTKWrap([^:]+)::.*" "\\1" wrap_name ${wrap_target})
-        set(install_dir_var "OpenCTKWrap${wrap_name}_INSTALL_DIR")
+        # Extract wrap name from target (supports both OpenCTKWrapFmt::WrapFmt and MSRTC3rdparty::WrapIceoryx2)
+        string(REGEX REPLACE "^.*::Wrap([^:]+)$" "\\1" wrap_name ${wrap_target})
+        # Extract namespace prefix for _INSTALL_DIR variable
+        string(REGEX REPLACE "::.*$" "" wrap_prefix ${wrap_target})
+        set(install_dir_var "${wrap_prefix}_INSTALL_DIR")
         if(NOT ${install_dir_var})
             message(WARNING "octk_install_public_wrap_headers: ${install_dir_var} not set for ${wrap_target}")
             continue()
         endif()
 
-        set(wrap_install_dir "${${install_dir_var}}")
         set(wrap_install_dir "${${install_dir_var}}")
         set(wrap_include_dir "${wrap_install_dir}/include")
         set(install_dest_dir "include/openctk/3rdparty/${shortname}")

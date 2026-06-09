@@ -21,6 +21,14 @@
 #
 ########################################################################################################################
 
+# Determine the namespace to use for target naming (OCTK_ALT_NAMESPACE override supported)
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # This function can be used to add sources/libraries/etc. to the specified CMake target
 # if the provided CONDITION evaluates to true.
@@ -125,9 +133,9 @@ function(octk_internal_extend_target target)
         # CorePrivate).
         set(octk_libs_private "")
         foreach(it ${known_librarys})
-            list(FIND arg_LIBRARIES "OpenCTK::${it}Private" pos)
+            list(FIND arg_LIBRARIES "${_octk_namespace}::${it}Private" pos)
             if(pos GREATER -1)
-                list(APPEND octk_libs_private "OpenCTK::${it}Private")
+                list(APPEND octk_libs_private "${_octk_namespace}::${it}Private")
             endif()
         endforeach()
 
@@ -181,8 +189,8 @@ endfunction()
 # Common function to add OpenCTK prefixes to the target name, use the OpenCTK'fied library name as a framework identifier.
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_internal_target_name out_var target)
-    set(${out_var} "OpenCTK${target}" PARENT_SCOPE)
-    set(${out_var}_versioned "OpenCTK${OCTKPP_NAMESPACE_VERSION}${target}" PARENT_SCOPE)
+    set(${out_var} "${_octk_namespace}${target}" PARENT_SCOPE)
+    set(${out_var}_versioned "${_octk_namespace}${OCTKPP_NAMESPACE_VERSION}${target}" PARENT_SCOPE)
 endfunction()
 
 
@@ -195,8 +203,8 @@ function(octk_internal_add_target_aliases target)
         message(FATAL_ERROR "${target} is not a library.")
     endif()
 
-    set(versionless_alias "OpenCTK::${library_base_name}")
-    set(versionfull_alias "OpenCTK${OCTK_NAMESPACE_VERSION}::${library_base_name}")
+    set(versionless_alias "${_octk_namespace}::${library_base_name}")
+    set(versionfull_alias "${_octk_namespace}${OCTK_NAMESPACE_VERSION}::${library_base_name}")
     set_target_properties("${target}" PROPERTIES _octk_versionless_alias "${versionless_alias}")
     set_target_properties("${target}" PROPERTIES _octk_versionfull_alias "${versionfull_alias}")
 
@@ -282,7 +290,7 @@ function(octk_internal_set_compile_pdb_names target)
         if(target_type STREQUAL "STATIC_LIBRARY" OR target_type STREQUAL "OBJECT_LIBRARY")
             get_target_property(output_name ${target} OUTPUT_NAME)
             if(NOT output_name)
-                set(output_name "${OCTK_NAMESPACE}${target}")
+                set(output_name "${_octk_namespace}${target}")
             endif()
             set_target_properties(${target} PROPERTIES COMPILE_PDB_NAME "${output_name}")
             set_target_properties(${target} PROPERTIES COMPILE_PDB_NAME_DEBUG "${output_name}d")
@@ -468,7 +476,7 @@ function(octk_internal_export_modern_cmake_config_targets_file)
 
         octk_install(TARGETS "${target}Versionless" EXPORT ${export_name})
     endforeach()
-    octk_install(EXPORT ${export_name} NAMESPACE OpenCTK:: DESTINATION "${arg_CONFIG_INSTALL_DIR}")
+    octk_install(EXPORT ${export_name} NAMESPACE ${_octk_namespace}:: DESTINATION "${arg_CONFIG_INSTALL_DIR}")
 endfunction()
 
 

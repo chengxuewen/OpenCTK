@@ -233,7 +233,7 @@ function(octk_configure_file)
 
     if(arg_CONTENT)
         set(template_name "OpenCTKFileConfigure.txt.in")
-        set(input_file "${PROJECT_SOURCE_DIR}/cmake/${template_name}")
+        set(input_file "${OCTK_CMAKE_DIR}/${template_name}")
         set(__octk_file_configure_content "${arg_CONTENT}")
     elseif(arg_INPUT)
         set(input_file "${arg_INPUT}")

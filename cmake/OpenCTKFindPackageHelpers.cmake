@@ -21,6 +21,13 @@
 #
 ########################################################################################################################
 
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
+
 # This function recursively walks transitive link libraries of the given target
 # and promotes those targets to be IMPORTED_GLOBAL if they are not.
 #
@@ -180,7 +187,7 @@ macro(octk_find_package)
                 set_target_properties(${octk_find_package_target_name} PROPERTIES
                     INTERFACE_OCTK_PACKAGE_NAME ${ARGV0}
                     INTERFACE_OCTK_PACKAGE_IS_OPTIONAL ${arg_MARK_OPTIONAL}
-                    FOLDER "OpenCTK/3rdparty")
+                    FOLDER "${_octk_namespace}/3rdparty")
                 if(package_version)
                     set_target_properties(${octk_find_package_target_name}
                         PROPERTIES INTERFACE_OCTK_PACKAGE_VERSION ${ARGV1})
@@ -255,7 +262,7 @@ function(octk_register_target_dependencies target public_libs private_libs)
     endif()
 
     foreach(lib IN LISTS lib_list)
-        if("${lib}" MATCHES "^OpenCTK::(.*)")
+        if("${lib}" MATCHES "^${_octk_namespace}::(.*)")
             set(lib "${CMAKE_MATCH_1}")
             octk_internal_get_package_name_of_target("${lib}" package_name)
             octk_internal_get_package_version_of_target("${lib}" package_version)
@@ -271,7 +278,7 @@ function(octk_register_target_dependencies target public_libs private_libs)
     # INTERFACE libraries. INTERFACE libraries in most cases will be FooPrivate libraries.
     if(target_is_shared AND private_libs)
         foreach(lib IN LISTS private_libs)
-            if("${lib}" MATCHES "^OpenCTK::(.*)")
+            if("${lib}" MATCHES "^${_octk_namespace}::(.*)")
                 set(lib_namespaced "${lib}")
                 set(lib "${CMAKE_MATCH_1}")
 
@@ -300,7 +307,7 @@ function(octk_internal_get_package_name_of_target target package_name_out_var)
     # their builds not to contain stale FooDependencies.cmakes files without the
     # _octk_package_name property.
     set(package_name "")
-    set(package_name_default "${OCTK_NAMESPACE}${target}")
+    set(package_name_default "${_octk_namespace}${target}")
     set(target_namespaced "${OCTK_CMAKE_EXPORT_NAMESPACE}::${target}")
     #    message(target_namespaced=${target_namespaced})
     if(TARGET "${target_namespaced}")

@@ -20,6 +20,13 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
+# Determine the namespace to use for target naming (OCTK_ALT_NAMESPACE override supported)
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Add libraries to variable ${out_libs_var} in a way that duplicates are added at the end. This ensures the library
@@ -162,7 +169,7 @@ function(__octk_internal_walk_libs target out_var rcc_objects_out_var dict_name 
             if(lib_target MATCHES "^::@")
                 continue()
             elseif(TARGET ${lib_target})
-                if("${lib_target}" MATCHES "^OpenCTK::(.*)")
+                if("${lib_target}" MATCHES "^${_octk_namespace}::(.*)")
                     # If both, OpenCTK::foo and Foo targets exist, prefer the target name without
                     # namespace. Which one is preferred doesn't really matter. This code exists to
                     # avoid ending up with both, OpenCTK::foo and Foo in our dependencies.
@@ -233,7 +240,7 @@ function(__octk_internal_walk_libs target out_var rcc_objects_out_var dict_name 
                         __octk_internal_promote_target_to_global(${lib_target_unaliased})
                     endif()
                 endif()
-            elseif("${lib_target}" MATCHES "^OpenCTK::(.*)")
+            elseif("${lib_target}" MATCHES "^${_octk_namespace}::(.*)")
                 message(FATAL_ERROR "The ${CMAKE_MATCH_1} target is mentioned as a dependency for \
                     ${target}, but not declared.")
             else()

@@ -22,6 +22,16 @@
 ########################################################################################################################
 
 #-----------------------------------------------------------------------------------------------------------------------
+# File-scope namespace variable for OCTK_ALT_NAMESPACE support
+#-----------------------------------------------------------------------------------------------------------------------
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # octk_internal_get_add_library_keywords macro
 #-----------------------------------------------------------------------------------------------------------------------
 macro(octk_internal_get_add_library_keywords option_args single_args multi_args)
@@ -157,7 +167,7 @@ function(octk_add_library name)
     elseif(target_type STREQUAL "SHARED_LIBRARY")
         set(is_shared_lib 1)
     else()
-        message(FATAL_ERROR "Invalid target type '${target_type}' for OpenCTK library '${target}'")
+        message(FATAL_ERROR "Invalid target type '${target_type}' for ${_octk_namespace} library '${target}'")
     endif()
 
     if(NOT arg_NO_SYNC_OCTK AND NOT arg_NO_LIBRARY_HEADERS AND arg_LIBRARY_INCLUDE_NAME)
@@ -171,7 +181,7 @@ function(octk_add_library name)
         _octk_target_base_name "${name}"
         _octk_library_interface_name "${arg_LIBRARY_INTERFACE_NAME}"
         _octk_package_version "${PROJECT_VERSION}"
-        _octk_package_name "${OCTK_NAMESPACE}${name}")
+        _octk_package_name "${_octk_namespace}${name}")
     set(export_properties
         "_octk_library_interface_name"
         "_octk_package_version"
@@ -264,7 +274,7 @@ function(octk_add_library name)
             _octk_target_base_name "${name}Private"
             _octk_config_library_name ${arg_CONFIG_LIBRARY_NAME}Private
             _octk_package_version "${PROJECT_VERSION}"
-            _octk_package_name "${OCTK_NAMESPACE}${name}Private"
+            _octk_package_name "${_octk_namespace}${name}Private"
             _octk_is_private_library TRUE
             _octk_public_library_target_name "${target}")
         set(export_properties
@@ -584,7 +594,7 @@ function(octk_add_library name)
     endif()
 
     # Handle creation of cmake files for consumers of find_package().
-    set(path_suffix "${OCTK_NAMESPACE}${name}")
+    set(path_suffix "${_octk_namespace}${name}")
     octk_path_join(config_build_dir ${OCTK_CONFIG_BUILD_DIR} ${path_suffix})
     octk_path_join(config_install_dir ${OCTK_CONFIG_INSTALL_DIR} ${path_suffix})
 
@@ -635,7 +645,7 @@ function(octk_add_library name)
     get_target_property(_octk_link_libs ${target} INTERFACE_LINK_LIBRARIES)
     if(_octk_link_libs)
         foreach(_lib IN LISTS _octk_link_libs)
-            if(_lib MATCHES "^OpenCTKWrap([A-Za-z0-9]+)::Wrap[A-Za-z0-9]+$")
+            if(_lib MATCHES "^${_octk_namespace}Wrap([A-Za-z0-9]+)::Wrap[A-Za-z0-9]+$")
                 set(_wrap_name "${CMAKE_MATCH_1}")
                 string(APPEND octk_3rdparty_stubs
                     "if(NOT TARGET \"${_lib}\")\n"
@@ -814,9 +824,9 @@ function(octk_add_library name)
     if(NOT _octk_folder)
         file(RELATIVE_PATH _dir "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
         if(_dir MATCHES "^src/(.+)$")
-            set_target_properties(${target} PROPERTIES FOLDER "OpenCTK/${CMAKE_MATCH_1}")
+            set_target_properties(${target} PROPERTIES FOLDER "${_octk_namespace}/${CMAKE_MATCH_1}")
         else()
-            set_target_properties(${target} PROPERTIES FOLDER "OpenCTK/${_dir}")
+            set_target_properties(${target} PROPERTIES FOLDER "${_octk_namespace}/${_dir}")
         endif()
     endif()
 endfunction()
@@ -957,7 +967,7 @@ function(octk_internal_library_info result target)
 
     get_target_property("${result}_include_name" ${target} _octk_library_include_name)
     if(NOT ${result}_include_name)
-        set("${result}_include_name" "OpenCTK${library_base_name}")
+        set("${result}_include_name" "${_octk_namespace}${library_base_name}")
     endif()
 
     set("${result}_versioned_include_dir"
@@ -1402,9 +1412,9 @@ function(octk_internal_create_library_depends_file target)
     set(all_depends ${depends} ${public_depends})
     foreach(dep ${all_depends})
         # Normalize module by stripping leading "OpenCTK::" and trailing "private"
-        if(dep MATCHES "(OpenCTK|${OCTK_CMAKE_EXPORT_NAMESPACE})::([-_A-Za-z0-9]+)")
+        if(dep MATCHES "(${_octk_namespace}|${OCTK_CMAKE_EXPORT_NAMESPACE})::([-_A-Za-z0-9]+)")
             set(dep "${CMAKE_MATCH_2}")
-            set(real_dep_target "OpenCTK::${dep}")
+            set(real_dep_target "${_octk_namespace}::${dep}")
 
             if(TARGET "${real_dep_target}")
                 get_target_property(is_versionless_target "${real_dep_target}" _octk_is_versionless_target)
@@ -1434,7 +1444,7 @@ function(octk_internal_create_library_depends_file target)
             if(dep_seen EQUAL -1 AND ${dep} IN_LIST OCTK_KNOWN_LIBRARIES_WITH_TOOLS)
                 octk_internal_get_package_version_of_target("${dep}" dep_package_version)
                 list(APPEND tool_deps_seen ${dep})
-                list(APPEND tool_deps "${OCTK_NAMESPACE}${dep}Tools\;${dep_package_version}")
+                list(APPEND tool_deps "${_octk_namespace}${dep}Tools\;${dep_package_version}")
             endif()
         endif()
     endforeach()
@@ -1445,11 +1455,11 @@ function(octk_internal_create_library_depends_file target)
     if(${target} IN_LIST OCTK_KNOWN_LIBRARIES_WITH_TOOLS)
         octk_internal_get_package_version_of_target("${target}" main_library_tool_package_version)
         list(APPEND main_library_tool_deps
-            "${OCTK_NAMESPACE}${target}Tools\;${main_library_tool_package_version}")
+            "${_octk_namespace}${target}Tools\;${main_library_tool_package_version}")
     endif()
 
     foreach(dep ${target_deps})
-        if(NOT dep MATCHES ".+_private$" AND dep MATCHES "${OCTK_NAMESPACE}(.+)")
+        if(NOT dep MATCHES ".+_private$" AND dep MATCHES "${_octk_namespace}(.+)")
             # target_deps contains elements that are a pair of target name and version, e.g. 'Core\;1.1'
             # After the extracting from the target_deps list, the element becomes a list itself,
             # because it loses escape symbol before the semicolon, so ${CMAKE_MATCH_1} is the list: Core;1.1.
@@ -1473,7 +1483,7 @@ function(octk_internal_create_library_depends_file target)
         octk_internal_write_depends_file(${target} ${library_include_name} ${octkdeps})
     endif()
     if(third_party_deps OR main_library_tool_deps OR target_deps)
-        set(path_suffix "${OCTK_NAMESPACE}${name}")
+        set(path_suffix "${_octk_namespace}${name}")
         octk_path_join(config_build_dir ${OCTK_CONFIG_BUILD_DIR} ${path_suffix})
         octk_path_join(config_install_dir ${OCTK_CONFIG_INSTALL_DIR} ${path_suffix})
 
@@ -1543,7 +1553,7 @@ function(octk_internal_remove_dependency_duplicates out_deps deps)
 
                 # Skip over OCTK6 dependency, because we will manually handle it in the Dependencies
                 # file before everything else, to ensure that find_package(OCTK6Core)-style works.
-                if(dep_name STREQUAL "${OCTK_NAMESPACE}")
+                if(dep_name STREQUAL "${_octk_namespace}")
                     continue()
                 endif()
                 list(APPEND ${out_deps} "${dep_name}\;${dep_ver}")

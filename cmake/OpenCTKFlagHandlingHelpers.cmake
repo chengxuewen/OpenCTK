@@ -20,6 +20,13 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 ########################################################################################################################
+# Determine the namespace to use for target naming (OCTK_ALT_NAMESPACE override supported)
+if(DEFINED OCTK_ALT_NAMESPACE)
+    set(_octk_namespace "${OCTK_ALT_NAMESPACE}")
+else()
+    set(_octk_namespace "${OCTK_NAMESPACE}")
+endif()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------
@@ -180,10 +187,10 @@ function(octk_internal_add_linker_version_script target)
 		endforeach()
 		string(APPEND contents "};\n")
 		set(current "OCTK_${PROJECT_VERSION_MAJOR}")
-		if(OCTK_NAMESPACE STREQUAL "")
+		if("${_octk_namespace}" STREQUAL "")
 			set(tag_symbol "octk_version_tag")
 		else()
-			set(tag_symbol "octk_version_tag_${OCTK_NAMESPACE}")
+			set(tag_symbol "octk_version_tag_${_octk_namespace}")
 		endif()
 		string(APPEND contents "${current} { *; };\n")
 
