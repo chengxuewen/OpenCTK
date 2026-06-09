@@ -100,21 +100,23 @@ CameraCaptureV4L2Private::~CameraCaptureV4L2Private()
 bool CameraCaptureV4L2Private::deAllocateVideoBuffers()
 {
     OCTK_CHECK_RUNS_SERIALIZED(&mCaptureChecker);
-    // unmap buffers
-    for (int i = 0; i < mBuffersAllocatedByDevice; i++)
-    {
-        munmap(mPoolBuffer[i].start, mPoolBuffer[i].length);
-    }
-
-    delete[] mPoolBuffer;
-
-    // turn off stream
+    // turn off stream FIRST to stop DMA before unmapping buffers
     enum v4l2_buf_type type;
     type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     if (ioctl(mDeviceFd, VIDIOC_STREAMOFF, &type) < 0)
     {
         OCTK_INFO() << "VIDIOC_STREAMOFF error. errno: " << errno;
     }
+
+    // unmap buffers after stream is stopped
+    for (int i = 0; i < mBuffersAllocatedByDevice; i++)
+    {
+        munmap(mPoolBuffer[i].start, mPoolBuffer[i].length);
+    }
+
+    delete[] mPoolBuffer;
+    mPoolBuffer = nullptr;
+    mBuffersAllocatedByDevice = -1;
 
     return true;
 }
@@ -489,6 +491,8 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
                                                strerror(savedErrno),
                                                savedErrno);
         OCTK_ERROR() << errstr;
+        close(d->mDeviceFd);
+        d->mDeviceFd = -1;
         return Error::create(errstr);
     }
 
@@ -542,6 +546,8 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
     {
         const auto errstr = utils::fmt::format("failed to allocate video capture buffers for {}", d->mDeviceId);
         OCTK_WARNING() << errstr;
+        close(d->mDeviceFd);
+        d->mDeviceFd = -1;
         return Error::create(errstr);
     }
 
@@ -557,6 +563,8 @@ Status CameraCaptureV4L2::startCapture(const Capability &capability)
                                                strerror(savedErrno),
                                                savedErrno == EBUSY ? ", EBUSY: may be in use by another process" : "");
         OCTK_WARNING() << errstr;
+        close(d->mDeviceFd);
+        d->mDeviceFd = -1;
         return Error::create(errstr);
     }
 
