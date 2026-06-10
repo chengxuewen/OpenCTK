@@ -47,11 +47,12 @@ if(NOT EXISTS "${OpenCTKWrapWolfSSL_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapWolfSSL_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_C_FLAGS="-fPIC"
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapWolfSSL_INSTALL_DIR}
         ${OpenCTKWrapWolfSSL_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapWolfSSL_BUILD_DIR}"

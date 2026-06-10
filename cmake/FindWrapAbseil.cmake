@@ -47,12 +47,13 @@ if(NOT EXISTS "${OpenCTKWrapAbseil_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapAbseil_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DBUILD_SHARED_LIBS=OFF
         -DABSL_PROPAGATE_CXX_STD=ON
         -DABSL_MSVC_STATIC_RUNTIME=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapAbseil_INSTALL_DIR}
         ${OpenCTKWrapAbseil_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapAbseil_BUILD_DIR}"

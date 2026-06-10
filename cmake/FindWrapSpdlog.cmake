@@ -47,11 +47,12 @@ if(NOT EXISTS "${OpenCTKWrapSpdlog_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapSpdlog_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DSPDLOG_BUILD_PIC=ON
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapSpdlog_INSTALL_DIR}
         ${OpenCTKWrapSpdlog_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapSpdlog_BUILD_DIR}"

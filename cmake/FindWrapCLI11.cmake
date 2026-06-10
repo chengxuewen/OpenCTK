@@ -47,6 +47,8 @@ if(NOT EXISTS "${OpenCTKWrapCLI11_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapCLI11_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DCLI11_BUILD_DOCS=OFF
         -DCLI11_BUILD_TESTS=OFF

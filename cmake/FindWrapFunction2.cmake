@@ -47,10 +47,11 @@ if(NOT EXISTS "${OpenCTKWrapFunction2_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapFunction2_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DBUILD_TESTING=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapFunction2_INSTALL_DIR}
         ${OpenCTKWrapFunction2_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapFunction2_BUILD_DIR}"

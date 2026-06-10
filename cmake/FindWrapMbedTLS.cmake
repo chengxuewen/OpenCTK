@@ -46,13 +46,14 @@ if(NOT EXISTS "${OpenCTKWrapMbedTLS_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapMbedTLS_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DENABLE_PROGRAMS=OFF
         -DMBEDTLS_AS_SUBPROJECT=OFF
         -DMBEDTLS_FATAL_WARNINGS=OFF
         -DCMAKE_C_FLAGS="-fPIC"
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapMbedTLS_INSTALL_DIR}
         ${OpenCTKWrapMbedTLS_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapMbedTLS_BUILD_DIR}"

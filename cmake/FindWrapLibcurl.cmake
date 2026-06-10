@@ -48,6 +48,8 @@ if(NOT EXISTS "${OpenCTKWrapLibcurl_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapLibcurl_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
 		-DUSE_LIBIDN2=OFF
         -DCURL_USE_MBEDTLS=ON

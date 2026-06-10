@@ -47,6 +47,8 @@ if(NOT EXISTS "${OpenCTKWrapYamlCpp_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapYamlCpp_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DYAML_BUILD_SHARED_LIBS=OFF
         -DYAML_CPP_BUILD_TESTS=OFF

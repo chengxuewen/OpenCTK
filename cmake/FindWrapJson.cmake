@@ -47,10 +47,11 @@ if(NOT EXISTS "${OpenCTKWrapJson_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapJson_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DJSON_BuildTests=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapJson_INSTALL_DIR}
         ${OpenCTKWrapJson_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapJson_BUILD_DIR}"

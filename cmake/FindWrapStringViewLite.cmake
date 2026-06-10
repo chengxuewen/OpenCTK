@@ -47,6 +47,8 @@ if(NOT EXISTS "${OpenCTKWrapStringViewLite_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapStringViewLite_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DSTRING_VIEW_LITE_OPT_BUILD_TESTS=OFF
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapStringViewLite_INSTALL_DIR}

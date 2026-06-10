@@ -47,6 +47,8 @@ if(NOT EXISTS "${OpenCTKWrapExpected_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapExpected_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DEXPECTED_BUILD_TESTS=OFF
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapExpected_INSTALL_DIR}

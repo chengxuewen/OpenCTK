@@ -47,6 +47,8 @@ if(NOT EXISTS "${OpenCTKWrapReaderWriterQueue_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapReaderWriterQueue_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapReaderWriterQueue_INSTALL_DIR}
         ${OpenCTKWrapReaderWriterQueue_SOURCE_DIR}

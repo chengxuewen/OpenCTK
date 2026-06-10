@@ -47,12 +47,13 @@ if(NOT EXISTS "${OpenCTKWrapFmt_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapFmt_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DFMT_DOC=OFF
         -DFMT_TEST=OFF
         -DFMT_CUDA_TEST=OFF
         -DFMT_INSTALL=ON
-        -DFMT_HEADER_ONLY=ON
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapFmt_INSTALL_DIR}
         ${OpenCTKWrapFmt_SOURCE_DIR}

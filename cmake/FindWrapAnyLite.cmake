@@ -47,6 +47,8 @@ if(NOT EXISTS "${OpenCTKWrapAnyLite_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapAnyLite_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DANY_LITE_OPT_BUILD_TESTS=OFF
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapAnyLite_INSTALL_DIR}

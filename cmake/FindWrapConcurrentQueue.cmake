@@ -47,6 +47,8 @@ if(NOT EXISTS "${OpenCTKWrapConcurrentQueue_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapConcurrentQueue_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapConcurrentQueue_INSTALL_DIR}
         ${OpenCTKWrapConcurrentQueue_SOURCE_DIR}

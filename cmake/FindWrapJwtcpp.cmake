@@ -48,12 +48,13 @@ if(NOT EXISTS "${OpenCTKWrapJwtcpp_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapJwtcpp_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DPKG_CONFIG_EXECUTABLE=${OpenCTKPkgconf_EXECUTABLE}
         -DJWT_SSL_LIBRARY=wolfSSL
         -DJWT_BUILD_EXAMPLES=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_PREFIX_PATH=${OpenCTKWrapWolfSSL_INSTALL_DIR}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapJwtcpp_INSTALL_DIR}
         ${OpenCTKWrapJwtcpp_SOURCE_DIR}

@@ -48,9 +48,10 @@ if(NOT EXISTS "${OpenCTKWrapLibyuv_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapLibyuv_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapLibyuv_INSTALL_DIR}
         -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         ${OpenCTKWrapLibyuv_SOURCE_DIR}

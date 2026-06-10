@@ -47,12 +47,13 @@ if(NOT EXISTS "${OpenCTKWrapBenchmark_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapBenchmark_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DBUILD_SHARED_LIBS=OFF
         -DBENCHMARK_ENABLE_TESTING=OFF
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapBenchmark_INSTALL_DIR}
         ${OpenCTKWrapBenchmark_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapBenchmark_BUILD_DIR}"

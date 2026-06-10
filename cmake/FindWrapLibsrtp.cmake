@@ -48,6 +48,8 @@ if(NOT EXISTS "${OpenCTKWrapLibsrtp_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapLibsrtp_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DENABLE_OPENSSL=ON
         -DOpenSSL_ROOT=${OpenCTKWrapOpenSSL_INSTALL_DIR}
@@ -55,7 +57,6 @@ if(NOT EXISTS "${OpenCTKWrapLibsrtp_STAMP_FILE_PATH}")
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_PREFIX_PATH=${OpenCTKWrapOpenSSL_INSTALL_DIR}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapLibsrtp_INSTALL_DIR}
         ${OpenCTKWrapLibsrtp_SOURCE_DIR}

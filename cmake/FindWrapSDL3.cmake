@@ -65,6 +65,8 @@ if(NOT EXISTS "${OpenCTKWrapSDL3_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapSDL3_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DSDL_TESTS=OFF
         -DSDL_STATIC=ON

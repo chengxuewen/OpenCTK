@@ -47,12 +47,13 @@ if(NOT EXISTS "${OpenCTKWrapGTest_STAMP_FILE_PATH}")
     message(STATUS "Configure ${OpenCTKWrapGTest_DIR_NAME} lib...")
     execute_process(
         COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
         -DBUILD_SHARED_LIBS=OFF
         -Dgtest_force_shared_crt=ON
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapGTest_INSTALL_DIR}
         ${OpenCTKWrapGTest_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapGTest_BUILD_DIR}"

@@ -47,11 +47,12 @@ if(NOT EXISTS "${OpenCTKWrapFilesystem_STAMP_FILE_PATH}")
 	message(STATUS "Configure ${OpenCTKWrapFilesystem_DIR_NAME} lib...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND}
+        -Wno-deprecated
+        --no-warn-unused-cli
 		-G ${CMAKE_GENERATOR}
 		-DGHC_FILESYSTEM_BUILD_TESTING=OFF
 		-DGHC_FILESYSTEM_BUILD_EXAMPLES=OFF
 		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-		-DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
 		-DCMAKE_INSTALL_PREFIX=${OpenCTKWrapFilesystem_INSTALL_DIR}
 		${OpenCTKWrapFilesystem_SOURCE_DIR}
 		WORKING_DIRECTORY "${OpenCTKWrapFilesystem_BUILD_DIR}"
