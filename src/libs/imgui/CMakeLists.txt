@@ -72,7 +72,7 @@ octk_add_library(Imgui
 	PUBLIC_LIBRARIES
 	OpenCTKWrapImGui::WrapImGui
 	OpenCTK::Core)
-octk_internal_extend_target(OpenCTKImgui
+octk_internal_extend_target(Imgui
 	SOURCES
 	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.mm
 	${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_metal.h
@@ -86,7 +86,7 @@ octk_internal_extend_target(OpenCTKImgui
 	CONDITION OCTK_SYSTEM_MAC)
 if(OCTK_FEATURE_IMGUI_USE_GLFW)
 	octk_find_package(WrapGLFW PROVIDED_TARGETS OpenCTKWrapGLFW::WrapGLFW)
-	octk_internal_extend_target(OpenCTKImgui
+	octk_internal_extend_target(Imgui
 		SOURCES
 		${OpenCTKWrapGLFW_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
 		${OpenCTKWrapGLFW_SOURCE_DIR}/backends/imgui_impl_glfw.h
@@ -99,7 +99,7 @@ if(OCTK_FEATURE_IMGUI_USE_SDL_OPENGL3)
 	elseif(TARGET OpenGL::OpenGL)
 		set(OpenGL_TARGET OpenGL::OpenGL)
 	endif()
-	octk_internal_extend_target(OpenCTKImgui
+	octk_internal_extend_target(Imgui
 		SOURCES
 		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 		${OpenCTKWrapImGui_SOURCE_DIR}/backends/imgui_impl_opengl3.h
@@ -112,7 +112,7 @@ endif()
 
 
 
-octk_install_public_wrap_headers(OpenCTKImgui
+octk_install_public_wrap_headers(Imgui
     WRAPS
     OpenCTKWrapImGui::WrapImGui|imgui
 )

@@ -299,6 +299,19 @@ set(OCTK_NUMBER_OF_ASYNC_JOBS ${OCTK_PROCESSOR_COUNT})
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Set namespace and separator
+#-----------------------------------------------------------------------------------------------------------------------
+set(OCTK_NAMESPACE_VERSION ${OCTK_VERSION_MAJOR})
+set(OCTK_NAMESPACE "OpenCTK" CACHE INTERNAL "OpenCTK Namespace" FORCE)
+if(NOT OCTK_CMAKE_INSTALL_NAMESPACE)
+	set(OCTK_CMAKE_INSTALL_NAMESPACE "openctk_"
+		CACHE STRING "CMake namespace [openctk_]")
+endif()
+if(NOT OCTK_CMAKE_EXPORT_NAMESPACE)
+	set(OCTK_CMAKE_EXPORT_NAMESPACE "OpenCTK"
+		CACHE STRING "CMake namespace used when exporting targets [OpenCTK]")
+endif()
+#-----------------------------------------------------------------------------------------------------------------------
 # Add CMake function(s) and macro(s)
 #-----------------------------------------------------------------------------------------------------------------------
 set(OCTK_CMAKE_DIR "${PROJECT_SOURCE_DIR}/cmake")
@@ -491,19 +504,6 @@ include(OpenCTKInternalTargets)
 include(OpenCTKPublicWrapHelpers)
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Set namespace and separator
-#-----------------------------------------------------------------------------------------------------------------------
-set(OCTK_NAMESPACE_VERSION ${OCTK_VERSION_MAJOR})
-set(OCTK_NAMESPACE "OpenCTK" CACHE INTERNAL "OpenCTK Namespace" FORCE)
-if(NOT OCTK_CMAKE_INSTALL_NAMESPACE)
-	set(OCTK_CMAKE_INSTALL_NAMESPACE "openctk_"
-		CACHE STRING "CMake namespace [openctk_]")
-endif()
-if(NOT OCTK_CMAKE_EXPORT_NAMESPACE)
-	set(OCTK_CMAKE_EXPORT_NAMESPACE "OpenCTK"
-		CACHE STRING "CMake namespace used when exporting targets [OpenCTK]")
-endif()
 
 set(OCTK_KNOWN_LIBRARIES_WITH_TOOLS "" CACHE INTERNAL "Known OpenCTK modules with tools" FORCE)
 

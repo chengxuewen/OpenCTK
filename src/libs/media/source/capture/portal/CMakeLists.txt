@@ -33,7 +33,7 @@ else()
 	    PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
 	    IMPORTED_TARGET gio-unix-2.0)
 endif()
-octk_internal_extend_target(OpenCTKMedia
+octk_internal_extend_target(Media
 	SOURCES
 	${ROOT_DIR}/camera_portal.cpp
 	${ROOT_DIR}/camera_portal_p.hpp
@@ -46,7 +46,7 @@ octk_internal_extend_target(OpenCTKMedia
 	LIBRARIES
 	PkgConfig::GIOUnix)
 if (OCTK_FEATURE_MEDIA_ENABLE_CAPTURE_CAMERA_PIPEWIRE)
-	octk_internal_extend_target(OpenCTKMedia
+	octk_internal_extend_target(Media
 		SOURCES
 		pipewire_utils.cpp
 		pipewire_utils_p.hpp

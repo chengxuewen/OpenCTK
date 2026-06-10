@@ -274,20 +274,17 @@ octk_add_library(Core
 	OpenCTKWrapConcurrentQueue::WrapConcurrentQueue
 	OpenCTKWrapReaderWriterQueue::WrapReaderWriterQueue
 	${OCTK_LIB_LINK_LIBRARIES})
-octk_internal_extend_target(OpenCTKCore
+octk_internal_extend_target(Core
 	SOURCES
 	source/thread/platform_thread_win.cpp
 	PUBLIC_DEFINES
 	NOMINMAX
 	CONDITION OCTK_SYSTEM_WIN)
-octk_internal_extend_target(OpenCTKCore
+octk_internal_extend_target(Core
 	SOURCES
 	source/thread/platform_thread_posix.cpp
 	CONDITION NOT OCTK_SYSTEM_WIN)
-
-
-
-octk_install_public_wrap_headers(OpenCTKCore
+octk_install_public_wrap_headers(Core
     WRAPS
     OpenCTKWrapFmt::WrapFmt|fmt
     OpenCTKWrapJson::WrapJson|nlohmann

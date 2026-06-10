@@ -53,17 +53,17 @@ octk_add_library(Network
 if(OCTK_FEATURE_USE_BOOST_BACKEND)
 	octk_find_package(WrapBoostAsio PROVIDED_TARGETS OpenCTKWrapBoostAsio::WrapBoostAsio)
 	octk_find_package(WrapBoostBeast PROVIDED_TARGETS OpenCTKWrapBoostBeast::WrapBoostBeast)
-	octk_internal_extend_target(OpenCTKNetwork
+	octk_internal_extend_target(Network
 		SOURCES
 		LIBRARIES
 		OpenCTKWrapBoostAsio::WrapBoostAsio
 		OpenCTKWrapBoostBeast::WrapBoostBeast)
 elseif(OCTK_FEATURE_HTTP_USE_LIBCPR_VCPKG)
 	octk_find_package(WrapLibcprVcpkg PROVIDED_TARGETS OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg)
-	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg)
+	octk_internal_extend_target(Network LIBRARIES OpenCTKWrapLibcprVcpkg::WrapLibcprVcpkg)
 else()
 	octk_find_package(WrapLibcpr PROVIDED_TARGETS OpenCTKWrapLibcpr::WrapLibcpr)
-	octk_internal_extend_target(OpenCTKNetwork LIBRARIES OpenCTKWrapLibcpr::WrapLibcpr)
+	octk_internal_extend_target(Network LIBRARIES OpenCTKWrapLibcpr::WrapLibcpr)
 endif()
 
 

@@ -49,6 +49,10 @@ endif()
 #-----------------------------------------------------------------------------------------------------------------------
 function(octk_install_public_wrap_headers target)
     cmake_parse_arguments(arg "" "" "WRAPS" ${ARGN})
+    # Resolve bare name to prefixed target (same guard as octk_internal_extend_target)
+    if(NOT TARGET "${target}")
+        octk_internal_target_name(target ${target})
+    endif()
 
     foreach(pair ${arg_WRAPS})
         # Parse wrap_target|shortname (using | as separator to avoid CMake list splitting)
