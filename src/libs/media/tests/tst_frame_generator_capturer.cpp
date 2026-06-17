@@ -8,10 +8,10 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <openctk/core/create_frame_generator_capturer.hpp>
+#include <openctk/media/create_frame_generator_capturer.hpp>
 //#include <test/octk_simulated_time_controller_p.hpp>
-#include <openctk/core/frame_generator_capturer.hpp>
-#include <openctk/core/create_frame_generator.hpp>
+#include <openctk/media/frame_generator_capturer.hpp>
+#include <openctk/media/create_frame_generator.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

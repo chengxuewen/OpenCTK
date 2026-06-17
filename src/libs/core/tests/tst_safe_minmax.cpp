@@ -8,9 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "../source/global/octk_macros.hpp"
-
-
+#include <openctk/core/macros.hpp>
 #include <openctk/core/safe_minmax.hpp>
 
 #include <gmock/gmock.h>

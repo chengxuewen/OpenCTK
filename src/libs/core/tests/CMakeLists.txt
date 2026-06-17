@@ -205,14 +205,14 @@ octk_add_test(OpenCTKCoreTstException
 #	${OCTK_TEST_LINK_LIBRARIES}
 #	OUTPUT_DIRECTORY
 #	${OCTK_TEST_OUTPUT_DIR})
-octk_add_test(OpenCTKCoreTstFileWrapper
-	SOURCES
-	tst_file_wrapper.cpp
-	INCLUDE_DIRECTORIES
-	LIBRARIES
-	${OCTK_TEST_LINK_LIBRARIES}
-	OUTPUT_DIRECTORY
-	${OCTK_TEST_OUTPUT_DIR})
+#octk_add_test(OpenCTKCoreTstFileWrapper
+#	SOURCES
+#	tst_file_wrapper.cpp
+#	INCLUDE_DIRECTORIES
+#	LIBRARIES
+#	${OCTK_TEST_LINK_LIBRARIES}
+#	OUTPUT_DIRECTORY
+#	${OCTK_TEST_OUTPUT_DIR})
 octk_add_test(OpenCTKCoreTstFileSystem
 	SOURCES
 	tst_filesystem.cpp

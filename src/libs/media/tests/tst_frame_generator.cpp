@@ -8,10 +8,10 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <test/octk_file_utils_p.hpp>
-#include <openctk/core/create_frame_generator.hpp>
-#include <openctk/core/video_frame_buffer.hpp>
-#include <openctk/core/frame_generator.hpp>
+#include <openctk/core/test/file_utils_p.hpp>
+#include <openctk/media/create_frame_generator.hpp>
+#include <openctk/media/video_frame_buffer.hpp>
+#include <openctk/media/frame_generator.hpp>
 #include <openctk/core/shared_ref_ptr.hpp>
 
 #include <gmock/gmock.h>

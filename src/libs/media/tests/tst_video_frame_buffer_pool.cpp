@@ -23,9 +23,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <openctk/core/video_frame_buffer_pool.hpp>
-#include <openctk/core/video_frame_buffer.hpp>
-#include <openctk/core/i420_buffer.hpp>
+#include <openctk/media/video_frame_buffer_pool.hpp>
+#include <openctk/media/video_frame_buffer.hpp>
+#include <openctk/media/i420_buffer.hpp>
 
 #include <stdint.h>
 #include <string.h>

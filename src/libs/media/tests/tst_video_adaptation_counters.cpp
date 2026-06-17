@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <openctk/core/video_adaptation_counters.hpp>
+#include <openctk/media/video_adaptation_counters.hpp>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -22,9 +22,9 @@
 **
 ***********************************************************************************************************************/
 
-#include <openctk/core/rtc_engine.hpp>
+#include <openctk/media/rtc_engine.hpp>
+#include <openctk/network/http.hpp>
 #include <openctk/core/json.hpp>
-#include <openctk/core/http.hpp>
 
 #include "../capture/video_renderer.hpp"
 
