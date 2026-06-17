@@ -53,7 +53,6 @@ octk_find_package(WrapJson PROVIDED_TARGETS OpenCTKWrapJson::WrapJson)
 octk_find_package(WrapCLI11 PROVIDED_TARGETS OpenCTKWrapCLI11::WrapCLI11)
 octk_find_package(WrapJwtcpp PROVIDED_TARGETS OpenCTKWrapJwtcpp::WrapJwtcpp)
 octk_find_package(WrapSpdlog PROVIDED_TARGETS OpenCTKWrapSpdlog::WrapSpdlog)
-octk_find_package(WrapYamlCpp PROVIDED_TARGETS OpenCTKWrapYamlCpp::WrapYamlCpp)
 octk_find_package(WrapAnyLite PROVIDED_TARGETS OpenCTKWrapAnyLite::WrapAnyLite)
 octk_find_package(WrapVariant PROVIDED_TARGETS OpenCTKWrapVariant::WrapVariant)
 octk_find_package(WrapExpected PROVIDED_TARGETS OpenCTKWrapExpected::WrapExpected)
@@ -146,7 +145,6 @@ octk_add_library(Core
 	source/text/string_utils.cpp
 	source/text/string_utils.hpp
 	source/text/string_view.hpp
-	source/text/yaml.hpp
 	source/thread/concurrent.cpp
 	source/thread/concurrent.hpp
 	source/thread/context_checker.cpp
@@ -247,7 +245,6 @@ octk_add_library(Core
 	${OpenCTKWrapFmt_INSTALL_DIR}/include
 	${OpenCTKWrapJson_INSTALL_DIR}/include
 	${OpenCTKWrapJwtcpp_INSTALL_DIR}/include
-	${OpenCTKWrapYamlCpp_INSTALL_DIR}/include
 	${OpenCTKWrapVariant_INSTALL_DIR}/include
 	${OpenCTKWrapAnyLite_INSTALL_DIR}/include
 	${OpenCTKWrapOptional_INSTALL_DIR}/include
@@ -263,7 +260,6 @@ octk_add_library(Core
 	OpenCTKWrapJson::WrapJson
 	OpenCTKWrapCLI11::WrapCLI11
 	OpenCTKWrapJwtcpp::WrapJwtcpp
-	OpenCTKWrapYamlCpp::WrapYamlCpp
 	OpenCTKWrapVariant::WrapVariant
 	OpenCTKWrapAnyLite::WrapAnyLite
 	OpenCTKWrapExpected::WrapExpected
@@ -290,7 +286,6 @@ octk_install_public_wrap_headers(Core
     OpenCTKWrapJson::WrapJson|nlohmann
     OpenCTKWrapCLI11::WrapCLI11|CLI
     OpenCTKWrapJwtcpp::WrapJwtcpp|jwt-cpp
-    OpenCTKWrapYamlCpp::WrapYamlCpp|yaml-cpp
     OpenCTKWrapVariant::WrapVariant|mpark
     OpenCTKWrapAnyLite::WrapAnyLite|nonstd
     OpenCTKWrapExpected::WrapExpected|tl

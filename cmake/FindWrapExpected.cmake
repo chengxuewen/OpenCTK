@@ -70,7 +70,7 @@ if(NOT EXISTS "${OpenCTKWrapExpected_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapExpected_NAME} build success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --install ./
+        COMMAND ${CMAKE_COMMAND} --install ./ --config ${CMAKE_BUILD_TYPE}
         WORKING_DIRECTORY "${OpenCTKWrapExpected_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)

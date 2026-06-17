@@ -73,7 +73,8 @@ if(NOT EXISTS "${OpenCTKWrapLibcurl_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapLibcurl_NAME} configure success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
+        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapLibcurl_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
@@ -82,7 +83,7 @@ if(NOT EXISTS "${OpenCTKWrapLibcurl_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapLibcurl_NAME} build success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --install ./
+        COMMAND ${CMAKE_COMMAND} --install ./ --config ${CMAKE_BUILD_TYPE}
         WORKING_DIRECTORY "${OpenCTKWrapLibcurl_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)

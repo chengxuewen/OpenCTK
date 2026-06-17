@@ -76,7 +76,7 @@ if(NOT EXISTS "${OpenCTKWrapJwtcpp_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapJwtcpp_DIR_NAME} build success")
     
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --install ./
+        COMMAND ${CMAKE_COMMAND} --install ./ --config ${CMAKE_BUILD_TYPE}
         WORKING_DIRECTORY "${OpenCTKWrapJwtcpp_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)

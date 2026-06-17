@@ -72,7 +72,7 @@ if(NOT EXISTS "${OpenCTKWrapSDL3_STAMP_FILE_PATH}")
         -DSDL_STATIC=ON
         -DSDL_SHARED=OFF
         -DSDL_STATIC_PIC=ON
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapSDL3_INSTALL_DIR}
         ${OpenCTKWrapSDL3_SOURCE_DIR}
@@ -84,7 +84,8 @@ if(NOT EXISTS "${OpenCTKWrapSDL3_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapSDL3_NAME} configure success")
     
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
+        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapSDL3_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
@@ -93,7 +94,7 @@ if(NOT EXISTS "${OpenCTKWrapSDL3_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapSDL3_NAME} build success")
             
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --install ./
+        COMMAND ${CMAKE_COMMAND} --install ./ --config ${CMAKE_BUILD_TYPE}
         WORKING_DIRECTORY "${OpenCTKWrapSDL3_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)

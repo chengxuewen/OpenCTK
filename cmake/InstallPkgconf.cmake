@@ -103,6 +103,19 @@ if(NOT EXISTS "${OpenCTKPkgconf_STAMP_FILE_PATH}")
 			WORKING_DIRECTORY "${OpenCTKPkgconf_SOURCE_DIR}"
 			RESULT_VARIABLE SETUP_RESULT)
 		if(SETUP_RESULT MATCHES 0)
+			# Fix Windows: meson.pyz cannot be executed directly by CreateProcess.
+    		# Ninja's build.ninja references meson.pyz without python prefix,
+    		# so we patch all meson.pyz command lines to use the python interpreter.
+    		if(WIN32)
+        		file(READ "${OpenCTKPkgconf_BUILD_DIR}/build.ninja" _OCTK_NINJA_CONTENT)
+        		string(REGEX REPLACE
+            		"\"([^\"]*[/\\\\]meson\\.pyz)\""
+            		"\"${OpenCTKPython_EXECUTABLE}\" \"\\1\""
+            		_OCTK_NINJA_CONTENT "${_OCTK_NINJA_CONTENT}")
+        		file(WRITE "${OpenCTKPkgconf_BUILD_DIR}/build.ninja" "${_OCTK_NINJA_CONTENT}")
+        		message(STATUS "Patched build.ninja for Windows .pyz execution")
+    		endif()
+
 			message(STATUS "meson compile ${OpenCTKPkgconf_NAME} lib...")
 			execute_process(
 				COMMAND ${OpenCTKPython_EXECUTABLE} ${OCTKMeson_FILE} compile -C ../build

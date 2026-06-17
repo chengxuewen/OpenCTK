@@ -73,7 +73,7 @@ if(NOT EXISTS "${OpenCTKWrapSpdlog_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapSpdlog_DIR_NAME} build success")
     
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --install ./
+        COMMAND ${CMAKE_COMMAND} --install ./ --config ${CMAKE_BUILD_TYPE}
         WORKING_DIRECTORY "${OpenCTKWrapSpdlog_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)

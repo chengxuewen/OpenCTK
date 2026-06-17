@@ -82,7 +82,16 @@ endif()
 message(STATUS "CMAKE_BUILD_TYPE was set to: '${CMAKE_BUILD_TYPE}'")
 if(CMAKE_CONFIGURATION_TYPES)
 	message(STATUS "CMAKE_CONFIGURATION_TYPES was set to: '${CMAKE_BUILD_TYPE}'")
-	set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE INTERNAL "Force disable CMAKE_CONFIGURATION_TYPES." FORCE)
+	# For true multi-config generators (VS, Xcode), CMAKE_CONFIGURATION_TYPES contains
+	# "Debug;Release;MinSizeRel;RelWithDebInfo" and CMAKE_BUILD_TYPE should be one of them.
+	# Only override to a single value when they conflict (single-config generator misdetected
+	# as multi-config), otherwise preserve all configurations so the IDE can switch between them.
+	string(FIND "${CMAKE_CONFIGURATION_TYPES}" "${CMAKE_BUILD_TYPE}" _octk_cfg_pos)
+	if(_octk_cfg_pos EQUAL -1)
+		set(CMAKE_CONFIGURATION_TYPES "${CMAKE_BUILD_TYPE}" CACHE INTERNAL "Force disable CMAKE_CONFIGURATION_TYPES." FORCE)
+	else()
+		message(STATUS "  Multi-config generator detected, keeping all configurations")
+	endif()
 endif()
 
 # Override the generic debug postfixes above with custom debug postfixes (even in a single config build) to follow the

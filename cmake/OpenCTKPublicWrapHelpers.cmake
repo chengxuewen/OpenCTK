@@ -41,7 +41,6 @@ endif()
 #   octk_install_public_wrap_headers(OpenCTKCore
 #       WRAPS
 #       OpenCTKWrapFmt::WrapFmt;fmt
-#       OpenCTKWrapYamlCpp::WrapYamlCpp;yaml-cpp
 #       OpenCTKWrapJson::WrapJson;nlohmann
 #       ...)
 #
