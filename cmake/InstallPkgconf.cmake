@@ -23,10 +23,20 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
+# macro(octk_pkgconf_add_path PATH)
+# 	set(ENV{PKG_CONFIG_PATH} "${PATH}")
+# 	set(PKG_CONFIG_ARGN "--with-path=${PATH}")
+# 	message(STATUS "Add Pkgconf check modules search path in ${PATH}")
+# endmacro()
 macro(octk_pkgconf_add_path PATH)
-	set(ENV{PKG_CONFIG_PATH} "${PATH}")
-	set(PKG_CONFIG_ARGN "--with-path=${PATH}")
-	message(STATUS "Add Pkgconf check modules search path in ${PATH}")
+    if("$ENV{PKG_CONFIG_PATH}" STREQUAL "")
+        set(ENV{PKG_CONFIG_PATH} "${PATH}")
+    else()
+        set(ENV{PKG_CONFIG_PATH} "${PATH}:$ENV{PKG_CONFIG_PATH}")
+    endif()
+    # PKG_CONFIG_ARGN intentionally removed — --with-path is pkgconf-specific.
+    # Both pkgconf and system pkg-config prepend from PKG_CONFIG_PATH env var.
+    message(STATUS "Add Pkgconf check modules search path in ${PATH}")
 endmacro()
 
 macro(octk_pkgconf_check_modules PREFIX)
@@ -54,6 +64,30 @@ endmacro()
 if(TARGET OpenCTKPkgconf::Pkgconf)
 	set(OpenCTKPkgconf_FOUND ON)
 	return()
+endif()
+
+
+find_program(OpenCTKPkgconf_SYSTEM_EXECUTABLE
+    NAMES pkgconf
+    DOC "Path to system pkgconf executable")
+if(OpenCTKPkgconf_SYSTEM_EXECUTABLE)
+    execute_process(
+        COMMAND "${OpenCTKPkgconf_SYSTEM_EXECUTABLE}" --version
+        OUTPUT_VARIABLE _octk_pkgconf_sys_version
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        RESULT_VARIABLE _octk_pkgconf_sys_version_result)
+    if(_octk_pkgconf_sys_version_result EQUAL 0)
+        message(STATUS "Found system pkgconf: ${OpenCTKPkgconf_SYSTEM_EXECUTABLE} (${_octk_pkgconf_sys_version})")
+        set(OpenCTKPkgconf_EXECUTABLE "${OpenCTKPkgconf_SYSTEM_EXECUTABLE}"
+            CACHE INTERNAL "PkgConf executable path." FORCE)
+        set(PKG_CONFIG_EXECUTABLE "${OpenCTKPkgconf_EXECUTABLE}"
+            CACHE INTERNAL "PKG_CONFIG_EXECUTABLE executable path." FORCE)
+        # Create dummy imported target so the re-entry guard (TARGET OpenCTKPkgconf::Pkgconf) passes
+        add_library(OpenCTKPkgconf::Pkgconf INTERFACE IMPORTED)
+        set(OpenCTKPkgconf_FOUND ON)
+        return()
+    endif()
 endif()
 
 set(OpenCTKPkgconf_NAME "pkgconf-2.5.1")

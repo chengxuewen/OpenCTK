@@ -25,14 +25,8 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #-----------------------------------------------------------------------------------------------------------------------
 # extend lib target
 #-----------------------------------------------------------------------------------------------------------------------
-string(FIND "${CMAKE_PREFIX_PATH}" ".pixi/envs" PIXI_ENV_FIND_POS)
-if(EXISTS "${CMAKE_SOURCE_DIR}/pixi.toml" AND PIXI_ENV_FIND_POS GREATER -1)
-    octk_pkgconf_check_modules(GIOUnix REQUIRED IMPORTED_TARGET gio-unix-2.0)
-else()
-    octk_pkgconf_check_modules(GIOUnix REQUIRED
-	    PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig"
-	    IMPORTED_TARGET gio-unix-2.0)
-endif()
+octk_pkgconf_check_modules(GIOUnix REQUIRED
+	IMPORTED_TARGET gio-unix-2.0)
 octk_internal_extend_target(Media
 	SOURCES
 	${ROOT_DIR}/camera_portal.cpp
