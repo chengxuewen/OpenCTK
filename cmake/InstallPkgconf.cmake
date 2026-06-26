@@ -23,20 +23,12 @@
 
 # We can't create the same interface imported target multiple times, CMake will complain if we do
 # that. This can happen if the find_package call is done in multiple different subdirectories.
-# macro(octk_pkgconf_add_path PATH)
-# 	set(ENV{PKG_CONFIG_PATH} "${PATH}")
-# 	set(PKG_CONFIG_ARGN "--with-path=${PATH}")
-# 	message(STATUS "Add Pkgconf check modules search path in ${PATH}")
-# endmacro()
 macro(octk_pkgconf_add_path PATH)
     if("$ENV{PKG_CONFIG_PATH}" STREQUAL "")
         set(ENV{PKG_CONFIG_PATH} "${PATH}")
     else()
         set(ENV{PKG_CONFIG_PATH} "${PATH}:$ENV{PKG_CONFIG_PATH}")
     endif()
-    # PKG_CONFIG_ARGN intentionally removed — --with-path is pkgconf-specific.
-    # Both pkgconf and system pkg-config prepend from PKG_CONFIG_PATH env var.
-    message(STATUS "Add Pkgconf check modules search path in ${PATH}")
 endmacro()
 
 macro(octk_pkgconf_check_modules PREFIX)
@@ -50,7 +42,10 @@ macro(octk_pkgconf_check_modules PREFIX)
 	set(PKG_CONFIG_PATH_CACHE "$ENV{PKG_CONFIG_PATH}")
 	if(arg_PATH)
 		octk_pkgconf_add_path("${arg_PATH}")
+	elseif(NOT WIN32)
+		octk_pkgconf_add_path("/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig")
 	endif()
+    message(STATUS "Set PkgConfig path ${PKG_CONFIG_PATH} for ${PREFIX}")
 	if(arg_REQUIRED)
 		pkg_check_modules(${PREFIX} REQUIRED IMPORTED_TARGET GLOBAL ${arg_IMPORTED_TARGET})
 	elseif(arg_QUIET)
