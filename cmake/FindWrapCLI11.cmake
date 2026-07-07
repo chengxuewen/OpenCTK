@@ -54,6 +54,7 @@ if(NOT EXISTS "${OpenCTKWrapCLI11_STAMP_FILE_PATH}")
         -DCLI11_BUILD_TESTS=OFF
         -DCLI11_BUILD_EXAMPLES=OFF
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapCLI11_INSTALL_DIR}
         ${OpenCTKWrapCLI11_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapCLI11_BUILD_DIR}"
@@ -64,7 +65,9 @@ if(NOT EXISTS "${OpenCTKWrapCLI11_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapCLI11_NAME} configure success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
+        COMMAND ${CMAKE_COMMAND} --build ./ 
+        --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapCLI11_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)

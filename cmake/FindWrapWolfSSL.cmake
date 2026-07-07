@@ -63,7 +63,8 @@ if(NOT EXISTS "${OpenCTKWrapWolfSSL_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapWolfSSL_DIR_NAME} configure success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS}
+        COMMAND ${CMAKE_COMMAND} --build ./ 
+        --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS}
         --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapWolfSSL_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)

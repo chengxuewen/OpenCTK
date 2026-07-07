@@ -36,7 +36,7 @@ OCTK_BEGIN_NAMESPACE
 class OCTK_CORE_API OCTK_ATTRIBUTE_LOCKABLE RaceChecker final
 {
 public:
-    class OCTK_ATTRIBUTE_SCOPED_LOCKABLE Scope
+    class OCTK_CORE_API OCTK_ATTRIBUTE_SCOPED_LOCKABLE Scope
     {
     public:
         explicit Scope(const RaceChecker* raceChecker) OCTK_ATTRIBUTE_EXCLUSIVE_LOCK_FUNCTION(raceChecker);

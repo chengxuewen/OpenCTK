@@ -84,7 +84,8 @@ if(NOT EXISTS "${OpenCTKWrapSDL3_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapSDL3_NAME} configure success")
     
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        COMMAND ${CMAKE_COMMAND} --build ./ 
+        --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
         --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapSDL3_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)

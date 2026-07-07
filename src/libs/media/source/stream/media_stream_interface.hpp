@@ -210,10 +210,10 @@ public:
     // Add an encoded video sink to the source and additionally cause
     // a key frame to be generated from the source. The sink will be
     // invoked from a decoder queue.
-    virtual void addEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) = 0;
+    // virtual void addEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) = 0;
 
     // Removes an encoded video sink from the source.
-    virtual void removeEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) = 0;
+    // virtual void removeEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) = 0;
 
     // Notify about constraints set on the source. The information eventually gets
     // routed to attached sinks via VideoSinkInterface<>::OnConstraintsChanged.

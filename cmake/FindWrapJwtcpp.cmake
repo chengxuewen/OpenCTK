@@ -51,10 +51,10 @@ if(NOT EXISTS "${OpenCTKWrapJwtcpp_STAMP_FILE_PATH}")
         -Wno-deprecated
         --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
-        -DPKG_CONFIG_EXECUTABLE=${OpenCTKPkgconf_EXECUTABLE}
         -DJWT_SSL_LIBRARY=wolfSSL
         -DJWT_BUILD_EXAMPLES=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DPKG_CONFIG_EXECUTABLE=${OpenCTKPkgconf_EXECUTABLE}
         -DCMAKE_PREFIX_PATH=${OpenCTKWrapWolfSSL_INSTALL_DIR}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapJwtcpp_INSTALL_DIR}
         ${OpenCTKWrapJwtcpp_SOURCE_DIR}
@@ -66,8 +66,9 @@ if(NOT EXISTS "${OpenCTKWrapJwtcpp_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapJwtcpp_DIR_NAME} configure success")
     
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config 
-        ${CMAKE_BUILD_TYPE} --target install
+        COMMAND ${CMAKE_COMMAND} --build ./ 
+        --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapJwtcpp_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)

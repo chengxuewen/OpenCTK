@@ -29,7 +29,7 @@
 OCTK_BEGIN_NAMESPACE
 
 class CameraDeviceInfoV4L2Private;
-class OCTK_CORE_API CameraDeviceInfoV4L2 : public CameraCapture::DeviceInfo
+class OCTK_MEDIA_API CameraDeviceInfoV4L2 : public CameraCapture::DeviceInfo
 {
 public:
     CameraDeviceInfoV4L2();

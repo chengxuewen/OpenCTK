@@ -24,7 +24,7 @@
 
 #ifndef _OCTK_VIDEO_RECORDABLE_ENCODED_FRAME_HPP
 #define _OCTK_VIDEO_RECORDABLE_ENCODED_FRAME_HPP
-
+#if 0
 #include <openctk/media/video_codec_types.hpp>
 #include <openctk/media/encoded_image.hpp>
 #include <openctk/media/color_space.hpp>
@@ -71,5 +71,5 @@ public:
 };
 
 OCTK_END_NAMESPACE
-
+#endif
 #endif  // _OCTK_VIDEO_RECORDABLE_ENCODED_FRAME_HPP

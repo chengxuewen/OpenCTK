@@ -50,6 +50,7 @@ if(NOT EXISTS "${OpenCTKWrapReaderWriterQueue_STAMP_FILE_PATH}")
         -Wno-deprecated
         --no-warn-unused-cli
         -G ${CMAKE_GENERATOR}
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapReaderWriterQueue_INSTALL_DIR}
         ${OpenCTKWrapReaderWriterQueue_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapReaderWriterQueue_BUILD_DIR}"
@@ -60,7 +61,9 @@ if(NOT EXISTS "${OpenCTKWrapReaderWriterQueue_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapReaderWriterQueue_NAME} configure success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
+        COMMAND ${CMAKE_COMMAND} --build ./ 
+        --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapReaderWriterQueue_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)

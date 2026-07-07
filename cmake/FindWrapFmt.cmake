@@ -55,6 +55,7 @@ if(NOT EXISTS "${OpenCTKWrapFmt_STAMP_FILE_PATH}")
         -DFMT_CUDA_TEST=OFF
         -DFMT_INSTALL=ON
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapFmt_INSTALL_DIR}
         ${OpenCTKWrapFmt_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapFmt_BUILD_DIR}"
@@ -65,7 +66,9 @@ if(NOT EXISTS "${OpenCTKWrapFmt_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapFmt_NAME} configure success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
+        COMMAND ${CMAKE_COMMAND} --build ./ 
+        --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapFmt_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)

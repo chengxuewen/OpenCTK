@@ -54,6 +54,7 @@ if(NOT EXISTS "${OpenCTKWrapYamlCpp_STAMP_FILE_PATH}")
         -DYAML_CPP_BUILD_TESTS=OFF
         -DYAML_CPP_INSTALL=ON
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${OpenCTKWrapYamlCpp_INSTALL_DIR}
         ${OpenCTKWrapYamlCpp_SOURCE_DIR}
         WORKING_DIRECTORY "${OpenCTKWrapYamlCpp_BUILD_DIR}"
@@ -64,7 +65,9 @@ if(NOT EXISTS "${OpenCTKWrapYamlCpp_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapYamlCpp_NAME} configure success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --build ./ --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} --config Release --target install
+        COMMAND ${CMAKE_COMMAND} --build ./ 
+        --parallel ${OCTK_NUMBER_OF_ASYNC_JOBS} 
+        --config ${CMAKE_BUILD_TYPE} --target install
         WORKING_DIRECTORY "${OpenCTKWrapYamlCpp_BUILD_DIR}"
         RESULT_VARIABLE BUILD_RESULT)
     if(NOT BUILD_RESULT MATCHES 0)
@@ -73,7 +76,7 @@ if(NOT EXISTS "${OpenCTKWrapYamlCpp_STAMP_FILE_PATH}")
     message(STATUS "${OpenCTKWrapYamlCpp_NAME} build success")
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} --install ./
+        COMMAND ${CMAKE_COMMAND} --install ./ --config ${CMAKE_BUILD_TYPE}
         WORKING_DIRECTORY "${OpenCTKWrapYamlCpp_BUILD_DIR}"
         RESULT_VARIABLE INSTALL_RESULT)
     if(NOT INSTALL_RESULT MATCHES 0)

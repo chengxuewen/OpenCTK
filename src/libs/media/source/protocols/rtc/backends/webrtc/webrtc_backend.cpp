@@ -516,7 +516,7 @@ public:
     using OnSetSdpSuccess = RtcPeerConnection::OnSetSdpSuccess;
     using OnSetSdpFailure = RtcPeerConnection::OnSetSdpFailure;
 
-    static webrtc::scoped_refptr<SetLocalDescriptionObserver> create(OnSetSdpSuccess success, OnSetSdpFailure failure)
+    static rtc::scoped_refptr<SetLocalDescriptionObserver> create(OnSetSdpSuccess success, OnSetSdpFailure failure)
     {
         return webrtc::make_ref_counted<SetLocalDescriptionObserver>(std::move(success), std::move(failure));
     }
@@ -563,7 +563,7 @@ public:
     using OnSetSdpSuccess = RtcPeerConnection::OnSetSdpSuccess;
     using OnSetSdpFailure = RtcPeerConnection::OnSetSdpFailure;
 
-    static webrtc::scoped_refptr<SetRemoteDescriptionObserver> create(OnSetSdpSuccess success, OnSetSdpFailure failure)
+    static rtc::scoped_refptr<SetRemoteDescriptionObserver> create(OnSetSdpSuccess success, OnSetSdpFailure failure)
     {
         return webrtc::make_ref_counted<SetRemoteDescriptionObserver>(std::move(success), std::move(failure));
     }
@@ -610,7 +610,7 @@ public:
     using OnSdpCreateSuccess = RtcPeerConnection::OnSdpCreateSuccess;
     using OnSdpCreateFailure = RtcPeerConnection::OnSdpCreateFailure;
 
-    static webrtc::scoped_refptr<CreateSessionDescriptionObserver> create(OnSdpCreateSuccess success,
+    static rtc::scoped_refptr<CreateSessionDescriptionObserver> create(OnSdpCreateSuccess success,
                                                                           OnSdpCreateFailure failure)
     {
         return webrtc::make_ref_counted<CreateSessionDescriptionObserver>(std::move(success), std::move(failure));
@@ -651,7 +651,7 @@ public:
     }
     ~RTCStatsCollectorCallback() override { }
 
-    static webrtc::scoped_refptr<RTCStatsCollectorCallback> Create(OnStatsCollectorSuccess success,
+    static rtc::scoped_refptr<RTCStatsCollectorCallback> Create(OnStatsCollectorSuccess success,
                                                                    OnStatsCollectorFailure failure)
     {
         auto instance = webrtc::make_ref_counted<RTCStatsCollectorCallback>(std::move(success), std::move(failure));
@@ -659,7 +659,7 @@ public:
         return instance;
     }
 
-    void OnStatsDelivered(const webrtc::scoped_refptr<const webrtc::RTCStatsReport> &report) override
+    void OnStatsDelivered(const rtc::scoped_refptr<const webrtc::RTCStatsReport> &report) override
     {
         webrtc::RTCStatsReport::ConstIterator iter = report->begin();
         std::vector<RtcStats::SharedPtr> reports;
@@ -679,7 +679,7 @@ private:
 RtcPeerConnectionWebRTC::RtcPeerConnectionWebRTC(
     const RtcConfiguration &configuration,
     RtcMediaConstraints::SharedPtr constraints,
-    webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory)
+    rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory)
     : mWebRTCPeerConnectionFactory(peer_connection_factory)
     , mConfiguration(configuration)
     , mConstraints(constraints)
@@ -1127,7 +1127,7 @@ Result<RtcRtpTransceiver::SharedPtr> RtcPeerConnectionWebRTC::addTransceiver(
         return Error::create("init type error, not RtcRtpTransceiverInitWebRTC type");
     }
 
-    webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
+    webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
     std::string kind = track->kind().std_string();
     if (0 == kind.compare(webrtc::MediaStreamTrackInterface::kVideoKind))
     {
@@ -1164,7 +1164,7 @@ Result<RtcRtpTransceiver::SharedPtr> RtcPeerConnectionWebRTC::addTransceiver(
 
 Result<RtcRtpTransceiver::SharedPtr> RtcPeerConnectionWebRTC::addTransceiver(const RtcMediaTrack::SharedPtr &track)
 {
-    webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
+    webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
     std::string kind = track->kind().std_string();
     if (0 == kind.compare(webrtc::MediaStreamTrackInterface::kVideoKind))
     {
@@ -1201,7 +1201,7 @@ Result<RtcRtpTransceiver::SharedPtr> RtcPeerConnectionWebRTC::addTransceiver(con
 
 Result<RtcRtpTransceiver::SharedPtr> RtcPeerConnectionWebRTC::addTransceiver(RtcMediaType mediaType)
 {
-    webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
+    webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
     if (RtcMediaType::kAudio == mediaType)
     {
         errorOr = mWebRTCPeerConnection->AddTransceiver(cricket::MEDIA_TYPE_AUDIO);
@@ -1227,7 +1227,7 @@ Result<RtcRtpTransceiver::SharedPtr> RtcPeerConnectionWebRTC::addTransceiver(
     {
         return Error::create("init type error, not RtcRtpTransceiverInitWebRTC type");
     }
-    webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
+    webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> errorOr;
     if (RtcMediaType::kAudio == mediaType)
     {
         errorOr = mWebRTCPeerConnection->AddTransceiver(cricket::MEDIA_TYPE_AUDIO, initImpl->rtp_transceiver_init());
@@ -1247,7 +1247,7 @@ Result<RtcRtpTransceiver::SharedPtr> RtcPeerConnectionWebRTC::addTransceiver(
 Result<RtcRtpSender::SharedPtr> RtcPeerConnectionWebRTC::addTrack(const RtcMediaTrack::SharedPtr &track,
                                                                   const Vector<String> &streamIds)
 {
-    webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::RtpSenderInterface>> errorOr;
+    webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>> errorOr;
 
     std::vector<std::string> stream_ids;
     for (auto id : streamIds.std_vector())
@@ -1353,8 +1353,8 @@ RtcPeerConnection::PeerConnectionState RtcPeerConnectionWebRTC::peerConnectionSt
 }
 
 void RtcPeerConnectionWebRTC::OnAddTrack(
-    webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
-    const std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>> &streams)
+    rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+    const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> &streams)
 {
     OCTK_TRACE("[{}]{}({}, {})",
                utils::fmt::ptr(this),
@@ -1373,7 +1373,7 @@ void RtcPeerConnectionWebRTC::OnAddTrack(
     }
 }
 
-void RtcPeerConnectionWebRTC::OnTrack(webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver)
+void RtcPeerConnectionWebRTC::OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver)
 {
     OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, utils::fmt::ptr(transceiver.get()));
     if (mObserver)
@@ -1382,7 +1382,7 @@ void RtcPeerConnectionWebRTC::OnTrack(webrtc::scoped_refptr<webrtc::RtpTransceiv
     }
 }
 
-void RtcPeerConnectionWebRTC::OnRemoveTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver)
+void RtcPeerConnectionWebRTC::OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver)
 {
     OCTK_TRACE("[{}]{}({})", utils::fmt::ptr(this), OCTK_STRFUNC_NAME, utils::fmt::ptr(receiver.get()));
     if (mObserver)
@@ -1391,7 +1391,7 @@ void RtcPeerConnectionWebRTC::OnRemoveTrack(webrtc::scoped_refptr<webrtc::RtpRec
     }
 }
 
-void RtcPeerConnectionWebRTC::OnAddStream(webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream)
+void RtcPeerConnectionWebRTC::OnAddStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream)
 {
     OCTK_TRACE("[{}]{}({}, {})",
                utils::fmt::ptr(this),
@@ -1409,7 +1409,7 @@ void RtcPeerConnectionWebRTC::OnAddStream(webrtc::scoped_refptr<webrtc::MediaStr
     }
 }
 
-void RtcPeerConnectionWebRTC::OnRemoveStream(webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream)
+void RtcPeerConnectionWebRTC::OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream)
 {
     OCTK_TRACE("[{}]{}({}, {})",
                utils::fmt::ptr(this),
@@ -1437,7 +1437,7 @@ void RtcPeerConnectionWebRTC::OnRemoveStream(webrtc::scoped_refptr<webrtc::Media
     }
 }
 
-void RtcPeerConnectionWebRTC::OnDataChannel(webrtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
+void RtcPeerConnectionWebRTC::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel)
 {
     OCTK_TRACE("[{}]{}({}, {})",
                utils::fmt::ptr(this),
@@ -1713,7 +1713,7 @@ RtcAudioProcessor::SharedPtr RtcPeerConnectionFactoryWebRTC::getAudioProcessor()
 //         const auto impl = utils::dynamic_pointer_cast<RtcVideoCapturerWebRTC>(capturer);
 //         if (impl)
 //         {
-//             auto rtc_source_track = webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface>(
+//             auto rtc_source_track = rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>(
 //                 new webrtc::RefCountedObject<webrtc::internal::CapturerTrackSource>(impl->video_capturer()));
 //             auto source = scoped_refptr<RTCVideoSourceImpl>(new RefCountedObject<RTCVideoSourceImpl>(rtc_source_track));
 //             return source;

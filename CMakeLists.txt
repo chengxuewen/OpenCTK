@@ -94,6 +94,15 @@ if(CMAKE_CONFIGURATION_TYPES)
 	endif()
 endif()
 
+# Detect multi-config generator (VS, Xcode). Used by resource.rc generation and debug postfix logic.
+# get_cmake_property is the canonical CMake way to detect multi-config generators.
+get_cmake_property(OCTK_GENERATOR_IS_MULTI_CONFIG GENERATOR_IS_MULTI_CONFIG)
+
+# Also define MSRTC's equivalent for the parent project if it hasn't been set yet
+if(NOT DEFINED MSRTC_GENERATOR_IS_MULTI_CONFIG)
+    set(MSRTC_GENERATOR_IS_MULTI_CONFIG ${OCTK_GENERATOR_IS_MULTI_CONFIG})
+endif()
+
 # Override the generic debug postfixes above with custom debug postfixes (even in a single config build) to follow the
 # conventions we had. lib/liboctk_core_debug.6.3.0.dylib
 if(WIN32)
@@ -275,6 +284,11 @@ endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Using C++: ${OCTK_CMAKE_CXX_STANDARD}")
+
+# Avoid winsock.h vs winsock2.h conflict when included transitively by <windows.h>
+if(WIN32)
+    add_compile_definitions(WIN32_LEAN_AND_MEAN)
+endif()
 
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -33,7 +33,7 @@
 OCTK_BEGIN_NAMESPACE
 
 class CameraCapturePrivate;
-class OCTK_CORE_API CameraCapture
+class OCTK_MEDIA_API CameraCapture
 {
 public:
     OCTK_STATIC_CONSTANT_NUMBER(kUniqueNameLength, 1024)

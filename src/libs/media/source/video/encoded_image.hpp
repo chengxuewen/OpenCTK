@@ -24,7 +24,7 @@
 
 #ifndef _OCTK_VIDEO_ENCODED_IMAGE_HPP
 #define _OCTK_VIDEO_ENCODED_IMAGE_HPP
-
+#if 0
 #include <openctk/media/video_filter_settings.hpp>
 // #include <openctk/media/video_codec_constants.hpp>
 // #include <openctk/media/video_content_type.hpp>
@@ -289,5 +289,5 @@ private:
 };
 
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_VIDEO_ENCODED_IMAGE_HPP

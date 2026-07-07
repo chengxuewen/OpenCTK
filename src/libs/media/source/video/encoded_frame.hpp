@@ -24,7 +24,7 @@
 
 #ifndef _OCTK_VIDEO_ENCODED_FRAME_HPP
 #define _OCTK_VIDEO_ENCODED_FRAME_HPP
-
+#if 0
 #include <openctk/media/codec_specific_info.hpp>
 #include <openctk/media/video_codec_types.hpp>
 #include <openctk/media/rtp_video_header.hpp>
@@ -115,5 +115,5 @@ private:
 };
 
 OCTK_END_NAMESPACE
-
+#endif
 #endif // _OCTK_VIDEO_ENCODED_FRAME_HPP

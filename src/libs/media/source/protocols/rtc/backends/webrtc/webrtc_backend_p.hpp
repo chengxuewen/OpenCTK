@@ -601,7 +601,7 @@ std::string join(T &val, std::string delim)
 class RtcVideoFrameWebRTC : public RtcVideoFrame
 {
 public:
-    RtcVideoFrameWebRTC(webrtc::scoped_refptr<webrtc::I420BufferInterface> buffer,
+    RtcVideoFrameWebRTC(rtc::scoped_refptr<webrtc::I420BufferInterface> buffer,
                         webrtc::VideoRotation rotation,
                         int64_t timestamp_us,
                         uint16_t id)
@@ -658,7 +658,7 @@ public:
 private:
     uint16_t mId{0};
     int64_t mTimestampUSecs{0};
-    webrtc::scoped_refptr<webrtc::I420BufferInterface> mWebRTCI420Buffer;
+    rtc::scoped_refptr<webrtc::I420BufferInterface> mWebRTCI420Buffer;
     webrtc::VideoRotation mWebRTCRotation{webrtc::kVideoRotation_0};
 };
 
@@ -777,7 +777,7 @@ private:
 // class RtcAudioSourceWebRTC : public RtcAudioSource
 // {
 // public:
-//     RtcAudioSourceWebRTC(webrtc::scoped_refptr<libwebrtc::LocalAudioSource> rtc_audio_source, Type source_type);
+//     RtcAudioSourceWebRTC(rtc::scoped_refptr<libwebrtc::LocalAudioSource> rtc_audio_source, Type source_type);
 //     ~RtcAudioSourceWebRTC() override;
 //
 //     virtual void captureFrame(const void *audio_data,
@@ -822,7 +822,7 @@ private:
 class RtcAudioTrackWebRTC : public RtcAudioTrack
 {
 public:
-    RtcAudioTrackWebRTC(webrtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track)
+    RtcAudioTrackWebRTC(rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track)
         : mWebRTCVideoTrack(audio_track)
     {
         RTC_LOG(LS_INFO) << __FUNCTION__ << ": ctor ";
@@ -873,7 +873,7 @@ public:
     bool enabled() const override { return mWebRTCVideoTrack->enabled(); }
     bool setEnabled(bool enable) override { return mWebRTCVideoTrack->set_enabled(enable); }
 
-    webrtc::scoped_refptr<webrtc::AudioTrackInterface> rtc_track() { return mWebRTCVideoTrack; }
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> rtc_track() { return mWebRTCVideoTrack; }
 
 private:
     void RemoveSinks()
@@ -889,7 +889,7 @@ private:
     }
 
     std::map<RtcAudioSink *, std::unique_ptr<RtcAudioTrackSinkWebRTCAdapter>> mVideoSinks;
-    webrtc::scoped_refptr<webrtc::AudioTrackInterface> mWebRTCVideoTrack;
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> mWebRTCVideoTrack;
     webrtc::Mutex mMutex;
     String mKind;
     String mId;
@@ -901,7 +901,7 @@ private:
 class RtcVideoSinkWebRTCAdapter : public webrtc::VideoSinkInterface<webrtc::VideoFrame>
 {
 public:
-    RtcVideoSinkWebRTCAdapter(webrtc::scoped_refptr<webrtc::VideoTrackInterface> track)
+    RtcVideoSinkWebRTCAdapter(rtc::scoped_refptr<webrtc::VideoTrackInterface> track)
         : mWebRTCVideoTrack(track)
     // , mMutex(new webrtc::Mutex())
     {
@@ -957,7 +957,7 @@ protected:
         mVideoBroadcaster.sendData(videoFrame);
     }
 
-    webrtc::scoped_refptr<webrtc::VideoTrackInterface> mWebRTCVideoTrack;
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> mWebRTCVideoTrack;
     RtcVideoBroadcaster mVideoBroadcaster;
     // std::vector<RtcVideoSink *> mVideoSinks;
     // std::unique_ptr<webrtc::Mutex> mMutex;
@@ -1013,7 +1013,7 @@ public:
         }
 
     private:
-        webrtc::scoped_refptr<webrtc::I420Buffer> mWebRTCI420Buffer;
+        rtc::scoped_refptr<webrtc::I420Buffer> mWebRTCI420Buffer;
         // RtcVideoSourceWebRTCAdapter *mAdapter;
         webrtc::VideoBroadcaster *mVideoBroadcaster{nullptr};
     };
@@ -1063,7 +1063,7 @@ public:
         {
             // Video adapter has requested a down-scale. Allocate a new buffer and
             // return scaled version.
-            webrtc::scoped_refptr<webrtc::I420Buffer> scaled_buffer = webrtc::I420Buffer::Create(out_width, out_height);
+            rtc::scoped_refptr<webrtc::I420Buffer> scaled_buffer = webrtc::I420Buffer::Create(out_width, out_height);
             scaled_buffer->ScaleFrom(*frame.video_frame_buffer()->ToI420());
             mWebRTCVideoBroadcaster.OnFrame(webrtc::VideoFrame::Builder()
                                                 .set_video_frame_buffer(scaled_buffer)
@@ -1157,7 +1157,7 @@ public:
     }
     ~RtcVideoTrackSourceWebRTCAdapter() override = default;
 
-    static webrtc::scoped_refptr<RtcVideoTrackSourceWebRTCAdapter> create(
+    static rtc::scoped_refptr<RtcVideoTrackSourceWebRTCAdapter> create(
         const SharedPointer<RtcVideoSourceWebRTCAdapter> &adapter)
     {
         return webrtc::make_ref_counted<RtcVideoTrackSourceWebRTCAdapter>(adapter);
@@ -1177,7 +1177,7 @@ private:
 class RtcVideoTrackSourceWebRTC : public RtcVideoTrackSource
 {
 public:
-    RtcVideoTrackSourceWebRTC(webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface> videoTrackSource)
+    RtcVideoTrackSourceWebRTC(rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> videoTrackSource)
         : mWebRTCVideoTrackSource(videoTrackSource)
     {
     }
@@ -1203,10 +1203,10 @@ public:
         return ret;
     }
 
-    webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface> rtcVideoTrackSource() { return mWebRTCVideoTrackSource; }
+    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> rtcVideoTrackSource() { return mWebRTCVideoTrackSource; }
 
 private:
-    webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface> mWebRTCVideoTrackSource;
+    rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> mWebRTCVideoTrackSource;
 };
 
 /***********************************************************************************************************************
@@ -1215,7 +1215,7 @@ private:
 class RtcVideoTrackWebRTC : public RtcVideoTrack
 {
 public:
-    RtcVideoTrackWebRTC(webrtc::scoped_refptr<webrtc::VideoTrackInterface> rtc_track)
+    RtcVideoTrackWebRTC(rtc::scoped_refptr<webrtc::VideoTrackInterface> rtc_track)
         : mWebRTCVideoTrack(rtc_track)
         , mVideoSinkAdapter(utils::make_unique<RtcVideoSinkWebRTCAdapter>(rtc_track))
     // , mVideoSource(utils::make_shared<RtcVideoTrackSourceWebRTC>(rtc_track->GetSource()))
@@ -1250,10 +1250,10 @@ public:
     bool enabled() const override { return mWebRTCVideoTrack->enabled(); }
     bool setEnabled(bool enable) override { return mWebRTCVideoTrack->set_enabled(enable); }
 
-    webrtc::scoped_refptr<webrtc::VideoTrackInterface> rtc_track() { return mWebRTCVideoTrack; }
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> rtc_track() { return mWebRTCVideoTrack; }
 
 private:
-    webrtc::scoped_refptr<webrtc::VideoTrackInterface> mWebRTCVideoTrack;
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> mWebRTCVideoTrack;
     UniquePointer<RtcVideoSinkWebRTCAdapter> mVideoSinkAdapter;
     SharedPointer<RtcVideoTrackSourceWebRTC> mVideoSource;
     String mKind;
@@ -1266,7 +1266,7 @@ private:
 class RtcMediaStreamWebRTC : public RtcMediaStream, public webrtc::ObserverInterface
 {
 public:
-    RtcMediaStreamWebRTC(webrtc::scoped_refptr<webrtc::MediaStreamInterface> webrtcMediaStream)
+    RtcMediaStreamWebRTC(rtc::scoped_refptr<webrtc::MediaStreamInterface> webrtcMediaStream)
         : mWebRTCMediaStream(webrtcMediaStream)
     {
         mWebRTCMediaStream->RegisterObserver(this);
@@ -1387,7 +1387,7 @@ public:
 
     String id() override { return mId; }
 
-    webrtc::scoped_refptr<webrtc::MediaStreamInterface> webrtcMediaStream() { return mWebRTCMediaStream; }
+    rtc::scoped_refptr<webrtc::MediaStreamInterface> webrtcMediaStream() { return mWebRTCMediaStream; }
 
     void RegisterRTCPeerConnectionObserver(RtcPeerConnection::Observer *observer) { mObserver = observer; }
 
@@ -1444,8 +1444,8 @@ protected:
     }
 
 private:
-    webrtc::scoped_refptr<webrtc::PeerConnectionInterface> mWebRTCPeerConnection;
-    webrtc::scoped_refptr<webrtc::MediaStreamInterface> mWebRTCMediaStream;
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> mWebRTCPeerConnection;
+    rtc::scoped_refptr<webrtc::MediaStreamInterface> mWebRTCMediaStream;
     std::vector<RtcAudioTrack::SharedPtr> mAudioTracks;
     std::vector<RtcVideoTrack::SharedPtr> mVideoTracks;
     RtcPeerConnection::Observer *mObserver{nullptr};
@@ -1460,7 +1460,7 @@ private:
 class RtcDataChannelWebRTC : public RtcDataChannel, public webrtc::DataChannelObserver
 {
 public:
-    RtcDataChannelWebRTC(webrtc::scoped_refptr<webrtc::DataChannelInterface> rtc_data_channel)
+    RtcDataChannelWebRTC(rtc::scoped_refptr<webrtc::DataChannelInterface> rtc_data_channel)
         : mWebRTCDataChannel(rtc_data_channel)
         , mMutex(new webrtc::Mutex())
     {
@@ -1469,7 +1469,7 @@ public:
     }
     ~RtcDataChannelWebRTC() override { mWebRTCDataChannel->UnregisterObserver(); }
 
-    webrtc::scoped_refptr<webrtc::DataChannelInterface> rtc_data_channel() { return mWebRTCDataChannel; }
+    rtc::scoped_refptr<webrtc::DataChannelInterface> rtc_data_channel() { return mWebRTCDataChannel; }
 
     void send(const uint8_t *data, uint32_t size, bool binary = false) override
     {
@@ -1524,7 +1524,7 @@ protected:
     }
 
 private:
-    webrtc::scoped_refptr<webrtc::DataChannelInterface> mWebRTCDataChannel;
+    rtc::scoped_refptr<webrtc::DataChannelInterface> mWebRTCDataChannel;
     std::unique_ptr<webrtc::Mutex> mMutex;
     Observer *mObserver{nullptr};
     std::string mLabel;
@@ -1537,7 +1537,7 @@ private:
 // class RtcAudioDeviceWebRTC : public RtcAudioDevice, public webrtc::AudioDeviceObserver
 // {
 // public:
-//     RtcAudioDeviceWebRTC(webrtc::scoped_refptr<webrtc::AudioDeviceModule> audio_device_module,
+//     RtcAudioDeviceWebRTC(rtc::scoped_refptr<webrtc::AudioDeviceModule> audio_device_module,
 //                     webrtc::Thread *worker_thread);
 //
 //     virtual ~RtcAudioDeviceWebRTC();
@@ -1676,7 +1676,7 @@ public:
             this->stopCapture();
         }
 
-        webrtc::scoped_refptr<webrtc::VideoCaptureModule> vcm_;
+        rtc::scoped_refptr<webrtc::VideoCaptureModule> vcm_;
         webrtc::VideoCaptureCapability capability_;
         webrtc::Thread *worker_thread_ = nullptr;
     };
@@ -1831,7 +1831,7 @@ private:
 class RtcDtlsTransportWebRTC : public RtcDtlsTransport, public webrtc::DtlsTransportObserverInterface
 {
 public:
-    RtcDtlsTransportWebRTC(webrtc::scoped_refptr<webrtc::DtlsTransportInterface> dtls_transport)
+    RtcDtlsTransportWebRTC(rtc::scoped_refptr<webrtc::DtlsTransportInterface> dtls_transport)
         : mWebRTCDtlsTransport(dtls_transport)
         , mObserver(nullptr)
     {
@@ -1855,7 +1855,7 @@ public:
         mObserver = nullptr;
     }
 
-    webrtc::scoped_refptr<webrtc::DtlsTransportInterface> dtls_transport();
+    rtc::scoped_refptr<webrtc::DtlsTransportInterface> dtls_transport();
 
 protected:
     void OnStateChange(webrtc::DtlsTransportInformation info) override { }
@@ -1869,7 +1869,7 @@ protected:
     }
 
 private:
-    webrtc::scoped_refptr<webrtc::DtlsTransportInterface> mWebRTCDtlsTransport;
+    rtc::scoped_refptr<webrtc::DtlsTransportInterface> mWebRTCDtlsTransport;
     Observer *mObserver;
 };
 
@@ -1879,7 +1879,7 @@ private:
 class RtcDtmfSenderWebRTC : public RtcDtmfSender, public webrtc::DtmfSenderObserverInterface
 {
 public:
-    RtcDtmfSenderWebRTC(webrtc::scoped_refptr<webrtc::DtmfSenderInterface> dtmf_sender)
+    RtcDtmfSenderWebRTC(rtc::scoped_refptr<webrtc::DtmfSenderInterface> dtmf_sender)
         : mWebRTCDtmfSender(dtmf_sender)
         , mObserver(nullptr)
     {
@@ -1916,7 +1916,7 @@ public:
 
     int duration() const override { return mWebRTCDtmfSender->duration(); }
 
-    webrtc::scoped_refptr<webrtc::DtmfSenderInterface> dtmf_sender() { return mWebRTCDtmfSender; }
+    rtc::scoped_refptr<webrtc::DtmfSenderInterface> dtmf_sender() { return mWebRTCDtmfSender; }
 
 protected:
     void OnToneChange(const std::string &tone, const std::string &tone_buffer) override
@@ -1936,7 +1936,7 @@ protected:
     }
 
 private:
-    webrtc::scoped_refptr<webrtc::DtmfSenderInterface> mWebRTCDtmfSender;
+    rtc::scoped_refptr<webrtc::DtmfSenderInterface> mWebRTCDtmfSender;
     Observer *mObserver;
 };
 
@@ -2550,7 +2550,7 @@ private:
 class RtcRtpReceiverWebRTC : public RtcRtpReceiver, webrtc::RtpReceiverObserverInterface
 {
 public:
-    RtcRtpReceiverWebRTC(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> rtp_receiver)
+    RtcRtpReceiverWebRTC(rtc::scoped_refptr<webrtc::RtpReceiverInterface> rtp_receiver)
         : mWebRTCRtpReceiver(rtp_receiver)
         , mObserver(nullptr)
     {
@@ -2560,19 +2560,19 @@ public:
 
     RtcMediaTrack::SharedPtr track() const override
     {
-        webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track = mWebRTCRtpReceiver->track();
+        rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track = mWebRTCRtpReceiver->track();
         if (nullptr == track.get())
         {
             return nullptr;
         }
         if (track->kind() == webrtc::MediaStreamTrackInterface::kVideoKind)
         {
-            return utils::make_shared<RtcVideoTrackWebRTC>(webrtc::scoped_refptr<webrtc::VideoTrackInterface>(
+            return utils::make_shared<RtcVideoTrackWebRTC>(rtc::scoped_refptr<webrtc::VideoTrackInterface>(
                 static_cast<webrtc::VideoTrackInterface *>(track.get())));
         }
         else if (track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind)
         {
-            return utils::make_shared<RtcAudioTrackWebRTC>(webrtc::scoped_refptr<webrtc::AudioTrackInterface>(
+            return utils::make_shared<RtcAudioTrackWebRTC>(rtc::scoped_refptr<webrtc::AudioTrackInterface>(
                 static_cast<webrtc::AudioTrackInterface *>(track.get())));
         }
         return nullptr;
@@ -2647,7 +2647,7 @@ public:
     }
 
 
-    webrtc::scoped_refptr<webrtc::RtpReceiverInterface> rtp_receiver() { return mWebRTCRtpReceiver; }
+    rtc::scoped_refptr<webrtc::RtpReceiverInterface> rtp_receiver() { return mWebRTCRtpReceiver; }
 
 protected:
     void OnFirstPacketReceived(cricket::MediaType media_type) override
@@ -2659,7 +2659,7 @@ protected:
     }
 
 private:
-    webrtc::scoped_refptr<webrtc::RtpReceiverInterface> mWebRTCRtpReceiver;
+    rtc::scoped_refptr<webrtc::RtpReceiverInterface> mWebRTCRtpReceiver;
     Observer *mObserver;
 };
 
@@ -2669,7 +2669,7 @@ private:
 class RtcRtpSenderWebRTC : public RtcRtpSender
 {
 public:
-    RtcRtpSenderWebRTC(webrtc::scoped_refptr<webrtc::RtpSenderInterface> rtp_sender)
+    RtcRtpSenderWebRTC(rtc::scoped_refptr<webrtc::RtpSenderInterface> rtp_sender)
         : mWebRTCRtpSender(rtp_sender)
     {
     }
@@ -2701,7 +2701,7 @@ public:
 
     RtcMediaTrack::SharedPtr track() const override
     {
-        webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track = mWebRTCRtpSender->track();
+        rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track = mWebRTCRtpSender->track();
 
         if (nullptr == track.get())
         {
@@ -2710,12 +2710,12 @@ public:
 
         if (track->kind() == webrtc::MediaStreamTrackInterface::kVideoKind)
         {
-            return utils::make_shared<RtcVideoTrackWebRTC>(webrtc::scoped_refptr<webrtc::VideoTrackInterface>(
+            return utils::make_shared<RtcVideoTrackWebRTC>(rtc::scoped_refptr<webrtc::VideoTrackInterface>(
                 static_cast<webrtc::VideoTrackInterface *>(track.get())));
         }
         else if (track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind)
         {
-            return utils::make_shared<RtcAudioTrackWebRTC>(webrtc::scoped_refptr<webrtc::AudioTrackInterface>(
+            return utils::make_shared<RtcAudioTrackWebRTC>(rtc::scoped_refptr<webrtc::AudioTrackInterface>(
                 static_cast<webrtc::AudioTrackInterface *>(track.get())));
         }
         return nullptr;
@@ -2785,10 +2785,10 @@ public:
     uint32_t ssrc() const override { return mWebRTCRtpSender->ssrc(); }
     String id() const override { return mWebRTCRtpSender->id(); }
 
-    webrtc::scoped_refptr<webrtc::RtpSenderInterface> rtc_rtp_sender() { return mWebRTCRtpSender; }
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> rtc_rtp_sender() { return mWebRTCRtpSender; }
 
 private:
-    webrtc::scoped_refptr<webrtc::RtpSenderInterface> mWebRTCRtpSender;
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> mWebRTCRtpSender;
 };
 
 /***********************************************************************************************************************
@@ -2863,7 +2863,7 @@ private:
 class RtcRtpTransceiverWebRTC : public RtcRtpTransceiver
 {
 public:
-    RtcRtpTransceiverWebRTC(webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> rtp_transceiver)
+    RtcRtpTransceiverWebRTC(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> rtp_transceiver)
         : mWebRTCRtpTransceiver(rtp_transceiver)
     {
     }
@@ -2959,10 +2959,10 @@ public:
         mWebRTCRtpTransceiver->SetCodecPreferences(list);
     }
 
-    webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> rtp_transceiver() { return mWebRTCRtpTransceiver; }
+    rtc::scoped_refptr<webrtc::RtpTransceiverInterface> rtp_transceiver() { return mWebRTCRtpTransceiver; }
 
 private:
-    webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> mWebRTCRtpTransceiver;
+    rtc::scoped_refptr<webrtc::RtpTransceiverInterface> mWebRTCRtpTransceiver;
 };
 
 /***********************************************************************************************************************
@@ -2973,7 +2973,7 @@ class RtcPeerConnectionWebRTC : public RtcPeerConnection, public webrtc::PeerCon
 public:
     RtcPeerConnectionWebRTC(const RtcConfiguration &configuration,
                             RtcMediaConstraints::SharedPtr constraints,
-                            webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory);
+                            rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory);
     ~RtcPeerConnectionWebRTC() override;
 
     Status initialize() override;
@@ -3042,13 +3042,13 @@ public:
     PeerConnectionState peerConnectionState() override;
 
 protected:
-    void OnAddTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
-                    const std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>> &streams) override;
-    void OnTrack(webrtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) override;
-    void OnRemoveTrack(webrtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) override;
-    void OnAddStream(webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
-    void OnRemoveStream(webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
-    void OnDataChannel(webrtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) override;
+    void OnAddTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver,
+                    const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> &streams) override;
+    void OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) override;
+    void OnRemoveTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver) override;
+    void OnAddStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
+    void OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
+    void OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) override;
     void OnRenegotiationNeeded() override;
     void OnConnectionChange(webrtc::PeerConnectionInterface::PeerConnectionState new_state) override;
     void OnIceCandidate(const webrtc::IceCandidateInterface *candidate) override;
@@ -3056,9 +3056,9 @@ protected:
     void OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState new_state) override;
     void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) override;
 
-    webrtc::scoped_refptr<webrtc::PeerConnectionInterface> mWebRTCPeerConnection;
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> mWebRTCPeerConnection;
     webrtc::PeerConnectionInterface::RTCOfferAnswerOptions mWebRTCOfferAnswerOptions;
-    webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> mWebRTCPeerConnectionFactory;
+    rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> mWebRTCPeerConnectionFactory;
 
 private:
     OnceFlag mInitOnceFlag;
@@ -3119,14 +3119,14 @@ public:
 
 
     webrtc::Thread *webrtcSignalingThread() { return mWebRTCSignalingThread.get(); }
-    webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> webrtcPeerConnectionFactory()
+    rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> webrtcPeerConnectionFactory()
     {
         return mWebRTCPeerConnectionFactory;
     }
 
 protected:
 
-    // webrtc::scoped_refptr<libwebrtc::LocalAudioSource> CreateAudioSourceWithOptions(webrtc::AudioOptions *options,
+    // rtc::scoped_refptr<libwebrtc::LocalAudioSource> CreateAudioSourceWithOptions(webrtc::AudioOptions *options,
     //                                                                                 bool is_custom_source = false);
 
     // scoped_refptr<RTCVideoSource> CreateVideoSource_s(SharedPointer<RTCVideoCapturer> capturer,
@@ -3145,9 +3145,9 @@ private:
     std::unique_ptr<rtc::Thread> mWebRTCNetworkThread;
     std::unique_ptr<rtc::Thread> mWebRTCSignalingThread;
     std::unique_ptr<webrtc::TaskQueueFactory> mWebRTCTaskQueueFactory;
-    webrtc::scoped_refptr<webrtc::AudioDeviceModule> mWebRTCAudioDeviceModule;
-    webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> mWebRTCPeerConnectionFactory;
-    // webrtc::scoped_refptr<webrtc::CustomAudioTransportFactory> audio_transport_factory_;
+    rtc::scoped_refptr<webrtc::AudioDeviceModule> mWebRTCAudioDeviceModule;
+    rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> mWebRTCPeerConnectionFactory;
+    // rtc::scoped_refptr<webrtc::CustomAudioTransportFactory> audio_transport_factory_;
 
     // SharedPointer<RtcAudioDeviceWebRTC> audio_device_impl_;
     // SharedPointer<RtcAudioProcessorWebRTC> audio_processing_impl_;

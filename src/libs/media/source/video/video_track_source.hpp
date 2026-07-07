@@ -60,8 +60,8 @@ public:
 
     bool isSupportsEncodedOutput() const override { return false; }
     void generateKeyFrame() override { }
-    void addEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) override { }
-    void removeEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) override { }
+    // void addEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) override { }
+    // void removeEncodedSink(VideoSinkInterface<RecordableEncodedFrame> *sink) override { }
 
 protected:
     virtual VideoSourceInterface<VideoFrame> *source() = 0;

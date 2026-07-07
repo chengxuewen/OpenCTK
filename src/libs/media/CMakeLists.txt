@@ -163,10 +163,10 @@ octk_add_library(Media
 	source/stream/media_stream_track.hpp
 	source/video/color_space.cpp
 	source/video/color_space.hpp
-#	source/video/encoded_frame.cpp
-#	source/video/encoded_frame.hpp
-#	source/video/encoded_image.cpp
-#	source/video/encoded_image.hpp
+	# source/video/encoded_frame.cpp
+	# source/video/encoded_frame.hpp
+	# source/video/encoded_image.cpp
+	# source/video/encoded_image.hpp
 	source/video/frame_instrumentation_data.hpp
 	source/video/frame_utils.cpp
 	source/video/frame_utils.hpp

@@ -29,7 +29,7 @@
 OCTK_BEGIN_NAMESPACE
 
 class CameraDeviceInfoPipeWirePrivate;
-class OCTK_CORE_API CameraDeviceInfoPipeWire : public CameraCapture::DeviceInfo
+class OCTK_MEDIA_API CameraDeviceInfoPipeWire : public CameraCapture::DeviceInfo
 {
 public:
     CameraDeviceInfoPipeWire();
