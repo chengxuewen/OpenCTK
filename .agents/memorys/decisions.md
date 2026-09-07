@@ -27,3 +27,14 @@
 **决策**: MSRTC 删除 FindWrap{GTest,OpenSSL,Libsrtp}，复用 OpenCTK 的对应模块。
 
 **原因**: OpenCTK 已有 42 个 FindWrap 模块覆盖这些依赖。MSRTC 只保留独有的 (ZLMediaKit, Iceoryx2, TrroSdk, SDL2)。
+
+## yaml-cpp wrap 模块
+
+**决策**: 保留 yaml-cpp wrap（84cb303 引入，OpenCTK::Core PUBLIC_LIBRARIES，`octk::yaml` 命名空间）。
+
+**原因**:
+1. 源码构建静态 .a，无系统依赖
+2. 6d17208 曾因 MSVC 2019 dragonbox.h 模板错误临时移除，后续重新引入并保留
+3. MSRTC 的 yaml 配置解析链依赖此模块
+
+**风险**: MSVC 2019 下有已知构建问题（dragonbox.h），Windows 消费者报错先查此点

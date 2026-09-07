@@ -39,3 +39,13 @@
 ### ⚠️ git status 显示子模块为 "modified content"
 
 `3rdparty/OpenCTK` 内有未提交修改时，MSRTC 的 `git status` 会显示子模块状态。
+
+### ⚠️ pkg-config 链完全依赖 PKG_CONFIG_PATH 环境变量 (2026-06)
+
+0e49a8d/e9486a1 后：FindWrapWebRTC 硬编码 gio/glib 路径已注释，portal 分支逻辑已移除——
+全部依赖 build.sh 导出的 `PKG_CONFIG_PATH`。手动 cmake/ninja 不经 build.sh 时找不到 GLib/WebRTC 依赖。
+
+### ⚠️ yaml-cpp MSVC 2019 dragonbox.h 模板错误 (2026-06)
+
+曾导致 6d17208 整体移除 yaml-cpp。Linux/pixi 正常；Windows 消费者构建失败先查此点。
+

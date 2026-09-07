@@ -96,3 +96,5 @@ stash
 # Don't ignore files
 # --------
 .vscode/settings.json
+# CodeGraph index
+.codegraph/
